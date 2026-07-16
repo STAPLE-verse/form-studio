@@ -16,13 +16,15 @@ Add the package to your app's `package.json`:
 }
 ```
 
-Then run `npm install`. The `prepare` script builds the package automatically when installed from git.
+Then run `npm install`. The built `dist/` output is committed to this repo, so no build step runs at install time — installing straight from git works even with npm's script-blocking defaults (npm 12+).
 
 To track the latest commit on `main`:
 
 ```json
 "@staple-verse/form-studio": "github:STAPLE-verse/form-studio"
 ```
+
+> **Note:** npm 12+ blocks git dependencies by default. Consuming apps need `--allow-git` (or `allow-git=true` in `.npmrc`) for `npm install` to resolve this package.
 
 ## Peer dependencies
 
@@ -88,6 +90,8 @@ npm install
 npm run build      # emit dist/
 npm run typecheck  # type-check without emitting
 ```
+
+`dist/` is committed, so after making changes, run `npm run build` and commit the updated output alongside your source changes. CI fails the build if `dist/` is out of date.
 
 ## License
 

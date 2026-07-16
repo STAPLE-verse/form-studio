@@ -11,6 +11,9 @@
     "url": "https://github.com/STAPLE-verse/form-studio/issues"
   },
   "homepage": "https://github.com/STAPLE-verse/form-studio#readme",
+  "engines": {
+    "node": ">=20"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,7 +29,6 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "prepare": "npm run build",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {
