@@ -1,7 +1,7 @@
 "use client"
 
 import { lazy, Suspense, useState, useEffect, useRef } from "react"
-import { FormStudioProvider, useFormStudio } from "./FormStudioContext"
+import { FormStudioProvider, useFormStudio, type FormStudioState } from "./FormStudioContext"
 import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
 
@@ -22,9 +22,9 @@ function JsonEditorFallback() {
 export type FormStudioSaveStatus = "synced" | "unsaved" | "saving"
 
 interface FormStudioUIProps {
-  onAutoSave?: (state: { schema: object; uiSchema: object; formData: object }) => Promise<void> | void
-  onSave?: (state: { schema: object; uiSchema: object; formData: object }) => Promise<void>
-  onSaveNewVersion?: (state: { schema: object; uiSchema: object; formData: object }) => Promise<void>
+  onAutoSave?: (state: FormStudioState) => Promise<void> | void
+  onSave?: (state: FormStudioState) => Promise<void>
+  onSaveNewVersion?: (state: FormStudioState) => Promise<void>
   onCancel?: () => void
   mods?: Mods
   /** When provided, the route layer owns save-status semantics (§8.11.4). */
@@ -164,7 +164,7 @@ export function FormStudioUI({
         <div className={activeTab === "builder" ? "block" : "hidden"}>
           <FormBuilder
             schema={typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema)}
-            uischema={typeof state.uiSchema === "string" ? state.uiSchema : JSON.stringify(state.uiSchema)}
+            uiSchema={typeof state.uiSchema === "string" ? state.uiSchema : JSON.stringify(state.uiSchema)}
             onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
               try {
                 setSchema(JSON.parse(newSchemaStr))

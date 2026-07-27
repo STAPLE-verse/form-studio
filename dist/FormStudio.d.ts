@@ -1,21 +1,10 @@
+import { type FormStudioState } from "./FormStudioContext";
 import type { Mods } from "./types";
 export type FormStudioSaveStatus = "synced" | "unsaved" | "saving";
 interface FormStudioUIProps {
-    onAutoSave?: (state: {
-        schema: object;
-        uiSchema: object;
-        formData: object;
-    }) => Promise<void> | void;
-    onSave?: (state: {
-        schema: object;
-        uiSchema: object;
-        formData: object;
-    }) => Promise<void>;
-    onSaveNewVersion?: (state: {
-        schema: object;
-        uiSchema: object;
-        formData: object;
-    }) => Promise<void>;
+    onAutoSave?: (state: FormStudioState) => Promise<void> | void;
+    onSave?: (state: FormStudioState) => Promise<void>;
+    onSaveNewVersion?: (state: FormStudioState) => Promise<void>;
     onCancel?: () => void;
     mods?: Mods;
     /** When provided, the route layer owns save-status semantics (§8.11.4). */

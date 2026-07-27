@@ -81,6 +81,7 @@ export default function Page() {
 - `FormPreview` — live RJSF preview
 - `JsonEditor` — Monaco JSON editor
 - `FormStudioProvider`, `useFormStudio` — shared state context
+- `FormStudioState`, `FormStudioProviderProps` — shared integration types
 - All types from `./types`
 
 ## Development

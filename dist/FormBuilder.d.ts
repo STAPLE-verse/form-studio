@@ -1,10 +1,10 @@
 import { ReactElement } from "react";
 import type { Mods, InitParameters } from "./types";
-export default function FormBuilder({ schema, uischema, onMount, onChange, mods, className, }: {
+export default function FormBuilder({ schema, uiSchema, onMount, onChange, mods, className, }: {
     schema: string;
-    uischema: string;
+    uiSchema: string;
     onMount?: (parameters: InitParameters) => any;
-    onChange: (schema: string, uischema: string) => any;
+    onChange: (schema: string, uiSchema: string) => any;
     mods?: Mods;
     className?: string;
 }): ReactElement;

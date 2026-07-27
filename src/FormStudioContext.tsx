@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from "react"
 
-interface FormStudioState {
+export interface FormStudioState {
   schema: object
   uiSchema: object
   formData: object
@@ -18,11 +18,11 @@ interface FormStudioContextType {
 
 const FormStudioContext = createContext<FormStudioContextType | undefined>(undefined)
 
-interface FormStudioProviderProps {
+export interface FormStudioProviderProps {
   initialSchema?: object | string
   initialUiSchema?: object | string
   initialFormData?: object
-  children: ReactNode
+  children?: ReactNode
 }
 
 export function FormStudioProvider({

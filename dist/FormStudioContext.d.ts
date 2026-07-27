@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-interface FormStudioState {
+export interface FormStudioState {
     schema: object;
     uiSchema: object;
     formData: object;
@@ -11,11 +11,11 @@ interface FormStudioContextType {
     setFormData: (newFormData: object) => void;
     updateState: (newState: Partial<FormStudioState>) => void;
 }
-interface FormStudioProviderProps {
+export interface FormStudioProviderProps {
     initialSchema?: object | string;
     initialUiSchema?: object | string;
     initialFormData?: object;
-    children: ReactNode;
+    children?: ReactNode;
 }
 export declare function FormStudioProvider({ initialSchema, initialUiSchema, initialFormData, children, }: FormStudioProviderProps): React.JSX.Element;
 export declare function useFormStudio(): FormStudioContextType;

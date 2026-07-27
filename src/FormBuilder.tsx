@@ -24,22 +24,22 @@ import type { Mods, InitParameters, AddFormObjectParametersType } from "./types"
 
 export default function FormBuilder({
   schema,
-  uischema,
+  uiSchema,
   onMount,
   onChange,
   mods,
   className,
 }: {
   schema: string
-  uischema: string
+  uiSchema: string
   onMount?: (parameters: InitParameters) => any
-  onChange: (schema: string, uischema: string) => any
+  onChange: (schema: string, uiSchema: string) => any
   mods?: Mods
   className?: string
 }): ReactElement {
   const schemaData = parse(schema)
   schemaData.type = "object"
-  const uiSchemaData = parse(uischema)
+  const uiSchemaData = parse(uiSchema)
   const allFormInputs = excludeKeys(
     Object.assign({}, DEFAULT_FORM_INPUTS, (mods && mods.customFormInputs) || {}),
     mods && mods.deactivatedFormInputs
@@ -119,7 +119,7 @@ export default function FormBuilder({
                     ...schemaData,
                     title: ev.target.value,
                   }),
-                  uischema
+                  uiSchema
                 )
               }}
               className="input input-primary input-bordered w-full form-title mb-4"
@@ -139,7 +139,7 @@ export default function FormBuilder({
                     ...schemaData,
                     description: val,
                   }),
-                  uischema
+                  uiSchema
                 )
               }
             />

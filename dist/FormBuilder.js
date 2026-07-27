@@ -8,10 +8,10 @@ import Add from "./Add";
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput";
 import { parse, stringify, checkForUnsupportedFeatures, generateElementComponentsFromSchemas, addCardObj, addSectionObj, onDragEnd, generateCategoryHash, excludeKeys, DROPPABLE_TYPE, } from "./utils";
 import DEFAULT_FORM_INPUTS from "./defaults/defaultFormInputs";
-export default function FormBuilder({ schema, uischema, onMount, onChange, mods, className, }) {
+export default function FormBuilder({ schema, uiSchema, onMount, onChange, mods, className, }) {
     const schemaData = parse(schema);
     schemaData.type = "object";
-    const uiSchemaData = parse(uischema);
+    const uiSchemaData = parse(uiSchema);
     const allFormInputs = excludeKeys(Object.assign({}, DEFAULT_FORM_INPUTS, (mods && mods.customFormInputs) || {}), mods && mods.deactivatedFormInputs);
     const unsupportedFeatures = checkForUnsupportedFeatures(schemaData, uiSchemaData, allFormInputs).filter((msg) => !msg.includes("Object Property: _stapleSchema") &&
         !msg.includes("Property Parameter: readOnly in _stapleSchema") &&
@@ -48,13 +48,13 @@ export default function FormBuilder({ schema, uischema, onMount, onChange, mods,
                                     onChange(stringify({
                                         ...schemaData,
                                         title: ev.target.value,
-                                    }), uischema);
+                                    }), uiSchema);
                                 }, className: "input input-primary input-bordered w-full form-title mb-4" })] }), _jsxs("div", { children: [_jsx("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string"
                                     ? mods.labels.formDescriptionLabel
                                     : "Form Description" }), _jsx(MarkdownDescriptionInput, { value: schemaData.description || "", onChange: (val) => onChange(stringify({
                                     ...schemaData,
                                     description: val,
-                                }), uischema) })] })] })), _jsx("div", { className: "form-body formBody mt-6", children: _jsx(DragDropContext, { onDragEnd: (result) => onDragEnd(result, {
+                                }), uiSchema) })] })] })), _jsx("div", { className: "form-body formBody mt-6", children: _jsx(DragDropContext, { onDragEnd: (result) => onDragEnd(result, {
                         schema: schemaData,
                         uischema: uiSchemaData,
                         onChange: (newSchema, newUiSchema) => onChange(stringify(newSchema), stringify(newUiSchema)),
