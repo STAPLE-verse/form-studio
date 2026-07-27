@@ -1,8 +1,8 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import classnames from "classnames";
+import classNames from "../classNames";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 const Collapse = (props) => {
-    const classes = classnames(`border border-base-300 rounded-xl bg-base-100 shadow-sm p-4 ${props.className || ""}`, {
+    const classes = classNames(`border border-base-300 rounded-xl bg-base-100 shadow-sm p-4 ${props.className || ""}`, {
         "opacity-50 pointer-events-none": props.disableToggle,
     });
     return (_jsxs("div", { className: classes, children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx("span", { className: "toggle-collapse", children: props.isOpen ? (_jsx(ChevronDownIcon, { className: "h-6 w-6 cursor-pointer text-primary", onClick: (event) => {

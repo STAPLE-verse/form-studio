@@ -1,5 +1,5 @@
 import React, { useState, ReactElement } from "react"
-import classnames from "classnames"
+import classNames from "../classNames"
 
 type Props = {
   label: ReactElement | string
@@ -15,7 +15,7 @@ type Props = {
 export default function FBRadioButton(props: Props): ReactElement {
   const { label, value, checked, name, onChange, required, disabled, autoFocus } = props
   const id = React.useId()
-  const classes = classnames("form-control w-full", { disabled })
+  const classes = classNames("form-control w-full", { disabled })
   return (
     <div className={classes} key={value}>
       <label htmlFor={id} className="label cursor-pointer justify-start gap-3">

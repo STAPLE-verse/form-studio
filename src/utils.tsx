@@ -641,6 +641,14 @@ export function countElementsFromSchema(schemaData: any): number {
 }
 
 // convert an element into a schema equivalent
+const nullableNumberParameters = new Set([
+  "multipleOf",
+  "minimum",
+  "exclusiveMinimum",
+  "maximum",
+  "exclusiveMaximum",
+])
+
 function generateSchemaElementFromElement(element: ElementProps) {
   if (element.$ref !== undefined) {
     const title =
@@ -681,7 +689,8 @@ function generateSchemaElementFromElement(element: ElementProps) {
             "definitionUi",
             "allFormInputs",
           ].includes(key) &&
-          element.dataOptions[key] !== ""
+          element.dataOptions[key] !== "" &&
+          !(nullableNumberParameters.has(key) && element.dataOptions[key] === null)
         )
           prop[key] = element.dataOptions[key]
       })

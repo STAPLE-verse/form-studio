@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import classnames from "classnames";
+import classNames from "../classNames";
 const FBCheckbox = ({ onChangeValue, value = "", isChecked = false, label = "", use = "action", disabled = false, id = "", dataTest = "", labelClassName = "", }) => {
-    const classes = classnames("fb-checkbox", {
+    const classes = classNames("fb-checkbox", {
         "edit-checkbox": !disabled && use === "edit",
         "action-checkbox": !disabled && use === "action",
         "disabled-checked-checkbox": disabled && isChecked,
@@ -13,7 +13,7 @@ const FBCheckbox = ({ onChangeValue, value = "", isChecked = false, label = "", 
                         if (!disabled) {
                             onChangeValue(event);
                         }
-                    }, value: value, disabled: disabled, checked: isChecked, className: classnames("checkbox checkbox-primary", {
+                    }, value: value, disabled: disabled, checked: isChecked, className: classNames("checkbox checkbox-primary", {
                         "checkbox-disabled": disabled
                     }) }), label && _jsx("span", { className: "label-text text-base", children: label })] }) }));
 };

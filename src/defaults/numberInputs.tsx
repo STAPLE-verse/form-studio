@@ -2,8 +2,37 @@ import React, { useState } from "react"
 import FBCheckbox from "../checkbox/FBCheckbox"
 import Tooltip from "../Tooltip"
 import { getRandomId } from "../utils"
-import type { FormInput, CardComponentType } from "../types"
+import type { FormInput, CardComponentType, CardComponentPropsType } from "../types"
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "../fieldLayout"
+
+type NumberParameter =
+  | "multipleOf"
+  | "minimum"
+  | "exclusiveMinimum"
+  | "maximum"
+  | "exclusiveMaximum"
+
+const hasNumberValue = (value: number | null | undefined): value is number =>
+  typeof value === "number"
+
+const updateNumberParameter = (
+  parameters: CardComponentPropsType,
+  key: NumberParameter,
+  value: number | null,
+  inactiveKey?: NumberParameter
+) => {
+  const nextParameters = { ...parameters }
+
+  if (inactiveKey) delete nextParameters[inactiveKey]
+
+  if (value === null) {
+    delete nextParameters[key]
+  } else {
+    nextParameters[key] = value
+  }
+
+  return nextParameters
+}
 
 // specify the inputs required for a number type object
 const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) => {
@@ -27,10 +56,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
           onChange={(ev) => {
             let newVal: null | number = parseFloat(ev.target.value)
             if (Number.isNaN(newVal)) newVal = null
-            onChange({
-              ...parameters,
-              multipleOf: newVal,
-            })
+            onChange(updateNumberParameter(parameters, "multipleOf", newVal))
           }}
           className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
         />
@@ -38,7 +64,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
       <div className={fieldClass}>
         <div className={fieldLabelClass}>Minimum</div>
         <input
-          value={parameters.minimum || parameters.exclusiveMinimum || ""}
+          value={parameters.minimum ?? parameters.exclusiveMinimum ?? ""}
           placeholder="ex: 3"
           key="minimum"
           type="number"
@@ -46,18 +72,14 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
             let newVal: null | number = parseFloat(ev.target.value)
             if (Number.isNaN(newVal)) newVal = null
             // change either min or exclusiveMin depending on which one is active
-            if (parameters.exclusiveMinimum) {
-              onChange({
-                ...parameters,
-                exclusiveMinimum: newVal,
-                minimum: null,
-              })
+            if (hasNumberValue(parameters.exclusiveMinimum)) {
+              onChange(
+                updateNumberParameter(parameters, "exclusiveMinimum", newVal, "minimum")
+              )
             } else {
-              onChange({
-                ...parameters,
-                minimum: newVal,
-                exclusiveMinimum: null,
-              })
+              onChange(
+                updateNumberParameter(parameters, "minimum", newVal, "exclusiveMinimum")
+              )
             }
           }}
           className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
@@ -68,30 +90,31 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
           // @ts-ignore: suppress key error, can't change key assignment
           key="exclusiveMinimum"
           onChangeValue={() => {
-            const newMin = parameters.minimum || parameters.exclusiveMinimum
-            if (parameters.exclusiveMinimum) {
-              onChange({
-                ...parameters,
-                exclusiveMinimum: null,
-                minimum: newMin,
-              })
+            const newMin = parameters.minimum ?? parameters.exclusiveMinimum
+            if (!hasNumberValue(newMin)) return
+
+            if (hasNumberValue(parameters.exclusiveMinimum)) {
+              onChange(
+                updateNumberParameter(parameters, "minimum", newMin, "exclusiveMinimum")
+              )
             } else {
-              onChange({
-                ...parameters,
-                exclusiveMinimum: newMin,
-                minimum: null,
-              })
+              onChange(
+                updateNumberParameter(parameters, "exclusiveMinimum", newMin, "minimum")
+              )
             }
           }}
-          isChecked={!!parameters.exclusiveMinimum}
-          disabled={!parameters.minimum && !parameters.exclusiveMinimum}
+          isChecked={hasNumberValue(parameters.exclusiveMinimum)}
+          disabled={
+            !hasNumberValue(parameters.minimum) &&
+            !hasNumberValue(parameters.exclusiveMinimum)
+          }
           label="Exclusive Minimum"
         />
       </div>
       <div className={fieldClass}>
         <div className={fieldLabelClass}>Maximum</div>
         <input
-          value={parameters.maximum || parameters.exclusiveMaximum || ""}
+          value={parameters.maximum ?? parameters.exclusiveMaximum ?? ""}
           placeholder="ex: 8"
           key="maximum"
           type="number"
@@ -99,18 +122,14 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
             let newVal: null | number = parseFloat(ev.target.value)
             if (Number.isNaN(newVal)) newVal = null
             // change either max or exclusiveMax depending on which one is active
-            if (parameters.exclusiveMinimum) {
-              onChange({
-                ...parameters,
-                exclusiveMaximum: newVal,
-                maximum: null,
-              })
+            if (hasNumberValue(parameters.exclusiveMaximum)) {
+              onChange(
+                updateNumberParameter(parameters, "exclusiveMaximum", newVal, "maximum")
+              )
             } else {
-              onChange({
-                ...parameters,
-                maximum: newVal,
-                exclusiveMaximum: null,
-              })
+              onChange(
+                updateNumberParameter(parameters, "maximum", newVal, "exclusiveMaximum")
+              )
             }
           }}
           className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
@@ -121,23 +140,24 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
           // @ts-ignore: suppress key error, can't change key assignment
           key="exclusiveMaximum"
           onChangeValue={() => {
-            const newMax = parameters.maximum || parameters.exclusiveMaximum
-            if (parameters.exclusiveMaximum) {
-              onChange({
-                ...parameters,
-                exclusiveMaximum: null,
-                maximum: newMax,
-              })
+            const newMax = parameters.maximum ?? parameters.exclusiveMaximum
+            if (!hasNumberValue(newMax)) return
+
+            if (hasNumberValue(parameters.exclusiveMaximum)) {
+              onChange(
+                updateNumberParameter(parameters, "maximum", newMax, "exclusiveMaximum")
+              )
             } else {
-              onChange({
-                ...parameters,
-                exclusiveMaximum: newMax,
-                maximum: null,
-              })
+              onChange(
+                updateNumberParameter(parameters, "exclusiveMaximum", newMax, "maximum")
+              )
             }
           }}
-          isChecked={!!parameters.exclusiveMaximum}
-          disabled={!parameters.maximum && !parameters.exclusiveMaximum}
+          isChecked={hasNumberValue(parameters.exclusiveMaximum)}
+          disabled={
+            !hasNumberValue(parameters.maximum) &&
+            !hasNumberValue(parameters.exclusiveMaximum)
+          }
           label="Exclusive Maximum"
         />
       </div>

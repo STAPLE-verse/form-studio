@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react"
-import classnames from "classnames"
+import classNames from "./classNames"
 import GeneralParameterInputs from "./GeneralParameterInputs"
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput"
 import {
@@ -182,7 +182,7 @@ export default function CardGeneralParameterInputs({
           />
         </div>
         <div
-          className={classnames(entryClass, {
+          className={classNames(entryClass, {
             "wide-card-entry": !showObjectNameInput,
           })}
         >

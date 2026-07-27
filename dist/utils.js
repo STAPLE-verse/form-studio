@@ -513,6 +513,13 @@ export function countElementsFromSchema(schemaData) {
     return elementCount;
 }
 // convert an element into a schema equivalent
+const nullableNumberParameters = new Set([
+    "multipleOf",
+    "minimum",
+    "exclusiveMinimum",
+    "maximum",
+    "exclusiveMaximum",
+]);
 function generateSchemaElementFromElement(element) {
     if (element.$ref !== undefined) {
         const title = element.schema !== undefined && element.schema.title !== undefined
@@ -549,7 +556,8 @@ function generateSchemaElementFromElement(element) {
                     "definitionUi",
                     "allFormInputs",
                 ].includes(key) &&
-                    element.dataOptions[key] !== "")
+                    element.dataOptions[key] !== "" &&
+                    !(nullableNumberParameters.has(key) && element.dataOptions[key] === null))
                     prop[key] = element.dataOptions[key];
             });
             return prop;

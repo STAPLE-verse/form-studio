@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from "react";
-import classnames from "classnames";
+import classNames from "./classNames";
 import GeneralParameterInputs from "./GeneralParameterInputs";
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput";
 import { defaultUiProps, defaultDataProps, categoryToNameMap, categoryType, subtractArray, getRandomId, } from "./utils";
@@ -81,7 +81,7 @@ export default function CardGeneralParameterInputs({ parameters, onChange, allFo
                                             mods.tooltipDescriptions &&
                                             typeof mods.tooltipDescriptions.cardDescription === "string"
                                             ? mods.tooltipDescriptions.cardDescription
-                                            : "This will appear as help text on the form", id: `${elementId}-descriptioninfo`, type: "help" })] }), _jsx(MarkdownDescriptionInput, { value: parameters.description || "", onChange: (val) => onChange({ ...parameters, description: val }) })] }), _jsxs("div", { className: classnames(entryClass, {
+                                            : "This will appear as help text on the form", id: `${elementId}-descriptioninfo`, type: "help" })] }), _jsx(MarkdownDescriptionInput, { value: parameters.description || "", onChange: (val) => onChange({ ...parameters, description: val }) })] }), _jsxs("div", { className: classNames(entryClass, {
                             "wide-card-entry": !showObjectNameInput,
                         }), children: [_jsxs("h5", { className: entryLabelClass, children: [`${inputTypeLabel} `, _jsx(Tooltip, { text: mods &&
                                             mods.tooltipDescriptions &&

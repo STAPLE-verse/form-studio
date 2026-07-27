@@ -1,13 +1,13 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { createElement as _createElement } from "react";
 import React from "react";
-import classnames from "classnames";
+import classNames from "../classNames";
 import FBRadioButton from "./FBRadioButton";
 export default function FBRadioGroup(props) {
     const { options, defaultValue, onChange, horizontal, id, autoFocus, disabled } = props;
     const name = React.useId();
     // Removed JSS class usage
-    const classes = classnames("fb-radio-group", {
+    const classes = classNames("fb-radio-group", {
         horizontal,
     });
     // Conditionallly add 'id' prop in case id was not passed in from parent.

@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import classnames from "classnames"
+import classNames from "../classNames"
 
 interface FBCheckboxProps {
   onChangeValue: (_arg0: { [key: string]: any }) => void
@@ -24,7 +24,7 @@ const FBCheckbox: FC<FBCheckboxProps> = ({
   dataTest = "",
   labelClassName = "",
 }) => {
-  const classes = classnames("fb-checkbox", {
+  const classes = classNames("fb-checkbox", {
     "edit-checkbox": !disabled && use === "edit",
     "action-checkbox": !disabled && use === "action",
     "disabled-checked-checkbox": disabled && isChecked,
@@ -47,7 +47,7 @@ const FBCheckbox: FC<FBCheckboxProps> = ({
           value={value}
           disabled={disabled}
           checked={isChecked}
-          className={classnames("checkbox checkbox-primary", {
+          className={classNames("checkbox checkbox-primary", {
             "checkbox-disabled": disabled
           })}
         />

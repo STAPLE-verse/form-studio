@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, MouseEvent } from "react"
-import classnames from "classnames"
+import classNames from "../classNames"
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid"
 
 interface CollapseProps {
@@ -17,7 +17,7 @@ interface CollapseProps {
 }
 
 const Collapse: FC<CollapseProps> = (props) => {
-  const classes = classnames(`border border-base-300 rounded-xl bg-base-100 shadow-sm p-4 ${props.className || ""}`, {
+  const classes = classNames(`border border-base-300 rounded-xl bg-base-100 shadow-sm p-4 ${props.className || ""}`, {
     "opacity-50 pointer-events-none": props.disableToggle,
   })
 

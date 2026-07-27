@@ -4,6 +4,19 @@ import FBCheckbox from "../checkbox/FBCheckbox";
 import Tooltip from "../Tooltip";
 import { getRandomId } from "../utils";
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "../fieldLayout";
+const hasNumberValue = (value) => typeof value === "number";
+const updateNumberParameter = (parameters, key, value, inactiveKey) => {
+    const nextParameters = { ...parameters };
+    if (inactiveKey)
+        delete nextParameters[inactiveKey];
+    if (value === null) {
+        delete nextParameters[key];
+    }
+    else {
+        nextParameters[key] = value;
+    }
+    return nextParameters;
+};
 // specify the inputs required for a number type object
 const CardNumberParameterInputs = ({ parameters, onChange }) => {
     const [elementId] = useState(getRandomId());
@@ -11,85 +24,56 @@ const CardNumberParameterInputs = ({ parameters, onChange }) => {
                             let newVal = parseFloat(ev.target.value);
                             if (Number.isNaN(newVal))
                                 newVal = null;
-                            onChange({
-                                ...parameters,
-                                multipleOf: newVal,
-                            });
-                        }, className: `input input-primary input-bordered input-sm ${fieldControlClass}` }, "multipleOf")] }), _jsxs("div", { className: fieldClass, children: [_jsx("div", { className: fieldLabelClass, children: "Minimum" }), _jsx("input", { value: parameters.minimum || parameters.exclusiveMinimum || "", placeholder: "ex: 3", type: "number", onChange: (ev) => {
+                            onChange(updateNumberParameter(parameters, "multipleOf", newVal));
+                        }, className: `input input-primary input-bordered input-sm ${fieldControlClass}` }, "multipleOf")] }), _jsxs("div", { className: fieldClass, children: [_jsx("div", { className: fieldLabelClass, children: "Minimum" }), _jsx("input", { value: parameters.minimum ?? parameters.exclusiveMinimum ?? "", placeholder: "ex: 3", type: "number", onChange: (ev) => {
                             let newVal = parseFloat(ev.target.value);
                             if (Number.isNaN(newVal))
                                 newVal = null;
                             // change either min or exclusiveMin depending on which one is active
-                            if (parameters.exclusiveMinimum) {
-                                onChange({
-                                    ...parameters,
-                                    exclusiveMinimum: newVal,
-                                    minimum: null,
-                                });
+                            if (hasNumberValue(parameters.exclusiveMinimum)) {
+                                onChange(updateNumberParameter(parameters, "exclusiveMinimum", newVal, "minimum"));
                             }
                             else {
-                                onChange({
-                                    ...parameters,
-                                    minimum: newVal,
-                                    exclusiveMinimum: null,
-                                });
+                                onChange(updateNumberParameter(parameters, "minimum", newVal, "exclusiveMinimum"));
                             }
                         }, className: `input input-primary input-bordered input-sm ${fieldControlClass}` }, "minimum")] }), _jsx("div", { className: `${fieldClass} card-modal-boolean`, children: _jsx(FBCheckbox
                 // @ts-ignore: suppress key error, can't change key assignment
                 , { onChangeValue: () => {
-                        const newMin = parameters.minimum || parameters.exclusiveMinimum;
-                        if (parameters.exclusiveMinimum) {
-                            onChange({
-                                ...parameters,
-                                exclusiveMinimum: null,
-                                minimum: newMin,
-                            });
+                        const newMin = parameters.minimum ?? parameters.exclusiveMinimum;
+                        if (!hasNumberValue(newMin))
+                            return;
+                        if (hasNumberValue(parameters.exclusiveMinimum)) {
+                            onChange(updateNumberParameter(parameters, "minimum", newMin, "exclusiveMinimum"));
                         }
                         else {
-                            onChange({
-                                ...parameters,
-                                exclusiveMinimum: newMin,
-                                minimum: null,
-                            });
+                            onChange(updateNumberParameter(parameters, "exclusiveMinimum", newMin, "minimum"));
                         }
-                    }, isChecked: !!parameters.exclusiveMinimum, disabled: !parameters.minimum && !parameters.exclusiveMinimum, label: "Exclusive Minimum" }, "exclusiveMinimum") }), _jsxs("div", { className: fieldClass, children: [_jsx("div", { className: fieldLabelClass, children: "Maximum" }), _jsx("input", { value: parameters.maximum || parameters.exclusiveMaximum || "", placeholder: "ex: 8", type: "number", onChange: (ev) => {
+                    }, isChecked: hasNumberValue(parameters.exclusiveMinimum), disabled: !hasNumberValue(parameters.minimum) &&
+                        !hasNumberValue(parameters.exclusiveMinimum), label: "Exclusive Minimum" }, "exclusiveMinimum") }), _jsxs("div", { className: fieldClass, children: [_jsx("div", { className: fieldLabelClass, children: "Maximum" }), _jsx("input", { value: parameters.maximum ?? parameters.exclusiveMaximum ?? "", placeholder: "ex: 8", type: "number", onChange: (ev) => {
                             let newVal = parseFloat(ev.target.value);
                             if (Number.isNaN(newVal))
                                 newVal = null;
                             // change either max or exclusiveMax depending on which one is active
-                            if (parameters.exclusiveMinimum) {
-                                onChange({
-                                    ...parameters,
-                                    exclusiveMaximum: newVal,
-                                    maximum: null,
-                                });
+                            if (hasNumberValue(parameters.exclusiveMaximum)) {
+                                onChange(updateNumberParameter(parameters, "exclusiveMaximum", newVal, "maximum"));
                             }
                             else {
-                                onChange({
-                                    ...parameters,
-                                    maximum: newVal,
-                                    exclusiveMaximum: null,
-                                });
+                                onChange(updateNumberParameter(parameters, "maximum", newVal, "exclusiveMaximum"));
                             }
                         }, className: `input input-primary input-bordered input-sm ${fieldControlClass}` }, "maximum")] }), _jsx("div", { className: `${fieldClass} card-modal-boolean`, children: _jsx(FBCheckbox
                 // @ts-ignore: suppress key error, can't change key assignment
                 , { onChangeValue: () => {
-                        const newMax = parameters.maximum || parameters.exclusiveMaximum;
-                        if (parameters.exclusiveMaximum) {
-                            onChange({
-                                ...parameters,
-                                exclusiveMaximum: null,
-                                maximum: newMax,
-                            });
+                        const newMax = parameters.maximum ?? parameters.exclusiveMaximum;
+                        if (!hasNumberValue(newMax))
+                            return;
+                        if (hasNumberValue(parameters.exclusiveMaximum)) {
+                            onChange(updateNumberParameter(parameters, "maximum", newMax, "exclusiveMaximum"));
                         }
                         else {
-                            onChange({
-                                ...parameters,
-                                exclusiveMaximum: newMax,
-                                maximum: null,
-                            });
+                            onChange(updateNumberParameter(parameters, "exclusiveMaximum", newMax, "maximum"));
                         }
-                    }, isChecked: !!parameters.exclusiveMaximum, disabled: !parameters.maximum && !parameters.exclusiveMaximum, label: "Exclusive Maximum" }, "exclusiveMaximum") })] }));
+                    }, isChecked: hasNumberValue(parameters.exclusiveMaximum), disabled: !hasNumberValue(parameters.maximum) &&
+                        !hasNumberValue(parameters.exclusiveMaximum), label: "Exclusive Maximum" }, "exclusiveMaximum") })] }));
 };
 const NumberField = ({ parameters, onChange }) => {
     return (_jsxs(React.Fragment, { children: [_jsx("h5", { children: "Default Number" }), _jsx("input", { value: (parameters.default ?? ""), placeholder: "Default", type: "number", onChange: (ev) => onChange({
