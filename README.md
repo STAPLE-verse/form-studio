@@ -31,22 +31,30 @@ To track the latest commit on `main`:
 Your app must provide:
 
 - `react` and `react-dom` (^18 or ^19)
+- `tailwindcss` (^3.3.3 or ^4)
+- `daisyui` (^4.6.1 or ^5)
 
 Form Studio bundles its matching RJSF core, utilities, and validator so its behavior does not
 depend on which RJSF version the consuming application uses.
 
 ## Tailwind / daisyUI
 
-Components use Tailwind utility classes and daisyUI tokens. Configure your app to scan the installed package:
+Form Studio ships component class names rather than a compiled stylesheet, so the consuming
+app owns CSS generation, its daisyUI theme, and any theme customization.
 
-**Tailwind v4** (MARKER):
+Tailwind CSS 4 with daisyUI 5 is the native reference environment. Configure the app's global
+stylesheet to load Tailwind and daisyUI, and to scan the installed package:
 
 ```css
 @import "tailwindcss";
 @source "../node_modules/@staple-verse/form-studio/dist";
+@plugin "daisyui";
 ```
 
-**Tailwind v3** (STAPLE):
+Adjust the relative `@source` path when the global stylesheet is not directly below the app root.
+
+Tailwind CSS 3 with daisyUI 4 is supported as a legacy host environment. Configure Tailwind to
+scan the package:
 
 ```js
 module.exports = {
@@ -56,6 +64,11 @@ module.exports = {
   ],
 }
 ```
+
+daisyUI 4 and 5 differ in some component layout and control styling. Legacy hosts must provide
+scoped compatibility rules for those differences. Form Studio's outer UI element has a stable
+`form-studio` class for that purpose and for other host customization. The package's internal
+class names are not part of its public styling API.
 
 ## Usage
 

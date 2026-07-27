@@ -25616,7 +25616,7 @@ function FormStudioUI({
     }, 1500);
     return () => clearTimeout(handler);
   }, [state.schema, state.uiSchema, onAutoSave, state]);
-  return /* @__PURE__ */ jsxs24("div", { className: "flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
+  return /* @__PURE__ */ jsxs24("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
     /* @__PURE__ */ jsxs24("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
       /* @__PURE__ */ jsxs24("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
         /* @__PURE__ */ jsx31(

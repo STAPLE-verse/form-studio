@@ -85,7 +85,7 @@ export function FormStudioUI({
   }, [state.schema, state.uiSchema, onAutoSave, state])
 
   return (
-    <div className="flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden">
+    <div className="form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden">
       <div className="flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4">
         <div className="tabs tabs-bordered w-full md:w-auto">
           <button
