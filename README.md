@@ -88,11 +88,16 @@ export default function Page() {
 
 ```bash
 npm install
-npm run build      # emit dist/
+npm run build      # bundle the ESM library and declarations into dist/
 npm run typecheck  # type-check without emitting
 ```
 
-`dist/` is committed, so after making changes, run `npm run build` and commit the updated output alongside your source changes. CI fails the build if `dist/` is out of date.
+The build creates a single ESM entry point with bundled internal modules. Runtime and peer
+dependencies remain external, so consuming applications provide and bundle them normally.
+The output includes a `"use client"` directive for compatibility with Next.js App Router.
+
+`dist/` is committed, so after making changes, run `npm run build` and commit the updated
+output alongside your source changes. CI fails the build if `dist/` is out of date.
 
 ## License
 
