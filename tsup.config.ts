@@ -3,9 +3,6 @@ import { defineConfig } from "tsup"
 const external = [
   "react",
   "react-dom",
-  "@rjsf/core",
-  "@rjsf/utils",
-  "@rjsf/validator-ajv8",
   "@hello-pangea/dnd",
   "@heroicons/react",
   "@monaco-editor/react",
@@ -25,6 +22,7 @@ export default defineConfig({
   sourcemap: true,
   dts: true,
   external,
+  noExternal: [/^@rjsf\//],
   banner: {
     js: '"use client";',
   },

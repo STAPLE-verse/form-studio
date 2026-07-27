@@ -31,7 +31,9 @@ To track the latest commit on `main`:
 Your app must provide:
 
 - `react` and `react-dom` (^18 or ^19)
-- `@rjsf/core`, `@rjsf/utils`, `@rjsf/validator-ajv8` (^5 or ^6)
+
+Form Studio bundles its matching RJSF core, utilities, and validator so its behavior does not
+depend on which RJSF version the consuming application uses.
 
 ## Tailwind / daisyUI
 

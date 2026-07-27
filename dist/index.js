@@ -1,13 +1,38 @@
 "use client";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __commonJS = (cb, mod) => function __require() {
+  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 
 // src/FormStudioContext.tsx
 import { createContext, useContext, useState as useState14 } from "react";
@@ -75,20 +100,7237 @@ var init_FormStudioContext = __esm({
   }
 });
 
+// node_modules/fast-uri/lib/utils.js
+var require_utils = __commonJS({
+  "node_modules/fast-uri/lib/utils.js"(exports2, module2) {
+    "use strict";
+    var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
+    var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
+    var isHexPair = RegExp.prototype.test.bind(/^[\da-f]{2}$/iu);
+    var isUnreserved = RegExp.prototype.test.bind(/^[\da-z\-._~]$/iu);
+    var isPathCharacter = RegExp.prototype.test.bind(/^[\da-z\-._~!$&'()*+,;=:@/]$/iu);
+    function stringArrayToHexStripped(input) {
+      let acc = "";
+      let code = 0;
+      let i2 = 0;
+      for (i2 = 0; i2 < input.length; i2++) {
+        code = input[i2].charCodeAt(0);
+        if (code === 48) {
+          continue;
+        }
+        if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
+          return "";
+        }
+        acc += input[i2];
+        break;
+      }
+      for (i2 += 1; i2 < input.length; i2++) {
+        code = input[i2].charCodeAt(0);
+        if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
+          return "";
+        }
+        acc += input[i2];
+      }
+      return acc;
+    }
+    var nonSimpleDomain = RegExp.prototype.test.bind(/[^!"$&'()*+,\-.;=_`a-z{}~]/u);
+    function consumeIsZone(buffer) {
+      buffer.length = 0;
+      return true;
+    }
+    function consumeHextets(buffer, address, output) {
+      if (buffer.length) {
+        const hex = stringArrayToHexStripped(buffer);
+        if (hex !== "") {
+          address.push(hex);
+        } else {
+          output.error = true;
+          return false;
+        }
+        buffer.length = 0;
+      }
+      return true;
+    }
+    function getIPV6(input) {
+      let tokenCount = 0;
+      const output = { error: false, address: "", zone: "" };
+      const address = [];
+      const buffer = [];
+      let endipv6Encountered = false;
+      let endIpv6 = false;
+      let consume = consumeHextets;
+      for (let i2 = 0; i2 < input.length; i2++) {
+        const cursor = input[i2];
+        if (cursor === "[" || cursor === "]") {
+          continue;
+        }
+        if (cursor === ":") {
+          if (endipv6Encountered === true) {
+            endIpv6 = true;
+          }
+          if (!consume(buffer, address, output)) {
+            break;
+          }
+          if (++tokenCount > 7) {
+            output.error = true;
+            break;
+          }
+          if (i2 > 0 && input[i2 - 1] === ":") {
+            endipv6Encountered = true;
+          }
+          address.push(":");
+          continue;
+        } else if (cursor === "%") {
+          if (!consume(buffer, address, output)) {
+            break;
+          }
+          consume = consumeIsZone;
+        } else {
+          buffer.push(cursor);
+          continue;
+        }
+      }
+      if (buffer.length) {
+        if (consume === consumeIsZone) {
+          output.zone = buffer.join("");
+        } else if (endIpv6) {
+          address.push(buffer.join(""));
+        } else {
+          address.push(stringArrayToHexStripped(buffer));
+        }
+      }
+      output.address = address.join("");
+      return output;
+    }
+    function normalizeIPv6(host) {
+      if (findToken(host, ":") < 2) {
+        return { host, isIPV6: false };
+      }
+      const ipv6 = getIPV6(host);
+      if (!ipv6.error) {
+        let newHost = ipv6.address;
+        let escapedHost = ipv6.address;
+        if (ipv6.zone) {
+          newHost += "%" + ipv6.zone;
+          escapedHost += "%25" + ipv6.zone;
+        }
+        return { host: newHost, isIPV6: true, escapedHost };
+      } else {
+        return { host, isIPV6: false };
+      }
+    }
+    function findToken(str, token) {
+      let ind = 0;
+      for (let i2 = 0; i2 < str.length; i2++) {
+        if (str[i2] === token) ind++;
+      }
+      return ind;
+    }
+    function removeDotSegments(path) {
+      let input = path;
+      const output = [];
+      let nextSlash = -1;
+      let len = 0;
+      while (len = input.length) {
+        if (len === 1) {
+          if (input === ".") {
+            break;
+          } else if (input === "/") {
+            output.push("/");
+            break;
+          } else {
+            output.push(input);
+            break;
+          }
+        } else if (len === 2) {
+          if (input[0] === ".") {
+            if (input[1] === ".") {
+              break;
+            } else if (input[1] === "/") {
+              input = input.slice(2);
+              continue;
+            }
+          } else if (input[0] === "/") {
+            if (input[1] === "." || input[1] === "/") {
+              output.push("/");
+              break;
+            }
+          }
+        } else if (len === 3) {
+          if (input === "/..") {
+            if (output.length !== 0) {
+              output.pop();
+            }
+            output.push("/");
+            break;
+          }
+        }
+        if (input[0] === ".") {
+          if (input[1] === ".") {
+            if (input[2] === "/") {
+              input = input.slice(3);
+              continue;
+            }
+          } else if (input[1] === "/") {
+            input = input.slice(2);
+            continue;
+          }
+        } else if (input[0] === "/") {
+          if (input[1] === ".") {
+            if (input[2] === "/") {
+              input = input.slice(2);
+              continue;
+            } else if (input[2] === ".") {
+              if (input[3] === "/") {
+                input = input.slice(3);
+                if (output.length !== 0) {
+                  output.pop();
+                }
+                continue;
+              }
+            }
+          }
+        }
+        if ((nextSlash = input.indexOf("/", 1)) === -1) {
+          output.push(input);
+          break;
+        } else {
+          output.push(input.slice(0, nextSlash));
+          input = input.slice(nextSlash);
+        }
+      }
+      return output.join("");
+    }
+    var HOST_DELIMS = { "@": "%40", "/": "%2F", "?": "%3F", "#": "%23", ":": "%3A" };
+    var HOST_DELIM_RE = /[@/?#:]/g;
+    var HOST_DELIM_NO_COLON_RE = /[@/?#]/g;
+    function reescapeHostDelimiters(host, isIP) {
+      const re = isIP ? HOST_DELIM_NO_COLON_RE : HOST_DELIM_RE;
+      re.lastIndex = 0;
+      return host.replace(re, (ch) => HOST_DELIMS[ch]);
+    }
+    function normalizePercentEncoding(input, decodeUnreserved = false) {
+      if (input.indexOf("%") === -1) {
+        return input;
+      }
+      let output = "";
+      for (let i2 = 0; i2 < input.length; i2++) {
+        if (input[i2] === "%" && i2 + 2 < input.length) {
+          const hex = input.slice(i2 + 1, i2 + 3);
+          if (isHexPair(hex)) {
+            const normalizedHex = hex.toUpperCase();
+            const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
+            if (decodeUnreserved && isUnreserved(decoded)) {
+              output += decoded;
+            } else {
+              output += "%" + normalizedHex;
+            }
+            i2 += 2;
+            continue;
+          }
+        }
+        output += input[i2];
+      }
+      return output;
+    }
+    function normalizePathEncoding(input) {
+      let output = "";
+      for (let i2 = 0; i2 < input.length; i2++) {
+        if (input[i2] === "%" && i2 + 2 < input.length) {
+          const hex = input.slice(i2 + 1, i2 + 3);
+          if (isHexPair(hex)) {
+            const normalizedHex = hex.toUpperCase();
+            const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
+            if (decoded !== "." && isUnreserved(decoded)) {
+              output += decoded;
+            } else {
+              output += "%" + normalizedHex;
+            }
+            i2 += 2;
+            continue;
+          }
+        }
+        if (isPathCharacter(input[i2])) {
+          output += input[i2];
+        } else {
+          output += escape(input[i2]);
+        }
+      }
+      return output;
+    }
+    function escapePreservingEscapes(input) {
+      let output = "";
+      for (let i2 = 0; i2 < input.length; i2++) {
+        if (input[i2] === "%" && i2 + 2 < input.length) {
+          const hex = input.slice(i2 + 1, i2 + 3);
+          if (isHexPair(hex)) {
+            output += "%" + hex.toUpperCase();
+            i2 += 2;
+            continue;
+          }
+        }
+        output += escape(input[i2]);
+      }
+      return output;
+    }
+    function recomposeAuthority(component) {
+      const uriTokens = [];
+      if (component.userinfo !== void 0) {
+        uriTokens.push(component.userinfo);
+        uriTokens.push("@");
+      }
+      if (component.host !== void 0) {
+        let host = unescape(component.host);
+        if (!isIPv4(host)) {
+          const ipV6res = normalizeIPv6(host);
+          if (ipV6res.isIPV6 === true) {
+            host = `[${ipV6res.escapedHost}]`;
+          } else {
+            host = reescapeHostDelimiters(host, false);
+          }
+        }
+        uriTokens.push(host);
+      }
+      if (typeof component.port === "number" || typeof component.port === "string") {
+        uriTokens.push(":");
+        uriTokens.push(String(component.port));
+      }
+      return uriTokens.length ? uriTokens.join("") : void 0;
+    }
+    module2.exports = {
+      nonSimpleDomain,
+      recomposeAuthority,
+      reescapeHostDelimiters,
+      normalizePercentEncoding,
+      normalizePathEncoding,
+      escapePreservingEscapes,
+      removeDotSegments,
+      isIPv4,
+      isUUID,
+      normalizeIPv6,
+      stringArrayToHexStripped
+    };
+  }
+});
+
+// node_modules/fast-uri/lib/schemes.js
+var require_schemes = __commonJS({
+  "node_modules/fast-uri/lib/schemes.js"(exports2, module2) {
+    "use strict";
+    var { isUUID } = require_utils();
+    var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
+    var supportedSchemeNames = (
+      /** @type {const} */
+      [
+        "http",
+        "https",
+        "ws",
+        "wss",
+        "urn",
+        "urn:uuid"
+      ]
+    );
+    function isValidSchemeName(name) {
+      return supportedSchemeNames.indexOf(
+        /** @type {*} */
+        name
+      ) !== -1;
+    }
+    function wsIsSecure(wsComponent) {
+      if (wsComponent.secure === true) {
+        return true;
+      } else if (wsComponent.secure === false) {
+        return false;
+      } else if (wsComponent.scheme) {
+        return wsComponent.scheme.length === 3 && (wsComponent.scheme[0] === "w" || wsComponent.scheme[0] === "W") && (wsComponent.scheme[1] === "s" || wsComponent.scheme[1] === "S") && (wsComponent.scheme[2] === "s" || wsComponent.scheme[2] === "S");
+      } else {
+        return false;
+      }
+    }
+    function httpParse(component) {
+      if (!component.host) {
+        component.error = component.error || "HTTP URIs must have a host.";
+      }
+      return component;
+    }
+    function httpSerialize(component) {
+      const secure = String(component.scheme).toLowerCase() === "https";
+      if (component.port === (secure ? 443 : 80) || component.port === "") {
+        component.port = void 0;
+      }
+      if (!component.path) {
+        component.path = "/";
+      }
+      return component;
+    }
+    function wsParse(wsComponent) {
+      wsComponent.secure = wsIsSecure(wsComponent);
+      wsComponent.resourceName = (wsComponent.path || "/") + (wsComponent.query ? "?" + wsComponent.query : "");
+      wsComponent.path = void 0;
+      wsComponent.query = void 0;
+      return wsComponent;
+    }
+    function wsSerialize(wsComponent) {
+      if (wsComponent.port === (wsIsSecure(wsComponent) ? 443 : 80) || wsComponent.port === "") {
+        wsComponent.port = void 0;
+      }
+      if (typeof wsComponent.secure === "boolean") {
+        wsComponent.scheme = wsComponent.secure ? "wss" : "ws";
+        wsComponent.secure = void 0;
+      }
+      if (wsComponent.resourceName) {
+        const [path, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path && path !== "/" ? path : void 0;
+        wsComponent.query = query;
+        wsComponent.resourceName = void 0;
+      }
+      wsComponent.fragment = void 0;
+      return wsComponent;
+    }
+    function urnParse(urnComponent, options) {
+      if (!urnComponent.path) {
+        urnComponent.error = "URN can not be parsed";
+        return urnComponent;
+      }
+      const matches = urnComponent.path.match(URN_REG);
+      if (matches) {
+        const scheme = options.scheme || urnComponent.scheme || "urn";
+        urnComponent.nid = matches[1].toLowerCase();
+        urnComponent.nss = matches[2];
+        const urnScheme = `${scheme}:${options.nid || urnComponent.nid}`;
+        const schemeHandler = getSchemeHandler(urnScheme);
+        urnComponent.path = void 0;
+        if (schemeHandler) {
+          urnComponent = schemeHandler.parse(urnComponent, options);
+        }
+      } else {
+        urnComponent.error = urnComponent.error || "URN can not be parsed.";
+      }
+      return urnComponent;
+    }
+    function urnSerialize(urnComponent, options) {
+      if (urnComponent.nid === void 0) {
+        throw new Error("URN without nid cannot be serialized");
+      }
+      const scheme = options.scheme || urnComponent.scheme || "urn";
+      const nid = urnComponent.nid.toLowerCase();
+      const urnScheme = `${scheme}:${options.nid || nid}`;
+      const schemeHandler = getSchemeHandler(urnScheme);
+      if (schemeHandler) {
+        urnComponent = schemeHandler.serialize(urnComponent, options);
+      }
+      const uriComponent = urnComponent;
+      const nss = urnComponent.nss;
+      uriComponent.path = `${nid || options.nid}:${nss}`;
+      options.skipEscape = true;
+      return uriComponent;
+    }
+    function urnuuidParse(urnComponent, options) {
+      const uuidComponent = urnComponent;
+      uuidComponent.uuid = uuidComponent.nss;
+      uuidComponent.nss = void 0;
+      if (!options.tolerant && (!uuidComponent.uuid || !isUUID(uuidComponent.uuid))) {
+        uuidComponent.error = uuidComponent.error || "UUID is not valid.";
+      }
+      return uuidComponent;
+    }
+    function urnuuidSerialize(uuidComponent) {
+      const urnComponent = uuidComponent;
+      urnComponent.nss = (uuidComponent.uuid || "").toLowerCase();
+      return urnComponent;
+    }
+    var http = (
+      /** @type {SchemeHandler} */
+      {
+        scheme: "http",
+        domainHost: true,
+        parse: httpParse,
+        serialize: httpSerialize
+      }
+    );
+    var https = (
+      /** @type {SchemeHandler} */
+      {
+        scheme: "https",
+        domainHost: http.domainHost,
+        parse: httpParse,
+        serialize: httpSerialize
+      }
+    );
+    var ws = (
+      /** @type {SchemeHandler} */
+      {
+        scheme: "ws",
+        domainHost: true,
+        parse: wsParse,
+        serialize: wsSerialize
+      }
+    );
+    var wss = (
+      /** @type {SchemeHandler} */
+      {
+        scheme: "wss",
+        domainHost: ws.domainHost,
+        parse: ws.parse,
+        serialize: ws.serialize
+      }
+    );
+    var urn = (
+      /** @type {SchemeHandler} */
+      {
+        scheme: "urn",
+        parse: urnParse,
+        serialize: urnSerialize,
+        skipNormalize: true
+      }
+    );
+    var urnuuid = (
+      /** @type {SchemeHandler} */
+      {
+        scheme: "urn:uuid",
+        parse: urnuuidParse,
+        serialize: urnuuidSerialize,
+        skipNormalize: true
+      }
+    );
+    var SCHEMES = (
+      /** @type {Record<SchemeName, SchemeHandler>} */
+      {
+        http,
+        https,
+        ws,
+        wss,
+        urn,
+        "urn:uuid": urnuuid
+      }
+    );
+    Object.setPrototypeOf(SCHEMES, null);
+    function getSchemeHandler(scheme) {
+      return scheme && (SCHEMES[
+        /** @type {SchemeName} */
+        scheme
+      ] || SCHEMES[
+        /** @type {SchemeName} */
+        scheme.toLowerCase()
+      ]) || void 0;
+    }
+    module2.exports = {
+      wsIsSecure,
+      SCHEMES,
+      isValidSchemeName,
+      getSchemeHandler
+    };
+  }
+});
+
+// node_modules/fast-uri/index.js
+var require_fast_uri = __commonJS({
+  "node_modules/fast-uri/index.js"(exports2, module2) {
+    "use strict";
+    var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
+    var { SCHEMES, getSchemeHandler } = require_schemes();
+    function normalize(uri, options) {
+      if (typeof uri === "string") {
+        uri = /** @type {T} */
+        normalizeString(uri, options);
+      } else if (typeof uri === "object") {
+        uri = /** @type {T} */
+        parse2(serialize(uri, options), options);
+      }
+      return uri;
+    }
+    function resolve(baseURI, relativeURI, options) {
+      const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
+      const resolved = resolveComponent(parse2(baseURI, schemelessOptions), parse2(relativeURI, schemelessOptions), schemelessOptions, true);
+      schemelessOptions.skipEscape = true;
+      return serialize(resolved, schemelessOptions);
+    }
+    function resolveComponent(base, relative, options, skipNormalization) {
+      const target = {};
+      if (!skipNormalization) {
+        base = parse2(serialize(base, options), options);
+        relative = parse2(serialize(relative, options), options);
+      }
+      options = options || {};
+      if (!options.tolerant && relative.scheme) {
+        target.scheme = relative.scheme;
+        target.userinfo = relative.userinfo;
+        target.host = relative.host;
+        target.port = relative.port;
+        target.path = removeDotSegments(relative.path || "");
+        target.query = relative.query;
+      } else {
+        if (relative.userinfo !== void 0 || relative.host !== void 0 || relative.port !== void 0) {
+          target.userinfo = relative.userinfo;
+          target.host = relative.host;
+          target.port = relative.port;
+          target.path = removeDotSegments(relative.path || "");
+          target.query = relative.query;
+        } else {
+          if (!relative.path) {
+            target.path = base.path;
+            if (relative.query !== void 0) {
+              target.query = relative.query;
+            } else {
+              target.query = base.query;
+            }
+          } else {
+            if (relative.path[0] === "/") {
+              target.path = removeDotSegments(relative.path);
+            } else {
+              if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
+                target.path = "/" + relative.path;
+              } else if (!base.path) {
+                target.path = relative.path;
+              } else {
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative.path;
+              }
+              target.path = removeDotSegments(target.path);
+            }
+            target.query = relative.query;
+          }
+          target.userinfo = base.userinfo;
+          target.host = base.host;
+          target.port = base.port;
+        }
+        target.scheme = base.scheme;
+      }
+      target.fragment = relative.fragment;
+      return target;
+    }
+    function equal(uriA, uriB, options) {
+      const normalizedA = normalizeComparableURI(uriA, options);
+      const normalizedB = normalizeComparableURI(uriB, options);
+      return normalizedA !== void 0 && normalizedB !== void 0 && normalizedA.toLowerCase() === normalizedB.toLowerCase();
+    }
+    function serialize(cmpts, opts) {
+      const component = {
+        host: cmpts.host,
+        scheme: cmpts.scheme,
+        userinfo: cmpts.userinfo,
+        port: cmpts.port,
+        path: cmpts.path,
+        query: cmpts.query,
+        nid: cmpts.nid,
+        nss: cmpts.nss,
+        uuid: cmpts.uuid,
+        fragment: cmpts.fragment,
+        reference: cmpts.reference,
+        resourceName: cmpts.resourceName,
+        secure: cmpts.secure,
+        error: ""
+      };
+      const options = Object.assign({}, opts);
+      const uriTokens = [];
+      const schemeHandler = getSchemeHandler(options.scheme || component.scheme);
+      if (schemeHandler && schemeHandler.serialize) schemeHandler.serialize(component, options);
+      if (component.path !== void 0) {
+        if (!options.skipEscape) {
+          component.path = escapePreservingEscapes(component.path);
+          if (component.scheme !== void 0) {
+            component.path = component.path.split("%3A").join(":");
+          }
+        } else {
+          component.path = normalizePercentEncoding(component.path);
+        }
+      }
+      if (options.reference !== "suffix" && component.scheme) {
+        uriTokens.push(component.scheme, ":");
+      }
+      const authority = recomposeAuthority(component);
+      if (authority !== void 0) {
+        if (options.reference !== "suffix") {
+          uriTokens.push("//");
+        }
+        uriTokens.push(authority);
+        if (component.path && component.path[0] !== "/") {
+          uriTokens.push("/");
+        }
+      }
+      if (component.path !== void 0) {
+        let s2 = component.path;
+        if (!options.absolutePath && (!schemeHandler || !schemeHandler.absolutePath)) {
+          s2 = removeDotSegments(s2);
+        }
+        if (authority === void 0 && s2[0] === "/" && s2[1] === "/") {
+          s2 = "/%2F" + s2.slice(2);
+        }
+        uriTokens.push(s2);
+      }
+      if (component.query !== void 0) {
+        uriTokens.push("?", component.query);
+      }
+      if (component.fragment !== void 0) {
+        uriTokens.push("#", component.fragment);
+      }
+      return uriTokens.join("");
+    }
+    var URI_PARSE = /^(?:([^#/:?]+):)?(?:\/\/((?:([^#/?@]*)@)?(\[[^#/?\]]+\]|[^#/:?]*)(?::(\d*))?))?([^#?]*)(?:\?([^#]*))?(?:#((?:.|[\n\r])*))?/u;
+    function getParseError(parsed, matches) {
+      if (matches[2] !== void 0 && parsed.path && parsed.path[0] !== "/") {
+        return 'URI path must start with "/" when authority is present.';
+      }
+      if (typeof parsed.port === "number" && (parsed.port < 0 || parsed.port > 65535)) {
+        return "URI port is malformed.";
+      }
+      return void 0;
+    }
+    function parseWithStatus(uri, opts) {
+      const options = Object.assign({}, opts);
+      const parsed = {
+        scheme: void 0,
+        userinfo: void 0,
+        host: "",
+        port: void 0,
+        path: "",
+        query: void 0,
+        fragment: void 0
+      };
+      let malformedAuthorityOrPort = false;
+      let isIP = false;
+      if (options.reference === "suffix") {
+        if (options.scheme) {
+          uri = options.scheme + ":" + uri;
+        } else {
+          uri = "//" + uri;
+        }
+      }
+      const matches = uri.match(URI_PARSE);
+      if (matches) {
+        parsed.scheme = matches[1];
+        parsed.userinfo = matches[3];
+        parsed.host = matches[4];
+        parsed.port = parseInt(matches[5], 10);
+        parsed.path = matches[6] || "";
+        parsed.query = matches[7];
+        parsed.fragment = matches[8];
+        if (isNaN(parsed.port)) {
+          parsed.port = matches[5];
+        }
+        const parseError = getParseError(parsed, matches);
+        if (parseError !== void 0) {
+          parsed.error = parsed.error || parseError;
+          malformedAuthorityOrPort = true;
+        }
+        if (parsed.host) {
+          const ipv4result = isIPv4(parsed.host);
+          if (ipv4result === false) {
+            const ipv6result = normalizeIPv6(parsed.host);
+            parsed.host = ipv6result.host.toLowerCase();
+            isIP = ipv6result.isIPV6;
+          } else {
+            isIP = true;
+          }
+        }
+        if (parsed.scheme === void 0 && parsed.userinfo === void 0 && parsed.host === void 0 && parsed.port === void 0 && parsed.query === void 0 && !parsed.path) {
+          parsed.reference = "same-document";
+        } else if (parsed.scheme === void 0) {
+          parsed.reference = "relative";
+        } else if (parsed.fragment === void 0) {
+          parsed.reference = "absolute";
+        } else {
+          parsed.reference = "uri";
+        }
+        if (options.reference && options.reference !== "suffix" && options.reference !== parsed.reference) {
+          parsed.error = parsed.error || "URI is not a " + options.reference + " reference.";
+        }
+        const schemeHandler = getSchemeHandler(options.scheme || parsed.scheme);
+        if (!options.unicodeSupport && (!schemeHandler || !schemeHandler.unicodeSupport)) {
+          if (parsed.host && (options.domainHost || schemeHandler && schemeHandler.domainHost) && isIP === false && nonSimpleDomain(parsed.host)) {
+            try {
+              parsed.host = new URL("http://" + parsed.host).hostname;
+            } catch (e) {
+              parsed.error = parsed.error || "Host's domain name can not be converted to ASCII: " + e;
+            }
+          }
+        }
+        if (!schemeHandler || schemeHandler && !schemeHandler.skipNormalize) {
+          if (uri.indexOf("%") !== -1) {
+            if (parsed.scheme !== void 0) {
+              parsed.scheme = unescape(parsed.scheme);
+            }
+            if (parsed.host !== void 0) {
+              parsed.host = reescapeHostDelimiters(unescape(parsed.host), isIP);
+            }
+          }
+          if (parsed.path) {
+            parsed.path = normalizePathEncoding(parsed.path);
+          }
+          if (parsed.fragment) {
+            try {
+              parsed.fragment = encodeURI(decodeURIComponent(parsed.fragment));
+            } catch {
+              parsed.error = parsed.error || "URI malformed";
+            }
+          }
+        }
+        if (schemeHandler && schemeHandler.parse) {
+          schemeHandler.parse(parsed, options);
+        }
+      } else {
+        parsed.error = parsed.error || "URI can not be parsed.";
+      }
+      return { parsed, malformedAuthorityOrPort };
+    }
+    function parse2(uri, opts) {
+      return parseWithStatus(uri, opts).parsed;
+    }
+    function normalizeString(uri, opts) {
+      return normalizeStringWithStatus(uri, opts).normalized;
+    }
+    function normalizeStringWithStatus(uri, opts) {
+      const { parsed, malformedAuthorityOrPort } = parseWithStatus(uri, opts);
+      return {
+        normalized: malformedAuthorityOrPort ? uri : serialize(parsed, opts),
+        malformedAuthorityOrPort
+      };
+    }
+    function normalizeComparableURI(uri, opts) {
+      if (typeof uri === "string") {
+        const { normalized, malformedAuthorityOrPort } = normalizeStringWithStatus(uri, opts);
+        return malformedAuthorityOrPort ? void 0 : normalized;
+      }
+      if (typeof uri === "object") {
+        return serialize(uri, opts);
+      }
+    }
+    var fastUri = {
+      SCHEMES,
+      normalize,
+      resolve,
+      resolveComponent,
+      equal,
+      serialize,
+      parse: parse2
+    };
+    module2.exports = fastUri;
+    module2.exports.default = fastUri;
+    module2.exports.fastUri = fastUri;
+  }
+});
+
+// node_modules/jsonpointer/jsonpointer.js
+var require_jsonpointer = __commonJS({
+  "node_modules/jsonpointer/jsonpointer.js"(exports2) {
+    "use strict";
+    var hasExcape = /~/;
+    var escapeMatcher = /~[01]/g;
+    function escapeReplacer(m) {
+      switch (m) {
+        case "~1":
+          return "/";
+        case "~0":
+          return "~";
+      }
+      throw new Error("Invalid tilde escape: " + m);
+    }
+    function untilde(str) {
+      if (!hasExcape.test(str)) return str;
+      return str.replace(escapeMatcher, escapeReplacer);
+    }
+    function setter(obj, pointer, value) {
+      var part;
+      var hasNextPart;
+      for (var p2 = 1, len = pointer.length; p2 < len; ) {
+        if (pointer[p2] === "constructor" || pointer[p2] === "prototype" || pointer[p2] === "__proto__") return obj;
+        part = untilde(pointer[p2++]);
+        hasNextPart = len > p2;
+        if (typeof obj[part] === "undefined") {
+          if (Array.isArray(obj) && part === "-") {
+            part = obj.length;
+          }
+          if (hasNextPart) {
+            if (pointer[p2] !== "" && pointer[p2] < Infinity || pointer[p2] === "-") obj[part] = [];
+            else obj[part] = {};
+          }
+        }
+        if (!hasNextPart) break;
+        obj = obj[part];
+      }
+      var oldValue = obj[part];
+      if (value === void 0) delete obj[part];
+      else obj[part] = value;
+      return oldValue;
+    }
+    function compilePointer(pointer) {
+      if (typeof pointer === "string") {
+        pointer = pointer.split("/");
+        if (pointer[0] === "") return pointer;
+        throw new Error("Invalid JSON pointer.");
+      } else if (Array.isArray(pointer)) {
+        for (const part of pointer) {
+          if (typeof part !== "string" && typeof part !== "number") {
+            throw new Error("Invalid JSON pointer. Must be of type string or number.");
+          }
+        }
+        return pointer;
+      }
+      throw new Error("Invalid JSON pointer.");
+    }
+    function get2(obj, pointer) {
+      if (typeof obj !== "object") throw new Error("Invalid input object.");
+      pointer = compilePointer(pointer);
+      var len = pointer.length;
+      if (len === 1) return obj;
+      for (var p2 = 1; p2 < len; ) {
+        obj = obj[untilde(pointer[p2++])];
+        if (len === p2) return obj;
+        if (typeof obj !== "object" || obj === null) return void 0;
+      }
+    }
+    function set2(obj, pointer, value) {
+      if (typeof obj !== "object") throw new Error("Invalid input object.");
+      pointer = compilePointer(pointer);
+      if (pointer.length === 0) throw new Error("Invalid JSON pointer for set.");
+      return setter(obj, pointer, value);
+    }
+    function compile(pointer) {
+      var compiled = compilePointer(pointer);
+      return {
+        get: function(object) {
+          return get2(object, compiled);
+        },
+        set: function(object, value) {
+          return set2(object, compiled, value);
+        }
+      };
+    }
+    exports2.get = get2;
+    exports2.set = set2;
+    exports2.compile = compile;
+  }
+});
+
+// node_modules/react-is/cjs/react-is.production.min.js
+var require_react_is_production_min = __commonJS({
+  "node_modules/react-is/cjs/react-is.production.min.js"(exports2) {
+    "use strict";
+    var b2 = /* @__PURE__ */ Symbol.for("react.element");
+    var c2 = /* @__PURE__ */ Symbol.for("react.portal");
+    var d = /* @__PURE__ */ Symbol.for("react.fragment");
+    var e = /* @__PURE__ */ Symbol.for("react.strict_mode");
+    var f = /* @__PURE__ */ Symbol.for("react.profiler");
+    var g = /* @__PURE__ */ Symbol.for("react.provider");
+    var h2 = /* @__PURE__ */ Symbol.for("react.context");
+    var k = /* @__PURE__ */ Symbol.for("react.server_context");
+    var l = /* @__PURE__ */ Symbol.for("react.forward_ref");
+    var m = /* @__PURE__ */ Symbol.for("react.suspense");
+    var n = /* @__PURE__ */ Symbol.for("react.suspense_list");
+    var p2 = /* @__PURE__ */ Symbol.for("react.memo");
+    var q2 = /* @__PURE__ */ Symbol.for("react.lazy");
+    var t = /* @__PURE__ */ Symbol.for("react.offscreen");
+    var u;
+    u = /* @__PURE__ */ Symbol.for("react.module.reference");
+    function v3(a2) {
+      if ("object" === typeof a2 && null !== a2) {
+        var r = a2.$$typeof;
+        switch (r) {
+          case b2:
+            switch (a2 = a2.type, a2) {
+              case d:
+              case f:
+              case e:
+              case m:
+              case n:
+                return a2;
+              default:
+                switch (a2 = a2 && a2.$$typeof, a2) {
+                  case k:
+                  case h2:
+                  case l:
+                  case q2:
+                  case p2:
+                  case g:
+                    return a2;
+                  default:
+                    return r;
+                }
+            }
+          case c2:
+            return r;
+        }
+      }
+    }
+    exports2.ContextConsumer = h2;
+    exports2.ContextProvider = g;
+    exports2.Element = b2;
+    exports2.ForwardRef = l;
+    exports2.Fragment = d;
+    exports2.Lazy = q2;
+    exports2.Memo = p2;
+    exports2.Portal = c2;
+    exports2.Profiler = f;
+    exports2.StrictMode = e;
+    exports2.Suspense = m;
+    exports2.SuspenseList = n;
+    exports2.isAsyncMode = function() {
+      return false;
+    };
+    exports2.isConcurrentMode = function() {
+      return false;
+    };
+    exports2.isContextConsumer = function(a2) {
+      return v3(a2) === h2;
+    };
+    exports2.isContextProvider = function(a2) {
+      return v3(a2) === g;
+    };
+    exports2.isElement = function(a2) {
+      return "object" === typeof a2 && null !== a2 && a2.$$typeof === b2;
+    };
+    exports2.isForwardRef = function(a2) {
+      return v3(a2) === l;
+    };
+    exports2.isFragment = function(a2) {
+      return v3(a2) === d;
+    };
+    exports2.isLazy = function(a2) {
+      return v3(a2) === q2;
+    };
+    exports2.isMemo = function(a2) {
+      return v3(a2) === p2;
+    };
+    exports2.isPortal = function(a2) {
+      return v3(a2) === c2;
+    };
+    exports2.isProfiler = function(a2) {
+      return v3(a2) === f;
+    };
+    exports2.isStrictMode = function(a2) {
+      return v3(a2) === e;
+    };
+    exports2.isSuspense = function(a2) {
+      return v3(a2) === m;
+    };
+    exports2.isSuspenseList = function(a2) {
+      return v3(a2) === n;
+    };
+    exports2.isValidElementType = function(a2) {
+      return "string" === typeof a2 || "function" === typeof a2 || a2 === d || a2 === f || a2 === e || a2 === m || a2 === n || a2 === t || "object" === typeof a2 && null !== a2 && (a2.$$typeof === q2 || a2.$$typeof === p2 || a2.$$typeof === g || a2.$$typeof === h2 || a2.$$typeof === l || a2.$$typeof === u || void 0 !== a2.getModuleId) ? true : false;
+    };
+    exports2.typeOf = v3;
+  }
+});
+
+// node_modules/react-is/cjs/react-is.development.js
+var require_react_is_development = __commonJS({
+  "node_modules/react-is/cjs/react-is.development.js"(exports2) {
+    "use strict";
+    if (process.env.NODE_ENV !== "production") {
+      (function() {
+        "use strict";
+        var REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.element");
+        var REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal");
+        var REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment");
+        var REACT_STRICT_MODE_TYPE = /* @__PURE__ */ Symbol.for("react.strict_mode");
+        var REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for("react.profiler");
+        var REACT_PROVIDER_TYPE = /* @__PURE__ */ Symbol.for("react.provider");
+        var REACT_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for("react.context");
+        var REACT_SERVER_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for("react.server_context");
+        var REACT_FORWARD_REF_TYPE = /* @__PURE__ */ Symbol.for("react.forward_ref");
+        var REACT_SUSPENSE_TYPE = /* @__PURE__ */ Symbol.for("react.suspense");
+        var REACT_SUSPENSE_LIST_TYPE = /* @__PURE__ */ Symbol.for("react.suspense_list");
+        var REACT_MEMO_TYPE = /* @__PURE__ */ Symbol.for("react.memo");
+        var REACT_LAZY_TYPE = /* @__PURE__ */ Symbol.for("react.lazy");
+        var REACT_OFFSCREEN_TYPE = /* @__PURE__ */ Symbol.for("react.offscreen");
+        var enableScopeAPI = false;
+        var enableCacheElement = false;
+        var enableTransitionTracing = false;
+        var enableLegacyHidden = false;
+        var enableDebugTracing = false;
+        var REACT_MODULE_REFERENCE;
+        {
+          REACT_MODULE_REFERENCE = /* @__PURE__ */ Symbol.for("react.module.reference");
+        }
+        function isValidElementType(type) {
+          if (typeof type === "string" || typeof type === "function") {
+            return true;
+          }
+          if (type === REACT_FRAGMENT_TYPE || type === REACT_PROFILER_TYPE || enableDebugTracing || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || enableLegacyHidden || type === REACT_OFFSCREEN_TYPE || enableScopeAPI || enableCacheElement || enableTransitionTracing) {
+            return true;
+          }
+          if (typeof type === "object" && type !== null) {
+            if (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || // This needs to include all possible module reference object
+            // types supported by any Flight configuration anywhere since
+            // we don't know which Flight build this will end up being used
+            // with.
+            type.$$typeof === REACT_MODULE_REFERENCE || type.getModuleId !== void 0) {
+              return true;
+            }
+          }
+          return false;
+        }
+        function typeOf(object) {
+          if (typeof object === "object" && object !== null) {
+            var $$typeof = object.$$typeof;
+            switch ($$typeof) {
+              case REACT_ELEMENT_TYPE:
+                var type = object.type;
+                switch (type) {
+                  case REACT_FRAGMENT_TYPE:
+                  case REACT_PROFILER_TYPE:
+                  case REACT_STRICT_MODE_TYPE:
+                  case REACT_SUSPENSE_TYPE:
+                  case REACT_SUSPENSE_LIST_TYPE:
+                    return type;
+                  default:
+                    var $$typeofType = type && type.$$typeof;
+                    switch ($$typeofType) {
+                      case REACT_SERVER_CONTEXT_TYPE:
+                      case REACT_CONTEXT_TYPE:
+                      case REACT_FORWARD_REF_TYPE:
+                      case REACT_LAZY_TYPE:
+                      case REACT_MEMO_TYPE:
+                      case REACT_PROVIDER_TYPE:
+                        return $$typeofType;
+                      default:
+                        return $$typeof;
+                    }
+                }
+              case REACT_PORTAL_TYPE:
+                return $$typeof;
+            }
+          }
+          return void 0;
+        }
+        var ContextConsumer = REACT_CONTEXT_TYPE;
+        var ContextProvider = REACT_PROVIDER_TYPE;
+        var Element = REACT_ELEMENT_TYPE;
+        var ForwardRef = REACT_FORWARD_REF_TYPE;
+        var Fragment3 = REACT_FRAGMENT_TYPE;
+        var Lazy = REACT_LAZY_TYPE;
+        var Memo = REACT_MEMO_TYPE;
+        var Portal = REACT_PORTAL_TYPE;
+        var Profiler = REACT_PROFILER_TYPE;
+        var StrictMode = REACT_STRICT_MODE_TYPE;
+        var Suspense2 = REACT_SUSPENSE_TYPE;
+        var SuspenseList = REACT_SUSPENSE_LIST_TYPE;
+        var hasWarnedAboutDeprecatedIsAsyncMode = false;
+        var hasWarnedAboutDeprecatedIsConcurrentMode = false;
+        function isAsyncMode(object) {
+          {
+            if (!hasWarnedAboutDeprecatedIsAsyncMode) {
+              hasWarnedAboutDeprecatedIsAsyncMode = true;
+              console["warn"]("The ReactIs.isAsyncMode() alias has been deprecated, and will be removed in React 18+.");
+            }
+          }
+          return false;
+        }
+        function isConcurrentMode(object) {
+          {
+            if (!hasWarnedAboutDeprecatedIsConcurrentMode) {
+              hasWarnedAboutDeprecatedIsConcurrentMode = true;
+              console["warn"]("The ReactIs.isConcurrentMode() alias has been deprecated, and will be removed in React 18+.");
+            }
+          }
+          return false;
+        }
+        function isContextConsumer(object) {
+          return typeOf(object) === REACT_CONTEXT_TYPE;
+        }
+        function isContextProvider(object) {
+          return typeOf(object) === REACT_PROVIDER_TYPE;
+        }
+        function isElement(object) {
+          return typeof object === "object" && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+        }
+        function isForwardRef(object) {
+          return typeOf(object) === REACT_FORWARD_REF_TYPE;
+        }
+        function isFragment(object) {
+          return typeOf(object) === REACT_FRAGMENT_TYPE;
+        }
+        function isLazy(object) {
+          return typeOf(object) === REACT_LAZY_TYPE;
+        }
+        function isMemo(object) {
+          return typeOf(object) === REACT_MEMO_TYPE;
+        }
+        function isPortal(object) {
+          return typeOf(object) === REACT_PORTAL_TYPE;
+        }
+        function isProfiler(object) {
+          return typeOf(object) === REACT_PROFILER_TYPE;
+        }
+        function isStrictMode(object) {
+          return typeOf(object) === REACT_STRICT_MODE_TYPE;
+        }
+        function isSuspense(object) {
+          return typeOf(object) === REACT_SUSPENSE_TYPE;
+        }
+        function isSuspenseList(object) {
+          return typeOf(object) === REACT_SUSPENSE_LIST_TYPE;
+        }
+        exports2.ContextConsumer = ContextConsumer;
+        exports2.ContextProvider = ContextProvider;
+        exports2.Element = Element;
+        exports2.ForwardRef = ForwardRef;
+        exports2.Fragment = Fragment3;
+        exports2.Lazy = Lazy;
+        exports2.Memo = Memo;
+        exports2.Portal = Portal;
+        exports2.Profiler = Profiler;
+        exports2.StrictMode = StrictMode;
+        exports2.Suspense = Suspense2;
+        exports2.SuspenseList = SuspenseList;
+        exports2.isAsyncMode = isAsyncMode;
+        exports2.isConcurrentMode = isConcurrentMode;
+        exports2.isContextConsumer = isContextConsumer;
+        exports2.isContextProvider = isContextProvider;
+        exports2.isElement = isElement;
+        exports2.isForwardRef = isForwardRef;
+        exports2.isFragment = isFragment;
+        exports2.isLazy = isLazy;
+        exports2.isMemo = isMemo;
+        exports2.isPortal = isPortal;
+        exports2.isProfiler = isProfiler;
+        exports2.isStrictMode = isStrictMode;
+        exports2.isSuspense = isSuspense;
+        exports2.isSuspenseList = isSuspenseList;
+        exports2.isValidElementType = isValidElementType;
+        exports2.typeOf = typeOf;
+      })();
+    }
+  }
+});
+
+// node_modules/react-is/index.js
+var require_react_is = __commonJS({
+  "node_modules/react-is/index.js"(exports2, module2) {
+    "use strict";
+    if (process.env.NODE_ENV === "production") {
+      module2.exports = require_react_is_production_min();
+    } else {
+      module2.exports = require_react_is_development();
+    }
+  }
+});
+
+// node_modules/ajv/dist/compile/codegen/code.js
+var require_code = __commonJS({
+  "node_modules/ajv/dist/compile/codegen/code.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.regexpCode = exports2.getEsmExportName = exports2.getProperty = exports2.safeStringify = exports2.stringify = exports2.strConcat = exports2.addCodeArg = exports2.str = exports2._ = exports2.nil = exports2._Code = exports2.Name = exports2.IDENTIFIER = exports2._CodeOrName = void 0;
+    var _CodeOrName = class {
+    };
+    exports2._CodeOrName = _CodeOrName;
+    exports2.IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i;
+    var Name = class extends _CodeOrName {
+      constructor(s2) {
+        super();
+        if (!exports2.IDENTIFIER.test(s2))
+          throw new Error("CodeGen: name must be a valid identifier");
+        this.str = s2;
+      }
+      toString() {
+        return this.str;
+      }
+      emptyStr() {
+        return false;
+      }
+      get names() {
+        return { [this.str]: 1 };
+      }
+    };
+    exports2.Name = Name;
+    var _Code = class extends _CodeOrName {
+      constructor(code) {
+        super();
+        this._items = typeof code === "string" ? [code] : code;
+      }
+      toString() {
+        return this.str;
+      }
+      emptyStr() {
+        if (this._items.length > 1)
+          return false;
+        const item = this._items[0];
+        return item === "" || item === '""';
+      }
+      get str() {
+        var _a;
+        return (_a = this._str) !== null && _a !== void 0 ? _a : this._str = this._items.reduce((s2, c2) => `${s2}${c2}`, "");
+      }
+      get names() {
+        var _a;
+        return (_a = this._names) !== null && _a !== void 0 ? _a : this._names = this._items.reduce((names, c2) => {
+          if (c2 instanceof Name)
+            names[c2.str] = (names[c2.str] || 0) + 1;
+          return names;
+        }, {});
+      }
+    };
+    exports2._Code = _Code;
+    exports2.nil = new _Code("");
+    function _2(strs, ...args) {
+      const code = [strs[0]];
+      let i2 = 0;
+      while (i2 < args.length) {
+        addCodeArg(code, args[i2]);
+        code.push(strs[++i2]);
+      }
+      return new _Code(code);
+    }
+    exports2._ = _2;
+    var plus = new _Code("+");
+    function str(strs, ...args) {
+      const expr = [safeStringify(strs[0])];
+      let i2 = 0;
+      while (i2 < args.length) {
+        expr.push(plus);
+        addCodeArg(expr, args[i2]);
+        expr.push(plus, safeStringify(strs[++i2]));
+      }
+      optimize(expr);
+      return new _Code(expr);
+    }
+    exports2.str = str;
+    function addCodeArg(code, arg) {
+      if (arg instanceof _Code)
+        code.push(...arg._items);
+      else if (arg instanceof Name)
+        code.push(arg);
+      else
+        code.push(interpolate(arg));
+    }
+    exports2.addCodeArg = addCodeArg;
+    function optimize(expr) {
+      let i2 = 1;
+      while (i2 < expr.length - 1) {
+        if (expr[i2] === plus) {
+          const res = mergeExprItems(expr[i2 - 1], expr[i2 + 1]);
+          if (res !== void 0) {
+            expr.splice(i2 - 1, 3, res);
+            continue;
+          }
+          expr[i2++] = "+";
+        }
+        i2++;
+      }
+    }
+    function mergeExprItems(a2, b2) {
+      if (b2 === '""')
+        return a2;
+      if (a2 === '""')
+        return b2;
+      if (typeof a2 == "string") {
+        if (b2 instanceof Name || a2[a2.length - 1] !== '"')
+          return;
+        if (typeof b2 != "string")
+          return `${a2.slice(0, -1)}${b2}"`;
+        if (b2[0] === '"')
+          return a2.slice(0, -1) + b2.slice(1);
+        return;
+      }
+      if (typeof b2 == "string" && b2[0] === '"' && !(a2 instanceof Name))
+        return `"${a2}${b2.slice(1)}`;
+      return;
+    }
+    function strConcat(c1, c2) {
+      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str`${c1}${c2}`;
+    }
+    exports2.strConcat = strConcat;
+    function interpolate(x) {
+      return typeof x == "number" || typeof x == "boolean" || x === null ? x : safeStringify(Array.isArray(x) ? x.join(",") : x);
+    }
+    function stringify2(x) {
+      return new _Code(safeStringify(x));
+    }
+    exports2.stringify = stringify2;
+    function safeStringify(x) {
+      return JSON.stringify(x).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+    }
+    exports2.safeStringify = safeStringify;
+    function getProperty(key) {
+      return typeof key == "string" && exports2.IDENTIFIER.test(key) ? new _Code(`.${key}`) : _2`[${key}]`;
+    }
+    exports2.getProperty = getProperty;
+    function getEsmExportName(key) {
+      if (typeof key == "string" && exports2.IDENTIFIER.test(key)) {
+        return new _Code(`${key}`);
+      }
+      throw new Error(`CodeGen: invalid export name: ${key}, use explicit $id name mapping`);
+    }
+    exports2.getEsmExportName = getEsmExportName;
+    function regexpCode(rx) {
+      return new _Code(rx.toString());
+    }
+    exports2.regexpCode = regexpCode;
+  }
+});
+
+// node_modules/ajv/dist/compile/codegen/scope.js
+var require_scope = __commonJS({
+  "node_modules/ajv/dist/compile/codegen/scope.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ValueScope = exports2.ValueScopeName = exports2.Scope = exports2.varKinds = exports2.UsedValueState = void 0;
+    var code_1 = require_code();
+    var ValueError = class extends Error {
+      constructor(name) {
+        super(`CodeGen: "code" for ${name} not defined`);
+        this.value = name.value;
+      }
+    };
+    var UsedValueState;
+    (function(UsedValueState2) {
+      UsedValueState2[UsedValueState2["Started"] = 0] = "Started";
+      UsedValueState2[UsedValueState2["Completed"] = 1] = "Completed";
+    })(UsedValueState || (exports2.UsedValueState = UsedValueState = {}));
+    exports2.varKinds = {
+      const: new code_1.Name("const"),
+      let: new code_1.Name("let"),
+      var: new code_1.Name("var")
+    };
+    var Scope = class {
+      constructor({ prefixes, parent: parent2 } = {}) {
+        this._names = {};
+        this._prefixes = prefixes;
+        this._parent = parent2;
+      }
+      toName(nameOrPrefix) {
+        return nameOrPrefix instanceof code_1.Name ? nameOrPrefix : this.name(nameOrPrefix);
+      }
+      name(prefix) {
+        return new code_1.Name(this._newName(prefix));
+      }
+      _newName(prefix) {
+        const ng = this._names[prefix] || this._nameGroup(prefix);
+        return `${prefix}${ng.index++}`;
+      }
+      _nameGroup(prefix) {
+        var _a, _b;
+        if (((_b = (_a = this._parent) === null || _a === void 0 ? void 0 : _a._prefixes) === null || _b === void 0 ? void 0 : _b.has(prefix)) || this._prefixes && !this._prefixes.has(prefix)) {
+          throw new Error(`CodeGen: prefix "${prefix}" is not allowed in this scope`);
+        }
+        return this._names[prefix] = { prefix, index: 0 };
+      }
+    };
+    exports2.Scope = Scope;
+    var ValueScopeName = class extends code_1.Name {
+      constructor(prefix, nameStr) {
+        super(nameStr);
+        this.prefix = prefix;
+      }
+      setValue(value, { property: property2, itemIndex }) {
+        this.value = value;
+        this.scopePath = (0, code_1._)`.${new code_1.Name(property2)}[${itemIndex}]`;
+      }
+    };
+    exports2.ValueScopeName = ValueScopeName;
+    var line = (0, code_1._)`\n`;
+    var ValueScope = class extends Scope {
+      constructor(opts) {
+        super(opts);
+        this._values = {};
+        this._scope = opts.scope;
+        this.opts = { ...opts, _n: opts.lines ? line : code_1.nil };
+      }
+      get() {
+        return this._scope;
+      }
+      name(prefix) {
+        return new ValueScopeName(prefix, this._newName(prefix));
+      }
+      value(nameOrPrefix, value) {
+        var _a;
+        if (value.ref === void 0)
+          throw new Error("CodeGen: ref must be passed in value");
+        const name = this.toName(nameOrPrefix);
+        const { prefix } = name;
+        const valueKey = (_a = value.key) !== null && _a !== void 0 ? _a : value.ref;
+        let vs = this._values[prefix];
+        if (vs) {
+          const _name = vs.get(valueKey);
+          if (_name)
+            return _name;
+        } else {
+          vs = this._values[prefix] = /* @__PURE__ */ new Map();
+        }
+        vs.set(valueKey, name);
+        const s2 = this._scope[prefix] || (this._scope[prefix] = []);
+        const itemIndex = s2.length;
+        s2[itemIndex] = value.ref;
+        name.setValue(value, { property: prefix, itemIndex });
+        return name;
+      }
+      getValue(prefix, keyOrRef) {
+        const vs = this._values[prefix];
+        if (!vs)
+          return;
+        return vs.get(keyOrRef);
+      }
+      scopeRefs(scopeName, values2 = this._values) {
+        return this._reduceValues(values2, (name) => {
+          if (name.scopePath === void 0)
+            throw new Error(`CodeGen: name "${name}" has no value`);
+          return (0, code_1._)`${scopeName}${name.scopePath}`;
+        });
+      }
+      scopeCode(values2 = this._values, usedValues, getCode) {
+        return this._reduceValues(values2, (name) => {
+          if (name.value === void 0)
+            throw new Error(`CodeGen: name "${name}" has no value`);
+          return name.value.code;
+        }, usedValues, getCode);
+      }
+      _reduceValues(values2, valueCode, usedValues = {}, getCode) {
+        let code = code_1.nil;
+        for (const prefix in values2) {
+          const vs = values2[prefix];
+          if (!vs)
+            continue;
+          const nameSet = usedValues[prefix] = usedValues[prefix] || /* @__PURE__ */ new Map();
+          vs.forEach((name) => {
+            if (nameSet.has(name))
+              return;
+            nameSet.set(name, UsedValueState.Started);
+            let c2 = valueCode(name);
+            if (c2) {
+              const def = this.opts.es5 ? exports2.varKinds.var : exports2.varKinds.const;
+              code = (0, code_1._)`${code}${def} ${name} = ${c2};${this.opts._n}`;
+            } else if (c2 = getCode === null || getCode === void 0 ? void 0 : getCode(name)) {
+              code = (0, code_1._)`${code}${c2}${this.opts._n}`;
+            } else {
+              throw new ValueError(name);
+            }
+            nameSet.set(name, UsedValueState.Completed);
+          });
+        }
+        return code;
+      }
+    };
+    exports2.ValueScope = ValueScope;
+  }
+});
+
+// node_modules/ajv/dist/compile/codegen/index.js
+var require_codegen = __commonJS({
+  "node_modules/ajv/dist/compile/codegen/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.or = exports2.and = exports2.not = exports2.CodeGen = exports2.operators = exports2.varKinds = exports2.ValueScopeName = exports2.ValueScope = exports2.Scope = exports2.Name = exports2.regexpCode = exports2.stringify = exports2.getProperty = exports2.nil = exports2.strConcat = exports2.str = exports2._ = void 0;
+    var code_1 = require_code();
+    var scope_1 = require_scope();
+    var code_2 = require_code();
+    Object.defineProperty(exports2, "_", { enumerable: true, get: function() {
+      return code_2._;
+    } });
+    Object.defineProperty(exports2, "str", { enumerable: true, get: function() {
+      return code_2.str;
+    } });
+    Object.defineProperty(exports2, "strConcat", { enumerable: true, get: function() {
+      return code_2.strConcat;
+    } });
+    Object.defineProperty(exports2, "nil", { enumerable: true, get: function() {
+      return code_2.nil;
+    } });
+    Object.defineProperty(exports2, "getProperty", { enumerable: true, get: function() {
+      return code_2.getProperty;
+    } });
+    Object.defineProperty(exports2, "stringify", { enumerable: true, get: function() {
+      return code_2.stringify;
+    } });
+    Object.defineProperty(exports2, "regexpCode", { enumerable: true, get: function() {
+      return code_2.regexpCode;
+    } });
+    Object.defineProperty(exports2, "Name", { enumerable: true, get: function() {
+      return code_2.Name;
+    } });
+    var scope_2 = require_scope();
+    Object.defineProperty(exports2, "Scope", { enumerable: true, get: function() {
+      return scope_2.Scope;
+    } });
+    Object.defineProperty(exports2, "ValueScope", { enumerable: true, get: function() {
+      return scope_2.ValueScope;
+    } });
+    Object.defineProperty(exports2, "ValueScopeName", { enumerable: true, get: function() {
+      return scope_2.ValueScopeName;
+    } });
+    Object.defineProperty(exports2, "varKinds", { enumerable: true, get: function() {
+      return scope_2.varKinds;
+    } });
+    exports2.operators = {
+      GT: new code_1._Code(">"),
+      GTE: new code_1._Code(">="),
+      LT: new code_1._Code("<"),
+      LTE: new code_1._Code("<="),
+      EQ: new code_1._Code("==="),
+      NEQ: new code_1._Code("!=="),
+      NOT: new code_1._Code("!"),
+      OR: new code_1._Code("||"),
+      AND: new code_1._Code("&&"),
+      ADD: new code_1._Code("+")
+    };
+    var Node = class {
+      optimizeNodes() {
+        return this;
+      }
+      optimizeNames(_names, _constants) {
+        return this;
+      }
+    };
+    var Def = class extends Node {
+      constructor(varKind, name, rhs) {
+        super();
+        this.varKind = varKind;
+        this.name = name;
+        this.rhs = rhs;
+      }
+      render({ es5, _n }) {
+        const varKind = es5 ? scope_1.varKinds.var : this.varKind;
+        const rhs = this.rhs === void 0 ? "" : ` = ${this.rhs}`;
+        return `${varKind} ${this.name}${rhs};` + _n;
+      }
+      optimizeNames(names, constants) {
+        if (!names[this.name.str])
+          return;
+        if (this.rhs)
+          this.rhs = optimizeExpr(this.rhs, names, constants);
+        return this;
+      }
+      get names() {
+        return this.rhs instanceof code_1._CodeOrName ? this.rhs.names : {};
+      }
+    };
+    var Assign = class extends Node {
+      constructor(lhs, rhs, sideEffects) {
+        super();
+        this.lhs = lhs;
+        this.rhs = rhs;
+        this.sideEffects = sideEffects;
+      }
+      render({ _n }) {
+        return `${this.lhs} = ${this.rhs};` + _n;
+      }
+      optimizeNames(names, constants) {
+        if (this.lhs instanceof code_1.Name && !names[this.lhs.str] && !this.sideEffects)
+          return;
+        this.rhs = optimizeExpr(this.rhs, names, constants);
+        return this;
+      }
+      get names() {
+        const names = this.lhs instanceof code_1.Name ? {} : { ...this.lhs.names };
+        return addExprNames(names, this.rhs);
+      }
+    };
+    var AssignOp = class extends Assign {
+      constructor(lhs, op, rhs, sideEffects) {
+        super(lhs, rhs, sideEffects);
+        this.op = op;
+      }
+      render({ _n }) {
+        return `${this.lhs} ${this.op}= ${this.rhs};` + _n;
+      }
+    };
+    var Label3 = class extends Node {
+      constructor(label) {
+        super();
+        this.label = label;
+        this.names = {};
+      }
+      render({ _n }) {
+        return `${this.label}:` + _n;
+      }
+    };
+    var Break = class extends Node {
+      constructor(label) {
+        super();
+        this.label = label;
+        this.names = {};
+      }
+      render({ _n }) {
+        const label = this.label ? ` ${this.label}` : "";
+        return `break${label};` + _n;
+      }
+    };
+    var Throw = class extends Node {
+      constructor(error) {
+        super();
+        this.error = error;
+      }
+      render({ _n }) {
+        return `throw ${this.error};` + _n;
+      }
+      get names() {
+        return this.error.names;
+      }
+    };
+    var AnyCode = class extends Node {
+      constructor(code) {
+        super();
+        this.code = code;
+      }
+      render({ _n }) {
+        return `${this.code};` + _n;
+      }
+      optimizeNodes() {
+        return `${this.code}` ? this : void 0;
+      }
+      optimizeNames(names, constants) {
+        this.code = optimizeExpr(this.code, names, constants);
+        return this;
+      }
+      get names() {
+        return this.code instanceof code_1._CodeOrName ? this.code.names : {};
+      }
+    };
+    var ParentNode = class extends Node {
+      constructor(nodes = []) {
+        super();
+        this.nodes = nodes;
+      }
+      render(opts) {
+        return this.nodes.reduce((code, n) => code + n.render(opts), "");
+      }
+      optimizeNodes() {
+        const { nodes } = this;
+        let i2 = nodes.length;
+        while (i2--) {
+          const n = nodes[i2].optimizeNodes();
+          if (Array.isArray(n))
+            nodes.splice(i2, 1, ...n);
+          else if (n)
+            nodes[i2] = n;
+          else
+            nodes.splice(i2, 1);
+        }
+        return nodes.length > 0 ? this : void 0;
+      }
+      optimizeNames(names, constants) {
+        const { nodes } = this;
+        let i2 = nodes.length;
+        while (i2--) {
+          const n = nodes[i2];
+          if (n.optimizeNames(names, constants))
+            continue;
+          subtractNames(names, n.names);
+          nodes.splice(i2, 1);
+        }
+        return nodes.length > 0 ? this : void 0;
+      }
+      get names() {
+        return this.nodes.reduce((names, n) => addNames(names, n.names), {});
+      }
+    };
+    var BlockNode = class extends ParentNode {
+      render(opts) {
+        return "{" + opts._n + super.render(opts) + "}" + opts._n;
+      }
+    };
+    var Root = class extends ParentNode {
+    };
+    var Else = class extends BlockNode {
+    };
+    Else.kind = "else";
+    var If = class _If extends BlockNode {
+      constructor(condition, nodes) {
+        super(nodes);
+        this.condition = condition;
+      }
+      render(opts) {
+        let code = `if(${this.condition})` + super.render(opts);
+        if (this.else)
+          code += "else " + this.else.render(opts);
+        return code;
+      }
+      optimizeNodes() {
+        super.optimizeNodes();
+        const cond = this.condition;
+        if (cond === true)
+          return this.nodes;
+        let e = this.else;
+        if (e) {
+          const ns = e.optimizeNodes();
+          e = this.else = Array.isArray(ns) ? new Else(ns) : ns;
+        }
+        if (e) {
+          if (cond === false)
+            return e instanceof _If ? e : e.nodes;
+          if (this.nodes.length)
+            return this;
+          return new _If(not(cond), e instanceof _If ? [e] : e.nodes);
+        }
+        if (cond === false || !this.nodes.length)
+          return void 0;
+        return this;
+      }
+      optimizeNames(names, constants) {
+        var _a;
+        this.else = (_a = this.else) === null || _a === void 0 ? void 0 : _a.optimizeNames(names, constants);
+        if (!(super.optimizeNames(names, constants) || this.else))
+          return;
+        this.condition = optimizeExpr(this.condition, names, constants);
+        return this;
+      }
+      get names() {
+        const names = super.names;
+        addExprNames(names, this.condition);
+        if (this.else)
+          addNames(names, this.else.names);
+        return names;
+      }
+    };
+    If.kind = "if";
+    var For = class extends BlockNode {
+    };
+    For.kind = "for";
+    var ForLoop = class extends For {
+      constructor(iteration) {
+        super();
+        this.iteration = iteration;
+      }
+      render(opts) {
+        return `for(${this.iteration})` + super.render(opts);
+      }
+      optimizeNames(names, constants) {
+        if (!super.optimizeNames(names, constants))
+          return;
+        this.iteration = optimizeExpr(this.iteration, names, constants);
+        return this;
+      }
+      get names() {
+        return addNames(super.names, this.iteration.names);
+      }
+    };
+    var ForRange = class extends For {
+      constructor(varKind, name, from, to) {
+        super();
+        this.varKind = varKind;
+        this.name = name;
+        this.from = from;
+        this.to = to;
+      }
+      render(opts) {
+        const varKind = opts.es5 ? scope_1.varKinds.var : this.varKind;
+        const { name, from, to } = this;
+        return `for(${varKind} ${name}=${from}; ${name}<${to}; ${name}++)` + super.render(opts);
+      }
+      get names() {
+        const names = addExprNames(super.names, this.from);
+        return addExprNames(names, this.to);
+      }
+    };
+    var ForIter = class extends For {
+      constructor(loop, varKind, name, iterable) {
+        super();
+        this.loop = loop;
+        this.varKind = varKind;
+        this.name = name;
+        this.iterable = iterable;
+      }
+      render(opts) {
+        return `for(${this.varKind} ${this.name} ${this.loop} ${this.iterable})` + super.render(opts);
+      }
+      optimizeNames(names, constants) {
+        if (!super.optimizeNames(names, constants))
+          return;
+        this.iterable = optimizeExpr(this.iterable, names, constants);
+        return this;
+      }
+      get names() {
+        return addNames(super.names, this.iterable.names);
+      }
+    };
+    var Func = class extends BlockNode {
+      constructor(name, args, async) {
+        super();
+        this.name = name;
+        this.args = args;
+        this.async = async;
+      }
+      render(opts) {
+        const _async = this.async ? "async " : "";
+        return `${_async}function ${this.name}(${this.args})` + super.render(opts);
+      }
+    };
+    Func.kind = "func";
+    var Return = class extends ParentNode {
+      render(opts) {
+        return "return " + super.render(opts);
+      }
+    };
+    Return.kind = "return";
+    var Try = class extends BlockNode {
+      render(opts) {
+        let code = "try" + super.render(opts);
+        if (this.catch)
+          code += this.catch.render(opts);
+        if (this.finally)
+          code += this.finally.render(opts);
+        return code;
+      }
+      optimizeNodes() {
+        var _a, _b;
+        super.optimizeNodes();
+        (_a = this.catch) === null || _a === void 0 ? void 0 : _a.optimizeNodes();
+        (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNodes();
+        return this;
+      }
+      optimizeNames(names, constants) {
+        var _a, _b;
+        super.optimizeNames(names, constants);
+        (_a = this.catch) === null || _a === void 0 ? void 0 : _a.optimizeNames(names, constants);
+        (_b = this.finally) === null || _b === void 0 ? void 0 : _b.optimizeNames(names, constants);
+        return this;
+      }
+      get names() {
+        const names = super.names;
+        if (this.catch)
+          addNames(names, this.catch.names);
+        if (this.finally)
+          addNames(names, this.finally.names);
+        return names;
+      }
+    };
+    var Catch = class extends BlockNode {
+      constructor(error) {
+        super();
+        this.error = error;
+      }
+      render(opts) {
+        return `catch(${this.error})` + super.render(opts);
+      }
+    };
+    Catch.kind = "catch";
+    var Finally = class extends BlockNode {
+      render(opts) {
+        return "finally" + super.render(opts);
+      }
+    };
+    Finally.kind = "finally";
+    var CodeGen = class {
+      constructor(extScope, opts = {}) {
+        this._values = {};
+        this._blockStarts = [];
+        this._constants = {};
+        this.opts = { ...opts, _n: opts.lines ? "\n" : "" };
+        this._extScope = extScope;
+        this._scope = new scope_1.Scope({ parent: extScope });
+        this._nodes = [new Root()];
+      }
+      toString() {
+        return this._root.render(this.opts);
+      }
+      // returns unique name in the internal scope
+      name(prefix) {
+        return this._scope.name(prefix);
+      }
+      // reserves unique name in the external scope
+      scopeName(prefix) {
+        return this._extScope.name(prefix);
+      }
+      // reserves unique name in the external scope and assigns value to it
+      scopeValue(prefixOrName, value) {
+        const name = this._extScope.value(prefixOrName, value);
+        const vs = this._values[name.prefix] || (this._values[name.prefix] = /* @__PURE__ */ new Set());
+        vs.add(name);
+        return name;
+      }
+      getScopeValue(prefix, keyOrRef) {
+        return this._extScope.getValue(prefix, keyOrRef);
+      }
+      // return code that assigns values in the external scope to the names that are used internally
+      // (same names that were returned by gen.scopeName or gen.scopeValue)
+      scopeRefs(scopeName) {
+        return this._extScope.scopeRefs(scopeName, this._values);
+      }
+      scopeCode() {
+        return this._extScope.scopeCode(this._values);
+      }
+      _def(varKind, nameOrPrefix, rhs, constant2) {
+        const name = this._scope.toName(nameOrPrefix);
+        if (rhs !== void 0 && constant2)
+          this._constants[name.str] = rhs;
+        this._leafNode(new Def(varKind, name, rhs));
+        return name;
+      }
+      // `const` declaration (`var` in es5 mode)
+      const(nameOrPrefix, rhs, _constant) {
+        return this._def(scope_1.varKinds.const, nameOrPrefix, rhs, _constant);
+      }
+      // `let` declaration with optional assignment (`var` in es5 mode)
+      let(nameOrPrefix, rhs, _constant) {
+        return this._def(scope_1.varKinds.let, nameOrPrefix, rhs, _constant);
+      }
+      // `var` declaration with optional assignment
+      var(nameOrPrefix, rhs, _constant) {
+        return this._def(scope_1.varKinds.var, nameOrPrefix, rhs, _constant);
+      }
+      // assignment code
+      assign(lhs, rhs, sideEffects) {
+        return this._leafNode(new Assign(lhs, rhs, sideEffects));
+      }
+      // `+=` code
+      add(lhs, rhs) {
+        return this._leafNode(new AssignOp(lhs, exports2.operators.ADD, rhs));
+      }
+      // appends passed SafeExpr to code or executes Block
+      code(c2) {
+        if (typeof c2 == "function")
+          c2();
+        else if (c2 !== code_1.nil)
+          this._leafNode(new AnyCode(c2));
+        return this;
+      }
+      // returns code for object literal for the passed argument list of key-value pairs
+      object(...keyValues) {
+        const code = ["{"];
+        for (const [key, value] of keyValues) {
+          if (code.length > 1)
+            code.push(",");
+          code.push(key);
+          if (key !== value || this.opts.es5) {
+            code.push(":");
+            (0, code_1.addCodeArg)(code, value);
+          }
+        }
+        code.push("}");
+        return new code_1._Code(code);
+      }
+      // `if` clause (or statement if `thenBody` and, optionally, `elseBody` are passed)
+      if(condition, thenBody, elseBody) {
+        this._blockNode(new If(condition));
+        if (thenBody && elseBody) {
+          this.code(thenBody).else().code(elseBody).endIf();
+        } else if (thenBody) {
+          this.code(thenBody).endIf();
+        } else if (elseBody) {
+          throw new Error('CodeGen: "else" body without "then" body');
+        }
+        return this;
+      }
+      // `else if` clause - invalid without `if` or after `else` clauses
+      elseIf(condition) {
+        return this._elseNode(new If(condition));
+      }
+      // `else` clause - only valid after `if` or `else if` clauses
+      else() {
+        return this._elseNode(new Else());
+      }
+      // end `if` statement (needed if gen.if was used only with condition)
+      endIf() {
+        return this._endBlockNode(If, Else);
+      }
+      _for(node, forBody) {
+        this._blockNode(node);
+        if (forBody)
+          this.code(forBody).endFor();
+        return this;
+      }
+      // a generic `for` clause (or statement if `forBody` is passed)
+      for(iteration, forBody) {
+        return this._for(new ForLoop(iteration), forBody);
+      }
+      // `for` statement for a range of values
+      forRange(nameOrPrefix, from, to, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.let) {
+        const name = this._scope.toName(nameOrPrefix);
+        return this._for(new ForRange(varKind, name, from, to), () => forBody(name));
+      }
+      // `for-of` statement (in es5 mode replace with a normal for loop)
+      forOf(nameOrPrefix, iterable, forBody, varKind = scope_1.varKinds.const) {
+        const name = this._scope.toName(nameOrPrefix);
+        if (this.opts.es5) {
+          const arr = iterable instanceof code_1.Name ? iterable : this.var("_arr", iterable);
+          return this.forRange("_i", 0, (0, code_1._)`${arr}.length`, (i2) => {
+            this.var(name, (0, code_1._)`${arr}[${i2}]`);
+            forBody(name);
+          });
+        }
+        return this._for(new ForIter("of", varKind, name, iterable), () => forBody(name));
+      }
+      // `for-in` statement.
+      // With option `ownProperties` replaced with a `for-of` loop for object keys
+      forIn(nameOrPrefix, obj, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
+        if (this.opts.ownProperties) {
+          return this.forOf(nameOrPrefix, (0, code_1._)`Object.keys(${obj})`, forBody);
+        }
+        const name = this._scope.toName(nameOrPrefix);
+        return this._for(new ForIter("in", varKind, name, obj), () => forBody(name));
+      }
+      // end `for` loop
+      endFor() {
+        return this._endBlockNode(For);
+      }
+      // `label` statement
+      label(label) {
+        return this._leafNode(new Label3(label));
+      }
+      // `break` statement
+      break(label) {
+        return this._leafNode(new Break(label));
+      }
+      // `return` statement
+      return(value) {
+        const node = new Return();
+        this._blockNode(node);
+        this.code(value);
+        if (node.nodes.length !== 1)
+          throw new Error('CodeGen: "return" should have one node');
+        return this._endBlockNode(Return);
+      }
+      // `try` statement
+      try(tryBody, catchCode, finallyCode) {
+        if (!catchCode && !finallyCode)
+          throw new Error('CodeGen: "try" without "catch" and "finally"');
+        const node = new Try();
+        this._blockNode(node);
+        this.code(tryBody);
+        if (catchCode) {
+          const error = this.name("e");
+          this._currNode = node.catch = new Catch(error);
+          catchCode(error);
+        }
+        if (finallyCode) {
+          this._currNode = node.finally = new Finally();
+          this.code(finallyCode);
+        }
+        return this._endBlockNode(Catch, Finally);
+      }
+      // `throw` statement
+      throw(error) {
+        return this._leafNode(new Throw(error));
+      }
+      // start self-balancing block
+      block(body, nodeCount) {
+        this._blockStarts.push(this._nodes.length);
+        if (body)
+          this.code(body).endBlock(nodeCount);
+        return this;
+      }
+      // end the current self-balancing block
+      endBlock(nodeCount) {
+        const len = this._blockStarts.pop();
+        if (len === void 0)
+          throw new Error("CodeGen: not in self-balancing block");
+        const toClose = this._nodes.length - len;
+        if (toClose < 0 || nodeCount !== void 0 && toClose !== nodeCount) {
+          throw new Error(`CodeGen: wrong number of nodes: ${toClose} vs ${nodeCount} expected`);
+        }
+        this._nodes.length = len;
+        return this;
+      }
+      // `function` heading (or definition if funcBody is passed)
+      func(name, args = code_1.nil, async, funcBody) {
+        this._blockNode(new Func(name, args, async));
+        if (funcBody)
+          this.code(funcBody).endFunc();
+        return this;
+      }
+      // end function definition
+      endFunc() {
+        return this._endBlockNode(Func);
+      }
+      optimize(n = 1) {
+        while (n-- > 0) {
+          this._root.optimizeNodes();
+          this._root.optimizeNames(this._root.names, this._constants);
+        }
+      }
+      _leafNode(node) {
+        this._currNode.nodes.push(node);
+        return this;
+      }
+      _blockNode(node) {
+        this._currNode.nodes.push(node);
+        this._nodes.push(node);
+      }
+      _endBlockNode(N1, N2) {
+        const n = this._currNode;
+        if (n instanceof N1 || N2 && n instanceof N2) {
+          this._nodes.pop();
+          return this;
+        }
+        throw new Error(`CodeGen: not in block "${N2 ? `${N1.kind}/${N2.kind}` : N1.kind}"`);
+      }
+      _elseNode(node) {
+        const n = this._currNode;
+        if (!(n instanceof If)) {
+          throw new Error('CodeGen: "else" without "if"');
+        }
+        this._currNode = n.else = node;
+        return this;
+      }
+      get _root() {
+        return this._nodes[0];
+      }
+      get _currNode() {
+        const ns = this._nodes;
+        return ns[ns.length - 1];
+      }
+      set _currNode(node) {
+        const ns = this._nodes;
+        ns[ns.length - 1] = node;
+      }
+    };
+    exports2.CodeGen = CodeGen;
+    function addNames(names, from) {
+      for (const n in from)
+        names[n] = (names[n] || 0) + (from[n] || 0);
+      return names;
+    }
+    function addExprNames(names, from) {
+      return from instanceof code_1._CodeOrName ? addNames(names, from.names) : names;
+    }
+    function optimizeExpr(expr, names, constants) {
+      if (expr instanceof code_1.Name)
+        return replaceName(expr);
+      if (!canOptimize(expr))
+        return expr;
+      return new code_1._Code(expr._items.reduce((items, c2) => {
+        if (c2 instanceof code_1.Name)
+          c2 = replaceName(c2);
+        if (c2 instanceof code_1._Code)
+          items.push(...c2._items);
+        else
+          items.push(c2);
+        return items;
+      }, []));
+      function replaceName(n) {
+        const c2 = constants[n.str];
+        if (c2 === void 0 || names[n.str] !== 1)
+          return n;
+        delete names[n.str];
+        return c2;
+      }
+      function canOptimize(e) {
+        return e instanceof code_1._Code && e._items.some((c2) => c2 instanceof code_1.Name && names[c2.str] === 1 && constants[c2.str] !== void 0);
+      }
+    }
+    function subtractNames(names, from) {
+      for (const n in from)
+        names[n] = (names[n] || 0) - (from[n] || 0);
+    }
+    function not(x) {
+      return typeof x == "boolean" || typeof x == "number" || x === null ? !x : (0, code_1._)`!${par(x)}`;
+    }
+    exports2.not = not;
+    var andCode = mappend(exports2.operators.AND);
+    function and(...args) {
+      return args.reduce(andCode);
+    }
+    exports2.and = and;
+    var orCode = mappend(exports2.operators.OR);
+    function or(...args) {
+      return args.reduce(orCode);
+    }
+    exports2.or = or;
+    function mappend(op) {
+      return (x, y) => x === code_1.nil ? y : y === code_1.nil ? x : (0, code_1._)`${par(x)} ${op} ${par(y)}`;
+    }
+    function par(x) {
+      return x instanceof code_1.Name ? x : (0, code_1._)`(${x})`;
+    }
+  }
+});
+
+// node_modules/ajv/dist/compile/util.js
+var require_util = __commonJS({
+  "node_modules/ajv/dist/compile/util.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.checkStrictMode = exports2.getErrorPath = exports2.Type = exports2.useFunc = exports2.setEvaluated = exports2.evaluatedPropsToName = exports2.mergeEvaluated = exports2.eachItem = exports2.unescapeJsonPointer = exports2.escapeJsonPointer = exports2.escapeFragment = exports2.unescapeFragment = exports2.schemaRefOrVal = exports2.schemaHasRulesButRef = exports2.schemaHasRules = exports2.checkUnknownRules = exports2.alwaysValidSchema = exports2.toHash = void 0;
+    var codegen_1 = require_codegen();
+    var code_1 = require_code();
+    function toHash(arr) {
+      const hash = {};
+      for (const item of arr)
+        hash[item] = true;
+      return hash;
+    }
+    exports2.toHash = toHash;
+    function alwaysValidSchema(it, schema) {
+      if (typeof schema == "boolean")
+        return schema;
+      if (Object.keys(schema).length === 0)
+        return true;
+      checkUnknownRules(it, schema);
+      return !schemaHasRules(schema, it.self.RULES.all);
+    }
+    exports2.alwaysValidSchema = alwaysValidSchema;
+    function checkUnknownRules(it, schema = it.schema) {
+      const { opts, self: self2 } = it;
+      if (!opts.strictSchema)
+        return;
+      if (typeof schema === "boolean")
+        return;
+      const rules = self2.RULES.keywords;
+      for (const key in schema) {
+        if (!rules[key])
+          checkStrictMode(it, `unknown keyword: "${key}"`);
+      }
+    }
+    exports2.checkUnknownRules = checkUnknownRules;
+    function schemaHasRules(schema, rules) {
+      if (typeof schema == "boolean")
+        return !schema;
+      for (const key in schema)
+        if (rules[key])
+          return true;
+      return false;
+    }
+    exports2.schemaHasRules = schemaHasRules;
+    function schemaHasRulesButRef(schema, RULES) {
+      if (typeof schema == "boolean")
+        return !schema;
+      for (const key in schema)
+        if (key !== "$ref" && RULES.all[key])
+          return true;
+      return false;
+    }
+    exports2.schemaHasRulesButRef = schemaHasRulesButRef;
+    function schemaRefOrVal({ topSchemaRef, schemaPath }, schema, keyword, $data) {
+      if (!$data) {
+        if (typeof schema == "number" || typeof schema == "boolean")
+          return schema;
+        if (typeof schema == "string")
+          return (0, codegen_1._)`${schema}`;
+      }
+      return (0, codegen_1._)`${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
+    }
+    exports2.schemaRefOrVal = schemaRefOrVal;
+    function unescapeFragment(str) {
+      return unescapeJsonPointer(decodeURIComponent(str));
+    }
+    exports2.unescapeFragment = unescapeFragment;
+    function escapeFragment(str) {
+      return encodeURIComponent(escapeJsonPointer(str));
+    }
+    exports2.escapeFragment = escapeFragment;
+    function escapeJsonPointer(str) {
+      if (typeof str == "number")
+        return `${str}`;
+      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    }
+    exports2.escapeJsonPointer = escapeJsonPointer;
+    function unescapeJsonPointer(str) {
+      return str.replace(/~1/g, "/").replace(/~0/g, "~");
+    }
+    exports2.unescapeJsonPointer = unescapeJsonPointer;
+    function eachItem(xs, f) {
+      if (Array.isArray(xs)) {
+        for (const x of xs)
+          f(x);
+      } else {
+        f(xs);
+      }
+    }
+    exports2.eachItem = eachItem;
+    function makeMergeEvaluated({ mergeNames, mergeToName, mergeValues, resultToName }) {
+      return (gen, from, to, toName) => {
+        const res = to === void 0 ? from : to instanceof codegen_1.Name ? (from instanceof codegen_1.Name ? mergeNames(gen, from, to) : mergeToName(gen, from, to), to) : from instanceof codegen_1.Name ? (mergeToName(gen, to, from), from) : mergeValues(from, to);
+        return toName === codegen_1.Name && !(res instanceof codegen_1.Name) ? resultToName(gen, res) : res;
+      };
+    }
+    exports2.mergeEvaluated = {
+      props: makeMergeEvaluated({
+        mergeNames: (gen, from, to) => gen.if((0, codegen_1._)`${to} !== true && ${from} !== undefined`, () => {
+          gen.if((0, codegen_1._)`${from} === true`, () => gen.assign(to, true), () => gen.assign(to, (0, codegen_1._)`${to} || {}`).code((0, codegen_1._)`Object.assign(${to}, ${from})`));
+        }),
+        mergeToName: (gen, from, to) => gen.if((0, codegen_1._)`${to} !== true`, () => {
+          if (from === true) {
+            gen.assign(to, true);
+          } else {
+            gen.assign(to, (0, codegen_1._)`${to} || {}`);
+            setEvaluated(gen, to, from);
+          }
+        }),
+        mergeValues: (from, to) => from === true ? true : { ...from, ...to },
+        resultToName: evaluatedPropsToName
+      }),
+      items: makeMergeEvaluated({
+        mergeNames: (gen, from, to) => gen.if((0, codegen_1._)`${to} !== true && ${from} !== undefined`, () => gen.assign(to, (0, codegen_1._)`${from} === true ? true : ${to} > ${from} ? ${to} : ${from}`)),
+        mergeToName: (gen, from, to) => gen.if((0, codegen_1._)`${to} !== true`, () => gen.assign(to, from === true ? true : (0, codegen_1._)`${to} > ${from} ? ${to} : ${from}`)),
+        mergeValues: (from, to) => from === true ? true : Math.max(from, to),
+        resultToName: (gen, items) => gen.var("items", items)
+      })
+    };
+    function evaluatedPropsToName(gen, ps) {
+      if (ps === true)
+        return gen.var("props", true);
+      const props = gen.var("props", (0, codegen_1._)`{}`);
+      if (ps !== void 0)
+        setEvaluated(gen, props, ps);
+      return props;
+    }
+    exports2.evaluatedPropsToName = evaluatedPropsToName;
+    function setEvaluated(gen, props, ps) {
+      Object.keys(ps).forEach((p2) => gen.assign((0, codegen_1._)`${props}${(0, codegen_1.getProperty)(p2)}`, true));
+    }
+    exports2.setEvaluated = setEvaluated;
+    var snippets = {};
+    function useFunc(gen, f) {
+      return gen.scopeValue("func", {
+        ref: f,
+        code: snippets[f.code] || (snippets[f.code] = new code_1._Code(f.code))
+      });
+    }
+    exports2.useFunc = useFunc;
+    var Type;
+    (function(Type2) {
+      Type2[Type2["Num"] = 0] = "Num";
+      Type2[Type2["Str"] = 1] = "Str";
+    })(Type || (exports2.Type = Type = {}));
+    function getErrorPath(dataProp, dataPropType, jsPropertySyntax) {
+      if (dataProp instanceof codegen_1.Name) {
+        const isNumber2 = dataPropType === Type.Num;
+        return jsPropertySyntax ? isNumber2 ? (0, codegen_1._)`"[" + ${dataProp} + "]"` : (0, codegen_1._)`"['" + ${dataProp} + "']"` : isNumber2 ? (0, codegen_1._)`"/" + ${dataProp}` : (0, codegen_1._)`"/" + ${dataProp}.replace(/~/g, "~0").replace(/\\//g, "~1")`;
+      }
+      return jsPropertySyntax ? (0, codegen_1.getProperty)(dataProp).toString() : "/" + escapeJsonPointer(dataProp);
+    }
+    exports2.getErrorPath = getErrorPath;
+    function checkStrictMode(it, msg, mode = it.opts.strictSchema) {
+      if (!mode)
+        return;
+      msg = `strict mode: ${msg}`;
+      if (mode === true)
+        throw new Error(msg);
+      it.self.logger.warn(msg);
+    }
+    exports2.checkStrictMode = checkStrictMode;
+  }
+});
+
+// node_modules/ajv/dist/compile/names.js
+var require_names = __commonJS({
+  "node_modules/ajv/dist/compile/names.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var names = {
+      // validation function arguments
+      data: new codegen_1.Name("data"),
+      // data passed to validation function
+      // args passed from referencing schema
+      valCxt: new codegen_1.Name("valCxt"),
+      // validation/data context - should not be used directly, it is destructured to the names below
+      instancePath: new codegen_1.Name("instancePath"),
+      parentData: new codegen_1.Name("parentData"),
+      parentDataProperty: new codegen_1.Name("parentDataProperty"),
+      rootData: new codegen_1.Name("rootData"),
+      // root data - same as the data passed to the first/top validation function
+      dynamicAnchors: new codegen_1.Name("dynamicAnchors"),
+      // used to support recursiveRef and dynamicRef
+      // function scoped variables
+      vErrors: new codegen_1.Name("vErrors"),
+      // null or array of validation errors
+      errors: new codegen_1.Name("errors"),
+      // counter of validation errors
+      this: new codegen_1.Name("this"),
+      // "globals"
+      self: new codegen_1.Name("self"),
+      scope: new codegen_1.Name("scope"),
+      // JTD serialize/parse name for JSON string and position
+      json: new codegen_1.Name("json"),
+      jsonPos: new codegen_1.Name("jsonPos"),
+      jsonLen: new codegen_1.Name("jsonLen"),
+      jsonPart: new codegen_1.Name("jsonPart")
+    };
+    exports2.default = names;
+  }
+});
+
+// node_modules/ajv/dist/compile/errors.js
+var require_errors = __commonJS({
+  "node_modules/ajv/dist/compile/errors.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.extendErrors = exports2.resetErrorsCount = exports2.reportExtraError = exports2.reportError = exports2.keyword$DataError = exports2.keywordError = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var names_1 = require_names();
+    exports2.keywordError = {
+      message: ({ keyword }) => (0, codegen_1.str)`must pass "${keyword}" keyword validation`
+    };
+    exports2.keyword$DataError = {
+      message: ({ keyword, schemaType }) => schemaType ? (0, codegen_1.str)`"${keyword}" keyword must be ${schemaType} ($data)` : (0, codegen_1.str)`"${keyword}" keyword is invalid ($data)`
+    };
+    function reportError(cxt, error = exports2.keywordError, errorPaths, overrideAllErrors) {
+      const { it } = cxt;
+      const { gen, compositeRule, allErrors } = it;
+      const errObj = errorObjectCode(cxt, error, errorPaths);
+      if (overrideAllErrors !== null && overrideAllErrors !== void 0 ? overrideAllErrors : compositeRule || allErrors) {
+        addError(gen, errObj);
+      } else {
+        returnErrors(it, (0, codegen_1._)`[${errObj}]`);
+      }
+    }
+    exports2.reportError = reportError;
+    function reportExtraError(cxt, error = exports2.keywordError, errorPaths) {
+      const { it } = cxt;
+      const { gen, compositeRule, allErrors } = it;
+      const errObj = errorObjectCode(cxt, error, errorPaths);
+      addError(gen, errObj);
+      if (!(compositeRule || allErrors)) {
+        returnErrors(it, names_1.default.vErrors);
+      }
+    }
+    exports2.reportExtraError = reportExtraError;
+    function resetErrorsCount(gen, errsCount) {
+      gen.assign(names_1.default.errors, errsCount);
+      gen.if((0, codegen_1._)`${names_1.default.vErrors} !== null`, () => gen.if(errsCount, () => gen.assign((0, codegen_1._)`${names_1.default.vErrors}.length`, errsCount), () => gen.assign(names_1.default.vErrors, null)));
+    }
+    exports2.resetErrorsCount = resetErrorsCount;
+    function extendErrors({ gen, keyword, schemaValue, data, errsCount, it }) {
+      if (errsCount === void 0)
+        throw new Error("ajv implementation error");
+      const err = gen.name("err");
+      gen.forRange("i", errsCount, names_1.default.errors, (i2) => {
+        gen.const(err, (0, codegen_1._)`${names_1.default.vErrors}[${i2}]`);
+        gen.if((0, codegen_1._)`${err}.instancePath === undefined`, () => gen.assign((0, codegen_1._)`${err}.instancePath`, (0, codegen_1.strConcat)(names_1.default.instancePath, it.errorPath)));
+        gen.assign((0, codegen_1._)`${err}.schemaPath`, (0, codegen_1.str)`${it.errSchemaPath}/${keyword}`);
+        if (it.opts.verbose) {
+          gen.assign((0, codegen_1._)`${err}.schema`, schemaValue);
+          gen.assign((0, codegen_1._)`${err}.data`, data);
+        }
+      });
+    }
+    exports2.extendErrors = extendErrors;
+    function addError(gen, errObj) {
+      const err = gen.const("err", errObj);
+      gen.if((0, codegen_1._)`${names_1.default.vErrors} === null`, () => gen.assign(names_1.default.vErrors, (0, codegen_1._)`[${err}]`), (0, codegen_1._)`${names_1.default.vErrors}.push(${err})`);
+      gen.code((0, codegen_1._)`${names_1.default.errors}++`);
+    }
+    function returnErrors(it, errs) {
+      const { gen, validateName, schemaEnv } = it;
+      if (schemaEnv.$async) {
+        gen.throw((0, codegen_1._)`new ${it.ValidationError}(${errs})`);
+      } else {
+        gen.assign((0, codegen_1._)`${validateName}.errors`, errs);
+        gen.return(false);
+      }
+    }
+    var E2 = {
+      keyword: new codegen_1.Name("keyword"),
+      schemaPath: new codegen_1.Name("schemaPath"),
+      // also used in JTD errors
+      params: new codegen_1.Name("params"),
+      propertyName: new codegen_1.Name("propertyName"),
+      message: new codegen_1.Name("message"),
+      schema: new codegen_1.Name("schema"),
+      parentSchema: new codegen_1.Name("parentSchema")
+    };
+    function errorObjectCode(cxt, error, errorPaths) {
+      const { createErrors } = cxt.it;
+      if (createErrors === false)
+        return (0, codegen_1._)`{}`;
+      return errorObject(cxt, error, errorPaths);
+    }
+    function errorObject(cxt, error, errorPaths = {}) {
+      const { gen, it } = cxt;
+      const keyValues = [
+        errorInstancePath(it, errorPaths),
+        errorSchemaPath(cxt, errorPaths)
+      ];
+      extraErrorProps(cxt, error, keyValues);
+      return gen.object(...keyValues);
+    }
+    function errorInstancePath({ errorPath }, { instancePath }) {
+      const instPath = instancePath ? (0, codegen_1.str)`${errorPath}${(0, util_1.getErrorPath)(instancePath, util_1.Type.Str)}` : errorPath;
+      return [names_1.default.instancePath, (0, codegen_1.strConcat)(names_1.default.instancePath, instPath)];
+    }
+    function errorSchemaPath({ keyword, it: { errSchemaPath } }, { schemaPath, parentSchema }) {
+      let schPath = parentSchema ? errSchemaPath : (0, codegen_1.str)`${errSchemaPath}/${keyword}`;
+      if (schemaPath) {
+        schPath = (0, codegen_1.str)`${schPath}${(0, util_1.getErrorPath)(schemaPath, util_1.Type.Str)}`;
+      }
+      return [E2.schemaPath, schPath];
+    }
+    function extraErrorProps(cxt, { params, message }, keyValues) {
+      const { keyword, data, schemaValue, it } = cxt;
+      const { opts, propertyName, topSchemaRef, schemaPath } = it;
+      keyValues.push([E2.keyword, keyword], [E2.params, typeof params == "function" ? params(cxt) : params || (0, codegen_1._)`{}`]);
+      if (opts.messages) {
+        keyValues.push([E2.message, typeof message == "function" ? message(cxt) : message]);
+      }
+      if (opts.verbose) {
+        keyValues.push([E2.schema, schemaValue], [E2.parentSchema, (0, codegen_1._)`${topSchemaRef}${schemaPath}`], [names_1.default.data, data]);
+      }
+      if (propertyName)
+        keyValues.push([E2.propertyName, propertyName]);
+    }
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/boolSchema.js
+var require_boolSchema = __commonJS({
+  "node_modules/ajv/dist/compile/validate/boolSchema.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.boolOrEmptySchema = exports2.topBoolOrEmptySchema = void 0;
+    var errors_1 = require_errors();
+    var codegen_1 = require_codegen();
+    var names_1 = require_names();
+    var boolError = {
+      message: "boolean schema is false"
+    };
+    function topBoolOrEmptySchema(it) {
+      const { gen, schema, validateName } = it;
+      if (schema === false) {
+        falseSchemaError(it, false);
+      } else if (typeof schema == "object" && schema.$async === true) {
+        gen.return(names_1.default.data);
+      } else {
+        gen.assign((0, codegen_1._)`${validateName}.errors`, null);
+        gen.return(true);
+      }
+    }
+    exports2.topBoolOrEmptySchema = topBoolOrEmptySchema;
+    function boolOrEmptySchema(it, valid) {
+      const { gen, schema } = it;
+      if (schema === false) {
+        gen.var(valid, false);
+        falseSchemaError(it);
+      } else {
+        gen.var(valid, true);
+      }
+    }
+    exports2.boolOrEmptySchema = boolOrEmptySchema;
+    function falseSchemaError(it, overrideAllErrors) {
+      const { gen, data } = it;
+      const cxt = {
+        gen,
+        keyword: "false schema",
+        data,
+        schema: false,
+        schemaCode: false,
+        schemaValue: false,
+        params: {},
+        it
+      };
+      (0, errors_1.reportError)(cxt, boolError, void 0, overrideAllErrors);
+    }
+  }
+});
+
+// node_modules/ajv/dist/compile/rules.js
+var require_rules = __commonJS({
+  "node_modules/ajv/dist/compile/rules.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getRules = exports2.isJSONType = void 0;
+    var _jsonTypes = ["string", "number", "integer", "boolean", "null", "object", "array"];
+    var jsonTypes = new Set(_jsonTypes);
+    function isJSONType(x) {
+      return typeof x == "string" && jsonTypes.has(x);
+    }
+    exports2.isJSONType = isJSONType;
+    function getRules() {
+      const groups = {
+        number: { type: "number", rules: [] },
+        string: { type: "string", rules: [] },
+        array: { type: "array", rules: [] },
+        object: { type: "object", rules: [] }
+      };
+      return {
+        types: { ...groups, integer: true, boolean: true, null: true },
+        rules: [{ rules: [] }, groups.number, groups.string, groups.array, groups.object],
+        post: { rules: [] },
+        all: {},
+        keywords: {}
+      };
+    }
+    exports2.getRules = getRules;
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/applicability.js
+var require_applicability = __commonJS({
+  "node_modules/ajv/dist/compile/validate/applicability.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.shouldUseRule = exports2.shouldUseGroup = exports2.schemaHasRulesForType = void 0;
+    function schemaHasRulesForType({ schema, self: self2 }, type) {
+      const group = self2.RULES.types[type];
+      return group && group !== true && shouldUseGroup(schema, group);
+    }
+    exports2.schemaHasRulesForType = schemaHasRulesForType;
+    function shouldUseGroup(schema, group) {
+      return group.rules.some((rule) => shouldUseRule(schema, rule));
+    }
+    exports2.shouldUseGroup = shouldUseGroup;
+    function shouldUseRule(schema, rule) {
+      var _a;
+      return schema[rule.keyword] !== void 0 || ((_a = rule.definition.implements) === null || _a === void 0 ? void 0 : _a.some((kwd) => schema[kwd] !== void 0));
+    }
+    exports2.shouldUseRule = shouldUseRule;
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/dataType.js
+var require_dataType = __commonJS({
+  "node_modules/ajv/dist/compile/validate/dataType.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.reportTypeError = exports2.checkDataTypes = exports2.checkDataType = exports2.coerceAndCheckDataType = exports2.getJSONTypes = exports2.getSchemaTypes = exports2.DataType = void 0;
+    var rules_1 = require_rules();
+    var applicability_1 = require_applicability();
+    var errors_1 = require_errors();
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var DataType;
+    (function(DataType2) {
+      DataType2[DataType2["Correct"] = 0] = "Correct";
+      DataType2[DataType2["Wrong"] = 1] = "Wrong";
+    })(DataType || (exports2.DataType = DataType = {}));
+    function getSchemaTypes(schema) {
+      const types = getJSONTypes(schema.type);
+      const hasNull = types.includes("null");
+      if (hasNull) {
+        if (schema.nullable === false)
+          throw new Error("type: null contradicts nullable: false");
+      } else {
+        if (!types.length && schema.nullable !== void 0) {
+          throw new Error('"nullable" cannot be used without "type"');
+        }
+        if (schema.nullable === true)
+          types.push("null");
+      }
+      return types;
+    }
+    exports2.getSchemaTypes = getSchemaTypes;
+    function getJSONTypes(ts) {
+      const types = Array.isArray(ts) ? ts : ts ? [ts] : [];
+      if (types.every(rules_1.isJSONType))
+        return types;
+      throw new Error("type must be JSONType or JSONType[]: " + types.join(","));
+    }
+    exports2.getJSONTypes = getJSONTypes;
+    function coerceAndCheckDataType(it, types) {
+      const { gen, data, opts } = it;
+      const coerceTo = coerceToTypes(types, opts.coerceTypes);
+      const checkTypes = types.length > 0 && !(coerceTo.length === 0 && types.length === 1 && (0, applicability_1.schemaHasRulesForType)(it, types[0]));
+      if (checkTypes) {
+        const wrongType = checkDataTypes(types, data, opts.strictNumbers, DataType.Wrong);
+        gen.if(wrongType, () => {
+          if (coerceTo.length)
+            coerceData(it, types, coerceTo);
+          else
+            reportTypeError(it);
+        });
+      }
+      return checkTypes;
+    }
+    exports2.coerceAndCheckDataType = coerceAndCheckDataType;
+    var COERCIBLE = /* @__PURE__ */ new Set(["string", "number", "integer", "boolean", "null"]);
+    function coerceToTypes(types, coerceTypes) {
+      return coerceTypes ? types.filter((t) => COERCIBLE.has(t) || coerceTypes === "array" && t === "array") : [];
+    }
+    function coerceData(it, types, coerceTo) {
+      const { gen, data, opts } = it;
+      const dataType = gen.let("dataType", (0, codegen_1._)`typeof ${data}`);
+      const coerced = gen.let("coerced", (0, codegen_1._)`undefined`);
+      if (opts.coerceTypes === "array") {
+        gen.if((0, codegen_1._)`${dataType} == 'object' && Array.isArray(${data}) && ${data}.length == 1`, () => gen.assign(data, (0, codegen_1._)`${data}[0]`).assign(dataType, (0, codegen_1._)`typeof ${data}`).if(checkDataTypes(types, data, opts.strictNumbers), () => gen.assign(coerced, data)));
+      }
+      gen.if((0, codegen_1._)`${coerced} !== undefined`);
+      for (const t of coerceTo) {
+        if (COERCIBLE.has(t) || t === "array" && opts.coerceTypes === "array") {
+          coerceSpecificType(t);
+        }
+      }
+      gen.else();
+      reportTypeError(it);
+      gen.endIf();
+      gen.if((0, codegen_1._)`${coerced} !== undefined`, () => {
+        gen.assign(data, coerced);
+        assignParentData(it, coerced);
+      });
+      function coerceSpecificType(t) {
+        switch (t) {
+          case "string":
+            gen.elseIf((0, codegen_1._)`${dataType} == "number" || ${dataType} == "boolean"`).assign(coerced, (0, codegen_1._)`"" + ${data}`).elseIf((0, codegen_1._)`${data} === null`).assign(coerced, (0, codegen_1._)`""`);
+            return;
+          case "number":
+            gen.elseIf((0, codegen_1._)`${dataType} == "boolean" || ${data} === null
+              || (${dataType} == "string" && ${data} && ${data} == +${data})`).assign(coerced, (0, codegen_1._)`+${data}`);
+            return;
+          case "integer":
+            gen.elseIf((0, codegen_1._)`${dataType} === "boolean" || ${data} === null
+              || (${dataType} === "string" && ${data} && ${data} == +${data} && !(${data} % 1))`).assign(coerced, (0, codegen_1._)`+${data}`);
+            return;
+          case "boolean":
+            gen.elseIf((0, codegen_1._)`${data} === "false" || ${data} === 0 || ${data} === null`).assign(coerced, false).elseIf((0, codegen_1._)`${data} === "true" || ${data} === 1`).assign(coerced, true);
+            return;
+          case "null":
+            gen.elseIf((0, codegen_1._)`${data} === "" || ${data} === 0 || ${data} === false`);
+            gen.assign(coerced, null);
+            return;
+          case "array":
+            gen.elseIf((0, codegen_1._)`${dataType} === "string" || ${dataType} === "number"
+              || ${dataType} === "boolean" || ${data} === null`).assign(coerced, (0, codegen_1._)`[${data}]`);
+        }
+      }
+    }
+    function assignParentData({ gen, parentData, parentDataProperty }, expr) {
+      gen.if((0, codegen_1._)`${parentData} !== undefined`, () => gen.assign((0, codegen_1._)`${parentData}[${parentDataProperty}]`, expr));
+    }
+    function checkDataType(dataType, data, strictNums, correct = DataType.Correct) {
+      const EQ = correct === DataType.Correct ? codegen_1.operators.EQ : codegen_1.operators.NEQ;
+      let cond;
+      switch (dataType) {
+        case "null":
+          return (0, codegen_1._)`${data} ${EQ} null`;
+        case "array":
+          cond = (0, codegen_1._)`Array.isArray(${data})`;
+          break;
+        case "object":
+          cond = (0, codegen_1._)`${data} && typeof ${data} == "object" && !Array.isArray(${data})`;
+          break;
+        case "integer":
+          cond = numCond((0, codegen_1._)`!(${data} % 1) && !isNaN(${data})`);
+          break;
+        case "number":
+          cond = numCond();
+          break;
+        default:
+          return (0, codegen_1._)`typeof ${data} ${EQ} ${dataType}`;
+      }
+      return correct === DataType.Correct ? cond : (0, codegen_1.not)(cond);
+      function numCond(_cond = codegen_1.nil) {
+        return (0, codegen_1.and)((0, codegen_1._)`typeof ${data} == "number"`, _cond, strictNums ? (0, codegen_1._)`isFinite(${data})` : codegen_1.nil);
+      }
+    }
+    exports2.checkDataType = checkDataType;
+    function checkDataTypes(dataTypes, data, strictNums, correct) {
+      if (dataTypes.length === 1) {
+        return checkDataType(dataTypes[0], data, strictNums, correct);
+      }
+      let cond;
+      const types = (0, util_1.toHash)(dataTypes);
+      if (types.array && types.object) {
+        const notObj = (0, codegen_1._)`typeof ${data} != "object"`;
+        cond = types.null ? notObj : (0, codegen_1._)`!${data} || ${notObj}`;
+        delete types.null;
+        delete types.array;
+        delete types.object;
+      } else {
+        cond = codegen_1.nil;
+      }
+      if (types.number)
+        delete types.integer;
+      for (const t in types)
+        cond = (0, codegen_1.and)(cond, checkDataType(t, data, strictNums, correct));
+      return cond;
+    }
+    exports2.checkDataTypes = checkDataTypes;
+    var typeError = {
+      message: ({ schema }) => `must be ${schema}`,
+      params: ({ schema, schemaValue }) => typeof schema == "string" ? (0, codegen_1._)`{type: ${schema}}` : (0, codegen_1._)`{type: ${schemaValue}}`
+    };
+    function reportTypeError(it) {
+      const cxt = getTypeErrorContext(it);
+      (0, errors_1.reportError)(cxt, typeError);
+    }
+    exports2.reportTypeError = reportTypeError;
+    function getTypeErrorContext(it) {
+      const { gen, data, schema } = it;
+      const schemaCode = (0, util_1.schemaRefOrVal)(it, schema, "type");
+      return {
+        gen,
+        keyword: "type",
+        data,
+        schema: schema.type,
+        schemaCode,
+        schemaValue: schemaCode,
+        parentSchema: schema,
+        params: {},
+        it
+      };
+    }
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/defaults.js
+var require_defaults = __commonJS({
+  "node_modules/ajv/dist/compile/validate/defaults.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.assignDefaults = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    function assignDefaults(it, ty) {
+      const { properties, items } = it.schema;
+      if (ty === "object" && properties) {
+        for (const key in properties) {
+          assignDefault(it, key, properties[key].default);
+        }
+      } else if (ty === "array" && Array.isArray(items)) {
+        items.forEach((sch, i2) => assignDefault(it, i2, sch.default));
+      }
+    }
+    exports2.assignDefaults = assignDefaults;
+    function assignDefault(it, prop, defaultValue) {
+      const { gen, compositeRule, data, opts } = it;
+      if (defaultValue === void 0)
+        return;
+      const childData = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(prop)}`;
+      if (compositeRule) {
+        (0, util_1.checkStrictMode)(it, `default is ignored for: ${childData}`);
+        return;
+      }
+      let condition = (0, codegen_1._)`${childData} === undefined`;
+      if (opts.useDefaults === "empty") {
+        condition = (0, codegen_1._)`${condition} || ${childData} === null || ${childData} === ""`;
+      }
+      gen.if(condition, (0, codegen_1._)`${childData} = ${(0, codegen_1.stringify)(defaultValue)}`);
+    }
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/code.js
+var require_code2 = __commonJS({
+  "node_modules/ajv/dist/vocabularies/code.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.validateUnion = exports2.validateArray = exports2.usePattern = exports2.callValidateCode = exports2.schemaProperties = exports2.allSchemaProperties = exports2.noPropertyInData = exports2.propertyInData = exports2.isOwnProperty = exports2.hasPropFunc = exports2.reportMissingProp = exports2.checkMissingProp = exports2.checkReportMissingProp = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var names_1 = require_names();
+    var util_2 = require_util();
+    function checkReportMissingProp(cxt, prop) {
+      const { gen, data, it } = cxt;
+      gen.if(noPropertyInData(gen, data, prop, it.opts.ownProperties), () => {
+        cxt.setParams({ missingProperty: (0, codegen_1._)`${prop}` }, true);
+        cxt.error();
+      });
+    }
+    exports2.checkReportMissingProp = checkReportMissingProp;
+    function checkMissingProp({ gen, data, it: { opts } }, properties, missing) {
+      return (0, codegen_1.or)(...properties.map((prop) => (0, codegen_1.and)(noPropertyInData(gen, data, prop, opts.ownProperties), (0, codegen_1._)`${missing} = ${prop}`)));
+    }
+    exports2.checkMissingProp = checkMissingProp;
+    function reportMissingProp(cxt, missing) {
+      cxt.setParams({ missingProperty: missing }, true);
+      cxt.error();
+    }
+    exports2.reportMissingProp = reportMissingProp;
+    function hasPropFunc(gen) {
+      return gen.scopeValue("func", {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        ref: Object.prototype.hasOwnProperty,
+        code: (0, codegen_1._)`Object.prototype.hasOwnProperty`
+      });
+    }
+    exports2.hasPropFunc = hasPropFunc;
+    function isOwnProperty(gen, data, property2) {
+      return (0, codegen_1._)`${hasPropFunc(gen)}.call(${data}, ${property2})`;
+    }
+    exports2.isOwnProperty = isOwnProperty;
+    function propertyInData(gen, data, property2, ownProperties) {
+      const cond = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(property2)} !== undefined`;
+      return ownProperties ? (0, codegen_1._)`${cond} && ${isOwnProperty(gen, data, property2)}` : cond;
+    }
+    exports2.propertyInData = propertyInData;
+    function noPropertyInData(gen, data, property2, ownProperties) {
+      const cond = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(property2)} === undefined`;
+      return ownProperties ? (0, codegen_1.or)(cond, (0, codegen_1.not)(isOwnProperty(gen, data, property2))) : cond;
+    }
+    exports2.noPropertyInData = noPropertyInData;
+    function allSchemaProperties(schemaMap) {
+      return schemaMap ? Object.keys(schemaMap).filter((p2) => p2 !== "__proto__") : [];
+    }
+    exports2.allSchemaProperties = allSchemaProperties;
+    function schemaProperties(it, schemaMap) {
+      return allSchemaProperties(schemaMap).filter((p2) => !(0, util_1.alwaysValidSchema)(it, schemaMap[p2]));
+    }
+    exports2.schemaProperties = schemaProperties;
+    function callValidateCode({ schemaCode, data, it: { gen, topSchemaRef, schemaPath, errorPath }, it }, func, context, passSchema) {
+      const dataAndSchema = passSchema ? (0, codegen_1._)`${schemaCode}, ${data}, ${topSchemaRef}${schemaPath}` : data;
+      const valCxt = [
+        [names_1.default.instancePath, (0, codegen_1.strConcat)(names_1.default.instancePath, errorPath)],
+        [names_1.default.parentData, it.parentData],
+        [names_1.default.parentDataProperty, it.parentDataProperty],
+        [names_1.default.rootData, names_1.default.rootData]
+      ];
+      if (it.opts.dynamicRef)
+        valCxt.push([names_1.default.dynamicAnchors, names_1.default.dynamicAnchors]);
+      const args = (0, codegen_1._)`${dataAndSchema}, ${gen.object(...valCxt)}`;
+      return context !== codegen_1.nil ? (0, codegen_1._)`${func}.call(${context}, ${args})` : (0, codegen_1._)`${func}(${args})`;
+    }
+    exports2.callValidateCode = callValidateCode;
+    var newRegExp = (0, codegen_1._)`new RegExp`;
+    function usePattern({ gen, it: { opts } }, pattern) {
+      const u = opts.unicodeRegExp ? "u" : "";
+      const { regExp } = opts.code;
+      const rx = regExp(pattern, u);
+      return gen.scopeValue("pattern", {
+        key: rx.toString(),
+        ref: rx,
+        code: (0, codegen_1._)`${regExp.code === "new RegExp" ? newRegExp : (0, util_2.useFunc)(gen, regExp)}(${pattern}, ${u})`
+      });
+    }
+    exports2.usePattern = usePattern;
+    function validateArray(cxt) {
+      const { gen, data, keyword, it } = cxt;
+      const valid = gen.name("valid");
+      if (it.allErrors) {
+        const validArr = gen.let("valid", true);
+        validateItems(() => gen.assign(validArr, false));
+        return validArr;
+      }
+      gen.var(valid, true);
+      validateItems(() => gen.break());
+      return valid;
+      function validateItems(notValid) {
+        const len = gen.const("len", (0, codegen_1._)`${data}.length`);
+        gen.forRange("i", 0, len, (i2) => {
+          cxt.subschema({
+            keyword,
+            dataProp: i2,
+            dataPropType: util_1.Type.Num
+          }, valid);
+          gen.if((0, codegen_1.not)(valid), notValid);
+        });
+      }
+    }
+    exports2.validateArray = validateArray;
+    function validateUnion(cxt) {
+      const { gen, schema, keyword, it } = cxt;
+      if (!Array.isArray(schema))
+        throw new Error("ajv implementation error");
+      const alwaysValid = schema.some((sch) => (0, util_1.alwaysValidSchema)(it, sch));
+      if (alwaysValid && !it.opts.unevaluated)
+        return;
+      const valid = gen.let("valid", false);
+      const schValid = gen.name("_valid");
+      gen.block(() => schema.forEach((_sch, i2) => {
+        const schCxt = cxt.subschema({
+          keyword,
+          schemaProp: i2,
+          compositeRule: true
+        }, schValid);
+        gen.assign(valid, (0, codegen_1._)`${valid} || ${schValid}`);
+        const merged = cxt.mergeValidEvaluated(schCxt, schValid);
+        if (!merged)
+          gen.if((0, codegen_1.not)(valid));
+      }));
+      cxt.result(valid, () => cxt.reset(), () => cxt.error(true));
+    }
+    exports2.validateUnion = validateUnion;
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/keyword.js
+var require_keyword = __commonJS({
+  "node_modules/ajv/dist/compile/validate/keyword.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.validateKeywordUsage = exports2.validSchemaType = exports2.funcKeywordCode = exports2.macroKeywordCode = void 0;
+    var codegen_1 = require_codegen();
+    var names_1 = require_names();
+    var code_1 = require_code2();
+    var errors_1 = require_errors();
+    function macroKeywordCode(cxt, def) {
+      const { gen, keyword, schema, parentSchema, it } = cxt;
+      const macroSchema = def.macro.call(it.self, schema, parentSchema, it);
+      const schemaRef = useKeyword(gen, keyword, macroSchema);
+      if (it.opts.validateSchema !== false)
+        it.self.validateSchema(macroSchema, true);
+      const valid = gen.name("valid");
+      cxt.subschema({
+        schema: macroSchema,
+        schemaPath: codegen_1.nil,
+        errSchemaPath: `${it.errSchemaPath}/${keyword}`,
+        topSchemaRef: schemaRef,
+        compositeRule: true
+      }, valid);
+      cxt.pass(valid, () => cxt.error(true));
+    }
+    exports2.macroKeywordCode = macroKeywordCode;
+    function funcKeywordCode(cxt, def) {
+      var _a;
+      const { gen, keyword, schema, parentSchema, $data, it } = cxt;
+      checkAsyncKeyword(it, def);
+      const validate = !$data && def.compile ? def.compile.call(it.self, schema, parentSchema, it) : def.validate;
+      const validateRef = useKeyword(gen, keyword, validate);
+      const valid = gen.let("valid");
+      cxt.block$data(valid, validateKeyword);
+      cxt.ok((_a = def.valid) !== null && _a !== void 0 ? _a : valid);
+      function validateKeyword() {
+        if (def.errors === false) {
+          assignValid();
+          if (def.modifying)
+            modifyData(cxt);
+          reportErrs(() => cxt.error());
+        } else {
+          const ruleErrs = def.async ? validateAsync() : validateSync();
+          if (def.modifying)
+            modifyData(cxt);
+          reportErrs(() => addErrs(cxt, ruleErrs));
+        }
+      }
+      function validateAsync() {
+        const ruleErrs = gen.let("ruleErrs", null);
+        gen.try(() => assignValid((0, codegen_1._)`await `), (e) => gen.assign(valid, false).if((0, codegen_1._)`${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_1._)`${e}.errors`), () => gen.throw(e)));
+        return ruleErrs;
+      }
+      function validateSync() {
+        const validateErrs = (0, codegen_1._)`${validateRef}.errors`;
+        gen.assign(validateErrs, null);
+        assignValid(codegen_1.nil);
+        return validateErrs;
+      }
+      function assignValid(_await = def.async ? (0, codegen_1._)`await ` : codegen_1.nil) {
+        const passCxt = it.opts.passContext ? names_1.default.this : names_1.default.self;
+        const passSchema = !("compile" in def && !$data || def.schema === false);
+        gen.assign(valid, (0, codegen_1._)`${_await}${(0, code_1.callValidateCode)(cxt, validateRef, passCxt, passSchema)}`, def.modifying);
+      }
+      function reportErrs(errors) {
+        var _a2;
+        gen.if((0, codegen_1.not)((_a2 = def.valid) !== null && _a2 !== void 0 ? _a2 : valid), errors);
+      }
+    }
+    exports2.funcKeywordCode = funcKeywordCode;
+    function modifyData(cxt) {
+      const { gen, data, it } = cxt;
+      gen.if(it.parentData, () => gen.assign(data, (0, codegen_1._)`${it.parentData}[${it.parentDataProperty}]`));
+    }
+    function addErrs(cxt, errs) {
+      const { gen } = cxt;
+      gen.if((0, codegen_1._)`Array.isArray(${errs})`, () => {
+        gen.assign(names_1.default.vErrors, (0, codegen_1._)`${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`).assign(names_1.default.errors, (0, codegen_1._)`${names_1.default.vErrors}.length`);
+        (0, errors_1.extendErrors)(cxt);
+      }, () => cxt.error());
+    }
+    function checkAsyncKeyword({ schemaEnv }, def) {
+      if (def.async && !schemaEnv.$async)
+        throw new Error("async keyword in sync schema");
+    }
+    function useKeyword(gen, keyword, result) {
+      if (result === void 0)
+        throw new Error(`keyword "${keyword}" failed to compile`);
+      return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: (0, codegen_1.stringify)(result) });
+    }
+    function validSchemaType(schema, schemaType, allowUndefined = false) {
+      return !schemaType.length || schemaType.some((st) => st === "array" ? Array.isArray(schema) : st === "object" ? schema && typeof schema == "object" && !Array.isArray(schema) : typeof schema == st || allowUndefined && typeof schema == "undefined");
+    }
+    exports2.validSchemaType = validSchemaType;
+    function validateKeywordUsage({ schema, opts, self: self2, errSchemaPath }, def, keyword) {
+      if (Array.isArray(def.keyword) ? !def.keyword.includes(keyword) : def.keyword !== keyword) {
+        throw new Error("ajv implementation error");
+      }
+      const deps = def.dependencies;
+      if (deps === null || deps === void 0 ? void 0 : deps.some((kwd) => !Object.prototype.hasOwnProperty.call(schema, kwd))) {
+        throw new Error(`parent schema must have dependencies of ${keyword}: ${deps.join(",")}`);
+      }
+      if (def.validateSchema) {
+        const valid = def.validateSchema(schema[keyword]);
+        if (!valid) {
+          const msg = `keyword "${keyword}" value is invalid at path "${errSchemaPath}": ` + self2.errorsText(def.validateSchema.errors);
+          if (opts.validateSchema === "log")
+            self2.logger.error(msg);
+          else
+            throw new Error(msg);
+        }
+      }
+    }
+    exports2.validateKeywordUsage = validateKeywordUsage;
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/subschema.js
+var require_subschema = __commonJS({
+  "node_modules/ajv/dist/compile/validate/subschema.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.extendSubschemaMode = exports2.extendSubschemaData = exports2.getSubschema = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    function getSubschema(it, { keyword, schemaProp, schema, schemaPath, errSchemaPath, topSchemaRef }) {
+      if (keyword !== void 0 && schema !== void 0) {
+        throw new Error('both "keyword" and "schema" passed, only one allowed');
+      }
+      if (keyword !== void 0) {
+        const sch = it.schema[keyword];
+        return schemaProp === void 0 ? {
+          schema: sch,
+          schemaPath: (0, codegen_1._)`${it.schemaPath}${(0, codegen_1.getProperty)(keyword)}`,
+          errSchemaPath: `${it.errSchemaPath}/${keyword}`
+        } : {
+          schema: sch[schemaProp],
+          schemaPath: (0, codegen_1._)`${it.schemaPath}${(0, codegen_1.getProperty)(keyword)}${(0, codegen_1.getProperty)(schemaProp)}`,
+          errSchemaPath: `${it.errSchemaPath}/${keyword}/${(0, util_1.escapeFragment)(schemaProp)}`
+        };
+      }
+      if (schema !== void 0) {
+        if (schemaPath === void 0 || errSchemaPath === void 0 || topSchemaRef === void 0) {
+          throw new Error('"schemaPath", "errSchemaPath" and "topSchemaRef" are required with "schema"');
+        }
+        return {
+          schema,
+          schemaPath,
+          topSchemaRef,
+          errSchemaPath
+        };
+      }
+      throw new Error('either "keyword" or "schema" must be passed');
+    }
+    exports2.getSubschema = getSubschema;
+    function extendSubschemaData(subschema, it, { dataProp, dataPropType: dpType, data, dataTypes, propertyName }) {
+      if (data !== void 0 && dataProp !== void 0) {
+        throw new Error('both "data" and "dataProp" passed, only one allowed');
+      }
+      const { gen } = it;
+      if (dataProp !== void 0) {
+        const { errorPath, dataPathArr, opts } = it;
+        const nextData = gen.let("data", (0, codegen_1._)`${it.data}${(0, codegen_1.getProperty)(dataProp)}`, true);
+        dataContextProps(nextData);
+        subschema.errorPath = (0, codegen_1.str)`${errorPath}${(0, util_1.getErrorPath)(dataProp, dpType, opts.jsPropertySyntax)}`;
+        subschema.parentDataProperty = (0, codegen_1._)`${dataProp}`;
+        subschema.dataPathArr = [...dataPathArr, subschema.parentDataProperty];
+      }
+      if (data !== void 0) {
+        const nextData = data instanceof codegen_1.Name ? data : gen.let("data", data, true);
+        dataContextProps(nextData);
+        if (propertyName !== void 0)
+          subschema.propertyName = propertyName;
+      }
+      if (dataTypes)
+        subschema.dataTypes = dataTypes;
+      function dataContextProps(_nextData) {
+        subschema.data = _nextData;
+        subschema.dataLevel = it.dataLevel + 1;
+        subschema.dataTypes = [];
+        it.definedProperties = /* @__PURE__ */ new Set();
+        subschema.parentData = it.data;
+        subschema.dataNames = [...it.dataNames, _nextData];
+      }
+    }
+    exports2.extendSubschemaData = extendSubschemaData;
+    function extendSubschemaMode(subschema, { jtdDiscriminator, jtdMetadata, compositeRule, createErrors, allErrors }) {
+      if (compositeRule !== void 0)
+        subschema.compositeRule = compositeRule;
+      if (createErrors !== void 0)
+        subschema.createErrors = createErrors;
+      if (allErrors !== void 0)
+        subschema.allErrors = allErrors;
+      subschema.jtdDiscriminator = jtdDiscriminator;
+      subschema.jtdMetadata = jtdMetadata;
+    }
+    exports2.extendSubschemaMode = extendSubschemaMode;
+  }
+});
+
+// node_modules/fast-deep-equal/index.js
+var require_fast_deep_equal = __commonJS({
+  "node_modules/fast-deep-equal/index.js"(exports2, module2) {
+    "use strict";
+    module2.exports = function equal(a2, b2) {
+      if (a2 === b2) return true;
+      if (a2 && b2 && typeof a2 == "object" && typeof b2 == "object") {
+        if (a2.constructor !== b2.constructor) return false;
+        var length, i2, keys3;
+        if (Array.isArray(a2)) {
+          length = a2.length;
+          if (length != b2.length) return false;
+          for (i2 = length; i2-- !== 0; )
+            if (!equal(a2[i2], b2[i2])) return false;
+          return true;
+        }
+        if (a2.constructor === RegExp) return a2.source === b2.source && a2.flags === b2.flags;
+        if (a2.valueOf !== Object.prototype.valueOf) return a2.valueOf() === b2.valueOf();
+        if (a2.toString !== Object.prototype.toString) return a2.toString() === b2.toString();
+        keys3 = Object.keys(a2);
+        length = keys3.length;
+        if (length !== Object.keys(b2).length) return false;
+        for (i2 = length; i2-- !== 0; )
+          if (!Object.prototype.hasOwnProperty.call(b2, keys3[i2])) return false;
+        for (i2 = length; i2-- !== 0; ) {
+          var key = keys3[i2];
+          if (!equal(a2[key], b2[key])) return false;
+        }
+        return true;
+      }
+      return a2 !== a2 && b2 !== b2;
+    };
+  }
+});
+
+// node_modules/json-schema-traverse/index.js
+var require_json_schema_traverse = __commonJS({
+  "node_modules/json-schema-traverse/index.js"(exports2, module2) {
+    "use strict";
+    var traverse = module2.exports = function(schema, opts, cb) {
+      if (typeof opts == "function") {
+        cb = opts;
+        opts = {};
+      }
+      cb = opts.cb || cb;
+      var pre = typeof cb == "function" ? cb : cb.pre || function() {
+      };
+      var post = cb.post || function() {
+      };
+      _traverse(opts, pre, post, schema, "", schema);
+    };
+    traverse.keywords = {
+      additionalItems: true,
+      items: true,
+      contains: true,
+      additionalProperties: true,
+      propertyNames: true,
+      not: true,
+      if: true,
+      then: true,
+      else: true
+    };
+    traverse.arrayKeywords = {
+      items: true,
+      allOf: true,
+      anyOf: true,
+      oneOf: true
+    };
+    traverse.propsKeywords = {
+      $defs: true,
+      definitions: true,
+      properties: true,
+      patternProperties: true,
+      dependencies: true
+    };
+    traverse.skipKeywords = {
+      default: true,
+      enum: true,
+      const: true,
+      required: true,
+      maximum: true,
+      minimum: true,
+      exclusiveMaximum: true,
+      exclusiveMinimum: true,
+      multipleOf: true,
+      maxLength: true,
+      minLength: true,
+      pattern: true,
+      format: true,
+      maxItems: true,
+      minItems: true,
+      uniqueItems: true,
+      maxProperties: true,
+      minProperties: true
+    };
+    function _traverse(opts, pre, post, schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex) {
+      if (schema && typeof schema == "object" && !Array.isArray(schema)) {
+        pre(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
+        for (var key in schema) {
+          var sch = schema[key];
+          if (Array.isArray(sch)) {
+            if (key in traverse.arrayKeywords) {
+              for (var i2 = 0; i2 < sch.length; i2++)
+                _traverse(opts, pre, post, sch[i2], jsonPtr + "/" + key + "/" + i2, rootSchema, jsonPtr, key, schema, i2);
+            }
+          } else if (key in traverse.propsKeywords) {
+            if (sch && typeof sch == "object") {
+              for (var prop in sch)
+                _traverse(opts, pre, post, sch[prop], jsonPtr + "/" + key + "/" + escapeJsonPtr(prop), rootSchema, jsonPtr, key, schema, prop);
+            }
+          } else if (key in traverse.keywords || opts.allKeys && !(key in traverse.skipKeywords)) {
+            _traverse(opts, pre, post, sch, jsonPtr + "/" + key, rootSchema, jsonPtr, key, schema);
+          }
+        }
+        post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
+      }
+    }
+    function escapeJsonPtr(str) {
+      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    }
+  }
+});
+
+// node_modules/ajv/dist/compile/resolve.js
+var require_resolve = __commonJS({
+  "node_modules/ajv/dist/compile/resolve.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getSchemaRefs = exports2.resolveUrl = exports2.normalizeId = exports2._getFullPath = exports2.getFullPath = exports2.inlineRef = void 0;
+    var util_1 = require_util();
+    var equal = require_fast_deep_equal();
+    var traverse = require_json_schema_traverse();
+    var SIMPLE_INLINED = /* @__PURE__ */ new Set([
+      "type",
+      "format",
+      "pattern",
+      "maxLength",
+      "minLength",
+      "maxProperties",
+      "minProperties",
+      "maxItems",
+      "minItems",
+      "maximum",
+      "minimum",
+      "uniqueItems",
+      "multipleOf",
+      "required",
+      "enum",
+      "const"
+    ]);
+    function inlineRef(schema, limit = true) {
+      if (typeof schema == "boolean")
+        return true;
+      if (limit === true)
+        return !hasRef(schema);
+      if (!limit)
+        return false;
+      return countKeys(schema) <= limit;
+    }
+    exports2.inlineRef = inlineRef;
+    var REF_KEYWORDS = /* @__PURE__ */ new Set([
+      "$ref",
+      "$recursiveRef",
+      "$recursiveAnchor",
+      "$dynamicRef",
+      "$dynamicAnchor"
+    ]);
+    function hasRef(schema) {
+      for (const key in schema) {
+        if (REF_KEYWORDS.has(key))
+          return true;
+        const sch = schema[key];
+        if (Array.isArray(sch) && sch.some(hasRef))
+          return true;
+        if (typeof sch == "object" && hasRef(sch))
+          return true;
+      }
+      return false;
+    }
+    function countKeys(schema) {
+      let count = 0;
+      for (const key in schema) {
+        if (key === "$ref")
+          return Infinity;
+        count++;
+        if (SIMPLE_INLINED.has(key))
+          continue;
+        if (typeof schema[key] == "object") {
+          (0, util_1.eachItem)(schema[key], (sch) => count += countKeys(sch));
+        }
+        if (count === Infinity)
+          return Infinity;
+      }
+      return count;
+    }
+    function getFullPath(resolver, id = "", normalize) {
+      if (normalize !== false)
+        id = normalizeId(id);
+      const p2 = resolver.parse(id);
+      return _getFullPath(resolver, p2);
+    }
+    exports2.getFullPath = getFullPath;
+    function _getFullPath(resolver, p2) {
+      const serialized = resolver.serialize(p2);
+      return serialized.split("#")[0] + "#";
+    }
+    exports2._getFullPath = _getFullPath;
+    var TRAILING_SLASH_HASH = /#\/?$/;
+    function normalizeId(id) {
+      return id ? id.replace(TRAILING_SLASH_HASH, "") : "";
+    }
+    exports2.normalizeId = normalizeId;
+    function resolveUrl(resolver, baseId, id) {
+      id = normalizeId(id);
+      return resolver.resolve(baseId, id);
+    }
+    exports2.resolveUrl = resolveUrl;
+    var ANCHOR = /^[a-z_][-a-z0-9._]*$/i;
+    function getSchemaRefs(schema, baseId) {
+      if (typeof schema == "boolean")
+        return {};
+      const { schemaId, uriResolver } = this.opts;
+      const schId = normalizeId(schema[schemaId] || baseId);
+      const baseIds = { "": schId };
+      const pathPrefix = getFullPath(uriResolver, schId, false);
+      const localRefs = {};
+      const schemaRefs = /* @__PURE__ */ new Set();
+      traverse(schema, { allKeys: true }, (sch, jsonPtr, _2, parentJsonPtr) => {
+        if (parentJsonPtr === void 0)
+          return;
+        const fullPath = pathPrefix + jsonPtr;
+        let innerBaseId = baseIds[parentJsonPtr];
+        if (typeof sch[schemaId] == "string")
+          innerBaseId = addRef.call(this, sch[schemaId]);
+        addAnchor.call(this, sch.$anchor);
+        addAnchor.call(this, sch.$dynamicAnchor);
+        baseIds[jsonPtr] = innerBaseId;
+        function addRef(ref) {
+          const _resolve = this.opts.uriResolver.resolve;
+          ref = normalizeId(innerBaseId ? _resolve(innerBaseId, ref) : ref);
+          if (schemaRefs.has(ref))
+            throw ambiguos(ref);
+          schemaRefs.add(ref);
+          let schOrRef = this.refs[ref];
+          if (typeof schOrRef == "string")
+            schOrRef = this.refs[schOrRef];
+          if (typeof schOrRef == "object") {
+            checkAmbiguosRef(sch, schOrRef.schema, ref);
+          } else if (ref !== normalizeId(fullPath)) {
+            if (ref[0] === "#") {
+              checkAmbiguosRef(sch, localRefs[ref], ref);
+              localRefs[ref] = sch;
+            } else {
+              this.refs[ref] = fullPath;
+            }
+          }
+          return ref;
+        }
+        function addAnchor(anchor) {
+          if (typeof anchor == "string") {
+            if (!ANCHOR.test(anchor))
+              throw new Error(`invalid anchor "${anchor}"`);
+            addRef.call(this, `#${anchor}`);
+          }
+        }
+      });
+      return localRefs;
+      function checkAmbiguosRef(sch1, sch2, ref) {
+        if (sch2 !== void 0 && !equal(sch1, sch2))
+          throw ambiguos(ref);
+      }
+      function ambiguos(ref) {
+        return new Error(`reference "${ref}" resolves to more than one schema`);
+      }
+    }
+    exports2.getSchemaRefs = getSchemaRefs;
+  }
+});
+
+// node_modules/ajv/dist/compile/validate/index.js
+var require_validate = __commonJS({
+  "node_modules/ajv/dist/compile/validate/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.getData = exports2.KeywordCxt = exports2.validateFunctionCode = void 0;
+    var boolSchema_1 = require_boolSchema();
+    var dataType_1 = require_dataType();
+    var applicability_1 = require_applicability();
+    var dataType_2 = require_dataType();
+    var defaults_1 = require_defaults();
+    var keyword_1 = require_keyword();
+    var subschema_1 = require_subschema();
+    var codegen_1 = require_codegen();
+    var names_1 = require_names();
+    var resolve_1 = require_resolve();
+    var util_1 = require_util();
+    var errors_1 = require_errors();
+    function validateFunctionCode(it) {
+      if (isSchemaObj(it)) {
+        checkKeywords(it);
+        if (schemaCxtHasRules(it)) {
+          topSchemaObjCode(it);
+          return;
+        }
+      }
+      validateFunction(it, () => (0, boolSchema_1.topBoolOrEmptySchema)(it));
+    }
+    exports2.validateFunctionCode = validateFunctionCode;
+    function validateFunction({ gen, validateName, schema, schemaEnv, opts }, body) {
+      if (opts.code.es5) {
+        gen.func(validateName, (0, codegen_1._)`${names_1.default.data}, ${names_1.default.valCxt}`, schemaEnv.$async, () => {
+          gen.code((0, codegen_1._)`"use strict"; ${funcSourceUrl(schema, opts)}`);
+          destructureValCxtES5(gen, opts);
+          gen.code(body);
+        });
+      } else {
+        gen.func(validateName, (0, codegen_1._)`${names_1.default.data}, ${destructureValCxt(opts)}`, schemaEnv.$async, () => gen.code(funcSourceUrl(schema, opts)).code(body));
+      }
+    }
+    function destructureValCxt(opts) {
+      return (0, codegen_1._)`{${names_1.default.instancePath}="", ${names_1.default.parentData}, ${names_1.default.parentDataProperty}, ${names_1.default.rootData}=${names_1.default.data}${opts.dynamicRef ? (0, codegen_1._)`, ${names_1.default.dynamicAnchors}={}` : codegen_1.nil}}={}`;
+    }
+    function destructureValCxtES5(gen, opts) {
+      gen.if(names_1.default.valCxt, () => {
+        gen.var(names_1.default.instancePath, (0, codegen_1._)`${names_1.default.valCxt}.${names_1.default.instancePath}`);
+        gen.var(names_1.default.parentData, (0, codegen_1._)`${names_1.default.valCxt}.${names_1.default.parentData}`);
+        gen.var(names_1.default.parentDataProperty, (0, codegen_1._)`${names_1.default.valCxt}.${names_1.default.parentDataProperty}`);
+        gen.var(names_1.default.rootData, (0, codegen_1._)`${names_1.default.valCxt}.${names_1.default.rootData}`);
+        if (opts.dynamicRef)
+          gen.var(names_1.default.dynamicAnchors, (0, codegen_1._)`${names_1.default.valCxt}.${names_1.default.dynamicAnchors}`);
+      }, () => {
+        gen.var(names_1.default.instancePath, (0, codegen_1._)`""`);
+        gen.var(names_1.default.parentData, (0, codegen_1._)`undefined`);
+        gen.var(names_1.default.parentDataProperty, (0, codegen_1._)`undefined`);
+        gen.var(names_1.default.rootData, names_1.default.data);
+        if (opts.dynamicRef)
+          gen.var(names_1.default.dynamicAnchors, (0, codegen_1._)`{}`);
+      });
+    }
+    function topSchemaObjCode(it) {
+      const { schema, opts, gen } = it;
+      validateFunction(it, () => {
+        if (opts.$comment && schema.$comment)
+          commentKeyword(it);
+        checkNoDefault(it);
+        gen.let(names_1.default.vErrors, null);
+        gen.let(names_1.default.errors, 0);
+        if (opts.unevaluated)
+          resetEvaluated(it);
+        typeAndKeywords(it);
+        returnResults(it);
+      });
+      return;
+    }
+    function resetEvaluated(it) {
+      const { gen, validateName } = it;
+      it.evaluated = gen.const("evaluated", (0, codegen_1._)`${validateName}.evaluated`);
+      gen.if((0, codegen_1._)`${it.evaluated}.dynamicProps`, () => gen.assign((0, codegen_1._)`${it.evaluated}.props`, (0, codegen_1._)`undefined`));
+      gen.if((0, codegen_1._)`${it.evaluated}.dynamicItems`, () => gen.assign((0, codegen_1._)`${it.evaluated}.items`, (0, codegen_1._)`undefined`));
+    }
+    function funcSourceUrl(schema, opts) {
+      const schId = typeof schema == "object" && schema[opts.schemaId];
+      return schId && (opts.code.source || opts.code.process) ? (0, codegen_1._)`/*# sourceURL=${schId} */` : codegen_1.nil;
+    }
+    function subschemaCode(it, valid) {
+      if (isSchemaObj(it)) {
+        checkKeywords(it);
+        if (schemaCxtHasRules(it)) {
+          subSchemaObjCode(it, valid);
+          return;
+        }
+      }
+      (0, boolSchema_1.boolOrEmptySchema)(it, valid);
+    }
+    function schemaCxtHasRules({ schema, self: self2 }) {
+      if (typeof schema == "boolean")
+        return !schema;
+      for (const key in schema)
+        if (self2.RULES.all[key])
+          return true;
+      return false;
+    }
+    function isSchemaObj(it) {
+      return typeof it.schema != "boolean";
+    }
+    function subSchemaObjCode(it, valid) {
+      const { schema, gen, opts } = it;
+      if (opts.$comment && schema.$comment)
+        commentKeyword(it);
+      updateContext(it);
+      checkAsyncSchema(it);
+      const errsCount = gen.const("_errs", names_1.default.errors);
+      typeAndKeywords(it, errsCount);
+      gen.var(valid, (0, codegen_1._)`${errsCount} === ${names_1.default.errors}`);
+    }
+    function checkKeywords(it) {
+      (0, util_1.checkUnknownRules)(it);
+      checkRefsAndKeywords(it);
+    }
+    function typeAndKeywords(it, errsCount) {
+      if (it.opts.jtd)
+        return schemaKeywords(it, [], false, errsCount);
+      const types = (0, dataType_1.getSchemaTypes)(it.schema);
+      const checkedTypes = (0, dataType_1.coerceAndCheckDataType)(it, types);
+      schemaKeywords(it, types, !checkedTypes, errsCount);
+    }
+    function checkRefsAndKeywords(it) {
+      const { schema, errSchemaPath, opts, self: self2 } = it;
+      if (schema.$ref && opts.ignoreKeywordsWithRef && (0, util_1.schemaHasRulesButRef)(schema, self2.RULES)) {
+        self2.logger.warn(`$ref: keywords ignored in schema at path "${errSchemaPath}"`);
+      }
+    }
+    function checkNoDefault(it) {
+      const { schema, opts } = it;
+      if (schema.default !== void 0 && opts.useDefaults && opts.strictSchema) {
+        (0, util_1.checkStrictMode)(it, "default is ignored in the schema root");
+      }
+    }
+    function updateContext(it) {
+      const schId = it.schema[it.opts.schemaId];
+      if (schId)
+        it.baseId = (0, resolve_1.resolveUrl)(it.opts.uriResolver, it.baseId, schId);
+    }
+    function checkAsyncSchema(it) {
+      if (it.schema.$async && !it.schemaEnv.$async)
+        throw new Error("async schema in sync schema");
+    }
+    function commentKeyword({ gen, schemaEnv, schema, errSchemaPath, opts }) {
+      const msg = schema.$comment;
+      if (opts.$comment === true) {
+        gen.code((0, codegen_1._)`${names_1.default.self}.logger.log(${msg})`);
+      } else if (typeof opts.$comment == "function") {
+        const schemaPath = (0, codegen_1.str)`${errSchemaPath}/$comment`;
+        const rootName = gen.scopeValue("root", { ref: schemaEnv.root });
+        gen.code((0, codegen_1._)`${names_1.default.self}.opts.$comment(${msg}, ${schemaPath}, ${rootName}.schema)`);
+      }
+    }
+    function returnResults(it) {
+      const { gen, schemaEnv, validateName, ValidationError, opts } = it;
+      if (schemaEnv.$async) {
+        gen.if((0, codegen_1._)`${names_1.default.errors} === 0`, () => gen.return(names_1.default.data), () => gen.throw((0, codegen_1._)`new ${ValidationError}(${names_1.default.vErrors})`));
+      } else {
+        gen.assign((0, codegen_1._)`${validateName}.errors`, names_1.default.vErrors);
+        if (opts.unevaluated)
+          assignEvaluated(it);
+        gen.return((0, codegen_1._)`${names_1.default.errors} === 0`);
+      }
+    }
+    function assignEvaluated({ gen, evaluated, props, items }) {
+      if (props instanceof codegen_1.Name)
+        gen.assign((0, codegen_1._)`${evaluated}.props`, props);
+      if (items instanceof codegen_1.Name)
+        gen.assign((0, codegen_1._)`${evaluated}.items`, items);
+    }
+    function schemaKeywords(it, types, typeErrors, errsCount) {
+      const { gen, schema, data, allErrors, opts, self: self2 } = it;
+      const { RULES } = self2;
+      if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES))) {
+        gen.block(() => keywordCode(it, "$ref", RULES.all.$ref.definition));
+        return;
+      }
+      if (!opts.jtd)
+        checkStrictTypes(it, types);
+      gen.block(() => {
+        for (const group of RULES.rules)
+          groupKeywords(group);
+        groupKeywords(RULES.post);
+      });
+      function groupKeywords(group) {
+        if (!(0, applicability_1.shouldUseGroup)(schema, group))
+          return;
+        if (group.type) {
+          gen.if((0, dataType_2.checkDataType)(group.type, data, opts.strictNumbers));
+          iterateKeywords(it, group);
+          if (types.length === 1 && types[0] === group.type && typeErrors) {
+            gen.else();
+            (0, dataType_2.reportTypeError)(it);
+          }
+          gen.endIf();
+        } else {
+          iterateKeywords(it, group);
+        }
+        if (!allErrors)
+          gen.if((0, codegen_1._)`${names_1.default.errors} === ${errsCount || 0}`);
+      }
+    }
+    function iterateKeywords(it, group) {
+      const { gen, schema, opts: { useDefaults } } = it;
+      if (useDefaults)
+        (0, defaults_1.assignDefaults)(it, group.type);
+      gen.block(() => {
+        for (const rule of group.rules) {
+          if ((0, applicability_1.shouldUseRule)(schema, rule)) {
+            keywordCode(it, rule.keyword, rule.definition, group.type);
+          }
+        }
+      });
+    }
+    function checkStrictTypes(it, types) {
+      if (it.schemaEnv.meta || !it.opts.strictTypes)
+        return;
+      checkContextTypes(it, types);
+      if (!it.opts.allowUnionTypes)
+        checkMultipleTypes(it, types);
+      checkKeywordTypes(it, it.dataTypes);
+    }
+    function checkContextTypes(it, types) {
+      if (!types.length)
+        return;
+      if (!it.dataTypes.length) {
+        it.dataTypes = types;
+        return;
+      }
+      types.forEach((t) => {
+        if (!includesType(it.dataTypes, t)) {
+          strictTypesError(it, `type "${t}" not allowed by context "${it.dataTypes.join(",")}"`);
+        }
+      });
+      narrowSchemaTypes(it, types);
+    }
+    function checkMultipleTypes(it, ts) {
+      if (ts.length > 1 && !(ts.length === 2 && ts.includes("null"))) {
+        strictTypesError(it, "use allowUnionTypes to allow union type keyword");
+      }
+    }
+    function checkKeywordTypes(it, ts) {
+      const rules = it.self.RULES.all;
+      for (const keyword in rules) {
+        const rule = rules[keyword];
+        if (typeof rule == "object" && (0, applicability_1.shouldUseRule)(it.schema, rule)) {
+          const { type } = rule.definition;
+          if (type.length && !type.some((t) => hasApplicableType(ts, t))) {
+            strictTypesError(it, `missing type "${type.join(",")}" for keyword "${keyword}"`);
+          }
+        }
+      }
+    }
+    function hasApplicableType(schTs, kwdT) {
+      return schTs.includes(kwdT) || kwdT === "number" && schTs.includes("integer");
+    }
+    function includesType(ts, t) {
+      return ts.includes(t) || t === "integer" && ts.includes("number");
+    }
+    function narrowSchemaTypes(it, withTypes) {
+      const ts = [];
+      for (const t of it.dataTypes) {
+        if (includesType(withTypes, t))
+          ts.push(t);
+        else if (withTypes.includes("integer") && t === "number")
+          ts.push("integer");
+      }
+      it.dataTypes = ts;
+    }
+    function strictTypesError(it, msg) {
+      const schemaPath = it.schemaEnv.baseId + it.errSchemaPath;
+      msg += ` at "${schemaPath}" (strictTypes)`;
+      (0, util_1.checkStrictMode)(it, msg, it.opts.strictTypes);
+    }
+    var KeywordCxt = class {
+      constructor(it, def, keyword) {
+        (0, keyword_1.validateKeywordUsage)(it, def, keyword);
+        this.gen = it.gen;
+        this.allErrors = it.allErrors;
+        this.keyword = keyword;
+        this.data = it.data;
+        this.schema = it.schema[keyword];
+        this.$data = def.$data && it.opts.$data && this.schema && this.schema.$data;
+        this.schemaValue = (0, util_1.schemaRefOrVal)(it, this.schema, keyword, this.$data);
+        this.schemaType = def.schemaType;
+        this.parentSchema = it.schema;
+        this.params = {};
+        this.it = it;
+        this.def = def;
+        if (this.$data) {
+          this.schemaCode = it.gen.const("vSchema", getData(this.$data, it));
+        } else {
+          this.schemaCode = this.schemaValue;
+          if (!(0, keyword_1.validSchemaType)(this.schema, def.schemaType, def.allowUndefined)) {
+            throw new Error(`${keyword} value must be ${JSON.stringify(def.schemaType)}`);
+          }
+        }
+        if ("code" in def ? def.trackErrors : def.errors !== false) {
+          this.errsCount = it.gen.const("_errs", names_1.default.errors);
+        }
+      }
+      result(condition, successAction, failAction) {
+        this.failResult((0, codegen_1.not)(condition), successAction, failAction);
+      }
+      failResult(condition, successAction, failAction) {
+        this.gen.if(condition);
+        if (failAction)
+          failAction();
+        else
+          this.error();
+        if (successAction) {
+          this.gen.else();
+          successAction();
+          if (this.allErrors)
+            this.gen.endIf();
+        } else {
+          if (this.allErrors)
+            this.gen.endIf();
+          else
+            this.gen.else();
+        }
+      }
+      pass(condition, failAction) {
+        this.failResult((0, codegen_1.not)(condition), void 0, failAction);
+      }
+      fail(condition) {
+        if (condition === void 0) {
+          this.error();
+          if (!this.allErrors)
+            this.gen.if(false);
+          return;
+        }
+        this.gen.if(condition);
+        this.error();
+        if (this.allErrors)
+          this.gen.endIf();
+        else
+          this.gen.else();
+      }
+      fail$data(condition) {
+        if (!this.$data)
+          return this.fail(condition);
+        const { schemaCode } = this;
+        this.fail((0, codegen_1._)`${schemaCode} !== undefined && (${(0, codegen_1.or)(this.invalid$data(), condition)})`);
+      }
+      error(append, errorParams, errorPaths) {
+        if (errorParams) {
+          this.setParams(errorParams);
+          this._error(append, errorPaths);
+          this.setParams({});
+          return;
+        }
+        this._error(append, errorPaths);
+      }
+      _error(append, errorPaths) {
+        ;
+        (append ? errors_1.reportExtraError : errors_1.reportError)(this, this.def.error, errorPaths);
+      }
+      $dataError() {
+        (0, errors_1.reportError)(this, this.def.$dataError || errors_1.keyword$DataError);
+      }
+      reset() {
+        if (this.errsCount === void 0)
+          throw new Error('add "trackErrors" to keyword definition');
+        (0, errors_1.resetErrorsCount)(this.gen, this.errsCount);
+      }
+      ok(cond) {
+        if (!this.allErrors)
+          this.gen.if(cond);
+      }
+      setParams(obj, assign) {
+        if (assign)
+          Object.assign(this.params, obj);
+        else
+          this.params = obj;
+      }
+      block$data(valid, codeBlock, $dataValid = codegen_1.nil) {
+        this.gen.block(() => {
+          this.check$data(valid, $dataValid);
+          codeBlock();
+        });
+      }
+      check$data(valid = codegen_1.nil, $dataValid = codegen_1.nil) {
+        if (!this.$data)
+          return;
+        const { gen, schemaCode, schemaType, def } = this;
+        gen.if((0, codegen_1.or)((0, codegen_1._)`${schemaCode} === undefined`, $dataValid));
+        if (valid !== codegen_1.nil)
+          gen.assign(valid, true);
+        if (schemaType.length || def.validateSchema) {
+          gen.elseIf(this.invalid$data());
+          this.$dataError();
+          if (valid !== codegen_1.nil)
+            gen.assign(valid, false);
+        }
+        gen.else();
+      }
+      invalid$data() {
+        const { gen, schemaCode, schemaType, def, it } = this;
+        return (0, codegen_1.or)(wrong$DataType(), invalid$DataSchema());
+        function wrong$DataType() {
+          if (schemaType.length) {
+            if (!(schemaCode instanceof codegen_1.Name))
+              throw new Error("ajv implementation error");
+            const st = Array.isArray(schemaType) ? schemaType : [schemaType];
+            return (0, codegen_1._)`${(0, dataType_2.checkDataTypes)(st, schemaCode, it.opts.strictNumbers, dataType_2.DataType.Wrong)}`;
+          }
+          return codegen_1.nil;
+        }
+        function invalid$DataSchema() {
+          if (def.validateSchema) {
+            const validateSchemaRef = gen.scopeValue("validate$data", { ref: def.validateSchema });
+            return (0, codegen_1._)`!${validateSchemaRef}(${schemaCode})`;
+          }
+          return codegen_1.nil;
+        }
+      }
+      subschema(appl, valid) {
+        const subschema = (0, subschema_1.getSubschema)(this.it, appl);
+        (0, subschema_1.extendSubschemaData)(subschema, this.it, appl);
+        (0, subschema_1.extendSubschemaMode)(subschema, appl);
+        const nextContext = { ...this.it, ...subschema, items: void 0, props: void 0 };
+        subschemaCode(nextContext, valid);
+        return nextContext;
+      }
+      mergeEvaluated(schemaCxt, toName) {
+        const { it, gen } = this;
+        if (!it.opts.unevaluated)
+          return;
+        if (it.props !== true && schemaCxt.props !== void 0) {
+          it.props = util_1.mergeEvaluated.props(gen, schemaCxt.props, it.props, toName);
+        }
+        if (it.items !== true && schemaCxt.items !== void 0) {
+          it.items = util_1.mergeEvaluated.items(gen, schemaCxt.items, it.items, toName);
+        }
+      }
+      mergeValidEvaluated(schemaCxt, valid) {
+        const { it, gen } = this;
+        if (it.opts.unevaluated && (it.props !== true || it.items !== true)) {
+          gen.if(valid, () => this.mergeEvaluated(schemaCxt, codegen_1.Name));
+          return true;
+        }
+      }
+    };
+    exports2.KeywordCxt = KeywordCxt;
+    function keywordCode(it, keyword, def, ruleType) {
+      const cxt = new KeywordCxt(it, def, keyword);
+      if ("code" in def) {
+        def.code(cxt, ruleType);
+      } else if (cxt.$data && def.validate) {
+        (0, keyword_1.funcKeywordCode)(cxt, def);
+      } else if ("macro" in def) {
+        (0, keyword_1.macroKeywordCode)(cxt, def);
+      } else if (def.compile || def.validate) {
+        (0, keyword_1.funcKeywordCode)(cxt, def);
+      }
+    }
+    var JSON_POINTER = /^\/(?:[^~]|~0|~1)*$/;
+    var RELATIVE_JSON_POINTER = /^([0-9]+)(#|\/(?:[^~]|~0|~1)*)?$/;
+    function getData($data, { dataLevel, dataNames, dataPathArr }) {
+      let jsonPointer;
+      let data;
+      if ($data === "")
+        return names_1.default.rootData;
+      if ($data[0] === "/") {
+        if (!JSON_POINTER.test($data))
+          throw new Error(`Invalid JSON-pointer: ${$data}`);
+        jsonPointer = $data;
+        data = names_1.default.rootData;
+      } else {
+        const matches = RELATIVE_JSON_POINTER.exec($data);
+        if (!matches)
+          throw new Error(`Invalid JSON-pointer: ${$data}`);
+        const up = +matches[1];
+        jsonPointer = matches[2];
+        if (jsonPointer === "#") {
+          if (up >= dataLevel)
+            throw new Error(errorMsg("property/index", up));
+          return dataPathArr[dataLevel - up];
+        }
+        if (up > dataLevel)
+          throw new Error(errorMsg("data", up));
+        data = dataNames[dataLevel - up];
+        if (!jsonPointer)
+          return data;
+      }
+      let expr = data;
+      const segments = jsonPointer.split("/");
+      for (const segment of segments) {
+        if (segment) {
+          data = (0, codegen_1._)`${data}${(0, codegen_1.getProperty)((0, util_1.unescapeJsonPointer)(segment))}`;
+          expr = (0, codegen_1._)`${expr} && ${data}`;
+        }
+      }
+      return expr;
+      function errorMsg(pointerType, up) {
+        return `Cannot access ${pointerType} ${up} levels up, current level is ${dataLevel}`;
+      }
+    }
+    exports2.getData = getData;
+  }
+});
+
+// node_modules/ajv/dist/runtime/validation_error.js
+var require_validation_error = __commonJS({
+  "node_modules/ajv/dist/runtime/validation_error.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var ValidationError = class extends Error {
+      constructor(errors) {
+        super("validation failed");
+        this.errors = errors;
+        this.ajv = this.validation = true;
+      }
+    };
+    exports2.default = ValidationError;
+  }
+});
+
+// node_modules/ajv/dist/compile/ref_error.js
+var require_ref_error = __commonJS({
+  "node_modules/ajv/dist/compile/ref_error.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var resolve_1 = require_resolve();
+    var MissingRefError = class extends Error {
+      constructor(resolver, baseId, ref, msg) {
+        super(msg || `can't resolve reference ${ref} from id ${baseId}`);
+        this.missingRef = (0, resolve_1.resolveUrl)(resolver, baseId, ref);
+        this.missingSchema = (0, resolve_1.normalizeId)((0, resolve_1.getFullPath)(resolver, this.missingRef));
+      }
+    };
+    exports2.default = MissingRefError;
+  }
+});
+
+// node_modules/ajv/dist/compile/index.js
+var require_compile = __commonJS({
+  "node_modules/ajv/dist/compile/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.resolveSchema = exports2.getCompilingSchema = exports2.resolveRef = exports2.compileSchema = exports2.SchemaEnv = void 0;
+    var codegen_1 = require_codegen();
+    var validation_error_1 = require_validation_error();
+    var names_1 = require_names();
+    var resolve_1 = require_resolve();
+    var util_1 = require_util();
+    var validate_1 = require_validate();
+    var SchemaEnv = class {
+      constructor(env) {
+        var _a;
+        this.refs = {};
+        this.dynamicAnchors = {};
+        let schema;
+        if (typeof env.schema == "object")
+          schema = env.schema;
+        this.schema = env.schema;
+        this.schemaId = env.schemaId;
+        this.root = env.root || this;
+        this.baseId = (_a = env.baseId) !== null && _a !== void 0 ? _a : (0, resolve_1.normalizeId)(schema === null || schema === void 0 ? void 0 : schema[env.schemaId || "$id"]);
+        this.schemaPath = env.schemaPath;
+        this.localRefs = env.localRefs;
+        this.meta = env.meta;
+        this.$async = schema === null || schema === void 0 ? void 0 : schema.$async;
+        this.refs = {};
+      }
+    };
+    exports2.SchemaEnv = SchemaEnv;
+    function compileSchema(sch) {
+      const _sch = getCompilingSchema.call(this, sch);
+      if (_sch)
+        return _sch;
+      const rootId = (0, resolve_1.getFullPath)(this.opts.uriResolver, sch.root.baseId);
+      const { es5, lines } = this.opts.code;
+      const { ownProperties } = this.opts;
+      const gen = new codegen_1.CodeGen(this.scope, { es5, lines, ownProperties });
+      let _ValidationError;
+      if (sch.$async) {
+        _ValidationError = gen.scopeValue("Error", {
+          ref: validation_error_1.default,
+          code: (0, codegen_1._)`require("ajv/dist/runtime/validation_error").default`
+        });
+      }
+      const validateName = gen.scopeName("validate");
+      sch.validateName = validateName;
+      const schemaCxt = {
+        gen,
+        allErrors: this.opts.allErrors,
+        data: names_1.default.data,
+        parentData: names_1.default.parentData,
+        parentDataProperty: names_1.default.parentDataProperty,
+        dataNames: [names_1.default.data],
+        dataPathArr: [codegen_1.nil],
+        // TODO can its length be used as dataLevel if nil is removed?
+        dataLevel: 0,
+        dataTypes: [],
+        definedProperties: /* @__PURE__ */ new Set(),
+        topSchemaRef: gen.scopeValue("schema", this.opts.code.source === true ? { ref: sch.schema, code: (0, codegen_1.stringify)(sch.schema) } : { ref: sch.schema }),
+        validateName,
+        ValidationError: _ValidationError,
+        schema: sch.schema,
+        schemaEnv: sch,
+        rootId,
+        baseId: sch.baseId || rootId,
+        schemaPath: codegen_1.nil,
+        errSchemaPath: sch.schemaPath || (this.opts.jtd ? "" : "#"),
+        errorPath: (0, codegen_1._)`""`,
+        opts: this.opts,
+        self: this
+      };
+      let sourceCode;
+      try {
+        this._compilations.add(sch);
+        (0, validate_1.validateFunctionCode)(schemaCxt);
+        gen.optimize(this.opts.code.optimize);
+        const validateCode = gen.toString();
+        sourceCode = `${gen.scopeRefs(names_1.default.scope)}return ${validateCode}`;
+        if (this.opts.code.process)
+          sourceCode = this.opts.code.process(sourceCode, sch);
+        const makeValidate = new Function(`${names_1.default.self}`, `${names_1.default.scope}`, sourceCode);
+        const validate = makeValidate(this, this.scope.get());
+        this.scope.value(validateName, { ref: validate });
+        validate.errors = null;
+        validate.schema = sch.schema;
+        validate.schemaEnv = sch;
+        if (sch.$async)
+          validate.$async = true;
+        if (this.opts.code.source === true) {
+          validate.source = { validateName, validateCode, scopeValues: gen._values };
+        }
+        if (this.opts.unevaluated) {
+          const { props, items } = schemaCxt;
+          validate.evaluated = {
+            props: props instanceof codegen_1.Name ? void 0 : props,
+            items: items instanceof codegen_1.Name ? void 0 : items,
+            dynamicProps: props instanceof codegen_1.Name,
+            dynamicItems: items instanceof codegen_1.Name
+          };
+          if (validate.source)
+            validate.source.evaluated = (0, codegen_1.stringify)(validate.evaluated);
+        }
+        sch.validate = validate;
+        return sch;
+      } catch (e) {
+        delete sch.validate;
+        delete sch.validateName;
+        if (sourceCode)
+          this.logger.error("Error compiling schema, function code:", sourceCode);
+        throw e;
+      } finally {
+        this._compilations.delete(sch);
+      }
+    }
+    exports2.compileSchema = compileSchema;
+    function resolveRef(root2, baseId, ref) {
+      var _a;
+      ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, ref);
+      const schOrFunc = root2.refs[ref];
+      if (schOrFunc)
+        return schOrFunc;
+      let _sch = resolve.call(this, root2, ref);
+      if (_sch === void 0) {
+        const schema = (_a = root2.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
+        const { schemaId } = this.opts;
+        if (schema)
+          _sch = new SchemaEnv({ schema, schemaId, root: root2, baseId });
+      }
+      if (_sch === void 0)
+        return;
+      return root2.refs[ref] = inlineOrCompile.call(this, _sch);
+    }
+    exports2.resolveRef = resolveRef;
+    function inlineOrCompile(sch) {
+      if ((0, resolve_1.inlineRef)(sch.schema, this.opts.inlineRefs))
+        return sch.schema;
+      return sch.validate ? sch : compileSchema.call(this, sch);
+    }
+    function getCompilingSchema(schEnv) {
+      for (const sch of this._compilations) {
+        if (sameSchemaEnv(sch, schEnv))
+          return sch;
+      }
+    }
+    exports2.getCompilingSchema = getCompilingSchema;
+    function sameSchemaEnv(s1, s2) {
+      return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
+    }
+    function resolve(root2, ref) {
+      let sch;
+      while (typeof (sch = this.refs[ref]) == "string")
+        ref = sch;
+      return sch || this.schemas[ref] || resolveSchema2.call(this, root2, ref);
+    }
+    function resolveSchema2(root2, ref) {
+      const p2 = this.opts.uriResolver.parse(ref);
+      const refPath = (0, resolve_1._getFullPath)(this.opts.uriResolver, p2);
+      let baseId = (0, resolve_1.getFullPath)(this.opts.uriResolver, root2.baseId, void 0);
+      if (Object.keys(root2.schema).length > 0 && refPath === baseId) {
+        return getJsonPointer.call(this, p2, root2);
+      }
+      const id = (0, resolve_1.normalizeId)(refPath);
+      const schOrRef = this.refs[id] || this.schemas[id];
+      if (typeof schOrRef == "string") {
+        const sch = resolveSchema2.call(this, root2, schOrRef);
+        if (typeof (sch === null || sch === void 0 ? void 0 : sch.schema) !== "object")
+          return;
+        return getJsonPointer.call(this, p2, sch);
+      }
+      if (typeof (schOrRef === null || schOrRef === void 0 ? void 0 : schOrRef.schema) !== "object")
+        return;
+      if (!schOrRef.validate)
+        compileSchema.call(this, schOrRef);
+      if (id === (0, resolve_1.normalizeId)(ref)) {
+        const { schema } = schOrRef;
+        const { schemaId } = this.opts;
+        const schId = schema[schemaId];
+        if (schId)
+          baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
+        return new SchemaEnv({ schema, schemaId, root: root2, baseId });
+      }
+      return getJsonPointer.call(this, p2, schOrRef);
+    }
+    exports2.resolveSchema = resolveSchema2;
+    var PREVENT_SCOPE_CHANGE = /* @__PURE__ */ new Set([
+      "properties",
+      "patternProperties",
+      "enum",
+      "dependencies",
+      "definitions"
+    ]);
+    function getJsonPointer(parsedRef, { baseId, schema, root: root2 }) {
+      var _a;
+      if (((_a = parsedRef.fragment) === null || _a === void 0 ? void 0 : _a[0]) !== "/")
+        return;
+      for (const part of parsedRef.fragment.slice(1).split("/")) {
+        if (typeof schema === "boolean")
+          return;
+        const partSchema = schema[(0, util_1.unescapeFragment)(part)];
+        if (partSchema === void 0)
+          return;
+        schema = partSchema;
+        const schId = typeof schema === "object" && schema[this.opts.schemaId];
+        if (!PREVENT_SCOPE_CHANGE.has(part) && schId) {
+          baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
+        }
+      }
+      let env;
+      if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
+        const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
+        env = resolveSchema2.call(this, root2, $ref);
+      }
+      const { schemaId } = this.opts;
+      env = env || new SchemaEnv({ schema, schemaId, root: root2, baseId });
+      if (env.schema !== env.root.schema)
+        return env;
+      return void 0;
+    }
+  }
+});
+
+// node_modules/ajv/dist/refs/data.json
+var require_data = __commonJS({
+  "node_modules/ajv/dist/refs/data.json"(exports2, module2) {
+    module2.exports = {
+      $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
+      description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
+      type: "object",
+      required: ["$data"],
+      properties: {
+        $data: {
+          type: "string",
+          anyOf: [{ format: "relative-json-pointer" }, { format: "json-pointer" }]
+        }
+      },
+      additionalProperties: false
+    };
+  }
+});
+
+// node_modules/ajv/dist/runtime/uri.js
+var require_uri = __commonJS({
+  "node_modules/ajv/dist/runtime/uri.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var uri = require_fast_uri();
+    uri.code = 'require("ajv/dist/runtime/uri").default';
+    exports2.default = uri;
+  }
+});
+
+// node_modules/ajv/dist/core.js
+var require_core = __commonJS({
+  "node_modules/ajv/dist/core.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.CodeGen = exports2.Name = exports2.nil = exports2.stringify = exports2.str = exports2._ = exports2.KeywordCxt = void 0;
+    var validate_1 = require_validate();
+    Object.defineProperty(exports2, "KeywordCxt", { enumerable: true, get: function() {
+      return validate_1.KeywordCxt;
+    } });
+    var codegen_1 = require_codegen();
+    Object.defineProperty(exports2, "_", { enumerable: true, get: function() {
+      return codegen_1._;
+    } });
+    Object.defineProperty(exports2, "str", { enumerable: true, get: function() {
+      return codegen_1.str;
+    } });
+    Object.defineProperty(exports2, "stringify", { enumerable: true, get: function() {
+      return codegen_1.stringify;
+    } });
+    Object.defineProperty(exports2, "nil", { enumerable: true, get: function() {
+      return codegen_1.nil;
+    } });
+    Object.defineProperty(exports2, "Name", { enumerable: true, get: function() {
+      return codegen_1.Name;
+    } });
+    Object.defineProperty(exports2, "CodeGen", { enumerable: true, get: function() {
+      return codegen_1.CodeGen;
+    } });
+    var validation_error_1 = require_validation_error();
+    var ref_error_1 = require_ref_error();
+    var rules_1 = require_rules();
+    var compile_1 = require_compile();
+    var codegen_2 = require_codegen();
+    var resolve_1 = require_resolve();
+    var dataType_1 = require_dataType();
+    var util_1 = require_util();
+    var $dataRefSchema = require_data();
+    var uri_1 = require_uri();
+    var defaultRegExp = (str, flags) => new RegExp(str, flags);
+    defaultRegExp.code = "new RegExp";
+    var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
+    var EXT_SCOPE_NAMES = /* @__PURE__ */ new Set([
+      "validate",
+      "serialize",
+      "parse",
+      "wrapper",
+      "root",
+      "schema",
+      "keyword",
+      "pattern",
+      "formats",
+      "validate$data",
+      "func",
+      "obj",
+      "Error"
+    ]);
+    var removedOptions = {
+      errorDataPath: "",
+      format: "`validateFormats: false` can be used instead.",
+      nullable: '"nullable" keyword is supported by default.',
+      jsonPointers: "Deprecated jsPropertySyntax can be used instead.",
+      extendRefs: "Deprecated ignoreKeywordsWithRef can be used instead.",
+      missingRefs: "Pass empty schema with $id that should be ignored to ajv.addSchema.",
+      processCode: "Use option `code: {process: (code, schemaEnv: object) => string}`",
+      sourceCode: "Use option `code: {source: true}`",
+      strictDefaults: "It is default now, see option `strict`.",
+      strictKeywords: "It is default now, see option `strict`.",
+      uniqueItems: '"uniqueItems" keyword is always validated.',
+      unknownFormats: "Disable strict mode or pass `true` to `ajv.addFormat` (or `formats` option).",
+      cache: "Map is used as cache, schema object as key.",
+      serialize: "Map is used as cache, schema object as key.",
+      ajvErrors: "It is default now."
+    };
+    var deprecatedOptions = {
+      ignoreKeywordsWithRef: "",
+      jsPropertySyntax: "",
+      unicode: '"minLength"/"maxLength" account for unicode characters by default.'
+    };
+    var MAX_EXPRESSION = 200;
+    function requiredOptions(o2) {
+      var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _02;
+      const s2 = o2.strict;
+      const _optz = (_a = o2.code) === null || _a === void 0 ? void 0 : _a.optimize;
+      const optimize = _optz === true || _optz === void 0 ? 1 : _optz || 0;
+      const regExp = (_c = (_b = o2.code) === null || _b === void 0 ? void 0 : _b.regExp) !== null && _c !== void 0 ? _c : defaultRegExp;
+      const uriResolver = (_d = o2.uriResolver) !== null && _d !== void 0 ? _d : uri_1.default;
+      return {
+        strictSchema: (_f = (_e = o2.strictSchema) !== null && _e !== void 0 ? _e : s2) !== null && _f !== void 0 ? _f : true,
+        strictNumbers: (_h = (_g = o2.strictNumbers) !== null && _g !== void 0 ? _g : s2) !== null && _h !== void 0 ? _h : true,
+        strictTypes: (_k = (_j = o2.strictTypes) !== null && _j !== void 0 ? _j : s2) !== null && _k !== void 0 ? _k : "log",
+        strictTuples: (_m = (_l = o2.strictTuples) !== null && _l !== void 0 ? _l : s2) !== null && _m !== void 0 ? _m : "log",
+        strictRequired: (_p = (_o = o2.strictRequired) !== null && _o !== void 0 ? _o : s2) !== null && _p !== void 0 ? _p : false,
+        code: o2.code ? { ...o2.code, optimize, regExp } : { optimize, regExp },
+        loopRequired: (_q = o2.loopRequired) !== null && _q !== void 0 ? _q : MAX_EXPRESSION,
+        loopEnum: (_r = o2.loopEnum) !== null && _r !== void 0 ? _r : MAX_EXPRESSION,
+        meta: (_s = o2.meta) !== null && _s !== void 0 ? _s : true,
+        messages: (_t = o2.messages) !== null && _t !== void 0 ? _t : true,
+        inlineRefs: (_u = o2.inlineRefs) !== null && _u !== void 0 ? _u : true,
+        schemaId: (_v = o2.schemaId) !== null && _v !== void 0 ? _v : "$id",
+        addUsedSchema: (_w = o2.addUsedSchema) !== null && _w !== void 0 ? _w : true,
+        validateSchema: (_x = o2.validateSchema) !== null && _x !== void 0 ? _x : true,
+        validateFormats: (_y = o2.validateFormats) !== null && _y !== void 0 ? _y : true,
+        unicodeRegExp: (_z = o2.unicodeRegExp) !== null && _z !== void 0 ? _z : true,
+        int32range: (_02 = o2.int32range) !== null && _02 !== void 0 ? _02 : true,
+        uriResolver
+      };
+    }
+    var Ajv2 = class {
+      constructor(opts = {}) {
+        this.schemas = {};
+        this.refs = {};
+        this.formats = /* @__PURE__ */ Object.create(null);
+        this._compilations = /* @__PURE__ */ new Set();
+        this._loading = {};
+        this._cache = /* @__PURE__ */ new Map();
+        opts = this.opts = { ...opts, ...requiredOptions(opts) };
+        const { es5, lines } = this.opts.code;
+        this.scope = new codegen_2.ValueScope({ scope: {}, prefixes: EXT_SCOPE_NAMES, es5, lines });
+        this.logger = getLogger(opts.logger);
+        const formatOpt = opts.validateFormats;
+        opts.validateFormats = false;
+        this.RULES = (0, rules_1.getRules)();
+        checkOptions.call(this, removedOptions, opts, "NOT SUPPORTED");
+        checkOptions.call(this, deprecatedOptions, opts, "DEPRECATED", "warn");
+        this._metaOpts = getMetaSchemaOptions.call(this);
+        if (opts.formats)
+          addInitialFormats.call(this);
+        this._addVocabularies();
+        this._addDefaultMetaSchema();
+        if (opts.keywords)
+          addInitialKeywords.call(this, opts.keywords);
+        if (typeof opts.meta == "object")
+          this.addMetaSchema(opts.meta);
+        addInitialSchemas.call(this);
+        opts.validateFormats = formatOpt;
+      }
+      _addVocabularies() {
+        this.addKeyword("$async");
+      }
+      _addDefaultMetaSchema() {
+        const { $data, meta, schemaId } = this.opts;
+        let _dataRefSchema = $dataRefSchema;
+        if (schemaId === "id") {
+          _dataRefSchema = { ...$dataRefSchema };
+          _dataRefSchema.id = _dataRefSchema.$id;
+          delete _dataRefSchema.$id;
+        }
+        if (meta && $data)
+          this.addMetaSchema(_dataRefSchema, _dataRefSchema[schemaId], false);
+      }
+      defaultMeta() {
+        const { meta, schemaId } = this.opts;
+        return this.opts.defaultMeta = typeof meta == "object" ? meta[schemaId] || meta : void 0;
+      }
+      validate(schemaKeyRef, data) {
+        let v3;
+        if (typeof schemaKeyRef == "string") {
+          v3 = this.getSchema(schemaKeyRef);
+          if (!v3)
+            throw new Error(`no schema with key or ref "${schemaKeyRef}"`);
+        } else {
+          v3 = this.compile(schemaKeyRef);
+        }
+        const valid = v3(data);
+        if (!("$async" in v3))
+          this.errors = v3.errors;
+        return valid;
+      }
+      compile(schema, _meta) {
+        const sch = this._addSchema(schema, _meta);
+        return sch.validate || this._compileSchemaEnv(sch);
+      }
+      compileAsync(schema, meta) {
+        if (typeof this.opts.loadSchema != "function") {
+          throw new Error("options.loadSchema should be a function");
+        }
+        const { loadSchema } = this.opts;
+        return runCompileAsync.call(this, schema, meta);
+        async function runCompileAsync(_schema, _meta) {
+          await loadMetaSchema.call(this, _schema.$schema);
+          const sch = this._addSchema(_schema, _meta);
+          return sch.validate || _compileAsync.call(this, sch);
+        }
+        async function loadMetaSchema($ref) {
+          if ($ref && !this.getSchema($ref)) {
+            await runCompileAsync.call(this, { $ref }, true);
+          }
+        }
+        async function _compileAsync(sch) {
+          try {
+            return this._compileSchemaEnv(sch);
+          } catch (e) {
+            if (!(e instanceof ref_error_1.default))
+              throw e;
+            checkLoaded.call(this, e);
+            await loadMissingSchema.call(this, e.missingSchema);
+            return _compileAsync.call(this, sch);
+          }
+        }
+        function checkLoaded({ missingSchema: ref, missingRef }) {
+          if (this.refs[ref]) {
+            throw new Error(`AnySchema ${ref} is loaded but ${missingRef} cannot be resolved`);
+          }
+        }
+        async function loadMissingSchema(ref) {
+          const _schema = await _loadSchema.call(this, ref);
+          if (!this.refs[ref])
+            await loadMetaSchema.call(this, _schema.$schema);
+          if (!this.refs[ref])
+            this.addSchema(_schema, ref, meta);
+        }
+        async function _loadSchema(ref) {
+          const p2 = this._loading[ref];
+          if (p2)
+            return p2;
+          try {
+            return await (this._loading[ref] = loadSchema(ref));
+          } finally {
+            delete this._loading[ref];
+          }
+        }
+      }
+      // Adds schema to the instance
+      addSchema(schema, key, _meta, _validateSchema = this.opts.validateSchema) {
+        if (Array.isArray(schema)) {
+          for (const sch of schema)
+            this.addSchema(sch, void 0, _meta, _validateSchema);
+          return this;
+        }
+        let id;
+        if (typeof schema === "object") {
+          const { schemaId } = this.opts;
+          id = schema[schemaId];
+          if (id !== void 0 && typeof id != "string") {
+            throw new Error(`schema ${schemaId} must be string`);
+          }
+        }
+        key = (0, resolve_1.normalizeId)(key || id);
+        this._checkUnique(key);
+        this.schemas[key] = this._addSchema(schema, _meta, key, _validateSchema, true);
+        return this;
+      }
+      // Add schema that will be used to validate other schemas
+      // options in META_IGNORE_OPTIONS are alway set to false
+      addMetaSchema(schema, key, _validateSchema = this.opts.validateSchema) {
+        this.addSchema(schema, key, true, _validateSchema);
+        return this;
+      }
+      //  Validate schema against its meta-schema
+      validateSchema(schema, throwOrLogError) {
+        if (typeof schema == "boolean")
+          return true;
+        let $schema;
+        $schema = schema.$schema;
+        if ($schema !== void 0 && typeof $schema != "string") {
+          throw new Error("$schema must be a string");
+        }
+        $schema = $schema || this.opts.defaultMeta || this.defaultMeta();
+        if (!$schema) {
+          this.logger.warn("meta-schema not available");
+          this.errors = null;
+          return true;
+        }
+        const valid = this.validate($schema, schema);
+        if (!valid && throwOrLogError) {
+          const message = "schema is invalid: " + this.errorsText();
+          if (this.opts.validateSchema === "log")
+            this.logger.error(message);
+          else
+            throw new Error(message);
+        }
+        return valid;
+      }
+      // Get compiled schema by `key` or `ref`.
+      // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
+      getSchema(keyRef) {
+        let sch;
+        while (typeof (sch = getSchEnv.call(this, keyRef)) == "string")
+          keyRef = sch;
+        if (sch === void 0) {
+          const { schemaId } = this.opts;
+          const root2 = new compile_1.SchemaEnv({ schema: {}, schemaId });
+          sch = compile_1.resolveSchema.call(this, root2, keyRef);
+          if (!sch)
+            return;
+          this.refs[keyRef] = sch;
+        }
+        return sch.validate || this._compileSchemaEnv(sch);
+      }
+      // Remove cached schema(s).
+      // If no parameter is passed all schemas but meta-schemas are removed.
+      // If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
+      // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
+      removeSchema(schemaKeyRef) {
+        if (schemaKeyRef instanceof RegExp) {
+          this._removeAllSchemas(this.schemas, schemaKeyRef);
+          this._removeAllSchemas(this.refs, schemaKeyRef);
+          return this;
+        }
+        switch (typeof schemaKeyRef) {
+          case "undefined":
+            this._removeAllSchemas(this.schemas);
+            this._removeAllSchemas(this.refs);
+            this._cache.clear();
+            return this;
+          case "string": {
+            const sch = getSchEnv.call(this, schemaKeyRef);
+            if (typeof sch == "object")
+              this._cache.delete(sch.schema);
+            delete this.schemas[schemaKeyRef];
+            delete this.refs[schemaKeyRef];
+            return this;
+          }
+          case "object": {
+            const cacheKey = schemaKeyRef;
+            this._cache.delete(cacheKey);
+            let id = schemaKeyRef[this.opts.schemaId];
+            if (id) {
+              id = (0, resolve_1.normalizeId)(id);
+              delete this.schemas[id];
+              delete this.refs[id];
+            }
+            return this;
+          }
+          default:
+            throw new Error("ajv.removeSchema: invalid parameter");
+        }
+      }
+      // add "vocabulary" - a collection of keywords
+      addVocabulary(definitions) {
+        for (const def of definitions)
+          this.addKeyword(def);
+        return this;
+      }
+      addKeyword(kwdOrDef, def) {
+        let keyword;
+        if (typeof kwdOrDef == "string") {
+          keyword = kwdOrDef;
+          if (typeof def == "object") {
+            this.logger.warn("these parameters are deprecated, see docs for addKeyword");
+            def.keyword = keyword;
+          }
+        } else if (typeof kwdOrDef == "object" && def === void 0) {
+          def = kwdOrDef;
+          keyword = def.keyword;
+          if (Array.isArray(keyword) && !keyword.length) {
+            throw new Error("addKeywords: keyword must be string or non-empty array");
+          }
+        } else {
+          throw new Error("invalid addKeywords parameters");
+        }
+        checkKeyword.call(this, keyword, def);
+        if (!def) {
+          (0, util_1.eachItem)(keyword, (kwd) => addRule.call(this, kwd));
+          return this;
+        }
+        keywordMetaschema.call(this, def);
+        const definition = {
+          ...def,
+          type: (0, dataType_1.getJSONTypes)(def.type),
+          schemaType: (0, dataType_1.getJSONTypes)(def.schemaType)
+        };
+        (0, util_1.eachItem)(keyword, definition.type.length === 0 ? (k) => addRule.call(this, k, definition) : (k) => definition.type.forEach((t) => addRule.call(this, k, definition, t)));
+        return this;
+      }
+      getKeyword(keyword) {
+        const rule = this.RULES.all[keyword];
+        return typeof rule == "object" ? rule.definition : !!rule;
+      }
+      // Remove keyword
+      removeKeyword(keyword) {
+        const { RULES } = this;
+        delete RULES.keywords[keyword];
+        delete RULES.all[keyword];
+        for (const group of RULES.rules) {
+          const i2 = group.rules.findIndex((rule) => rule.keyword === keyword);
+          if (i2 >= 0)
+            group.rules.splice(i2, 1);
+        }
+        return this;
+      }
+      // Add format
+      addFormat(name, format) {
+        if (typeof format == "string")
+          format = new RegExp(format);
+        this.formats[name] = format;
+        return this;
+      }
+      errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
+        if (!errors || errors.length === 0)
+          return "No errors";
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text, msg) => text + separator + msg);
+      }
+      $dataMetaSchema(metaSchema, keywordsJsonPointers) {
+        const rules = this.RULES.all;
+        metaSchema = JSON.parse(JSON.stringify(metaSchema));
+        for (const jsonPointer of keywordsJsonPointers) {
+          const segments = jsonPointer.split("/").slice(1);
+          let keywords = metaSchema;
+          for (const seg of segments)
+            keywords = keywords[seg];
+          for (const key in rules) {
+            const rule = rules[key];
+            if (typeof rule != "object")
+              continue;
+            const { $data } = rule.definition;
+            const schema = keywords[key];
+            if ($data && schema)
+              keywords[key] = schemaOrData(schema);
+          }
+        }
+        return metaSchema;
+      }
+      _removeAllSchemas(schemas, regex) {
+        for (const keyRef in schemas) {
+          const sch = schemas[keyRef];
+          if (!regex || regex.test(keyRef)) {
+            if (typeof sch == "string") {
+              delete schemas[keyRef];
+            } else if (sch && !sch.meta) {
+              this._cache.delete(sch.schema);
+              delete schemas[keyRef];
+            }
+          }
+        }
+      }
+      _addSchema(schema, meta, baseId, validateSchema = this.opts.validateSchema, addSchema = this.opts.addUsedSchema) {
+        let id;
+        const { schemaId } = this.opts;
+        if (typeof schema == "object") {
+          id = schema[schemaId];
+        } else {
+          if (this.opts.jtd)
+            throw new Error("schema must be object");
+          else if (typeof schema != "boolean")
+            throw new Error("schema must be object or boolean");
+        }
+        let sch = this._cache.get(schema);
+        if (sch !== void 0)
+          return sch;
+        baseId = (0, resolve_1.normalizeId)(id || baseId);
+        const localRefs = resolve_1.getSchemaRefs.call(this, schema, baseId);
+        sch = new compile_1.SchemaEnv({ schema, schemaId, meta, baseId, localRefs });
+        this._cache.set(sch.schema, sch);
+        if (addSchema && !baseId.startsWith("#")) {
+          if (baseId)
+            this._checkUnique(baseId);
+          this.refs[baseId] = sch;
+        }
+        if (validateSchema)
+          this.validateSchema(schema, true);
+        return sch;
+      }
+      _checkUnique(id) {
+        if (this.schemas[id] || this.refs[id]) {
+          throw new Error(`schema with key or id "${id}" already exists`);
+        }
+      }
+      _compileSchemaEnv(sch) {
+        if (sch.meta)
+          this._compileMetaSchema(sch);
+        else
+          compile_1.compileSchema.call(this, sch);
+        if (!sch.validate)
+          throw new Error("ajv implementation error");
+        return sch.validate;
+      }
+      _compileMetaSchema(sch) {
+        const currentOpts = this.opts;
+        this.opts = this._metaOpts;
+        try {
+          compile_1.compileSchema.call(this, sch);
+        } finally {
+          this.opts = currentOpts;
+        }
+      }
+    };
+    Ajv2.ValidationError = validation_error_1.default;
+    Ajv2.MissingRefError = ref_error_1.default;
+    exports2.default = Ajv2;
+    function checkOptions(checkOpts, options, msg, log = "error") {
+      for (const key in checkOpts) {
+        const opt = key;
+        if (opt in options)
+          this.logger[log](`${msg}: option ${key}. ${checkOpts[opt]}`);
+      }
+    }
+    function getSchEnv(keyRef) {
+      keyRef = (0, resolve_1.normalizeId)(keyRef);
+      return this.schemas[keyRef] || this.refs[keyRef];
+    }
+    function addInitialSchemas() {
+      const optsSchemas = this.opts.schemas;
+      if (!optsSchemas)
+        return;
+      if (Array.isArray(optsSchemas))
+        this.addSchema(optsSchemas);
+      else
+        for (const key in optsSchemas)
+          this.addSchema(optsSchemas[key], key);
+    }
+    function addInitialFormats() {
+      for (const name in this.opts.formats) {
+        const format = this.opts.formats[name];
+        if (format)
+          this.addFormat(name, format);
+      }
+    }
+    function addInitialKeywords(defs) {
+      if (Array.isArray(defs)) {
+        this.addVocabulary(defs);
+        return;
+      }
+      this.logger.warn("keywords option as map is deprecated, pass array");
+      for (const keyword in defs) {
+        const def = defs[keyword];
+        if (!def.keyword)
+          def.keyword = keyword;
+        this.addKeyword(def);
+      }
+    }
+    function getMetaSchemaOptions() {
+      const metaOpts = { ...this.opts };
+      for (const opt of META_IGNORE_OPTIONS)
+        delete metaOpts[opt];
+      return metaOpts;
+    }
+    var noLogs = { log() {
+    }, warn() {
+    }, error() {
+    } };
+    function getLogger(logger) {
+      if (logger === false)
+        return noLogs;
+      if (logger === void 0)
+        return console;
+      if (logger.log && logger.warn && logger.error)
+        return logger;
+      throw new Error("logger must implement log, warn and error methods");
+    }
+    var KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i;
+    function checkKeyword(keyword, def) {
+      const { RULES } = this;
+      (0, util_1.eachItem)(keyword, (kwd) => {
+        if (RULES.keywords[kwd])
+          throw new Error(`Keyword ${kwd} is already defined`);
+        if (!KEYWORD_NAME.test(kwd))
+          throw new Error(`Keyword ${kwd} has invalid name`);
+      });
+      if (!def)
+        return;
+      if (def.$data && !("code" in def || "validate" in def)) {
+        throw new Error('$data keyword must have "code" or "validate" function');
+      }
+    }
+    function addRule(keyword, definition, dataType) {
+      var _a;
+      const post = definition === null || definition === void 0 ? void 0 : definition.post;
+      if (dataType && post)
+        throw new Error('keyword with "post" flag cannot have "type"');
+      const { RULES } = this;
+      let ruleGroup = post ? RULES.post : RULES.rules.find(({ type: t }) => t === dataType);
+      if (!ruleGroup) {
+        ruleGroup = { type: dataType, rules: [] };
+        RULES.rules.push(ruleGroup);
+      }
+      RULES.keywords[keyword] = true;
+      if (!definition)
+        return;
+      const rule = {
+        keyword,
+        definition: {
+          ...definition,
+          type: (0, dataType_1.getJSONTypes)(definition.type),
+          schemaType: (0, dataType_1.getJSONTypes)(definition.schemaType)
+        }
+      };
+      if (definition.before)
+        addBeforeRule.call(this, ruleGroup, rule, definition.before);
+      else
+        ruleGroup.rules.push(rule);
+      RULES.all[keyword] = rule;
+      (_a = definition.implements) === null || _a === void 0 ? void 0 : _a.forEach((kwd) => this.addKeyword(kwd));
+    }
+    function addBeforeRule(ruleGroup, rule, before) {
+      const i2 = ruleGroup.rules.findIndex((_rule) => _rule.keyword === before);
+      if (i2 >= 0) {
+        ruleGroup.rules.splice(i2, 0, rule);
+      } else {
+        ruleGroup.rules.push(rule);
+        this.logger.warn(`rule ${before} is not defined`);
+      }
+    }
+    function keywordMetaschema(def) {
+      let { metaSchema } = def;
+      if (metaSchema === void 0)
+        return;
+      if (def.$data && this.opts.$data)
+        metaSchema = schemaOrData(metaSchema);
+      def.validateSchema = this.compile(metaSchema, true);
+    }
+    var $dataRef = {
+      $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#"
+    };
+    function schemaOrData(schema) {
+      return { anyOf: [schema, $dataRef] };
+    }
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/core/id.js
+var require_id = __commonJS({
+  "node_modules/ajv/dist/vocabularies/core/id.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var def = {
+      keyword: "id",
+      code() {
+        throw new Error('NOT SUPPORTED: keyword "id", use "$id" for schema ID');
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/core/ref.js
+var require_ref = __commonJS({
+  "node_modules/ajv/dist/vocabularies/core/ref.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.callRef = exports2.getValidate = void 0;
+    var ref_error_1 = require_ref_error();
+    var code_1 = require_code2();
+    var codegen_1 = require_codegen();
+    var names_1 = require_names();
+    var compile_1 = require_compile();
+    var util_1 = require_util();
+    var def = {
+      keyword: "$ref",
+      schemaType: "string",
+      code(cxt) {
+        const { gen, schema: $ref, it } = cxt;
+        const { baseId, schemaEnv: env, validateName, opts, self: self2 } = it;
+        const { root: root2 } = env;
+        if (($ref === "#" || $ref === "#/") && baseId === root2.baseId)
+          return callRootRef();
+        const schOrEnv = compile_1.resolveRef.call(self2, root2, baseId, $ref);
+        if (schOrEnv === void 0)
+          throw new ref_error_1.default(it.opts.uriResolver, baseId, $ref);
+        if (schOrEnv instanceof compile_1.SchemaEnv)
+          return callValidate(schOrEnv);
+        return inlineRefSchema(schOrEnv);
+        function callRootRef() {
+          if (env === root2)
+            return callRef(cxt, validateName, env, env.$async);
+          const rootName = gen.scopeValue("root", { ref: root2 });
+          return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root2, root2.$async);
+        }
+        function callValidate(sch) {
+          const v3 = getValidate(cxt, sch);
+          callRef(cxt, v3, sch, sch.$async);
+        }
+        function inlineRefSchema(sch) {
+          const schName = gen.scopeValue("schema", opts.code.source === true ? { ref: sch, code: (0, codegen_1.stringify)(sch) } : { ref: sch });
+          const valid = gen.name("valid");
+          const schCxt = cxt.subschema({
+            schema: sch,
+            dataTypes: [],
+            schemaPath: codegen_1.nil,
+            topSchemaRef: schName,
+            errSchemaPath: $ref
+          }, valid);
+          cxt.mergeEvaluated(schCxt);
+          cxt.ok(valid);
+        }
+      }
+    };
+    function getValidate(cxt, sch) {
+      const { gen } = cxt;
+      return sch.validate ? gen.scopeValue("validate", { ref: sch.validate }) : (0, codegen_1._)`${gen.scopeValue("wrapper", { ref: sch })}.validate`;
+    }
+    exports2.getValidate = getValidate;
+    function callRef(cxt, v3, sch, $async) {
+      const { gen, it } = cxt;
+      const { allErrors, schemaEnv: env, opts } = it;
+      const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
+      if ($async)
+        callAsyncRef();
+      else
+        callSyncRef();
+      function callAsyncRef() {
+        if (!env.$async)
+          throw new Error("async schema referenced by sync schema");
+        const valid = gen.let("valid");
+        gen.try(() => {
+          gen.code((0, codegen_1._)`await ${(0, code_1.callValidateCode)(cxt, v3, passCxt)}`);
+          addEvaluatedFrom(v3);
+          if (!allErrors)
+            gen.assign(valid, true);
+        }, (e) => {
+          gen.if((0, codegen_1._)`!(${e} instanceof ${it.ValidationError})`, () => gen.throw(e));
+          addErrorsFrom(e);
+          if (!allErrors)
+            gen.assign(valid, false);
+        });
+        cxt.ok(valid);
+      }
+      function callSyncRef() {
+        cxt.result((0, code_1.callValidateCode)(cxt, v3, passCxt), () => addEvaluatedFrom(v3), () => addErrorsFrom(v3));
+      }
+      function addErrorsFrom(source) {
+        const errs = (0, codegen_1._)`${source}.errors`;
+        gen.assign(names_1.default.vErrors, (0, codegen_1._)`${names_1.default.vErrors} === null ? ${errs} : ${names_1.default.vErrors}.concat(${errs})`);
+        gen.assign(names_1.default.errors, (0, codegen_1._)`${names_1.default.vErrors}.length`);
+      }
+      function addEvaluatedFrom(source) {
+        var _a;
+        if (!it.opts.unevaluated)
+          return;
+        const schEvaluated = (_a = sch === null || sch === void 0 ? void 0 : sch.validate) === null || _a === void 0 ? void 0 : _a.evaluated;
+        if (it.props !== true) {
+          if (schEvaluated && !schEvaluated.dynamicProps) {
+            if (schEvaluated.props !== void 0) {
+              it.props = util_1.mergeEvaluated.props(gen, schEvaluated.props, it.props);
+            }
+          } else {
+            const props = gen.var("props", (0, codegen_1._)`${source}.evaluated.props`);
+            it.props = util_1.mergeEvaluated.props(gen, props, it.props, codegen_1.Name);
+          }
+        }
+        if (it.items !== true) {
+          if (schEvaluated && !schEvaluated.dynamicItems) {
+            if (schEvaluated.items !== void 0) {
+              it.items = util_1.mergeEvaluated.items(gen, schEvaluated.items, it.items);
+            }
+          } else {
+            const items = gen.var("items", (0, codegen_1._)`${source}.evaluated.items`);
+            it.items = util_1.mergeEvaluated.items(gen, items, it.items, codegen_1.Name);
+          }
+        }
+      }
+    }
+    exports2.callRef = callRef;
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/core/index.js
+var require_core2 = __commonJS({
+  "node_modules/ajv/dist/vocabularies/core/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var id_1 = require_id();
+    var ref_1 = require_ref();
+    var core = [
+      "$schema",
+      "$id",
+      "$defs",
+      "$vocabulary",
+      { keyword: "$comment" },
+      "definitions",
+      id_1.default,
+      ref_1.default
+    ];
+    exports2.default = core;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+var require_limitNumber = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var ops = codegen_1.operators;
+    var KWDs = {
+      maximum: { okStr: "<=", ok: ops.LTE, fail: ops.GT },
+      minimum: { okStr: ">=", ok: ops.GTE, fail: ops.LT },
+      exclusiveMaximum: { okStr: "<", ok: ops.LT, fail: ops.GTE },
+      exclusiveMinimum: { okStr: ">", ok: ops.GT, fail: ops.LTE }
+    };
+    var error = {
+      message: ({ keyword, schemaCode }) => (0, codegen_1.str)`must be ${KWDs[keyword].okStr} ${schemaCode}`,
+      params: ({ keyword, schemaCode }) => (0, codegen_1._)`{comparison: ${KWDs[keyword].okStr}, limit: ${schemaCode}}`
+    };
+    var def = {
+      keyword: Object.keys(KWDs),
+      type: "number",
+      schemaType: "number",
+      $data: true,
+      error,
+      code(cxt) {
+        const { keyword, data, schemaCode } = cxt;
+        cxt.fail$data((0, codegen_1._)`${data} ${KWDs[keyword].fail} ${schemaCode} || isNaN(${data})`);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+var require_multipleOf = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var error = {
+      message: ({ schemaCode }) => (0, codegen_1.str)`must be multiple of ${schemaCode}`,
+      params: ({ schemaCode }) => (0, codegen_1._)`{multipleOf: ${schemaCode}}`
+    };
+    var def = {
+      keyword: "multipleOf",
+      type: "number",
+      schemaType: "number",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, data, schemaCode, it } = cxt;
+        const prec = it.opts.multipleOfPrecision;
+        const res = gen.let("res");
+        const invalid = prec ? (0, codegen_1._)`Math.abs(Math.round(${res}) - ${res}) > 1e-${prec}` : (0, codegen_1._)`${res} !== parseInt(${res})`;
+        cxt.fail$data((0, codegen_1._)`(${schemaCode} === 0 || (${res} = ${data}/${schemaCode}, ${invalid}))`);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/runtime/ucs2length.js
+var require_ucs2length = __commonJS({
+  "node_modules/ajv/dist/runtime/ucs2length.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    function ucs2length(str) {
+      const len = str.length;
+      let length = 0;
+      let pos = 0;
+      let value;
+      while (pos < len) {
+        length++;
+        value = str.charCodeAt(pos++);
+        if (value >= 55296 && value <= 56319 && pos < len) {
+          value = str.charCodeAt(pos);
+          if ((value & 64512) === 56320)
+            pos++;
+        }
+      }
+      return length;
+    }
+    exports2.default = ucs2length;
+    ucs2length.code = 'require("ajv/dist/runtime/ucs2length").default';
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/limitLength.js
+var require_limitLength = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var ucs2length_1 = require_ucs2length();
+    var error = {
+      message({ keyword, schemaCode }) {
+        const comp = keyword === "maxLength" ? "more" : "fewer";
+        return (0, codegen_1.str)`must NOT have ${comp} than ${schemaCode} characters`;
+      },
+      params: ({ schemaCode }) => (0, codegen_1._)`{limit: ${schemaCode}}`
+    };
+    var def = {
+      keyword: ["maxLength", "minLength"],
+      type: "string",
+      schemaType: "number",
+      $data: true,
+      error,
+      code(cxt) {
+        const { keyword, data, schemaCode, it } = cxt;
+        const op = keyword === "maxLength" ? codegen_1.operators.GT : codegen_1.operators.LT;
+        const len = it.opts.unicode === false ? (0, codegen_1._)`${data}.length` : (0, codegen_1._)`${(0, util_1.useFunc)(cxt.gen, ucs2length_1.default)}(${data})`;
+        cxt.fail$data((0, codegen_1._)`${len} ${op} ${schemaCode}`);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/pattern.js
+var require_pattern = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var code_1 = require_code2();
+    var util_1 = require_util();
+    var codegen_1 = require_codegen();
+    var error = {
+      message: ({ schemaCode }) => (0, codegen_1.str)`must match pattern "${schemaCode}"`,
+      params: ({ schemaCode }) => (0, codegen_1._)`{pattern: ${schemaCode}}`
+    };
+    var def = {
+      keyword: "pattern",
+      type: "string",
+      schemaType: "string",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, data, $data, schema, schemaCode, it } = cxt;
+        const u = it.opts.unicodeRegExp ? "u" : "";
+        if ($data) {
+          const { regExp } = it.opts.code;
+          const regExpCode = regExp.code === "new RegExp" ? (0, codegen_1._)`new RegExp` : (0, util_1.useFunc)(gen, regExp);
+          const valid = gen.let("valid");
+          gen.try(() => gen.assign(valid, (0, codegen_1._)`${regExpCode}(${schemaCode}, ${u}).test(${data})`), () => gen.assign(valid, false));
+          cxt.fail$data((0, codegen_1._)`!${valid}`);
+        } else {
+          const regExp = (0, code_1.usePattern)(cxt, schema);
+          cxt.fail$data((0, codegen_1._)`!${regExp}.test(${data})`);
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+var require_limitProperties = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var error = {
+      message({ keyword, schemaCode }) {
+        const comp = keyword === "maxProperties" ? "more" : "fewer";
+        return (0, codegen_1.str)`must NOT have ${comp} than ${schemaCode} properties`;
+      },
+      params: ({ schemaCode }) => (0, codegen_1._)`{limit: ${schemaCode}}`
+    };
+    var def = {
+      keyword: ["maxProperties", "minProperties"],
+      type: "object",
+      schemaType: "number",
+      $data: true,
+      error,
+      code(cxt) {
+        const { keyword, data, schemaCode } = cxt;
+        const op = keyword === "maxProperties" ? codegen_1.operators.GT : codegen_1.operators.LT;
+        cxt.fail$data((0, codegen_1._)`Object.keys(${data}).length ${op} ${schemaCode}`);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/required.js
+var require_required = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/required.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var code_1 = require_code2();
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var error = {
+      message: ({ params: { missingProperty } }) => (0, codegen_1.str)`must have required property '${missingProperty}'`,
+      params: ({ params: { missingProperty } }) => (0, codegen_1._)`{missingProperty: ${missingProperty}}`
+    };
+    var def = {
+      keyword: "required",
+      type: "object",
+      schemaType: "array",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, schema, schemaCode, data, $data, it } = cxt;
+        const { opts } = it;
+        if (!$data && schema.length === 0)
+          return;
+        const useLoop = schema.length >= opts.loopRequired;
+        if (it.allErrors)
+          allErrorsMode();
+        else
+          exitOnErrorMode();
+        if (opts.strictRequired) {
+          const props = cxt.parentSchema.properties;
+          const { definedProperties } = cxt.it;
+          for (const requiredKey of schema) {
+            if ((props === null || props === void 0 ? void 0 : props[requiredKey]) === void 0 && !definedProperties.has(requiredKey)) {
+              const schemaPath = it.schemaEnv.baseId + it.errSchemaPath;
+              const msg = `required property "${requiredKey}" is not defined at "${schemaPath}" (strictRequired)`;
+              (0, util_1.checkStrictMode)(it, msg, it.opts.strictRequired);
+            }
+          }
+        }
+        function allErrorsMode() {
+          if (useLoop || $data) {
+            cxt.block$data(codegen_1.nil, loopAllRequired);
+          } else {
+            for (const prop of schema) {
+              (0, code_1.checkReportMissingProp)(cxt, prop);
+            }
+          }
+        }
+        function exitOnErrorMode() {
+          const missing = gen.let("missing");
+          if (useLoop || $data) {
+            const valid = gen.let("valid", true);
+            cxt.block$data(valid, () => loopUntilMissing(missing, valid));
+            cxt.ok(valid);
+          } else {
+            gen.if((0, code_1.checkMissingProp)(cxt, schema, missing));
+            (0, code_1.reportMissingProp)(cxt, missing);
+            gen.else();
+          }
+        }
+        function loopAllRequired() {
+          gen.forOf("prop", schemaCode, (prop) => {
+            cxt.setParams({ missingProperty: prop });
+            gen.if((0, code_1.noPropertyInData)(gen, data, prop, opts.ownProperties), () => cxt.error());
+          });
+        }
+        function loopUntilMissing(missing, valid) {
+          cxt.setParams({ missingProperty: missing });
+          gen.forOf(missing, schemaCode, () => {
+            gen.assign(valid, (0, code_1.propertyInData)(gen, data, missing, opts.ownProperties));
+            gen.if((0, codegen_1.not)(valid), () => {
+              cxt.error();
+              gen.break();
+            });
+          }, codegen_1.nil);
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/limitItems.js
+var require_limitItems = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var error = {
+      message({ keyword, schemaCode }) {
+        const comp = keyword === "maxItems" ? "more" : "fewer";
+        return (0, codegen_1.str)`must NOT have ${comp} than ${schemaCode} items`;
+      },
+      params: ({ schemaCode }) => (0, codegen_1._)`{limit: ${schemaCode}}`
+    };
+    var def = {
+      keyword: ["maxItems", "minItems"],
+      type: "array",
+      schemaType: "number",
+      $data: true,
+      error,
+      code(cxt) {
+        const { keyword, data, schemaCode } = cxt;
+        const op = keyword === "maxItems" ? codegen_1.operators.GT : codegen_1.operators.LT;
+        cxt.fail$data((0, codegen_1._)`${data}.length ${op} ${schemaCode}`);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/runtime/equal.js
+var require_equal = __commonJS({
+  "node_modules/ajv/dist/runtime/equal.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var equal = require_fast_deep_equal();
+    equal.code = 'require("ajv/dist/runtime/equal").default';
+    exports2.default = equal;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+var require_uniqueItems = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var dataType_1 = require_dataType();
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var equal_1 = require_equal();
+    var error = {
+      message: ({ params: { i: i2, j } }) => (0, codegen_1.str)`must NOT have duplicate items (items ## ${j} and ${i2} are identical)`,
+      params: ({ params: { i: i2, j } }) => (0, codegen_1._)`{i: ${i2}, j: ${j}}`
+    };
+    var def = {
+      keyword: "uniqueItems",
+      type: "array",
+      schemaType: "boolean",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, data, $data, schema, parentSchema, schemaCode, it } = cxt;
+        if (!$data && !schema)
+          return;
+        const valid = gen.let("valid");
+        const itemTypes = parentSchema.items ? (0, dataType_1.getSchemaTypes)(parentSchema.items) : [];
+        cxt.block$data(valid, validateUniqueItems, (0, codegen_1._)`${schemaCode} === false`);
+        cxt.ok(valid);
+        function validateUniqueItems() {
+          const i2 = gen.let("i", (0, codegen_1._)`${data}.length`);
+          const j = gen.let("j");
+          cxt.setParams({ i: i2, j });
+          gen.assign(valid, true);
+          gen.if((0, codegen_1._)`${i2} > 1`, () => (canOptimize() ? loopN : loopN2)(i2, j));
+        }
+        function canOptimize() {
+          return itemTypes.length > 0 && !itemTypes.some((t) => t === "object" || t === "array");
+        }
+        function loopN(i2, j) {
+          const item = gen.name("item");
+          const wrongType = (0, dataType_1.checkDataTypes)(itemTypes, item, it.opts.strictNumbers, dataType_1.DataType.Wrong);
+          const indices = gen.const("indices", (0, codegen_1._)`{}`);
+          gen.for((0, codegen_1._)`;${i2}--;`, () => {
+            gen.let(item, (0, codegen_1._)`${data}[${i2}]`);
+            gen.if(wrongType, (0, codegen_1._)`continue`);
+            if (itemTypes.length > 1)
+              gen.if((0, codegen_1._)`typeof ${item} == "string"`, (0, codegen_1._)`${item} += "_"`);
+            gen.if((0, codegen_1._)`typeof ${indices}[${item}] == "number"`, () => {
+              gen.assign(j, (0, codegen_1._)`${indices}[${item}]`);
+              cxt.error();
+              gen.assign(valid, false).break();
+            }).code((0, codegen_1._)`${indices}[${item}] = ${i2}`);
+          });
+        }
+        function loopN2(i2, j) {
+          const eql = (0, util_1.useFunc)(gen, equal_1.default);
+          const outer = gen.name("outer");
+          gen.label(outer).for((0, codegen_1._)`;${i2}--;`, () => gen.for((0, codegen_1._)`${j} = ${i2}; ${j}--;`, () => gen.if((0, codegen_1._)`${eql}(${data}[${i2}], ${data}[${j}])`, () => {
+            cxt.error();
+            gen.assign(valid, false).break(outer);
+          })));
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/const.js
+var require_const = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/const.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var equal_1 = require_equal();
+    var error = {
+      message: "must be equal to constant",
+      params: ({ schemaCode }) => (0, codegen_1._)`{allowedValue: ${schemaCode}}`
+    };
+    var def = {
+      keyword: "const",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, data, $data, schemaCode, schema } = cxt;
+        if ($data || schema && typeof schema == "object") {
+          cxt.fail$data((0, codegen_1._)`!${(0, util_1.useFunc)(gen, equal_1.default)}(${data}, ${schemaCode})`);
+        } else {
+          cxt.fail((0, codegen_1._)`${schema} !== ${data}`);
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/enum.js
+var require_enum = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/enum.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var equal_1 = require_equal();
+    var error = {
+      message: "must be equal to one of the allowed values",
+      params: ({ schemaCode }) => (0, codegen_1._)`{allowedValues: ${schemaCode}}`
+    };
+    var def = {
+      keyword: "enum",
+      schemaType: "array",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, data, $data, schema, schemaCode, it } = cxt;
+        if (!$data && schema.length === 0)
+          throw new Error("enum must have non-empty array");
+        const useLoop = schema.length >= it.opts.loopEnum;
+        let eql;
+        const getEql = () => eql !== null && eql !== void 0 ? eql : eql = (0, util_1.useFunc)(gen, equal_1.default);
+        let valid;
+        if (useLoop || $data) {
+          valid = gen.let("valid");
+          cxt.block$data(valid, loopEnum);
+        } else {
+          if (!Array.isArray(schema))
+            throw new Error("ajv implementation error");
+          const vSchema = gen.const("vSchema", schemaCode);
+          valid = (0, codegen_1.or)(...schema.map((_x, i2) => equalCode(vSchema, i2)));
+        }
+        cxt.pass(valid);
+        function loopEnum() {
+          gen.assign(valid, false);
+          gen.forOf("v", schemaCode, (v3) => gen.if((0, codegen_1._)`${getEql()}(${data}, ${v3})`, () => gen.assign(valid, true).break()));
+        }
+        function equalCode(vSchema, i2) {
+          const sch = schema[i2];
+          return typeof sch === "object" && sch !== null ? (0, codegen_1._)`${getEql()}(${data}, ${vSchema}[${i2}])` : (0, codegen_1._)`${data} === ${sch}`;
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/validation/index.js
+var require_validation = __commonJS({
+  "node_modules/ajv/dist/vocabularies/validation/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var limitNumber_1 = require_limitNumber();
+    var multipleOf_1 = require_multipleOf();
+    var limitLength_1 = require_limitLength();
+    var pattern_1 = require_pattern();
+    var limitProperties_1 = require_limitProperties();
+    var required_1 = require_required();
+    var limitItems_1 = require_limitItems();
+    var uniqueItems_1 = require_uniqueItems();
+    var const_1 = require_const();
+    var enum_1 = require_enum();
+    var validation = [
+      // number
+      limitNumber_1.default,
+      multipleOf_1.default,
+      // string
+      limitLength_1.default,
+      pattern_1.default,
+      // object
+      limitProperties_1.default,
+      required_1.default,
+      // array
+      limitItems_1.default,
+      uniqueItems_1.default,
+      // any
+      { keyword: "type", schemaType: ["string", "array"] },
+      { keyword: "nullable", schemaType: "boolean" },
+      const_1.default,
+      enum_1.default
+    ];
+    exports2.default = validation;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+var require_additionalItems = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.validateAdditionalItems = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var error = {
+      message: ({ params: { len } }) => (0, codegen_1.str)`must NOT have more than ${len} items`,
+      params: ({ params: { len } }) => (0, codegen_1._)`{limit: ${len}}`
+    };
+    var def = {
+      keyword: "additionalItems",
+      type: "array",
+      schemaType: ["boolean", "object"],
+      before: "uniqueItems",
+      error,
+      code(cxt) {
+        const { parentSchema, it } = cxt;
+        const { items } = parentSchema;
+        if (!Array.isArray(items)) {
+          (0, util_1.checkStrictMode)(it, '"additionalItems" is ignored when "items" is not an array of schemas');
+          return;
+        }
+        validateAdditionalItems(cxt, items);
+      }
+    };
+    function validateAdditionalItems(cxt, items) {
+      const { gen, schema, data, keyword, it } = cxt;
+      it.items = true;
+      const len = gen.const("len", (0, codegen_1._)`${data}.length`);
+      if (schema === false) {
+        cxt.setParams({ len: items.length });
+        cxt.pass((0, codegen_1._)`${len} <= ${items.length}`);
+      } else if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
+        const valid = gen.var("valid", (0, codegen_1._)`${len} <= ${items.length}`);
+        gen.if((0, codegen_1.not)(valid), () => validateItems(valid));
+        cxt.ok(valid);
+      }
+      function validateItems(valid) {
+        gen.forRange("i", items.length, len, (i2) => {
+          cxt.subschema({ keyword, dataProp: i2, dataPropType: util_1.Type.Num }, valid);
+          if (!it.allErrors)
+            gen.if((0, codegen_1.not)(valid), () => gen.break());
+        });
+      }
+    }
+    exports2.validateAdditionalItems = validateAdditionalItems;
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/items.js
+var require_items = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/items.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.validateTuple = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var code_1 = require_code2();
+    var def = {
+      keyword: "items",
+      type: "array",
+      schemaType: ["object", "array", "boolean"],
+      before: "uniqueItems",
+      code(cxt) {
+        const { schema, it } = cxt;
+        if (Array.isArray(schema))
+          return validateTuple(cxt, "additionalItems", schema);
+        it.items = true;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+          return;
+        cxt.ok((0, code_1.validateArray)(cxt));
+      }
+    };
+    function validateTuple(cxt, extraItems, schArr = cxt.schema) {
+      const { gen, parentSchema, data, keyword, it } = cxt;
+      checkStrictTuple(parentSchema);
+      if (it.opts.unevaluated && schArr.length && it.items !== true) {
+        it.items = util_1.mergeEvaluated.items(gen, schArr.length, it.items);
+      }
+      const valid = gen.name("valid");
+      const len = gen.const("len", (0, codegen_1._)`${data}.length`);
+      schArr.forEach((sch, i2) => {
+        if ((0, util_1.alwaysValidSchema)(it, sch))
+          return;
+        gen.if((0, codegen_1._)`${len} > ${i2}`, () => cxt.subschema({
+          keyword,
+          schemaProp: i2,
+          dataProp: i2
+        }, valid));
+        cxt.ok(valid);
+      });
+      function checkStrictTuple(sch) {
+        const { opts, errSchemaPath } = it;
+        const l = schArr.length;
+        const fullTuple = l === sch.minItems && (l === sch.maxItems || sch[extraItems] === false);
+        if (opts.strictTuples && !fullTuple) {
+          const msg = `"${keyword}" is ${l}-tuple, but minItems or maxItems/${extraItems} are not specified or different at path "${errSchemaPath}"`;
+          (0, util_1.checkStrictMode)(it, msg, opts.strictTuples);
+        }
+      }
+    }
+    exports2.validateTuple = validateTuple;
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+var require_prefixItems = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var items_1 = require_items();
+    var def = {
+      keyword: "prefixItems",
+      type: "array",
+      schemaType: ["array"],
+      before: "uniqueItems",
+      code: (cxt) => (0, items_1.validateTuple)(cxt, "items")
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/items2020.js
+var require_items2020 = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var code_1 = require_code2();
+    var additionalItems_1 = require_additionalItems();
+    var error = {
+      message: ({ params: { len } }) => (0, codegen_1.str)`must NOT have more than ${len} items`,
+      params: ({ params: { len } }) => (0, codegen_1._)`{limit: ${len}}`
+    };
+    var def = {
+      keyword: "items",
+      type: "array",
+      schemaType: ["object", "boolean"],
+      before: "uniqueItems",
+      error,
+      code(cxt) {
+        const { schema, parentSchema, it } = cxt;
+        const { prefixItems } = parentSchema;
+        it.items = true;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+          return;
+        if (prefixItems)
+          (0, additionalItems_1.validateAdditionalItems)(cxt, prefixItems);
+        else
+          cxt.ok((0, code_1.validateArray)(cxt));
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/contains.js
+var require_contains = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var error = {
+      message: ({ params: { min, max } }) => max === void 0 ? (0, codegen_1.str)`must contain at least ${min} valid item(s)` : (0, codegen_1.str)`must contain at least ${min} and no more than ${max} valid item(s)`,
+      params: ({ params: { min, max } }) => max === void 0 ? (0, codegen_1._)`{minContains: ${min}}` : (0, codegen_1._)`{minContains: ${min}, maxContains: ${max}}`
+    };
+    var def = {
+      keyword: "contains",
+      type: "array",
+      schemaType: ["object", "boolean"],
+      before: "uniqueItems",
+      trackErrors: true,
+      error,
+      code(cxt) {
+        const { gen, schema, parentSchema, data, it } = cxt;
+        let min;
+        let max;
+        const { minContains, maxContains } = parentSchema;
+        if (it.opts.next) {
+          min = minContains === void 0 ? 1 : minContains;
+          max = maxContains;
+        } else {
+          min = 1;
+        }
+        const len = gen.const("len", (0, codegen_1._)`${data}.length`);
+        cxt.setParams({ min, max });
+        if (max === void 0 && min === 0) {
+          (0, util_1.checkStrictMode)(it, `"minContains" == 0 without "maxContains": "contains" keyword ignored`);
+          return;
+        }
+        if (max !== void 0 && min > max) {
+          (0, util_1.checkStrictMode)(it, `"minContains" > "maxContains" is always invalid`);
+          cxt.fail();
+          return;
+        }
+        if ((0, util_1.alwaysValidSchema)(it, schema)) {
+          let cond = (0, codegen_1._)`${len} >= ${min}`;
+          if (max !== void 0)
+            cond = (0, codegen_1._)`${cond} && ${len} <= ${max}`;
+          cxt.pass(cond);
+          return;
+        }
+        it.items = true;
+        const valid = gen.name("valid");
+        if (max === void 0 && min === 1) {
+          validateItems(valid, () => gen.if(valid, () => gen.break()));
+        } else if (min === 0) {
+          gen.let(valid, true);
+          if (max !== void 0)
+            gen.if((0, codegen_1._)`${data}.length > 0`, validateItemsWithCount);
+        } else {
+          gen.let(valid, false);
+          validateItemsWithCount();
+        }
+        cxt.result(valid, () => cxt.reset());
+        function validateItemsWithCount() {
+          const schValid = gen.name("_valid");
+          const count = gen.let("count", 0);
+          validateItems(schValid, () => gen.if(schValid, () => checkLimits(count)));
+        }
+        function validateItems(_valid, block) {
+          gen.forRange("i", 0, len, (i2) => {
+            cxt.subschema({
+              keyword: "contains",
+              dataProp: i2,
+              dataPropType: util_1.Type.Num,
+              compositeRule: true
+            }, _valid);
+            block();
+          });
+        }
+        function checkLimits(count) {
+          gen.code((0, codegen_1._)`${count}++`);
+          if (max === void 0) {
+            gen.if((0, codegen_1._)`${count} >= ${min}`, () => gen.assign(valid, true).break());
+          } else {
+            gen.if((0, codegen_1._)`${count} > ${max}`, () => gen.assign(valid, false).break());
+            if (min === 1)
+              gen.assign(valid, true);
+            else
+              gen.if((0, codegen_1._)`${count} >= ${min}`, () => gen.assign(valid, true));
+          }
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+var require_dependencies = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.validateSchemaDeps = exports2.validatePropertyDeps = exports2.error = void 0;
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var code_1 = require_code2();
+    exports2.error = {
+      message: ({ params: { property: property2, depsCount, deps } }) => {
+        const property_ies = depsCount === 1 ? "property" : "properties";
+        return (0, codegen_1.str)`must have ${property_ies} ${deps} when property ${property2} is present`;
+      },
+      params: ({ params: { property: property2, depsCount, deps, missingProperty } }) => (0, codegen_1._)`{property: ${property2},
+    missingProperty: ${missingProperty},
+    depsCount: ${depsCount},
+    deps: ${deps}}`
+      // TODO change to reference
+    };
+    var def = {
+      keyword: "dependencies",
+      type: "object",
+      schemaType: "object",
+      error: exports2.error,
+      code(cxt) {
+        const [propDeps, schDeps] = splitDependencies(cxt);
+        validatePropertyDeps(cxt, propDeps);
+        validateSchemaDeps(cxt, schDeps);
+      }
+    };
+    function splitDependencies({ schema }) {
+      const propertyDeps = {};
+      const schemaDeps = {};
+      for (const key in schema) {
+        if (key === "__proto__")
+          continue;
+        const deps = Array.isArray(schema[key]) ? propertyDeps : schemaDeps;
+        deps[key] = schema[key];
+      }
+      return [propertyDeps, schemaDeps];
+    }
+    function validatePropertyDeps(cxt, propertyDeps = cxt.schema) {
+      const { gen, data, it } = cxt;
+      if (Object.keys(propertyDeps).length === 0)
+        return;
+      const missing = gen.let("missing");
+      for (const prop in propertyDeps) {
+        const deps = propertyDeps[prop];
+        if (deps.length === 0)
+          continue;
+        const hasProperty = (0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties);
+        cxt.setParams({
+          property: prop,
+          depsCount: deps.length,
+          deps: deps.join(", ")
+        });
+        if (it.allErrors) {
+          gen.if(hasProperty, () => {
+            for (const depProp of deps) {
+              (0, code_1.checkReportMissingProp)(cxt, depProp);
+            }
+          });
+        } else {
+          gen.if((0, codegen_1._)`${hasProperty} && (${(0, code_1.checkMissingProp)(cxt, deps, missing)})`);
+          (0, code_1.reportMissingProp)(cxt, missing);
+          gen.else();
+        }
+      }
+    }
+    exports2.validatePropertyDeps = validatePropertyDeps;
+    function validateSchemaDeps(cxt, schemaDeps = cxt.schema) {
+      const { gen, data, keyword, it } = cxt;
+      const valid = gen.name("valid");
+      for (const prop in schemaDeps) {
+        if ((0, util_1.alwaysValidSchema)(it, schemaDeps[prop]))
+          continue;
+        gen.if(
+          (0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties),
+          () => {
+            const schCxt = cxt.subschema({ keyword, schemaProp: prop }, valid);
+            cxt.mergeValidEvaluated(schCxt, valid);
+          },
+          () => gen.var(valid, true)
+          // TODO var
+        );
+        cxt.ok(valid);
+      }
+    }
+    exports2.validateSchemaDeps = validateSchemaDeps;
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+var require_propertyNames = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var error = {
+      message: "property name must be valid",
+      params: ({ params }) => (0, codegen_1._)`{propertyName: ${params.propertyName}}`
+    };
+    var def = {
+      keyword: "propertyNames",
+      type: "object",
+      schemaType: ["object", "boolean"],
+      error,
+      code(cxt) {
+        const { gen, schema, data, it } = cxt;
+        if ((0, util_1.alwaysValidSchema)(it, schema))
+          return;
+        const valid = gen.name("valid");
+        gen.forIn("key", data, (key) => {
+          cxt.setParams({ propertyName: key });
+          cxt.subschema({
+            keyword: "propertyNames",
+            data: key,
+            dataTypes: ["string"],
+            propertyName: key,
+            compositeRule: true
+          }, valid);
+          gen.if((0, codegen_1.not)(valid), () => {
+            cxt.error(true);
+            if (!it.allErrors)
+              gen.break();
+          });
+        });
+        cxt.ok(valid);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+var require_additionalProperties = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var code_1 = require_code2();
+    var codegen_1 = require_codegen();
+    var names_1 = require_names();
+    var util_1 = require_util();
+    var error = {
+      message: "must NOT have additional properties",
+      params: ({ params }) => (0, codegen_1._)`{additionalProperty: ${params.additionalProperty}}`
+    };
+    var def = {
+      keyword: "additionalProperties",
+      type: ["object"],
+      schemaType: ["boolean", "object"],
+      allowUndefined: true,
+      trackErrors: true,
+      error,
+      code(cxt) {
+        const { gen, schema, parentSchema, data, errsCount, it } = cxt;
+        if (!errsCount)
+          throw new Error("ajv implementation error");
+        const { allErrors, opts } = it;
+        it.props = true;
+        if (opts.removeAdditional !== "all" && (0, util_1.alwaysValidSchema)(it, schema))
+          return;
+        const props = (0, code_1.allSchemaProperties)(parentSchema.properties);
+        const patProps = (0, code_1.allSchemaProperties)(parentSchema.patternProperties);
+        checkAdditionalProperties();
+        cxt.ok((0, codegen_1._)`${errsCount} === ${names_1.default.errors}`);
+        function checkAdditionalProperties() {
+          gen.forIn("key", data, (key) => {
+            if (!props.length && !patProps.length)
+              additionalPropertyCode(key);
+            else
+              gen.if(isAdditional(key), () => additionalPropertyCode(key));
+          });
+        }
+        function isAdditional(key) {
+          let definedProp;
+          if (props.length > 8) {
+            const propsSchema = (0, util_1.schemaRefOrVal)(it, parentSchema.properties, "properties");
+            definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key);
+          } else if (props.length) {
+            definedProp = (0, codegen_1.or)(...props.map((p2) => (0, codegen_1._)`${key} === ${p2}`));
+          } else {
+            definedProp = codegen_1.nil;
+          }
+          if (patProps.length) {
+            definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p2) => (0, codegen_1._)`${(0, code_1.usePattern)(cxt, p2)}.test(${key})`));
+          }
+          return (0, codegen_1.not)(definedProp);
+        }
+        function deleteAdditional(key) {
+          gen.code((0, codegen_1._)`delete ${data}[${key}]`);
+        }
+        function additionalPropertyCode(key) {
+          if (opts.removeAdditional === "all" || opts.removeAdditional && schema === false) {
+            deleteAdditional(key);
+            return;
+          }
+          if (schema === false) {
+            cxt.setParams({ additionalProperty: key });
+            cxt.error();
+            if (!allErrors)
+              gen.break();
+            return;
+          }
+          if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
+            const valid = gen.name("valid");
+            if (opts.removeAdditional === "failing") {
+              applyAdditionalSchema(key, valid, false);
+              gen.if((0, codegen_1.not)(valid), () => {
+                cxt.reset();
+                deleteAdditional(key);
+              });
+            } else {
+              applyAdditionalSchema(key, valid);
+              if (!allErrors)
+                gen.if((0, codegen_1.not)(valid), () => gen.break());
+            }
+          }
+        }
+        function applyAdditionalSchema(key, valid, errors) {
+          const subschema = {
+            keyword: "additionalProperties",
+            dataProp: key,
+            dataPropType: util_1.Type.Str
+          };
+          if (errors === false) {
+            Object.assign(subschema, {
+              compositeRule: true,
+              createErrors: false,
+              allErrors: false
+            });
+          }
+          cxt.subschema(subschema, valid);
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/properties.js
+var require_properties = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var validate_1 = require_validate();
+    var code_1 = require_code2();
+    var util_1 = require_util();
+    var additionalProperties_1 = require_additionalProperties();
+    var def = {
+      keyword: "properties",
+      type: "object",
+      schemaType: "object",
+      code(cxt) {
+        const { gen, schema, parentSchema, data, it } = cxt;
+        if (it.opts.removeAdditional === "all" && parentSchema.additionalProperties === void 0) {
+          additionalProperties_1.default.code(new validate_1.KeywordCxt(it, additionalProperties_1.default, "additionalProperties"));
+        }
+        const allProps = (0, code_1.allSchemaProperties)(schema);
+        for (const prop of allProps) {
+          it.definedProperties.add(prop);
+        }
+        if (it.opts.unevaluated && allProps.length && it.props !== true) {
+          it.props = util_1.mergeEvaluated.props(gen, (0, util_1.toHash)(allProps), it.props);
+        }
+        const properties = allProps.filter((p2) => !(0, util_1.alwaysValidSchema)(it, schema[p2]));
+        if (properties.length === 0)
+          return;
+        const valid = gen.name("valid");
+        for (const prop of properties) {
+          if (hasDefault(prop)) {
+            applyPropertySchema(prop);
+          } else {
+            gen.if((0, code_1.propertyInData)(gen, data, prop, it.opts.ownProperties));
+            applyPropertySchema(prop);
+            if (!it.allErrors)
+              gen.else().var(valid, true);
+            gen.endIf();
+          }
+          cxt.it.definedProperties.add(prop);
+          cxt.ok(valid);
+        }
+        function hasDefault(prop) {
+          return it.opts.useDefaults && !it.compositeRule && schema[prop].default !== void 0;
+        }
+        function applyPropertySchema(prop) {
+          cxt.subschema({
+            keyword: "properties",
+            schemaProp: prop,
+            dataProp: prop
+          }, valid);
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+var require_patternProperties = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var code_1 = require_code2();
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var util_2 = require_util();
+    var def = {
+      keyword: "patternProperties",
+      type: "object",
+      schemaType: "object",
+      code(cxt) {
+        const { gen, schema, data, parentSchema, it } = cxt;
+        const { opts } = it;
+        const patterns = (0, code_1.allSchemaProperties)(schema);
+        const alwaysValidPatterns = patterns.filter((p2) => (0, util_1.alwaysValidSchema)(it, schema[p2]));
+        if (patterns.length === 0 || alwaysValidPatterns.length === patterns.length && (!it.opts.unevaluated || it.props === true)) {
+          return;
+        }
+        const checkProperties = opts.strictSchema && !opts.allowMatchingProperties && parentSchema.properties;
+        const valid = gen.name("valid");
+        if (it.props !== true && !(it.props instanceof codegen_1.Name)) {
+          it.props = (0, util_2.evaluatedPropsToName)(gen, it.props);
+        }
+        const { props } = it;
+        validatePatternProperties();
+        function validatePatternProperties() {
+          for (const pat of patterns) {
+            if (checkProperties)
+              checkMatchingProperties(pat);
+            if (it.allErrors) {
+              validateProperties(pat);
+            } else {
+              gen.var(valid, true);
+              validateProperties(pat);
+              gen.if(valid);
+            }
+          }
+        }
+        function checkMatchingProperties(pat) {
+          for (const prop in checkProperties) {
+            if (new RegExp(pat).test(prop)) {
+              (0, util_1.checkStrictMode)(it, `property ${prop} matches pattern ${pat} (use allowMatchingProperties)`);
+            }
+          }
+        }
+        function validateProperties(pat) {
+          gen.forIn("key", data, (key) => {
+            gen.if((0, codegen_1._)`${(0, code_1.usePattern)(cxt, pat)}.test(${key})`, () => {
+              const alwaysValid = alwaysValidPatterns.includes(pat);
+              if (!alwaysValid) {
+                cxt.subschema({
+                  keyword: "patternProperties",
+                  schemaProp: pat,
+                  dataProp: key,
+                  dataPropType: util_2.Type.Str
+                }, valid);
+              }
+              if (it.opts.unevaluated && props !== true) {
+                gen.assign((0, codegen_1._)`${props}[${key}]`, true);
+              } else if (!alwaysValid && !it.allErrors) {
+                gen.if((0, codegen_1.not)(valid), () => gen.break());
+              }
+            });
+          });
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/not.js
+var require_not = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/not.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var util_1 = require_util();
+    var def = {
+      keyword: "not",
+      schemaType: ["object", "boolean"],
+      trackErrors: true,
+      code(cxt) {
+        const { gen, schema, it } = cxt;
+        if ((0, util_1.alwaysValidSchema)(it, schema)) {
+          cxt.fail();
+          return;
+        }
+        const valid = gen.name("valid");
+        cxt.subschema({
+          keyword: "not",
+          compositeRule: true,
+          createErrors: false,
+          allErrors: false
+        }, valid);
+        cxt.failResult(valid, () => cxt.reset(), () => cxt.error());
+      },
+      error: { message: "must NOT be valid" }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+var require_anyOf = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var code_1 = require_code2();
+    var def = {
+      keyword: "anyOf",
+      schemaType: "array",
+      trackErrors: true,
+      code: code_1.validateUnion,
+      error: { message: "must match a schema in anyOf" }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+var require_oneOf = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var error = {
+      message: "must match exactly one schema in oneOf",
+      params: ({ params }) => (0, codegen_1._)`{passingSchemas: ${params.passing}}`
+    };
+    var def = {
+      keyword: "oneOf",
+      schemaType: "array",
+      trackErrors: true,
+      error,
+      code(cxt) {
+        const { gen, schema, parentSchema, it } = cxt;
+        if (!Array.isArray(schema))
+          throw new Error("ajv implementation error");
+        if (it.opts.discriminator && parentSchema.discriminator)
+          return;
+        const schArr = schema;
+        const valid = gen.let("valid", false);
+        const passing = gen.let("passing", null);
+        const schValid = gen.name("_valid");
+        cxt.setParams({ passing });
+        gen.block(validateOneOf);
+        cxt.result(valid, () => cxt.reset(), () => cxt.error(true));
+        function validateOneOf() {
+          schArr.forEach((sch, i2) => {
+            let schCxt;
+            if ((0, util_1.alwaysValidSchema)(it, sch)) {
+              gen.var(schValid, true);
+            } else {
+              schCxt = cxt.subschema({
+                keyword: "oneOf",
+                schemaProp: i2,
+                compositeRule: true
+              }, schValid);
+            }
+            if (i2 > 0) {
+              gen.if((0, codegen_1._)`${schValid} && ${valid}`).assign(valid, false).assign(passing, (0, codegen_1._)`[${passing}, ${i2}]`).else();
+            }
+            gen.if(schValid, () => {
+              gen.assign(valid, true);
+              gen.assign(passing, i2);
+              if (schCxt)
+                cxt.mergeEvaluated(schCxt, codegen_1.Name);
+            });
+          });
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/allOf.js
+var require_allOf = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var util_1 = require_util();
+    var def = {
+      keyword: "allOf",
+      schemaType: "array",
+      code(cxt) {
+        const { gen, schema, it } = cxt;
+        if (!Array.isArray(schema))
+          throw new Error("ajv implementation error");
+        const valid = gen.name("valid");
+        schema.forEach((sch, i2) => {
+          if ((0, util_1.alwaysValidSchema)(it, sch))
+            return;
+          const schCxt = cxt.subschema({ keyword: "allOf", schemaProp: i2 }, valid);
+          cxt.ok(valid);
+          cxt.mergeEvaluated(schCxt);
+        });
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/if.js
+var require_if = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/if.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var util_1 = require_util();
+    var error = {
+      message: ({ params }) => (0, codegen_1.str)`must match "${params.ifClause}" schema`,
+      params: ({ params }) => (0, codegen_1._)`{failingKeyword: ${params.ifClause}}`
+    };
+    var def = {
+      keyword: "if",
+      schemaType: ["object", "boolean"],
+      trackErrors: true,
+      error,
+      code(cxt) {
+        const { gen, parentSchema, it } = cxt;
+        if (parentSchema.then === void 0 && parentSchema.else === void 0) {
+          (0, util_1.checkStrictMode)(it, '"if" without "then" and "else" is ignored');
+        }
+        const hasThen = hasSchema(it, "then");
+        const hasElse = hasSchema(it, "else");
+        if (!hasThen && !hasElse)
+          return;
+        const valid = gen.let("valid", true);
+        const schValid = gen.name("_valid");
+        validateIf();
+        cxt.reset();
+        if (hasThen && hasElse) {
+          const ifClause = gen.let("ifClause");
+          cxt.setParams({ ifClause });
+          gen.if(schValid, validateClause("then", ifClause), validateClause("else", ifClause));
+        } else if (hasThen) {
+          gen.if(schValid, validateClause("then"));
+        } else {
+          gen.if((0, codegen_1.not)(schValid), validateClause("else"));
+        }
+        cxt.pass(valid, () => cxt.error(true));
+        function validateIf() {
+          const schCxt = cxt.subschema({
+            keyword: "if",
+            compositeRule: true,
+            createErrors: false,
+            allErrors: false
+          }, schValid);
+          cxt.mergeEvaluated(schCxt);
+        }
+        function validateClause(keyword, ifClause) {
+          return () => {
+            const schCxt = cxt.subschema({ keyword }, schValid);
+            gen.assign(valid, schValid);
+            cxt.mergeValidEvaluated(schCxt, valid);
+            if (ifClause)
+              gen.assign(ifClause, (0, codegen_1._)`${keyword}`);
+            else
+              cxt.setParams({ ifClause: keyword });
+          };
+        }
+      }
+    };
+    function hasSchema(it, keyword) {
+      const schema = it.schema[keyword];
+      return schema !== void 0 && !(0, util_1.alwaysValidSchema)(it, schema);
+    }
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+var require_thenElse = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var util_1 = require_util();
+    var def = {
+      keyword: ["then", "else"],
+      schemaType: ["object", "boolean"],
+      code({ keyword, parentSchema, it }) {
+        if (parentSchema.if === void 0)
+          (0, util_1.checkStrictMode)(it, `"${keyword}" without "if" is ignored`);
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/applicator/index.js
+var require_applicator = __commonJS({
+  "node_modules/ajv/dist/vocabularies/applicator/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var additionalItems_1 = require_additionalItems();
+    var prefixItems_1 = require_prefixItems();
+    var items_1 = require_items();
+    var items2020_1 = require_items2020();
+    var contains_1 = require_contains();
+    var dependencies_1 = require_dependencies();
+    var propertyNames_1 = require_propertyNames();
+    var additionalProperties_1 = require_additionalProperties();
+    var properties_1 = require_properties();
+    var patternProperties_1 = require_patternProperties();
+    var not_1 = require_not();
+    var anyOf_1 = require_anyOf();
+    var oneOf_1 = require_oneOf();
+    var allOf_1 = require_allOf();
+    var if_1 = require_if();
+    var thenElse_1 = require_thenElse();
+    function getApplicator(draft2020 = false) {
+      const applicator = [
+        // any
+        not_1.default,
+        anyOf_1.default,
+        oneOf_1.default,
+        allOf_1.default,
+        if_1.default,
+        thenElse_1.default,
+        // object
+        propertyNames_1.default,
+        additionalProperties_1.default,
+        dependencies_1.default,
+        properties_1.default,
+        patternProperties_1.default
+      ];
+      if (draft2020)
+        applicator.push(prefixItems_1.default, items2020_1.default);
+      else
+        applicator.push(additionalItems_1.default, items_1.default);
+      applicator.push(contains_1.default);
+      return applicator;
+    }
+    exports2.default = getApplicator;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/format/format.js
+var require_format = __commonJS({
+  "node_modules/ajv/dist/vocabularies/format/format.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var error = {
+      message: ({ schemaCode }) => (0, codegen_1.str)`must match format "${schemaCode}"`,
+      params: ({ schemaCode }) => (0, codegen_1._)`{format: ${schemaCode}}`
+    };
+    var def = {
+      keyword: "format",
+      type: ["number", "string"],
+      schemaType: "string",
+      $data: true,
+      error,
+      code(cxt, ruleType) {
+        const { gen, data, $data, schema, schemaCode, it } = cxt;
+        const { opts, errSchemaPath, schemaEnv, self: self2 } = it;
+        if (!opts.validateFormats)
+          return;
+        if ($data)
+          validate$DataFormat();
+        else
+          validateFormat();
+        function validate$DataFormat() {
+          const fmts = gen.scopeValue("formats", {
+            ref: self2.formats,
+            code: opts.code.formats
+          });
+          const fDef = gen.const("fDef", (0, codegen_1._)`${fmts}[${schemaCode}]`);
+          const fType = gen.let("fType");
+          const format = gen.let("format");
+          gen.if((0, codegen_1._)`typeof ${fDef} == "object" && !(${fDef} instanceof RegExp)`, () => gen.assign(fType, (0, codegen_1._)`${fDef}.type || "string"`).assign(format, (0, codegen_1._)`${fDef}.validate`), () => gen.assign(fType, (0, codegen_1._)`"string"`).assign(format, fDef));
+          cxt.fail$data((0, codegen_1.or)(unknownFmt(), invalidFmt()));
+          function unknownFmt() {
+            if (opts.strictSchema === false)
+              return codegen_1.nil;
+            return (0, codegen_1._)`${schemaCode} && !${format}`;
+          }
+          function invalidFmt() {
+            const callFormat = schemaEnv.$async ? (0, codegen_1._)`(${fDef}.async ? await ${format}(${data}) : ${format}(${data}))` : (0, codegen_1._)`${format}(${data})`;
+            const validData = (0, codegen_1._)`(typeof ${format} == "function" ? ${callFormat} : ${format}.test(${data}))`;
+            return (0, codegen_1._)`${format} && ${format} !== true && ${fType} === ${ruleType} && !${validData}`;
+          }
+        }
+        function validateFormat() {
+          const formatDef = self2.formats[schema];
+          if (!formatDef) {
+            unknownFormat();
+            return;
+          }
+          if (formatDef === true)
+            return;
+          const [fmtType, format, fmtRef] = getFormat(formatDef);
+          if (fmtType === ruleType)
+            cxt.pass(validCondition());
+          function unknownFormat() {
+            if (opts.strictSchema === false) {
+              self2.logger.warn(unknownMsg());
+              return;
+            }
+            throw new Error(unknownMsg());
+            function unknownMsg() {
+              return `unknown format "${schema}" ignored in schema at path "${errSchemaPath}"`;
+            }
+          }
+          function getFormat(fmtDef) {
+            const code = fmtDef instanceof RegExp ? (0, codegen_1.regexpCode)(fmtDef) : opts.code.formats ? (0, codegen_1._)`${opts.code.formats}${(0, codegen_1.getProperty)(schema)}` : void 0;
+            const fmt = gen.scopeValue("formats", { key: schema, ref: fmtDef, code });
+            if (typeof fmtDef == "object" && !(fmtDef instanceof RegExp)) {
+              return [fmtDef.type || "string", fmtDef.validate, (0, codegen_1._)`${fmt}.validate`];
+            }
+            return ["string", fmtDef, fmt];
+          }
+          function validCondition() {
+            if (typeof formatDef == "object" && !(formatDef instanceof RegExp) && formatDef.async) {
+              if (!schemaEnv.$async)
+                throw new Error("async format in sync schema");
+              return (0, codegen_1._)`await ${fmtRef}(${data})`;
+            }
+            return typeof format == "function" ? (0, codegen_1._)`${fmtRef}(${data})` : (0, codegen_1._)`${fmtRef}.test(${data})`;
+          }
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/format/index.js
+var require_format2 = __commonJS({
+  "node_modules/ajv/dist/vocabularies/format/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var format_1 = require_format();
+    var format = [format_1.default];
+    exports2.default = format;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/metadata.js
+var require_metadata = __commonJS({
+  "node_modules/ajv/dist/vocabularies/metadata.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.contentVocabulary = exports2.metadataVocabulary = void 0;
+    exports2.metadataVocabulary = [
+      "title",
+      "description",
+      "default",
+      "deprecated",
+      "readOnly",
+      "writeOnly",
+      "examples"
+    ];
+    exports2.contentVocabulary = [
+      "contentMediaType",
+      "contentEncoding",
+      "contentSchema"
+    ];
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/draft7.js
+var require_draft7 = __commonJS({
+  "node_modules/ajv/dist/vocabularies/draft7.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var core_1 = require_core2();
+    var validation_1 = require_validation();
+    var applicator_1 = require_applicator();
+    var format_1 = require_format2();
+    var metadata_1 = require_metadata();
+    var draft7Vocabularies = [
+      core_1.default,
+      validation_1.default,
+      (0, applicator_1.default)(),
+      format_1.default,
+      metadata_1.metadataVocabulary,
+      metadata_1.contentVocabulary
+    ];
+    exports2.default = draft7Vocabularies;
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/discriminator/types.js
+var require_types = __commonJS({
+  "node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.DiscrError = void 0;
+    var DiscrError;
+    (function(DiscrError2) {
+      DiscrError2["Tag"] = "tag";
+      DiscrError2["Mapping"] = "mapping";
+    })(DiscrError || (exports2.DiscrError = DiscrError = {}));
+  }
+});
+
+// node_modules/ajv/dist/vocabularies/discriminator/index.js
+var require_discriminator = __commonJS({
+  "node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var codegen_1 = require_codegen();
+    var types_1 = require_types();
+    var compile_1 = require_compile();
+    var ref_error_1 = require_ref_error();
+    var util_1 = require_util();
+    var error = {
+      message: ({ params: { discrError, tagName } }) => discrError === types_1.DiscrError.Tag ? `tag "${tagName}" must be string` : `value of tag "${tagName}" must be in oneOf`,
+      params: ({ params: { discrError, tag, tagName } }) => (0, codegen_1._)`{error: ${discrError}, tag: ${tagName}, tagValue: ${tag}}`
+    };
+    var def = {
+      keyword: "discriminator",
+      type: "object",
+      schemaType: "object",
+      error,
+      code(cxt) {
+        const { gen, data, schema, parentSchema, it } = cxt;
+        const { oneOf } = parentSchema;
+        if (!it.opts.discriminator) {
+          throw new Error("discriminator: requires discriminator option");
+        }
+        const tagName = schema.propertyName;
+        if (typeof tagName != "string")
+          throw new Error("discriminator: requires propertyName");
+        if (schema.mapping)
+          throw new Error("discriminator: mapping is not supported");
+        if (!oneOf)
+          throw new Error("discriminator: requires oneOf keyword");
+        const valid = gen.let("valid", false);
+        const tag = gen.const("tag", (0, codegen_1._)`${data}${(0, codegen_1.getProperty)(tagName)}`);
+        gen.if((0, codegen_1._)`typeof ${tag} == "string"`, () => validateMapping(), () => cxt.error(false, { discrError: types_1.DiscrError.Tag, tag, tagName }));
+        cxt.ok(valid);
+        function validateMapping() {
+          const mapping = getMapping();
+          gen.if(false);
+          for (const tagValue in mapping) {
+            gen.elseIf((0, codegen_1._)`${tag} === ${tagValue}`);
+            gen.assign(valid, applyTagSchema(mapping[tagValue]));
+          }
+          gen.else();
+          cxt.error(false, { discrError: types_1.DiscrError.Mapping, tag, tagName });
+          gen.endIf();
+        }
+        function applyTagSchema(schemaProp) {
+          const _valid = gen.name("valid");
+          const schCxt = cxt.subschema({ keyword: "oneOf", schemaProp }, _valid);
+          cxt.mergeEvaluated(schCxt, codegen_1.Name);
+          return _valid;
+        }
+        function getMapping() {
+          var _a;
+          const oneOfMapping = {};
+          const topRequired = hasRequired(parentSchema);
+          let tagRequired = true;
+          for (let i2 = 0; i2 < oneOf.length; i2++) {
+            let sch = oneOf[i2];
+            if ((sch === null || sch === void 0 ? void 0 : sch.$ref) && !(0, util_1.schemaHasRulesButRef)(sch, it.self.RULES)) {
+              const ref = sch.$ref;
+              sch = compile_1.resolveRef.call(it.self, it.schemaEnv.root, it.baseId, ref);
+              if (sch instanceof compile_1.SchemaEnv)
+                sch = sch.schema;
+              if (sch === void 0)
+                throw new ref_error_1.default(it.opts.uriResolver, it.baseId, ref);
+            }
+            const propSch = (_a = sch === null || sch === void 0 ? void 0 : sch.properties) === null || _a === void 0 ? void 0 : _a[tagName];
+            if (typeof propSch != "object") {
+              throw new Error(`discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName}"`);
+            }
+            tagRequired = tagRequired && (topRequired || hasRequired(sch));
+            addMappings(propSch, i2);
+          }
+          if (!tagRequired)
+            throw new Error(`discriminator: "${tagName}" must be required`);
+          return oneOfMapping;
+          function hasRequired({ required }) {
+            return Array.isArray(required) && required.includes(tagName);
+          }
+          function addMappings(sch, i2) {
+            if (sch.const) {
+              addMapping(sch.const, i2);
+            } else if (sch.enum) {
+              for (const tagValue of sch.enum) {
+                addMapping(tagValue, i2);
+              }
+            } else {
+              throw new Error(`discriminator: "properties/${tagName}" must have "const" or "enum"`);
+            }
+          }
+          function addMapping(tagValue, i2) {
+            if (typeof tagValue != "string" || tagValue in oneOfMapping) {
+              throw new Error(`discriminator: "${tagName}" values must be unique strings`);
+            }
+            oneOfMapping[tagValue] = i2;
+          }
+        }
+      }
+    };
+    exports2.default = def;
+  }
+});
+
+// node_modules/ajv/dist/refs/json-schema-draft-07.json
+var require_json_schema_draft_07 = __commonJS({
+  "node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports2, module2) {
+    module2.exports = {
+      $schema: "http://json-schema.org/draft-07/schema#",
+      $id: "http://json-schema.org/draft-07/schema#",
+      title: "Core schema meta-schema",
+      definitions: {
+        schemaArray: {
+          type: "array",
+          minItems: 1,
+          items: { $ref: "#" }
+        },
+        nonNegativeInteger: {
+          type: "integer",
+          minimum: 0
+        },
+        nonNegativeIntegerDefault0: {
+          allOf: [{ $ref: "#/definitions/nonNegativeInteger" }, { default: 0 }]
+        },
+        simpleTypes: {
+          enum: ["array", "boolean", "integer", "null", "number", "object", "string"]
+        },
+        stringArray: {
+          type: "array",
+          items: { type: "string" },
+          uniqueItems: true,
+          default: []
+        }
+      },
+      type: ["object", "boolean"],
+      properties: {
+        $id: {
+          type: "string",
+          format: "uri-reference"
+        },
+        $schema: {
+          type: "string",
+          format: "uri"
+        },
+        $ref: {
+          type: "string",
+          format: "uri-reference"
+        },
+        $comment: {
+          type: "string"
+        },
+        title: {
+          type: "string"
+        },
+        description: {
+          type: "string"
+        },
+        default: true,
+        readOnly: {
+          type: "boolean",
+          default: false
+        },
+        examples: {
+          type: "array",
+          items: true
+        },
+        multipleOf: {
+          type: "number",
+          exclusiveMinimum: 0
+        },
+        maximum: {
+          type: "number"
+        },
+        exclusiveMaximum: {
+          type: "number"
+        },
+        minimum: {
+          type: "number"
+        },
+        exclusiveMinimum: {
+          type: "number"
+        },
+        maxLength: { $ref: "#/definitions/nonNegativeInteger" },
+        minLength: { $ref: "#/definitions/nonNegativeIntegerDefault0" },
+        pattern: {
+          type: "string",
+          format: "regex"
+        },
+        additionalItems: { $ref: "#" },
+        items: {
+          anyOf: [{ $ref: "#" }, { $ref: "#/definitions/schemaArray" }],
+          default: true
+        },
+        maxItems: { $ref: "#/definitions/nonNegativeInteger" },
+        minItems: { $ref: "#/definitions/nonNegativeIntegerDefault0" },
+        uniqueItems: {
+          type: "boolean",
+          default: false
+        },
+        contains: { $ref: "#" },
+        maxProperties: { $ref: "#/definitions/nonNegativeInteger" },
+        minProperties: { $ref: "#/definitions/nonNegativeIntegerDefault0" },
+        required: { $ref: "#/definitions/stringArray" },
+        additionalProperties: { $ref: "#" },
+        definitions: {
+          type: "object",
+          additionalProperties: { $ref: "#" },
+          default: {}
+        },
+        properties: {
+          type: "object",
+          additionalProperties: { $ref: "#" },
+          default: {}
+        },
+        patternProperties: {
+          type: "object",
+          additionalProperties: { $ref: "#" },
+          propertyNames: { format: "regex" },
+          default: {}
+        },
+        dependencies: {
+          type: "object",
+          additionalProperties: {
+            anyOf: [{ $ref: "#" }, { $ref: "#/definitions/stringArray" }]
+          }
+        },
+        propertyNames: { $ref: "#" },
+        const: true,
+        enum: {
+          type: "array",
+          items: true,
+          minItems: 1,
+          uniqueItems: true
+        },
+        type: {
+          anyOf: [
+            { $ref: "#/definitions/simpleTypes" },
+            {
+              type: "array",
+              items: { $ref: "#/definitions/simpleTypes" },
+              minItems: 1,
+              uniqueItems: true
+            }
+          ]
+        },
+        format: { type: "string" },
+        contentMediaType: { type: "string" },
+        contentEncoding: { type: "string" },
+        if: { $ref: "#" },
+        then: { $ref: "#" },
+        else: { $ref: "#" },
+        allOf: { $ref: "#/definitions/schemaArray" },
+        anyOf: { $ref: "#/definitions/schemaArray" },
+        oneOf: { $ref: "#/definitions/schemaArray" },
+        not: { $ref: "#" }
+      },
+      default: true
+    };
+  }
+});
+
+// node_modules/ajv/dist/ajv.js
+var require_ajv = __commonJS({
+  "node_modules/ajv/dist/ajv.js"(exports2, module2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.MissingRefError = exports2.ValidationError = exports2.CodeGen = exports2.Name = exports2.nil = exports2.stringify = exports2.str = exports2._ = exports2.KeywordCxt = exports2.Ajv = void 0;
+    var core_1 = require_core();
+    var draft7_1 = require_draft7();
+    var discriminator_1 = require_discriminator();
+    var draft7MetaSchema = require_json_schema_draft_07();
+    var META_SUPPORT_DATA = ["/properties"];
+    var META_SCHEMA_ID = "http://json-schema.org/draft-07/schema";
+    var Ajv2 = class extends core_1.default {
+      _addVocabularies() {
+        super._addVocabularies();
+        draft7_1.default.forEach((v3) => this.addVocabulary(v3));
+        if (this.opts.discriminator)
+          this.addKeyword(discriminator_1.default);
+      }
+      _addDefaultMetaSchema() {
+        super._addDefaultMetaSchema();
+        if (!this.opts.meta)
+          return;
+        const metaSchema = this.opts.$data ? this.$dataMetaSchema(draft7MetaSchema, META_SUPPORT_DATA) : draft7MetaSchema;
+        this.addMetaSchema(metaSchema, META_SCHEMA_ID, false);
+        this.refs["http://json-schema.org/schema"] = META_SCHEMA_ID;
+      }
+      defaultMeta() {
+        return this.opts.defaultMeta = super.defaultMeta() || (this.getSchema(META_SCHEMA_ID) ? META_SCHEMA_ID : void 0);
+      }
+    };
+    exports2.Ajv = Ajv2;
+    module2.exports = exports2 = Ajv2;
+    module2.exports.Ajv = Ajv2;
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.default = Ajv2;
+    var validate_1 = require_validate();
+    Object.defineProperty(exports2, "KeywordCxt", { enumerable: true, get: function() {
+      return validate_1.KeywordCxt;
+    } });
+    var codegen_1 = require_codegen();
+    Object.defineProperty(exports2, "_", { enumerable: true, get: function() {
+      return codegen_1._;
+    } });
+    Object.defineProperty(exports2, "str", { enumerable: true, get: function() {
+      return codegen_1.str;
+    } });
+    Object.defineProperty(exports2, "stringify", { enumerable: true, get: function() {
+      return codegen_1.stringify;
+    } });
+    Object.defineProperty(exports2, "nil", { enumerable: true, get: function() {
+      return codegen_1.nil;
+    } });
+    Object.defineProperty(exports2, "Name", { enumerable: true, get: function() {
+      return codegen_1.Name;
+    } });
+    Object.defineProperty(exports2, "CodeGen", { enumerable: true, get: function() {
+      return codegen_1.CodeGen;
+    } });
+    var validation_error_1 = require_validation_error();
+    Object.defineProperty(exports2, "ValidationError", { enumerable: true, get: function() {
+      return validation_error_1.default;
+    } });
+    var ref_error_1 = require_ref_error();
+    Object.defineProperty(exports2, "MissingRefError", { enumerable: true, get: function() {
+      return ref_error_1.default;
+    } });
+  }
+});
+
+// node_modules/ajv-formats/dist/formats.js
+var require_formats = __commonJS({
+  "node_modules/ajv-formats/dist/formats.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.formatNames = exports2.fastFormats = exports2.fullFormats = void 0;
+    function fmtDef(validate, compare) {
+      return { validate, compare };
+    }
+    exports2.fullFormats = {
+      // date: http://tools.ietf.org/html/rfc3339#section-5.6
+      date: fmtDef(date, compareDate),
+      // date-time: http://tools.ietf.org/html/rfc3339#section-5.6
+      time: fmtDef(time, compareTime),
+      "date-time": fmtDef(date_time, compareDateTime),
+      // duration: https://tools.ietf.org/html/rfc3339#appendix-A
+      duration: /^P(?!$)((\d+Y)?(\d+M)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)?|(\d+W)?)$/,
+      uri,
+      "uri-reference": /^(?:[a-z][a-z0-9+\-.]*:)?(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'"()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'"()*+,;=:@]|%[0-9a-f]{2})*)*)?(?:\?(?:[a-z0-9\-._~!$&'"()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'"()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i,
+      // uri-template: https://tools.ietf.org/html/rfc6570
+      "uri-template": /^(?:(?:[^\x00-\x20"'<>%\\^`{|}]|%[0-9a-f]{2})|\{[+#./;?&=,!@|]?(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?(?:,(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?)*\})*$/i,
+      // For the source: https://gist.github.com/dperini/729294
+      // For test cases: https://mathiasbynens.be/demo/url-regex
+      url: /^(?:https?|ftp):\/\/(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u{00a1}-\u{ffff}]+-)*[a-z0-9\u{00a1}-\u{ffff}]+)(?:\.(?:[a-z0-9\u{00a1}-\u{ffff}]+-)*[a-z0-9\u{00a1}-\u{ffff}]+)*(?:\.(?:[a-z\u{00a1}-\u{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/iu,
+      email: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i,
+      hostname: /^(?=.{1,253}\.?$)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*\.?$/i,
+      // optimized https://www.safaribooksonline.com/library/view/regular-expressions-cookbook/9780596802837/ch07s16.html
+      ipv4: /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
+      ipv6: /^((([0-9a-f]{1,4}:){7}([0-9a-f]{1,4}|:))|(([0-9a-f]{1,4}:){6}(:[0-9a-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9a-f]{1,4}:){5}(((:[0-9a-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9a-f]{1,4}:){4}(((:[0-9a-f]{1,4}){1,3})|((:[0-9a-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9a-f]{1,4}:){3}(((:[0-9a-f]{1,4}){1,4})|((:[0-9a-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9a-f]{1,4}:){2}(((:[0-9a-f]{1,4}){1,5})|((:[0-9a-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9a-f]{1,4}:){1}(((:[0-9a-f]{1,4}){1,6})|((:[0-9a-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9a-f]{1,4}){1,7})|((:[0-9a-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))$/i,
+      regex,
+      // uuid: http://tools.ietf.org/html/rfc4122
+      uuid: /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i,
+      // JSON-pointer: https://tools.ietf.org/html/rfc6901
+      // uri fragment: https://tools.ietf.org/html/rfc3986#appendix-A
+      "json-pointer": /^(?:\/(?:[^~/]|~0|~1)*)*$/,
+      "json-pointer-uri-fragment": /^#(?:\/(?:[a-z0-9_\-.!$&'()*+,;:=@]|%[0-9a-f]{2}|~0|~1)*)*$/i,
+      // relative JSON-pointer: http://tools.ietf.org/html/draft-luff-relative-json-pointer-00
+      "relative-json-pointer": /^(?:0|[1-9][0-9]*)(?:#|(?:\/(?:[^~/]|~0|~1)*)*)$/,
+      // the following formats are used by the openapi specification: https://spec.openapis.org/oas/v3.0.0#data-types
+      // byte: https://github.com/miguelmota/is-base64
+      byte,
+      // signed 32 bit integer
+      int32: { type: "number", validate: validateInt32 },
+      // signed 64 bit integer
+      int64: { type: "number", validate: validateInt64 },
+      // C-type float
+      float: { type: "number", validate: validateNumber },
+      // C-type double
+      double: { type: "number", validate: validateNumber },
+      // hint to the UI to hide input strings
+      password: true,
+      // unchecked string payload
+      binary: true
+    };
+    exports2.fastFormats = {
+      ...exports2.fullFormats,
+      date: fmtDef(/^\d\d\d\d-[0-1]\d-[0-3]\d$/, compareDate),
+      time: fmtDef(/^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)?$/i, compareTime),
+      "date-time": fmtDef(/^\d\d\d\d-[0-1]\d-[0-3]\d[t\s](?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i, compareDateTime),
+      // uri: https://github.com/mafintosh/is-my-json-valid/blob/master/formats.js
+      uri: /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/)?[^\s]*$/i,
+      "uri-reference": /^(?:(?:[a-z][a-z0-9+\-.]*:)?\/?\/)?(?:[^\\\s#][^\s#]*)?(?:#[^\\\s]*)?$/i,
+      // email (sources from jsen validator):
+      // http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address#answer-8829363
+      // http://www.w3.org/TR/html5/forms.html#valid-e-mail-address (search for 'wilful violation')
+      email: /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/i
+    };
+    exports2.formatNames = Object.keys(exports2.fullFormats);
+    function isLeapYear(year) {
+      return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    }
+    var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
+    var DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    function date(str) {
+      const matches = DATE.exec(str);
+      if (!matches)
+        return false;
+      const year = +matches[1];
+      const month = +matches[2];
+      const day = +matches[3];
+      return month >= 1 && month <= 12 && day >= 1 && day <= (month === 2 && isLeapYear(year) ? 29 : DAYS[month]);
+    }
+    function compareDate(d1, d2) {
+      if (!(d1 && d2))
+        return void 0;
+      if (d1 > d2)
+        return 1;
+      if (d1 < d2)
+        return -1;
+      return 0;
+    }
+    var TIME = /^(\d\d):(\d\d):(\d\d)(\.\d+)?(z|[+-]\d\d(?::?\d\d)?)?$/i;
+    function time(str, withTimeZone) {
+      const matches = TIME.exec(str);
+      if (!matches)
+        return false;
+      const hour = +matches[1];
+      const minute = +matches[2];
+      const second = +matches[3];
+      const timeZone = matches[5];
+      return (hour <= 23 && minute <= 59 && second <= 59 || hour === 23 && minute === 59 && second === 60) && (!withTimeZone || timeZone !== "");
+    }
+    function compareTime(t1, t2) {
+      if (!(t1 && t2))
+        return void 0;
+      const a1 = TIME.exec(t1);
+      const a2 = TIME.exec(t2);
+      if (!(a1 && a2))
+        return void 0;
+      t1 = a1[1] + a1[2] + a1[3] + (a1[4] || "");
+      t2 = a2[1] + a2[2] + a2[3] + (a2[4] || "");
+      if (t1 > t2)
+        return 1;
+      if (t1 < t2)
+        return -1;
+      return 0;
+    }
+    var DATE_TIME_SEPARATOR = /t|\s/i;
+    function date_time(str) {
+      const dateTime = str.split(DATE_TIME_SEPARATOR);
+      return dateTime.length === 2 && date(dateTime[0]) && time(dateTime[1], true);
+    }
+    function compareDateTime(dt1, dt2) {
+      if (!(dt1 && dt2))
+        return void 0;
+      const [d1, t1] = dt1.split(DATE_TIME_SEPARATOR);
+      const [d2, t2] = dt2.split(DATE_TIME_SEPARATOR);
+      const res = compareDate(d1, d2);
+      if (res === void 0)
+        return void 0;
+      return res || compareTime(t1, t2);
+    }
+    var NOT_URI_FRAGMENT = /\/|:/;
+    var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
+    function uri(str) {
+      return NOT_URI_FRAGMENT.test(str) && URI.test(str);
+    }
+    var BYTE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gm;
+    function byte(str) {
+      BYTE.lastIndex = 0;
+      return BYTE.test(str);
+    }
+    var MIN_INT32 = -(2 ** 31);
+    var MAX_INT32 = 2 ** 31 - 1;
+    function validateInt32(value) {
+      return Number.isInteger(value) && value <= MAX_INT32 && value >= MIN_INT32;
+    }
+    function validateInt64(value) {
+      return Number.isInteger(value);
+    }
+    function validateNumber() {
+      return true;
+    }
+    var Z_ANCHOR = /[^\\]\\Z/;
+    function regex(str) {
+      if (Z_ANCHOR.test(str))
+        return false;
+      try {
+        new RegExp(str);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+  }
+});
+
+// node_modules/ajv-formats/dist/limit.js
+var require_limit = __commonJS({
+  "node_modules/ajv-formats/dist/limit.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.formatLimitDefinition = void 0;
+    var ajv_1 = require_ajv();
+    var codegen_1 = require_codegen();
+    var ops = codegen_1.operators;
+    var KWDs = {
+      formatMaximum: { okStr: "<=", ok: ops.LTE, fail: ops.GT },
+      formatMinimum: { okStr: ">=", ok: ops.GTE, fail: ops.LT },
+      formatExclusiveMaximum: { okStr: "<", ok: ops.LT, fail: ops.GTE },
+      formatExclusiveMinimum: { okStr: ">", ok: ops.GT, fail: ops.LTE }
+    };
+    var error = {
+      message: ({ keyword, schemaCode }) => codegen_1.str`should be ${KWDs[keyword].okStr} ${schemaCode}`,
+      params: ({ keyword, schemaCode }) => codegen_1._`{comparison: ${KWDs[keyword].okStr}, limit: ${schemaCode}}`
+    };
+    exports2.formatLimitDefinition = {
+      keyword: Object.keys(KWDs),
+      type: "string",
+      schemaType: "string",
+      $data: true,
+      error,
+      code(cxt) {
+        const { gen, data, schemaCode, keyword, it } = cxt;
+        const { opts, self: self2 } = it;
+        if (!opts.validateFormats)
+          return;
+        const fCxt = new ajv_1.KeywordCxt(it, self2.RULES.all.format.definition, "format");
+        if (fCxt.$data)
+          validate$DataFormat();
+        else
+          validateFormat();
+        function validate$DataFormat() {
+          const fmts = gen.scopeValue("formats", {
+            ref: self2.formats,
+            code: opts.code.formats
+          });
+          const fmt = gen.const("fmt", codegen_1._`${fmts}[${fCxt.schemaCode}]`);
+          cxt.fail$data(codegen_1.or(codegen_1._`typeof ${fmt} != "object"`, codegen_1._`${fmt} instanceof RegExp`, codegen_1._`typeof ${fmt}.compare != "function"`, compareCode(fmt)));
+        }
+        function validateFormat() {
+          const format = fCxt.schema;
+          const fmtDef = self2.formats[format];
+          if (!fmtDef || fmtDef === true)
+            return;
+          if (typeof fmtDef != "object" || fmtDef instanceof RegExp || typeof fmtDef.compare != "function") {
+            throw new Error(`"${keyword}": format "${format}" does not define "compare" function`);
+          }
+          const fmt = gen.scopeValue("formats", {
+            key: format,
+            ref: fmtDef,
+            code: opts.code.formats ? codegen_1._`${opts.code.formats}${codegen_1.getProperty(format)}` : void 0
+          });
+          cxt.fail$data(compareCode(fmt));
+        }
+        function compareCode(fmt) {
+          return codegen_1._`${fmt}.compare(${data}, ${schemaCode}) ${KWDs[keyword].fail} 0`;
+        }
+      },
+      dependencies: ["format"]
+    };
+    var formatLimitPlugin = (ajv) => {
+      ajv.addKeyword(exports2.formatLimitDefinition);
+      return ajv;
+    };
+    exports2.default = formatLimitPlugin;
+  }
+});
+
+// node_modules/ajv-formats/dist/index.js
+var require_dist = __commonJS({
+  "node_modules/ajv-formats/dist/index.js"(exports2, module2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var formats_1 = require_formats();
+    var limit_1 = require_limit();
+    var codegen_1 = require_codegen();
+    var fullName = new codegen_1.Name("fullFormats");
+    var fastName = new codegen_1.Name("fastFormats");
+    var formatsPlugin = (ajv, opts = { keywords: true }) => {
+      if (Array.isArray(opts)) {
+        addFormats2(ajv, opts, formats_1.fullFormats, fullName);
+        return ajv;
+      }
+      const [formats, exportName] = opts.mode === "fast" ? [formats_1.fastFormats, fastName] : [formats_1.fullFormats, fullName];
+      const list = opts.formats || formats_1.formatNames;
+      addFormats2(ajv, list, formats, exportName);
+      if (opts.keywords)
+        limit_1.default(ajv);
+      return ajv;
+    };
+    formatsPlugin.get = (name, mode = "full") => {
+      const formats = mode === "fast" ? formats_1.fastFormats : formats_1.fullFormats;
+      const f = formats[name];
+      if (!f)
+        throw new Error(`Unknown format "${name}"`);
+      return f;
+    };
+    function addFormats2(ajv, list, fs, exportName) {
+      var _a;
+      var _b;
+      (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = codegen_1._`require("ajv-formats/dist/formats").${exportName}`;
+      for (const f of list)
+        ajv.addFormat(f, fs[f]);
+    }
+    module2.exports = exports2 = formatsPlugin;
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.default = formatsPlugin;
+  }
+});
+
 // src/JsonEditor.tsx
 var JsonEditor_exports = {};
 __export(JsonEditor_exports, {
   default: () => JsonEditor
 });
-import { useState as useState15 } from "react";
+import { useState as useState21 } from "react";
 import Editor from "@monaco-editor/react";
 import { jsx as jsx30, jsxs as jsxs23 } from "react/jsx-runtime";
 function JsonEditor() {
   const { state, setSchema, setUiSchema } = useFormStudio();
-  const [localSchema, setLocalSchema] = useState15(() => JSON.stringify(state.schema, null, 2));
-  const [localUiSchema, setLocalUiSchema] = useState15(() => JSON.stringify(state.uiSchema, null, 2));
-  const [prevSchema, setPrevSchema] = useState15(state.schema);
-  const [prevUiSchema, setPrevUiSchema] = useState15(state.uiSchema);
+  const [localSchema, setLocalSchema] = useState21(() => JSON.stringify(state.schema, null, 2));
+  const [localUiSchema, setLocalUiSchema] = useState21(() => JSON.stringify(state.uiSchema, null, 2));
+  const [prevSchema, setPrevSchema] = useState21(state.schema);
+  const [prevUiSchema, setPrevUiSchema] = useState21(state.uiSchema);
   if (state.schema !== prevSchema) {
     setPrevSchema(state.schema);
     try {
@@ -194,8 +7436,8 @@ import { DragDropContext as DragDropContext2, Droppable as Droppable2, Draggable
 import React11 from "react";
 
 // src/classNames.ts
-function classNames(...values) {
-  return values.flatMap((value) => {
+function classNames(...values2) {
+  return values2.flatMap((value) => {
     if (typeof value === "string") return value;
     if (!value) return [];
     return Object.entries(value).filter(([, enabled]) => Boolean(enabled)).map(([className]) => className);
@@ -478,9 +7720,9 @@ var supportedUiParameters = /* @__PURE__ */ new Set([
 function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, supportedFields, supportedOptions) {
   const unsupportedFeatures = [];
   if (schema && typeof schema === "object") {
-    Object.keys(schema).forEach((property) => {
-      if (!supportedPropertyParameters.has(property) && property !== "properties") {
-        unsupportedFeatures.push(`Unrecognized Object Property: ${property}`);
+    Object.keys(schema).forEach((property2) => {
+      if (!supportedPropertyParameters.has(property2) && property2 !== "properties") {
+        unsupportedFeatures.push(`Unrecognized Object Property: ${property2}`);
       }
     });
   }
@@ -560,24 +7802,24 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
 }
 function checkForUnsupportedFeatures(schema, uischema, allFormInputs) {
   const unsupportedFeatures = [];
-  const widgets = [];
-  const fields = [];
+  const widgets2 = [];
+  const fields2 = [];
   const options = [];
   Object.keys(allFormInputs).forEach((inputType) => {
     allFormInputs[inputType].matchIf.forEach((match) => {
-      if (match.widget && !widgets.includes(match.widget)) {
-        widgets.push(match.widget);
+      if (match.widget && !widgets2.includes(match.widget)) {
+        widgets2.push(match.widget);
       }
-      if (match.field && !fields.includes(match.field)) {
-        fields.push(match.field);
+      if (match.field && !fields2.includes(match.field)) {
+        fields2.push(match.field);
       }
     });
     if (allFormInputs[inputType].possibleOptions && Array.isArray(allFormInputs[inputType].possibleOptions)) {
       options.push(...allFormInputs[inputType].possibleOptions);
     }
   });
-  const supportedWidgets = new Set(widgets);
-  const supportedFields = new Set(fields);
+  const supportedWidgets = new Set(widgets2);
+  const supportedFields = new Set(fields2);
   const supportedOptions = new Set(options);
   if (schema && typeof schema === "object" && schema.type === "object") {
     unsupportedFeatures.push(
@@ -683,22 +7925,22 @@ function generateElementPropsFromSchemas(parameters) {
   });
   if (schema.dependencies) {
     const useDefinitionDetails = false;
-    Object.keys(schema.dependencies).forEach((parent) => {
-      const group = schema.dependencies[parent];
+    Object.keys(schema.dependencies).forEach((parent2) => {
+      const group = schema.dependencies[parent2];
       if (group.oneOf) {
         let possibilityIndex = 0;
         group.oneOf.forEach((possibility) => {
-          if (!(elementDict[parent] || {}).dependents) {
-            elementDict[parent] = elementDict[parent] || {};
-            elementDict[parent].dependents = [];
+          if (!(elementDict[parent2] || {}).dependents) {
+            elementDict[parent2] = elementDict[parent2] || {};
+            elementDict[parent2].dependents = [];
           }
-          elementDict[parent].dependents.push({
+          elementDict[parent2].dependents.push({
             children: [],
-            value: possibility.properties[parent]
+            value: possibility.properties[parent2]
           });
           const requiredValues = possibility.required || [];
           Object.entries(possibility.properties).forEach(([parameter, element]) => {
-            if (!elementDict[parameter] || parameter !== parent && Object.keys(elementDict[parameter]).length === 1 && elementDict[parameter].dependents) {
+            if (!elementDict[parameter] || parameter !== parent2 && Object.keys(elementDict[parameter]).length === 1 && elementDict[parameter].dependents) {
               const newElement2 = generateDependencyElement(
                 parameter,
                 element,
@@ -716,10 +7958,10 @@ function generateElementPropsFromSchemas(parameters) {
               elementDict[newElement2.name] = newElement2;
             }
             const newElement = elementDict[parameter];
-            if (newElement && parameter !== parent) {
+            if (newElement && parameter !== parent2) {
               newElement.dependent = true;
-              newElement.parent = parent;
-              elementDict[parent].dependents[possibilityIndex].children.push(parameter);
+              newElement.parent = parent2;
+              elementDict[parent2].dependents[possibilityIndex].children.push(parameter);
             }
           });
           possibilityIndex += 1;
@@ -739,17 +7981,17 @@ function generateElementPropsFromSchemas(parameters) {
           );
           newElement.required = requiredValues.includes(newElement.name);
           newElement.dependent = true;
-          newElement.parent = parent;
+          newElement.parent = parent2;
           elementDict[newElement.name] = newElement;
-          if (elementDict[parent]) {
-            if (elementDict[parent].dependents) {
-              elementDict[parent].dependents[0].children.push(parameter);
+          if (elementDict[parent2]) {
+            if (elementDict[parent2].dependents) {
+              elementDict[parent2].dependents[0].children.push(parameter);
             } else {
-              elementDict[parent].dependents = [{ children: [parameter] }];
+              elementDict[parent2].dependents = [{ children: [parameter] }];
             }
           } else {
-            elementDict[parent] = {};
-            elementDict[parent].dependents = [{ children: [parameter] }];
+            elementDict[parent2] = {};
+            elementDict[parent2].dependents = [{ children: [parameter] }];
           }
         });
       } else {
@@ -960,10 +8202,10 @@ function addCardObj(parameters) {
     definitionUi,
     categoryHash
   });
-  const i = getIdFromElementsBlock(newElementObjArr);
-  const dataOptions = getNewElementDefaultDataOptions(i, mods);
+  const i2 = getIdFromElementsBlock(newElementObjArr);
+  const dataOptions = getNewElementDefaultDataOptions(i2, mods);
   const newElement = {
-    name: `${DEFAULT_INPUT_NAME}${i}`,
+    name: `${DEFAULT_INPUT_NAME}${i2}`,
     required: false,
     dataOptions,
     uiOptions: mods && mods.newElementDefaultUiSchema || {},
@@ -995,18 +8237,18 @@ function addSectionObj(parameters) {
     definitionUi,
     categoryHash
   });
-  const i = getIdFromElementsBlock(newElementObjArr);
+  const i2 = getIdFromElementsBlock(newElementObjArr);
   const newElement = {
-    name: `${DEFAULT_INPUT_NAME}${i}`,
+    name: `${DEFAULT_INPUT_NAME}${i2}`,
     required: false,
     dataOptions: {
-      title: `New Input ${i}`,
+      title: `New Input ${i2}`,
       type: "object",
       default: ""
     },
     uiOptions: {},
     propType: "section",
-    schema: { title: `New Input ${i}`, type: "object" },
+    schema: { title: `New Input ${i2}`, type: "object" },
     uischema: {},
     neighborNames: []
   };
@@ -1465,18 +8707,18 @@ function onDragEnd(result, details) {
 }
 function subtractArray(array1, array2) {
   if (array2 === void 0 || array2 === null) return array1;
-  const keys = array2.reduce(
+  const keys3 = array2.reduce(
     (acc, curr) => ({
       ...acc,
       [curr]: true
     }),
     {}
   );
-  return array1.filter((v) => !keys[v]);
+  return array1.filter((v3) => !keys3[v3]);
 }
-function excludeKeys(obj, keys) {
-  if (!keys) return { ...obj };
-  const keysHash = keys.reduce(
+function excludeKeys(obj, keys3) {
+  if (!keys3) return { ...obj };
+  const keysHash = keys3.reduce(
     (acc, curr) => ({
       ...acc,
       [curr]: true
@@ -1488,13 +8730,13 @@ function excludeKeys(obj, keys) {
     {}
   );
 }
-function getNewElementDefaultDataOptions(i, mods) {
+function getNewElementDefaultDataOptions(i2, mods) {
   if (mods && mods.newElementDefaultDataOptions !== void 0) {
-    const title = `${mods.newElementDefaultDataOptions.title} ${i}`;
+    const title = `${mods.newElementDefaultDataOptions.title} ${i2}`;
     return { ...mods.newElementDefaultDataOptions, ...{ title } };
   } else {
     return {
-      title: `New Input ${i}`,
+      title: `New Input ${i2}`,
       type: "string",
       default: ""
     };
@@ -2819,7 +10061,7 @@ function MultipleChoice({
     return isNaN(val);
   });
   const containsString = containsUnparsableString || enumArray.some((val) => typeof val === "string");
-  const [isNumber, setIsNumber] = React12.useState(!!enumArray.length && !containsString);
+  const [isNumber2, setIsNumber] = React12.useState(!!enumArray.length && !containsString);
   const [elementId] = React12.useState(getRandomId());
   return /* @__PURE__ */ jsxs15("div", { className: "card-enum", children: [
     /* @__PURE__ */ jsx19("h5", { children: "Possible Values" }),
@@ -2848,7 +10090,7 @@ function MultipleChoice({
       FBCheckbox_default,
       {
         onChangeValue: () => {
-          if (containsString || !isNumber) {
+          if (containsString || !isNumber2) {
             try {
               const newEnum = enumArray.map((val) => {
                 let newNum = 0;
@@ -2873,7 +10115,7 @@ function MultipleChoice({
             });
           }
         },
-        isChecked: isNumber,
+        isChecked: isNumber2,
         disabled: containsUnparsableString,
         label: "Force number",
         id: `${elementId}_forceNumber`
@@ -2890,7 +10132,7 @@ function MultipleChoice({
           enum: newEnum,
           enumNames: newEnumNames
         }),
-        type: isNumber ? "number" : "string"
+        type: isNumber2 ? "number" : "string"
       }
     )
   ] });
@@ -3076,7 +10318,7 @@ function Section({
   reference,
   dependents,
   dependent,
-  parent,
+  parent: parent2,
   parentProperties,
   neighborNames,
   cardOpen,
@@ -3117,10 +10359,10 @@ function Section({
           /* @__PURE__ */ jsxs16("span", { onClick: () => setCardOpen(!cardOpen), className: "text-xl font-bold cursor-pointer select-none", children: [
             schemaData.title || keyName,
             " ",
-            parent ? /* @__PURE__ */ jsx20(
+            parent2 ? /* @__PURE__ */ jsx20(
               Tooltip,
               {
-                text: `Depends on ${parent}`,
+                text: `Depends on ${parent2}`,
                 id: `${elementId}_parentinfo`,
                 type: "alert"
               }
@@ -4244,47 +11486,13831 @@ function FormBuilder({
 
 // src/FormStudio.tsx
 init_FormStudioContext();
-import { lazy, Suspense, useState as useState16, useEffect as useEffect3, useRef as useRef2 } from "react";
+import { lazy, Suspense, useState as useState22, useEffect as useEffect6, useRef as useRef6 } from "react";
 
 // src/FormPreview.tsx
 import React20 from "react";
-import { withTheme } from "@rjsf/core";
-import validator from "@rjsf/validator-ajv8";
+
+// node_modules/@rjsf/core/lib/components/Form.js
+import { jsx as _jsx61, jsxs as _jsxs23 } from "react/jsx-runtime";
+import { Component as Component3, createRef } from "react";
+
+// node_modules/@rjsf/utils/lib/isObject.js
+function isObject(thing) {
+  if (typeof thing !== "object" || thing === null) {
+    return false;
+  }
+  if (typeof thing.lastModified === "number" && typeof File !== "undefined" && thing instanceof File) {
+    return false;
+  }
+  if (typeof thing.getMonth === "function" && typeof Date !== "undefined" && thing instanceof Date) {
+    return false;
+  }
+  return !Array.isArray(thing);
+}
+
+// node_modules/@rjsf/utils/lib/allowAdditionalItems.js
+function allowAdditionalItems(schema) {
+  if (schema.additionalItems === true) {
+    console.warn("additionalItems=true is currently not supported");
+  }
+  return isObject(schema.additionalItems);
+}
+
+// node_modules/@rjsf/utils/lib/asNumber.js
+function asNumber(value) {
+  if (value === "") {
+    return void 0;
+  }
+  if (value === null) {
+    return null;
+  }
+  if (/\.$/.test(value)) {
+    return value;
+  }
+  if (/\.0$/.test(value)) {
+    return value;
+  }
+  if (/\.\d*0$/.test(value)) {
+    return value;
+  }
+  const n = Number(value);
+  const valid = typeof n === "number" && !Number.isNaN(n);
+  return valid ? n : value;
+}
+
+// node_modules/@rjsf/utils/lib/constants.js
+var ADDITIONAL_PROPERTY_FLAG = "__additional_property";
+var ADDITIONAL_PROPERTIES_KEY = "additionalProperties";
+var ALL_OF_KEY = "allOf";
+var ANY_OF_KEY = "anyOf";
+var CONST_KEY = "const";
+var DEFAULT_KEY = "default";
+var DEPENDENCIES_KEY = "dependencies";
+var ENUM_KEY = "enum";
+var ERRORS_KEY = "__errors";
+var ID_KEY = "$id";
+var IF_KEY = "if";
+var ITEMS_KEY = "items";
+var JUNK_OPTION_ID = "_$junk_option_schema_id$_";
+var NAME_KEY = "$name";
+var ONE_OF_KEY = "oneOf";
+var PATTERN_PROPERTIES_KEY = "patternProperties";
+var PROPERTIES_KEY = "properties";
+var READONLY_KEY = "readonly";
+var REQUIRED_KEY = "required";
+var SUBMIT_BTN_OPTIONS_KEY = "submitButtonOptions";
+var REF_KEY = "$ref";
+var RJSF_REF_KEY = "__rjsf_ref";
+var SCHEMA_KEY = "$schema";
+var DEFAULT_ID_PREFIX = "root";
+var DEFAULT_ID_SEPARATOR = "_";
+var DISCRIMINATOR_PATH = ["discriminator", "propertyName"];
+var FORM_CONTEXT_NAME = "formContext";
+var LOOKUP_MAP_NAME = "layoutGridLookupMap";
+var RJSF_ADDITIONAL_PROPERTIES_FLAG = "__rjsf_additionalProperties";
+var ROOT_SCHEMA_PREFIX = "__rjsf_rootSchema";
+var UI_FIELD_KEY = "ui:field";
+var UI_WIDGET_KEY = "ui:widget";
+var UI_OPTIONS_KEY = "ui:options";
+var UI_GLOBAL_OPTIONS_KEY = "ui:globalOptions";
+var UI_DEFINITIONS_KEY = "ui:definitions";
+var JSON_SCHEMA_DRAFT_2019_09 = "https://json-schema.org/draft/2019-09/schema";
+var JSON_SCHEMA_DRAFT_2020_12 = "https://json-schema.org/draft/2020-12/schema";
+
+// node_modules/@rjsf/utils/lib/getUiOptions.js
+function getUiOptions(uiSchema = {}, globalOptions = {}) {
+  if (!uiSchema) {
+    return { ...globalOptions };
+  }
+  return Object.keys(uiSchema).filter((key) => key.startsWith("ui:")).reduce((options, key) => {
+    const value = uiSchema[key];
+    if (key === UI_WIDGET_KEY && isObject(value)) {
+      console.error("Setting options via ui:widget object is no longer supported, use ui:options instead");
+      return options;
+    }
+    if (key === UI_OPTIONS_KEY && isObject(value)) {
+      return { ...options, ...value };
+    }
+    return { ...options, [key.substring(3)]: value };
+  }, { ...globalOptions });
+}
+
+// node_modules/@rjsf/utils/lib/canExpand.js
+function canExpand(schema, uiSchema = {}, formData) {
+  if (!(schema.additionalProperties || schema.patternProperties)) {
+    return false;
+  }
+  const { expandable = true } = getUiOptions(uiSchema);
+  if (expandable === false) {
+    return expandable;
+  }
+  if (schema.maxProperties !== void 0 && formData) {
+    return Object.keys(formData).length < schema.maxProperties;
+  }
+  return true;
+}
+
+// node_modules/lodash-es/_freeGlobal.js
+var freeGlobal = typeof global == "object" && global && global.Object === Object && global;
+var freeGlobal_default = freeGlobal;
+
+// node_modules/lodash-es/_root.js
+var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+var root = freeGlobal_default || freeSelf || Function("return this")();
+var root_default = root;
+
+// node_modules/lodash-es/_Symbol.js
+var Symbol2 = root_default.Symbol;
+var Symbol_default = Symbol2;
+
+// node_modules/lodash-es/_getRawTag.js
+var objectProto = Object.prototype;
+var hasOwnProperty = objectProto.hasOwnProperty;
+var nativeObjectToString = objectProto.toString;
+var symToStringTag = Symbol_default ? Symbol_default.toStringTag : void 0;
+function getRawTag(value) {
+  var isOwn = hasOwnProperty.call(value, symToStringTag), tag = value[symToStringTag];
+  try {
+    value[symToStringTag] = void 0;
+    var unmasked = true;
+  } catch (e) {
+  }
+  var result = nativeObjectToString.call(value);
+  if (unmasked) {
+    if (isOwn) {
+      value[symToStringTag] = tag;
+    } else {
+      delete value[symToStringTag];
+    }
+  }
+  return result;
+}
+var getRawTag_default = getRawTag;
+
+// node_modules/lodash-es/_objectToString.js
+var objectProto2 = Object.prototype;
+var nativeObjectToString2 = objectProto2.toString;
+function objectToString(value) {
+  return nativeObjectToString2.call(value);
+}
+var objectToString_default = objectToString;
+
+// node_modules/lodash-es/_baseGetTag.js
+var nullTag = "[object Null]";
+var undefinedTag = "[object Undefined]";
+var symToStringTag2 = Symbol_default ? Symbol_default.toStringTag : void 0;
+function baseGetTag(value) {
+  if (value == null) {
+    return value === void 0 ? undefinedTag : nullTag;
+  }
+  return symToStringTag2 && symToStringTag2 in Object(value) ? getRawTag_default(value) : objectToString_default(value);
+}
+var baseGetTag_default = baseGetTag;
+
+// node_modules/lodash-es/_overArg.js
+function overArg(func, transform2) {
+  return function(arg) {
+    return func(transform2(arg));
+  };
+}
+var overArg_default = overArg;
+
+// node_modules/lodash-es/_getPrototype.js
+var getPrototype = overArg_default(Object.getPrototypeOf, Object);
+var getPrototype_default = getPrototype;
+
+// node_modules/lodash-es/isObjectLike.js
+function isObjectLike(value) {
+  return value != null && typeof value == "object";
+}
+var isObjectLike_default = isObjectLike;
+
+// node_modules/lodash-es/isPlainObject.js
+var objectTag = "[object Object]";
+var funcProto = Function.prototype;
+var objectProto3 = Object.prototype;
+var funcToString = funcProto.toString;
+var hasOwnProperty2 = objectProto3.hasOwnProperty;
+var objectCtorString = funcToString.call(Object);
+function isPlainObject(value) {
+  if (!isObjectLike_default(value) || baseGetTag_default(value) != objectTag) {
+    return false;
+  }
+  var proto = getPrototype_default(value);
+  if (proto === null) {
+    return true;
+  }
+  var Ctor = hasOwnProperty2.call(proto, "constructor") && proto.constructor;
+  return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
+}
+var isPlainObject_default = isPlainObject;
+
+// node_modules/@rjsf/utils/lib/createErrorHandler.js
+function createErrorHandler(formData) {
+  const handler = {
+    // We store the list of errors for this node in a property named __errors
+    // to avoid name collision with a possible sub schema field named
+    // 'errors' (see `utils.toErrorSchema`).
+    [ERRORS_KEY]: [],
+    addError(message) {
+      this[ERRORS_KEY].push(message);
+    }
+  };
+  if (Array.isArray(formData)) {
+    return formData.reduce((acc, value, key) => ({ ...acc, [key]: createErrorHandler(value) }), handler);
+  }
+  if (isPlainObject_default(formData)) {
+    const formObject = formData;
+    return Object.keys(formObject).reduce((acc, key) => ({ ...acc, [key]: createErrorHandler(formObject[key]) }), handler);
+  }
+  return handler;
+}
+
+// node_modules/lodash-es/isArray.js
+var isArray = Array.isArray;
+var isArray_default = isArray;
+
+// node_modules/lodash-es/isSymbol.js
+var symbolTag = "[object Symbol]";
+function isSymbol(value) {
+  return typeof value == "symbol" || isObjectLike_default(value) && baseGetTag_default(value) == symbolTag;
+}
+var isSymbol_default = isSymbol;
+
+// node_modules/lodash-es/_isKey.js
+var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
+var reIsPlainProp = /^\w*$/;
+function isKey(value, object) {
+  if (isArray_default(value)) {
+    return false;
+  }
+  var type = typeof value;
+  if (type == "number" || type == "symbol" || type == "boolean" || value == null || isSymbol_default(value)) {
+    return true;
+  }
+  return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || object != null && value in Object(object);
+}
+var isKey_default = isKey;
+
+// node_modules/lodash-es/isObject.js
+function isObject2(value) {
+  var type = typeof value;
+  return value != null && (type == "object" || type == "function");
+}
+var isObject_default = isObject2;
+
+// node_modules/lodash-es/isFunction.js
+var asyncTag = "[object AsyncFunction]";
+var funcTag = "[object Function]";
+var genTag = "[object GeneratorFunction]";
+var proxyTag = "[object Proxy]";
+function isFunction(value) {
+  if (!isObject_default(value)) {
+    return false;
+  }
+  var tag = baseGetTag_default(value);
+  return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+}
+var isFunction_default = isFunction;
+
+// node_modules/lodash-es/_coreJsData.js
+var coreJsData = root_default["__core-js_shared__"];
+var coreJsData_default = coreJsData;
+
+// node_modules/lodash-es/_isMasked.js
+var maskSrcKey = (function() {
+  var uid = /[^.]+$/.exec(coreJsData_default && coreJsData_default.keys && coreJsData_default.keys.IE_PROTO || "");
+  return uid ? "Symbol(src)_1." + uid : "";
+})();
+function isMasked(func) {
+  return !!maskSrcKey && maskSrcKey in func;
+}
+var isMasked_default = isMasked;
+
+// node_modules/lodash-es/_toSource.js
+var funcProto2 = Function.prototype;
+var funcToString2 = funcProto2.toString;
+function toSource(func) {
+  if (func != null) {
+    try {
+      return funcToString2.call(func);
+    } catch (e) {
+    }
+    try {
+      return func + "";
+    } catch (e) {
+    }
+  }
+  return "";
+}
+var toSource_default = toSource;
+
+// node_modules/lodash-es/_baseIsNative.js
+var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+var reIsHostCtor = /^\[object .+?Constructor\]$/;
+var funcProto3 = Function.prototype;
+var objectProto4 = Object.prototype;
+var funcToString3 = funcProto3.toString;
+var hasOwnProperty3 = objectProto4.hasOwnProperty;
+var reIsNative = RegExp(
+  "^" + funcToString3.call(hasOwnProperty3).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+);
+function baseIsNative(value) {
+  if (!isObject_default(value) || isMasked_default(value)) {
+    return false;
+  }
+  var pattern = isFunction_default(value) ? reIsNative : reIsHostCtor;
+  return pattern.test(toSource_default(value));
+}
+var baseIsNative_default = baseIsNative;
+
+// node_modules/lodash-es/_getValue.js
+function getValue(object, key) {
+  return object == null ? void 0 : object[key];
+}
+var getValue_default = getValue;
+
+// node_modules/lodash-es/_getNative.js
+function getNative(object, key) {
+  var value = getValue_default(object, key);
+  return baseIsNative_default(value) ? value : void 0;
+}
+var getNative_default = getNative;
+
+// node_modules/lodash-es/_nativeCreate.js
+var nativeCreate = getNative_default(Object, "create");
+var nativeCreate_default = nativeCreate;
+
+// node_modules/lodash-es/_hashClear.js
+function hashClear() {
+  this.__data__ = nativeCreate_default ? nativeCreate_default(null) : {};
+  this.size = 0;
+}
+var hashClear_default = hashClear;
+
+// node_modules/lodash-es/_hashDelete.js
+function hashDelete(key) {
+  var result = this.has(key) && delete this.__data__[key];
+  this.size -= result ? 1 : 0;
+  return result;
+}
+var hashDelete_default = hashDelete;
+
+// node_modules/lodash-es/_hashGet.js
+var HASH_UNDEFINED = "__lodash_hash_undefined__";
+var objectProto5 = Object.prototype;
+var hasOwnProperty4 = objectProto5.hasOwnProperty;
+function hashGet(key) {
+  var data = this.__data__;
+  if (nativeCreate_default) {
+    var result = data[key];
+    return result === HASH_UNDEFINED ? void 0 : result;
+  }
+  return hasOwnProperty4.call(data, key) ? data[key] : void 0;
+}
+var hashGet_default = hashGet;
+
+// node_modules/lodash-es/_hashHas.js
+var objectProto6 = Object.prototype;
+var hasOwnProperty5 = objectProto6.hasOwnProperty;
+function hashHas(key) {
+  var data = this.__data__;
+  return nativeCreate_default ? data[key] !== void 0 : hasOwnProperty5.call(data, key);
+}
+var hashHas_default = hashHas;
+
+// node_modules/lodash-es/_hashSet.js
+var HASH_UNDEFINED2 = "__lodash_hash_undefined__";
+function hashSet(key, value) {
+  var data = this.__data__;
+  this.size += this.has(key) ? 0 : 1;
+  data[key] = nativeCreate_default && value === void 0 ? HASH_UNDEFINED2 : value;
+  return this;
+}
+var hashSet_default = hashSet;
+
+// node_modules/lodash-es/_Hash.js
+function Hash(entries) {
+  var index = -1, length = entries == null ? 0 : entries.length;
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+Hash.prototype.clear = hashClear_default;
+Hash.prototype["delete"] = hashDelete_default;
+Hash.prototype.get = hashGet_default;
+Hash.prototype.has = hashHas_default;
+Hash.prototype.set = hashSet_default;
+var Hash_default = Hash;
+
+// node_modules/lodash-es/_listCacheClear.js
+function listCacheClear() {
+  this.__data__ = [];
+  this.size = 0;
+}
+var listCacheClear_default = listCacheClear;
+
+// node_modules/lodash-es/eq.js
+function eq(value, other) {
+  return value === other || value !== value && other !== other;
+}
+var eq_default = eq;
+
+// node_modules/lodash-es/_assocIndexOf.js
+function assocIndexOf(array, key) {
+  var length = array.length;
+  while (length--) {
+    if (eq_default(array[length][0], key)) {
+      return length;
+    }
+  }
+  return -1;
+}
+var assocIndexOf_default = assocIndexOf;
+
+// node_modules/lodash-es/_listCacheDelete.js
+var arrayProto = Array.prototype;
+var splice = arrayProto.splice;
+function listCacheDelete(key) {
+  var data = this.__data__, index = assocIndexOf_default(data, key);
+  if (index < 0) {
+    return false;
+  }
+  var lastIndex = data.length - 1;
+  if (index == lastIndex) {
+    data.pop();
+  } else {
+    splice.call(data, index, 1);
+  }
+  --this.size;
+  return true;
+}
+var listCacheDelete_default = listCacheDelete;
+
+// node_modules/lodash-es/_listCacheGet.js
+function listCacheGet(key) {
+  var data = this.__data__, index = assocIndexOf_default(data, key);
+  return index < 0 ? void 0 : data[index][1];
+}
+var listCacheGet_default = listCacheGet;
+
+// node_modules/lodash-es/_listCacheHas.js
+function listCacheHas(key) {
+  return assocIndexOf_default(this.__data__, key) > -1;
+}
+var listCacheHas_default = listCacheHas;
+
+// node_modules/lodash-es/_listCacheSet.js
+function listCacheSet(key, value) {
+  var data = this.__data__, index = assocIndexOf_default(data, key);
+  if (index < 0) {
+    ++this.size;
+    data.push([key, value]);
+  } else {
+    data[index][1] = value;
+  }
+  return this;
+}
+var listCacheSet_default = listCacheSet;
+
+// node_modules/lodash-es/_ListCache.js
+function ListCache(entries) {
+  var index = -1, length = entries == null ? 0 : entries.length;
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+ListCache.prototype.clear = listCacheClear_default;
+ListCache.prototype["delete"] = listCacheDelete_default;
+ListCache.prototype.get = listCacheGet_default;
+ListCache.prototype.has = listCacheHas_default;
+ListCache.prototype.set = listCacheSet_default;
+var ListCache_default = ListCache;
+
+// node_modules/lodash-es/_Map.js
+var Map2 = getNative_default(root_default, "Map");
+var Map_default = Map2;
+
+// node_modules/lodash-es/_mapCacheClear.js
+function mapCacheClear() {
+  this.size = 0;
+  this.__data__ = {
+    "hash": new Hash_default(),
+    "map": new (Map_default || ListCache_default)(),
+    "string": new Hash_default()
+  };
+}
+var mapCacheClear_default = mapCacheClear;
+
+// node_modules/lodash-es/_isKeyable.js
+function isKeyable(value) {
+  var type = typeof value;
+  return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+}
+var isKeyable_default = isKeyable;
+
+// node_modules/lodash-es/_getMapData.js
+function getMapData(map, key) {
+  var data = map.__data__;
+  return isKeyable_default(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+}
+var getMapData_default = getMapData;
+
+// node_modules/lodash-es/_mapCacheDelete.js
+function mapCacheDelete(key) {
+  var result = getMapData_default(this, key)["delete"](key);
+  this.size -= result ? 1 : 0;
+  return result;
+}
+var mapCacheDelete_default = mapCacheDelete;
+
+// node_modules/lodash-es/_mapCacheGet.js
+function mapCacheGet(key) {
+  return getMapData_default(this, key).get(key);
+}
+var mapCacheGet_default = mapCacheGet;
+
+// node_modules/lodash-es/_mapCacheHas.js
+function mapCacheHas(key) {
+  return getMapData_default(this, key).has(key);
+}
+var mapCacheHas_default = mapCacheHas;
+
+// node_modules/lodash-es/_mapCacheSet.js
+function mapCacheSet(key, value) {
+  var data = getMapData_default(this, key), size = data.size;
+  data.set(key, value);
+  this.size += data.size == size ? 0 : 1;
+  return this;
+}
+var mapCacheSet_default = mapCacheSet;
+
+// node_modules/lodash-es/_MapCache.js
+function MapCache(entries) {
+  var index = -1, length = entries == null ? 0 : entries.length;
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+MapCache.prototype.clear = mapCacheClear_default;
+MapCache.prototype["delete"] = mapCacheDelete_default;
+MapCache.prototype.get = mapCacheGet_default;
+MapCache.prototype.has = mapCacheHas_default;
+MapCache.prototype.set = mapCacheSet_default;
+var MapCache_default = MapCache;
+
+// node_modules/lodash-es/memoize.js
+var FUNC_ERROR_TEXT = "Expected a function";
+function memoize(func, resolver) {
+  if (typeof func != "function" || resolver != null && typeof resolver != "function") {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  var memoized = function() {
+    var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache = memoized.cache;
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    var result = func.apply(this, args);
+    memoized.cache = cache.set(key, result) || cache;
+    return result;
+  };
+  memoized.cache = new (memoize.Cache || MapCache_default)();
+  return memoized;
+}
+memoize.Cache = MapCache_default;
+var memoize_default = memoize;
+
+// node_modules/lodash-es/_memoizeCapped.js
+var MAX_MEMOIZE_SIZE = 500;
+function memoizeCapped(func) {
+  var result = memoize_default(func, function(key) {
+    if (cache.size === MAX_MEMOIZE_SIZE) {
+      cache.clear();
+    }
+    return key;
+  });
+  var cache = result.cache;
+  return result;
+}
+var memoizeCapped_default = memoizeCapped;
+
+// node_modules/lodash-es/_stringToPath.js
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var reEscapeChar = /\\(\\)?/g;
+var stringToPath = memoizeCapped_default(function(string) {
+  var result = [];
+  if (string.charCodeAt(0) === 46) {
+    result.push("");
+  }
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, "$1") : number || match);
+  });
+  return result;
+});
+var stringToPath_default = stringToPath;
+
+// node_modules/lodash-es/_arrayMap.js
+function arrayMap(array, iteratee) {
+  var index = -1, length = array == null ? 0 : array.length, result = Array(length);
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+var arrayMap_default = arrayMap;
+
+// node_modules/lodash-es/_baseToString.js
+var INFINITY = 1 / 0;
+var symbolProto = Symbol_default ? Symbol_default.prototype : void 0;
+var symbolToString = symbolProto ? symbolProto.toString : void 0;
+function baseToString(value) {
+  if (typeof value == "string") {
+    return value;
+  }
+  if (isArray_default(value)) {
+    return arrayMap_default(value, baseToString) + "";
+  }
+  if (isSymbol_default(value)) {
+    return symbolToString ? symbolToString.call(value) : "";
+  }
+  var result = value + "";
+  return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+}
+var baseToString_default = baseToString;
+
+// node_modules/lodash-es/toString.js
+function toString(value) {
+  return value == null ? "" : baseToString_default(value);
+}
+var toString_default = toString;
+
+// node_modules/lodash-es/_castPath.js
+function castPath(value, object) {
+  if (isArray_default(value)) {
+    return value;
+  }
+  return isKey_default(value, object) ? [value] : stringToPath_default(toString_default(value));
+}
+var castPath_default = castPath;
+
+// node_modules/lodash-es/_toKey.js
+var INFINITY2 = 1 / 0;
+function toKey(value) {
+  if (typeof value == "string" || isSymbol_default(value)) {
+    return value;
+  }
+  var result = value + "";
+  return result == "0" && 1 / value == -INFINITY2 ? "-0" : result;
+}
+var toKey_default = toKey;
+
+// node_modules/lodash-es/_baseGet.js
+function baseGet(object, path) {
+  path = castPath_default(path, object);
+  var index = 0, length = path.length;
+  while (object != null && index < length) {
+    object = object[toKey_default(path[index++])];
+  }
+  return index && index == length ? object : void 0;
+}
+var baseGet_default = baseGet;
+
+// node_modules/lodash-es/get.js
+function get(object, path, defaultValue) {
+  var result = object == null ? void 0 : baseGet_default(object, path);
+  return result === void 0 ? defaultValue : result;
+}
+var get_default = get;
+
+// node_modules/fast-equals/dist/es/index.mjs
+var { getOwnPropertyNames, getOwnPropertySymbols } = Object;
+var { hasOwnProperty: hasOwnProperty6 } = Object.prototype;
+function combineComparators(comparatorA, comparatorB) {
+  return function isEqual2(a2, b2, state) {
+    return comparatorA(a2, b2, state) && comparatorB(a2, b2, state);
+  };
+}
+function createIsCircular(areItemsEqual) {
+  return function isCircular(a2, b2, state) {
+    if (!a2 || !b2 || typeof a2 !== "object" || typeof b2 !== "object") {
+      return areItemsEqual(a2, b2, state);
+    }
+    const { cache } = state;
+    const cachedA = cache.get(a2);
+    const cachedB = cache.get(b2);
+    if (cachedA && cachedB) {
+      return cachedA === b2 && cachedB === a2;
+    }
+    cache.set(a2, b2);
+    cache.set(b2, a2);
+    const result = areItemsEqual(a2, b2, state);
+    cache.delete(a2);
+    cache.delete(b2);
+    return result;
+  };
+}
+function getStrictProperties(object) {
+  const symbols = getOwnPropertySymbols(object);
+  return symbols.length ? getOwnPropertyNames(object).concat(symbols) : getOwnPropertyNames(object);
+}
+var hasOwn = (
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  Object.hasOwn || ((object, property2) => hasOwnProperty6.call(object, property2))
+);
+var PREACT_VNODE = "__v";
+var PREACT_OWNER = "__o";
+var REACT_OWNER = "_owner";
+var { getOwnPropertyDescriptor, keys } = Object;
+var sameValueEqual = (
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  Object.is || function sameValueEqual2(a2, b2) {
+    return a2 === b2 ? a2 !== 0 || 1 / a2 === 1 / b2 : a2 !== a2 && b2 !== b2;
+  }
+);
+function strictEqual(a2, b2) {
+  return a2 === b2;
+}
+function areArrayBuffersEqual(a2, b2) {
+  return a2.byteLength === b2.byteLength && areTypedArraysEqual(new Uint8Array(a2), new Uint8Array(b2));
+}
+function areArraysEqual(a2, b2, state) {
+  let index = a2.length;
+  if (b2.length !== index) {
+    return false;
+  }
+  while (index-- > 0) {
+    if (!state.equals(a2[index], b2[index], index, index, a2, b2, state)) {
+      return false;
+    }
+  }
+  return true;
+}
+function areDataViewsEqual(a2, b2) {
+  return a2.byteLength === b2.byteLength && areTypedArraysEqual(new Uint8Array(a2.buffer, a2.byteOffset, a2.byteLength), new Uint8Array(b2.buffer, b2.byteOffset, b2.byteLength));
+}
+function areDatesEqual(a2, b2) {
+  return sameValueEqual(a2.getTime(), b2.getTime());
+}
+function areErrorsEqual(a2, b2) {
+  return a2.name === b2.name && a2.message === b2.message && a2.cause === b2.cause && a2.stack === b2.stack;
+}
+function areMapsEqual(a2, b2, state) {
+  const size = a2.size;
+  if (size !== b2.size) {
+    return false;
+  }
+  if (!size) {
+    return true;
+  }
+  const matchedIndices = new Uint8Array(size);
+  const aIterable = a2.entries();
+  let aResult;
+  let bResult;
+  let index = 0;
+  while (aResult = aIterable.next()) {
+    if (aResult.done) {
+      break;
+    }
+    const bIterable = b2.entries();
+    let hasMatch = 0;
+    let matchIndex = 0;
+    while (bResult = bIterable.next()) {
+      if (bResult.done) {
+        break;
+      }
+      if (matchedIndices[matchIndex]) {
+        matchIndex++;
+        continue;
+      }
+      const aEntry = aResult.value;
+      const bEntry = bResult.value;
+      if (state.equals(aEntry[0], bEntry[0], index, matchIndex, a2, b2, state) && state.equals(aEntry[1], bEntry[1], aEntry[0], bEntry[0], a2, b2, state)) {
+        hasMatch = matchedIndices[matchIndex] = 1;
+        break;
+      }
+      matchIndex++;
+    }
+    if (!hasMatch) {
+      return false;
+    }
+    index++;
+  }
+  return true;
+}
+function areObjectsEqual(a2, b2, state) {
+  const properties = keys(a2);
+  let index = properties.length;
+  if (keys(b2).length !== index) {
+    return false;
+  }
+  while (index-- > 0) {
+    if (!isPropertyEqual(a2, b2, state, properties[index])) {
+      return false;
+    }
+  }
+  return true;
+}
+function areObjectsEqualStrict(a2, b2, state) {
+  const properties = getStrictProperties(a2);
+  let index = properties.length;
+  if (getStrictProperties(b2).length !== index) {
+    return false;
+  }
+  let property2;
+  let descriptorA;
+  let descriptorB;
+  while (index-- > 0) {
+    property2 = properties[index];
+    if (!isPropertyEqual(a2, b2, state, property2)) {
+      return false;
+    }
+    descriptorA = getOwnPropertyDescriptor(a2, property2);
+    descriptorB = getOwnPropertyDescriptor(b2, property2);
+    if ((descriptorA || descriptorB) && (!descriptorA || !descriptorB || descriptorA.configurable !== descriptorB.configurable || descriptorA.enumerable !== descriptorB.enumerable || descriptorA.writable !== descriptorB.writable)) {
+      return false;
+    }
+  }
+  return true;
+}
+function arePrimitiveWrappersEqual(a2, b2) {
+  return sameValueEqual(a2.valueOf(), b2.valueOf());
+}
+function areRegExpsEqual(a2, b2) {
+  return a2.source === b2.source && a2.flags === b2.flags;
+}
+function areSetsEqual(a2, b2, state) {
+  const size = a2.size;
+  if (size !== b2.size) {
+    return false;
+  }
+  if (!size) {
+    return true;
+  }
+  const matchedIndices = new Uint8Array(size);
+  const aIterable = a2.values();
+  let aResult;
+  let bResult;
+  while (aResult = aIterable.next()) {
+    if (aResult.done) {
+      break;
+    }
+    const bIterable = b2.values();
+    let hasMatch = 0;
+    let matchIndex = 0;
+    while (bResult = bIterable.next()) {
+      if (bResult.done) {
+        break;
+      }
+      if (!matchedIndices[matchIndex] && state.equals(aResult.value, bResult.value, aResult.value, bResult.value, a2, b2, state)) {
+        hasMatch = matchedIndices[matchIndex] = 1;
+        break;
+      }
+      matchIndex++;
+    }
+    if (!hasMatch) {
+      return false;
+    }
+  }
+  return true;
+}
+function areTypedArraysEqual(a2, b2) {
+  let index = a2.length;
+  if (b2.length !== index || a2.byteOffset !== b2.byteOffset) {
+    return false;
+  }
+  while (index-- > 0) {
+    if (a2[index] !== b2[index]) {
+      return false;
+    }
+  }
+  return true;
+}
+function areUrlsEqual(a2, b2) {
+  return a2.hostname === b2.hostname && a2.pathname === b2.pathname && a2.protocol === b2.protocol && a2.port === b2.port && a2.hash === b2.hash && a2.username === b2.username && a2.password === b2.password;
+}
+function isPropertyEqual(a2, b2, state, property2) {
+  if ((property2 === REACT_OWNER || property2 === PREACT_OWNER || property2 === PREACT_VNODE) && (a2.$$typeof || b2.$$typeof)) {
+    return true;
+  }
+  return hasOwn(b2, property2) && state.equals(a2[property2], b2[property2], property2, property2, a2, b2, state);
+}
+var toString2 = Object.prototype.toString;
+function createEqualityComparator(config) {
+  const supportedComparatorMap = createSupportedComparatorMap(config);
+  const { areArraysEqual: areArraysEqual2, areDatesEqual: areDatesEqual2, areFunctionsEqual, areMapsEqual: areMapsEqual2, areNumbersEqual, areObjectsEqual: areObjectsEqual2, areRegExpsEqual: areRegExpsEqual2, areSetsEqual: areSetsEqual2, getUnsupportedCustomComparator } = config;
+  return function comparator(a2, b2, state) {
+    if (a2 === b2) {
+      return true;
+    }
+    if (a2 == null || b2 == null) {
+      return false;
+    }
+    const type = typeof a2;
+    if (type !== typeof b2) {
+      return false;
+    }
+    if (type !== "object") {
+      if (type === "number" || type === "bigint") {
+        return areNumbersEqual(a2, b2, state);
+      }
+      if (type === "function") {
+        return areFunctionsEqual(a2, b2, state);
+      }
+      return false;
+    }
+    const constructor = a2.constructor;
+    if (constructor !== b2.constructor) {
+      return false;
+    }
+    if (constructor === Object) {
+      return areObjectsEqual2(a2, b2, state);
+    }
+    if (constructor === Array) {
+      return areArraysEqual2(a2, b2, state);
+    }
+    if (constructor === Date) {
+      return areDatesEqual2(a2, b2, state);
+    }
+    if (constructor === RegExp) {
+      return areRegExpsEqual2(a2, b2, state);
+    }
+    if (constructor === Map) {
+      return areMapsEqual2(a2, b2, state);
+    }
+    if (constructor === Set) {
+      return areSetsEqual2(a2, b2, state);
+    }
+    if (constructor === Promise) {
+      return false;
+    }
+    if (Array.isArray(a2)) {
+      return areArraysEqual2(a2, b2, state);
+    }
+    const tag = toString2.call(a2);
+    const supportedComparator = supportedComparatorMap[tag];
+    if (supportedComparator) {
+      return supportedComparator(a2, b2, state);
+    }
+    const unsupportedCustomComparator = getUnsupportedCustomComparator && getUnsupportedCustomComparator(a2, b2, state, tag);
+    if (unsupportedCustomComparator) {
+      return unsupportedCustomComparator(a2, b2, state);
+    }
+    return false;
+  };
+}
+function createEqualityComparatorConfig({ circular, createCustomConfig, strict }) {
+  let config = {
+    areArrayBuffersEqual,
+    areArraysEqual: strict ? areObjectsEqualStrict : areArraysEqual,
+    areDataViewsEqual,
+    areDatesEqual,
+    areErrorsEqual,
+    areFunctionsEqual: strictEqual,
+    areMapsEqual: strict ? combineComparators(areMapsEqual, areObjectsEqualStrict) : areMapsEqual,
+    areNumbersEqual: sameValueEqual,
+    areObjectsEqual: strict ? areObjectsEqualStrict : areObjectsEqual,
+    arePrimitiveWrappersEqual,
+    areRegExpsEqual,
+    areSetsEqual: strict ? combineComparators(areSetsEqual, areObjectsEqualStrict) : areSetsEqual,
+    areTypedArraysEqual: strict ? combineComparators(areTypedArraysEqual, areObjectsEqualStrict) : areTypedArraysEqual,
+    areUrlsEqual,
+    getUnsupportedCustomComparator: void 0
+  };
+  if (createCustomConfig) {
+    config = Object.assign({}, config, createCustomConfig(config));
+  }
+  if (circular) {
+    const areArraysEqual2 = createIsCircular(config.areArraysEqual);
+    const areMapsEqual2 = createIsCircular(config.areMapsEqual);
+    const areObjectsEqual2 = createIsCircular(config.areObjectsEqual);
+    const areSetsEqual2 = createIsCircular(config.areSetsEqual);
+    config = Object.assign({}, config, {
+      areArraysEqual: areArraysEqual2,
+      areMapsEqual: areMapsEqual2,
+      areObjectsEqual: areObjectsEqual2,
+      areSetsEqual: areSetsEqual2
+    });
+  }
+  return config;
+}
+function createInternalEqualityComparator(compare) {
+  return function(a2, b2, _indexOrKeyA, _indexOrKeyB, _parentA, _parentB, state) {
+    return compare(a2, b2, state);
+  };
+}
+function createIsEqual({ circular, comparator, createState, equals, strict }) {
+  if (createState) {
+    return function isEqual2(a2, b2) {
+      const { cache = circular ? /* @__PURE__ */ new WeakMap() : void 0, meta } = createState();
+      return comparator(a2, b2, {
+        cache,
+        equals,
+        meta,
+        strict
+      });
+    };
+  }
+  if (circular) {
+    return function isEqual2(a2, b2) {
+      return comparator(a2, b2, {
+        cache: /* @__PURE__ */ new WeakMap(),
+        equals,
+        meta: void 0,
+        strict
+      });
+    };
+  }
+  const state = {
+    cache: void 0,
+    equals,
+    meta: void 0,
+    strict
+  };
+  return function isEqual2(a2, b2) {
+    return comparator(a2, b2, state);
+  };
+}
+function createSupportedComparatorMap({ areArrayBuffersEqual: areArrayBuffersEqual2, areArraysEqual: areArraysEqual2, areDataViewsEqual: areDataViewsEqual2, areDatesEqual: areDatesEqual2, areErrorsEqual: areErrorsEqual2, areFunctionsEqual, areMapsEqual: areMapsEqual2, areNumbersEqual, areObjectsEqual: areObjectsEqual2, arePrimitiveWrappersEqual: arePrimitiveWrappersEqual2, areRegExpsEqual: areRegExpsEqual2, areSetsEqual: areSetsEqual2, areTypedArraysEqual: areTypedArraysEqual2, areUrlsEqual: areUrlsEqual2 }) {
+  return {
+    "[object Arguments]": areObjectsEqual2,
+    "[object Array]": areArraysEqual2,
+    "[object ArrayBuffer]": areArrayBuffersEqual2,
+    "[object AsyncGeneratorFunction]": areFunctionsEqual,
+    "[object BigInt]": areNumbersEqual,
+    "[object BigInt64Array]": areTypedArraysEqual2,
+    "[object BigUint64Array]": areTypedArraysEqual2,
+    "[object Boolean]": arePrimitiveWrappersEqual2,
+    "[object DataView]": areDataViewsEqual2,
+    "[object Date]": areDatesEqual2,
+    // If an error tag, it should be tested explicitly. Like RegExp, the properties are not
+    // enumerable, and therefore will give false positives if tested like a standard object.
+    "[object Error]": areErrorsEqual2,
+    "[object Float16Array]": areTypedArraysEqual2,
+    "[object Float32Array]": areTypedArraysEqual2,
+    "[object Float64Array]": areTypedArraysEqual2,
+    "[object Function]": areFunctionsEqual,
+    "[object GeneratorFunction]": areFunctionsEqual,
+    "[object Int8Array]": areTypedArraysEqual2,
+    "[object Int16Array]": areTypedArraysEqual2,
+    "[object Int32Array]": areTypedArraysEqual2,
+    "[object Map]": areMapsEqual2,
+    "[object Number]": arePrimitiveWrappersEqual2,
+    "[object Object]": (a2, b2, state) => (
+      // The exception for value comparison is custom `Promise`-like class instances. These should
+      // be treated the same as standard `Promise` objects, which means strict equality, and if
+      // it reaches this point then that strict equality comparison has already failed.
+      typeof a2.then !== "function" && typeof b2.then !== "function" && areObjectsEqual2(a2, b2, state)
+    ),
+    // For RegExp, the properties are not enumerable, and therefore will give false positives if
+    // tested like a standard object.
+    "[object RegExp]": areRegExpsEqual2,
+    "[object Set]": areSetsEqual2,
+    "[object String]": arePrimitiveWrappersEqual2,
+    "[object URL]": areUrlsEqual2,
+    "[object Uint8Array]": areTypedArraysEqual2,
+    "[object Uint8ClampedArray]": areTypedArraysEqual2,
+    "[object Uint16Array]": areTypedArraysEqual2,
+    "[object Uint32Array]": areTypedArraysEqual2
+  };
+}
+var deepEqual = createCustomEqual();
+var strictDeepEqual = createCustomEqual({ strict: true });
+var circularDeepEqual = createCustomEqual({ circular: true });
+var strictCircularDeepEqual = createCustomEqual({
+  circular: true,
+  strict: true
+});
+var shallowEqual = createCustomEqual({
+  createInternalComparator: () => sameValueEqual
+});
+var strictShallowEqual = createCustomEqual({
+  strict: true,
+  createInternalComparator: () => sameValueEqual
+});
+var circularShallowEqual = createCustomEqual({
+  circular: true,
+  createInternalComparator: () => sameValueEqual
+});
+var strictCircularShallowEqual = createCustomEqual({
+  circular: true,
+  createInternalComparator: () => sameValueEqual,
+  strict: true
+});
+function createCustomEqual(options = {}) {
+  const { circular = false, createInternalComparator: createCustomInternalComparator, createState, strict = false } = options;
+  const config = createEqualityComparatorConfig(options);
+  const comparator = createEqualityComparator(config);
+  const equals = createCustomInternalComparator ? createCustomInternalComparator(comparator) : createInternalEqualityComparator(comparator);
+  return createIsEqual({ circular, comparator, createState, equals, strict });
+}
+
+// node_modules/@rjsf/utils/lib/deepEquals.js
+var deepEquals = createCustomEqual({
+  circular: true,
+  createCustomConfig: () => ({
+    areFunctionsEqual(_a, b2) {
+      return typeof b2 === "function";
+    }
+  })
+});
+var deepEquals_default = deepEquals;
+
+// node_modules/@rjsf/utils/lib/findSchemaDefinition.js
+var import_fast_uri = __toESM(require_fast_uri(), 1);
+var import_jsonpointer = __toESM(require_jsonpointer(), 1);
+
+// node_modules/lodash-es/_isPrototype.js
+var objectProto7 = Object.prototype;
+function isPrototype(value) {
+  var Ctor = value && value.constructor, proto = typeof Ctor == "function" && Ctor.prototype || objectProto7;
+  return value === proto;
+}
+var isPrototype_default = isPrototype;
+
+// node_modules/lodash-es/_nativeKeys.js
+var nativeKeys = overArg_default(Object.keys, Object);
+var nativeKeys_default = nativeKeys;
+
+// node_modules/lodash-es/_baseKeys.js
+var objectProto8 = Object.prototype;
+var hasOwnProperty7 = objectProto8.hasOwnProperty;
+function baseKeys(object) {
+  if (!isPrototype_default(object)) {
+    return nativeKeys_default(object);
+  }
+  var result = [];
+  for (var key in Object(object)) {
+    if (hasOwnProperty7.call(object, key) && key != "constructor") {
+      result.push(key);
+    }
+  }
+  return result;
+}
+var baseKeys_default = baseKeys;
+
+// node_modules/lodash-es/_DataView.js
+var DataView = getNative_default(root_default, "DataView");
+var DataView_default = DataView;
+
+// node_modules/lodash-es/_Promise.js
+var Promise2 = getNative_default(root_default, "Promise");
+var Promise_default = Promise2;
+
+// node_modules/lodash-es/_Set.js
+var Set2 = getNative_default(root_default, "Set");
+var Set_default = Set2;
+
+// node_modules/lodash-es/_WeakMap.js
+var WeakMap2 = getNative_default(root_default, "WeakMap");
+var WeakMap_default = WeakMap2;
+
+// node_modules/lodash-es/_getTag.js
+var mapTag = "[object Map]";
+var objectTag2 = "[object Object]";
+var promiseTag = "[object Promise]";
+var setTag = "[object Set]";
+var weakMapTag = "[object WeakMap]";
+var dataViewTag = "[object DataView]";
+var dataViewCtorString = toSource_default(DataView_default);
+var mapCtorString = toSource_default(Map_default);
+var promiseCtorString = toSource_default(Promise_default);
+var setCtorString = toSource_default(Set_default);
+var weakMapCtorString = toSource_default(WeakMap_default);
+var getTag = baseGetTag_default;
+if (DataView_default && getTag(new DataView_default(new ArrayBuffer(1))) != dataViewTag || Map_default && getTag(new Map_default()) != mapTag || Promise_default && getTag(Promise_default.resolve()) != promiseTag || Set_default && getTag(new Set_default()) != setTag || WeakMap_default && getTag(new WeakMap_default()) != weakMapTag) {
+  getTag = function(value) {
+    var result = baseGetTag_default(value), Ctor = result == objectTag2 ? value.constructor : void 0, ctorString = Ctor ? toSource_default(Ctor) : "";
+    if (ctorString) {
+      switch (ctorString) {
+        case dataViewCtorString:
+          return dataViewTag;
+        case mapCtorString:
+          return mapTag;
+        case promiseCtorString:
+          return promiseTag;
+        case setCtorString:
+          return setTag;
+        case weakMapCtorString:
+          return weakMapTag;
+      }
+    }
+    return result;
+  };
+}
+var getTag_default = getTag;
+
+// node_modules/lodash-es/_baseIsArguments.js
+var argsTag = "[object Arguments]";
+function baseIsArguments(value) {
+  return isObjectLike_default(value) && baseGetTag_default(value) == argsTag;
+}
+var baseIsArguments_default = baseIsArguments;
+
+// node_modules/lodash-es/isArguments.js
+var objectProto9 = Object.prototype;
+var hasOwnProperty8 = objectProto9.hasOwnProperty;
+var propertyIsEnumerable = objectProto9.propertyIsEnumerable;
+var isArguments = baseIsArguments_default(/* @__PURE__ */ (function() {
+  return arguments;
+})()) ? baseIsArguments_default : function(value) {
+  return isObjectLike_default(value) && hasOwnProperty8.call(value, "callee") && !propertyIsEnumerable.call(value, "callee");
+};
+var isArguments_default = isArguments;
+
+// node_modules/lodash-es/isLength.js
+var MAX_SAFE_INTEGER = 9007199254740991;
+function isLength(value) {
+  return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+var isLength_default = isLength;
+
+// node_modules/lodash-es/isArrayLike.js
+function isArrayLike(value) {
+  return value != null && isLength_default(value.length) && !isFunction_default(value);
+}
+var isArrayLike_default = isArrayLike;
+
+// node_modules/lodash-es/stubFalse.js
+function stubFalse() {
+  return false;
+}
+var stubFalse_default = stubFalse;
+
+// node_modules/lodash-es/isBuffer.js
+var freeExports = typeof exports == "object" && exports && !exports.nodeType && exports;
+var freeModule = freeExports && typeof module == "object" && module && !module.nodeType && module;
+var moduleExports = freeModule && freeModule.exports === freeExports;
+var Buffer2 = moduleExports ? root_default.Buffer : void 0;
+var nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0;
+var isBuffer = nativeIsBuffer || stubFalse_default;
+var isBuffer_default = isBuffer;
+
+// node_modules/lodash-es/_baseIsTypedArray.js
+var argsTag2 = "[object Arguments]";
+var arrayTag = "[object Array]";
+var boolTag = "[object Boolean]";
+var dateTag = "[object Date]";
+var errorTag = "[object Error]";
+var funcTag2 = "[object Function]";
+var mapTag2 = "[object Map]";
+var numberTag = "[object Number]";
+var objectTag3 = "[object Object]";
+var regexpTag = "[object RegExp]";
+var setTag2 = "[object Set]";
+var stringTag = "[object String]";
+var weakMapTag2 = "[object WeakMap]";
+var arrayBufferTag = "[object ArrayBuffer]";
+var dataViewTag2 = "[object DataView]";
+var float32Tag = "[object Float32Array]";
+var float64Tag = "[object Float64Array]";
+var int8Tag = "[object Int8Array]";
+var int16Tag = "[object Int16Array]";
+var int32Tag = "[object Int32Array]";
+var uint8Tag = "[object Uint8Array]";
+var uint8ClampedTag = "[object Uint8ClampedArray]";
+var uint16Tag = "[object Uint16Array]";
+var uint32Tag = "[object Uint32Array]";
+var typedArrayTags = {};
+typedArrayTags[float32Tag] = typedArrayTags[float64Tag] = typedArrayTags[int8Tag] = typedArrayTags[int16Tag] = typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] = typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] = typedArrayTags[uint32Tag] = true;
+typedArrayTags[argsTag2] = typedArrayTags[arrayTag] = typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] = typedArrayTags[dataViewTag2] = typedArrayTags[dateTag] = typedArrayTags[errorTag] = typedArrayTags[funcTag2] = typedArrayTags[mapTag2] = typedArrayTags[numberTag] = typedArrayTags[objectTag3] = typedArrayTags[regexpTag] = typedArrayTags[setTag2] = typedArrayTags[stringTag] = typedArrayTags[weakMapTag2] = false;
+function baseIsTypedArray(value) {
+  return isObjectLike_default(value) && isLength_default(value.length) && !!typedArrayTags[baseGetTag_default(value)];
+}
+var baseIsTypedArray_default = baseIsTypedArray;
+
+// node_modules/lodash-es/_baseUnary.js
+function baseUnary(func) {
+  return function(value) {
+    return func(value);
+  };
+}
+var baseUnary_default = baseUnary;
+
+// node_modules/lodash-es/_nodeUtil.js
+var freeExports2 = typeof exports == "object" && exports && !exports.nodeType && exports;
+var freeModule2 = freeExports2 && typeof module == "object" && module && !module.nodeType && module;
+var moduleExports2 = freeModule2 && freeModule2.exports === freeExports2;
+var freeProcess = moduleExports2 && freeGlobal_default.process;
+var nodeUtil = (function() {
+  try {
+    var types = freeModule2 && freeModule2.require && freeModule2.require("util").types;
+    if (types) {
+      return types;
+    }
+    return freeProcess && freeProcess.binding && freeProcess.binding("util");
+  } catch (e) {
+  }
+})();
+var nodeUtil_default = nodeUtil;
+
+// node_modules/lodash-es/isTypedArray.js
+var nodeIsTypedArray = nodeUtil_default && nodeUtil_default.isTypedArray;
+var isTypedArray = nodeIsTypedArray ? baseUnary_default(nodeIsTypedArray) : baseIsTypedArray_default;
+var isTypedArray_default = isTypedArray;
+
+// node_modules/lodash-es/isEmpty.js
+var mapTag3 = "[object Map]";
+var setTag3 = "[object Set]";
+var objectProto10 = Object.prototype;
+var hasOwnProperty9 = objectProto10.hasOwnProperty;
+function isEmpty(value) {
+  if (value == null) {
+    return true;
+  }
+  if (isArrayLike_default(value) && (isArray_default(value) || typeof value == "string" || typeof value.splice == "function" || isBuffer_default(value) || isTypedArray_default(value) || isArguments_default(value))) {
+    return !value.length;
+  }
+  var tag = getTag_default(value);
+  if (tag == mapTag3 || tag == setTag3) {
+    return !value.size;
+  }
+  if (isPrototype_default(value)) {
+    return !baseKeys_default(value).length;
+  }
+  for (var key in value) {
+    if (hasOwnProperty9.call(value, key)) {
+      return false;
+    }
+  }
+  return true;
+}
+var isEmpty_default = isEmpty;
+
+// node_modules/lodash-es/_stackClear.js
+function stackClear() {
+  this.__data__ = new ListCache_default();
+  this.size = 0;
+}
+var stackClear_default = stackClear;
+
+// node_modules/lodash-es/_stackDelete.js
+function stackDelete(key) {
+  var data = this.__data__, result = data["delete"](key);
+  this.size = data.size;
+  return result;
+}
+var stackDelete_default = stackDelete;
+
+// node_modules/lodash-es/_stackGet.js
+function stackGet(key) {
+  return this.__data__.get(key);
+}
+var stackGet_default = stackGet;
+
+// node_modules/lodash-es/_stackHas.js
+function stackHas(key) {
+  return this.__data__.has(key);
+}
+var stackHas_default = stackHas;
+
+// node_modules/lodash-es/_stackSet.js
+var LARGE_ARRAY_SIZE = 200;
+function stackSet(key, value) {
+  var data = this.__data__;
+  if (data instanceof ListCache_default) {
+    var pairs = data.__data__;
+    if (!Map_default || pairs.length < LARGE_ARRAY_SIZE - 1) {
+      pairs.push([key, value]);
+      this.size = ++data.size;
+      return this;
+    }
+    data = this.__data__ = new MapCache_default(pairs);
+  }
+  data.set(key, value);
+  this.size = data.size;
+  return this;
+}
+var stackSet_default = stackSet;
+
+// node_modules/lodash-es/_Stack.js
+function Stack(entries) {
+  var data = this.__data__ = new ListCache_default(entries);
+  this.size = data.size;
+}
+Stack.prototype.clear = stackClear_default;
+Stack.prototype["delete"] = stackDelete_default;
+Stack.prototype.get = stackGet_default;
+Stack.prototype.has = stackHas_default;
+Stack.prototype.set = stackSet_default;
+var Stack_default = Stack;
+
+// node_modules/lodash-es/_arrayEach.js
+function arrayEach(array, iteratee) {
+  var index = -1, length = array == null ? 0 : array.length;
+  while (++index < length) {
+    if (iteratee(array[index], index, array) === false) {
+      break;
+    }
+  }
+  return array;
+}
+var arrayEach_default = arrayEach;
+
+// node_modules/lodash-es/_defineProperty.js
+var defineProperty = (function() {
+  try {
+    var func = getNative_default(Object, "defineProperty");
+    func({}, "", {});
+    return func;
+  } catch (e) {
+  }
+})();
+var defineProperty_default = defineProperty;
+
+// node_modules/lodash-es/_baseAssignValue.js
+function baseAssignValue(object, key, value) {
+  if (key == "__proto__" && defineProperty_default) {
+    defineProperty_default(object, key, {
+      "configurable": true,
+      "enumerable": true,
+      "value": value,
+      "writable": true
+    });
+  } else {
+    object[key] = value;
+  }
+}
+var baseAssignValue_default = baseAssignValue;
+
+// node_modules/lodash-es/_assignValue.js
+var objectProto11 = Object.prototype;
+var hasOwnProperty10 = objectProto11.hasOwnProperty;
+function assignValue(object, key, value) {
+  var objValue = object[key];
+  if (!(hasOwnProperty10.call(object, key) && eq_default(objValue, value)) || value === void 0 && !(key in object)) {
+    baseAssignValue_default(object, key, value);
+  }
+}
+var assignValue_default = assignValue;
+
+// node_modules/lodash-es/_copyObject.js
+function copyObject(source, props, object, customizer) {
+  var isNew = !object;
+  object || (object = {});
+  var index = -1, length = props.length;
+  while (++index < length) {
+    var key = props[index];
+    var newValue = customizer ? customizer(object[key], source[key], key, object, source) : void 0;
+    if (newValue === void 0) {
+      newValue = source[key];
+    }
+    if (isNew) {
+      baseAssignValue_default(object, key, newValue);
+    } else {
+      assignValue_default(object, key, newValue);
+    }
+  }
+  return object;
+}
+var copyObject_default = copyObject;
+
+// node_modules/lodash-es/_baseTimes.js
+function baseTimes(n, iteratee) {
+  var index = -1, result = Array(n);
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+var baseTimes_default = baseTimes;
+
+// node_modules/lodash-es/_isIndex.js
+var MAX_SAFE_INTEGER2 = 9007199254740991;
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+function isIndex(value, length) {
+  var type = typeof value;
+  length = length == null ? MAX_SAFE_INTEGER2 : length;
+  return !!length && (type == "number" || type != "symbol" && reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+}
+var isIndex_default = isIndex;
+
+// node_modules/lodash-es/_arrayLikeKeys.js
+var objectProto12 = Object.prototype;
+var hasOwnProperty11 = objectProto12.hasOwnProperty;
+function arrayLikeKeys(value, inherited) {
+  var isArr = isArray_default(value), isArg = !isArr && isArguments_default(value), isBuff = !isArr && !isArg && isBuffer_default(value), isType = !isArr && !isArg && !isBuff && isTypedArray_default(value), skipIndexes = isArr || isArg || isBuff || isType, result = skipIndexes ? baseTimes_default(value.length, String) : [], length = result.length;
+  for (var key in value) {
+    if ((inherited || hasOwnProperty11.call(value, key)) && !(skipIndexes && // Safari 9 has enumerable `arguments.length` in strict mode.
+    (key == "length" || // Node.js 0.10 has enumerable non-index properties on buffers.
+    isBuff && (key == "offset" || key == "parent") || // PhantomJS 2 has enumerable non-index properties on typed arrays.
+    isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || // Skip index properties.
+    isIndex_default(key, length)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+var arrayLikeKeys_default = arrayLikeKeys;
+
+// node_modules/lodash-es/keys.js
+function keys2(object) {
+  return isArrayLike_default(object) ? arrayLikeKeys_default(object) : baseKeys_default(object);
+}
+var keys_default = keys2;
+
+// node_modules/lodash-es/_baseAssign.js
+function baseAssign(object, source) {
+  return object && copyObject_default(source, keys_default(source), object);
+}
+var baseAssign_default = baseAssign;
+
+// node_modules/lodash-es/_nativeKeysIn.js
+function nativeKeysIn(object) {
+  var result = [];
+  if (object != null) {
+    for (var key in Object(object)) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+var nativeKeysIn_default = nativeKeysIn;
+
+// node_modules/lodash-es/_baseKeysIn.js
+var objectProto13 = Object.prototype;
+var hasOwnProperty12 = objectProto13.hasOwnProperty;
+function baseKeysIn(object) {
+  if (!isObject_default(object)) {
+    return nativeKeysIn_default(object);
+  }
+  var isProto = isPrototype_default(object), result = [];
+  for (var key in object) {
+    if (!(key == "constructor" && (isProto || !hasOwnProperty12.call(object, key)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+var baseKeysIn_default = baseKeysIn;
+
+// node_modules/lodash-es/keysIn.js
+function keysIn(object) {
+  return isArrayLike_default(object) ? arrayLikeKeys_default(object, true) : baseKeysIn_default(object);
+}
+var keysIn_default = keysIn;
+
+// node_modules/lodash-es/_baseAssignIn.js
+function baseAssignIn(object, source) {
+  return object && copyObject_default(source, keysIn_default(source), object);
+}
+var baseAssignIn_default = baseAssignIn;
+
+// node_modules/lodash-es/_cloneBuffer.js
+var freeExports3 = typeof exports == "object" && exports && !exports.nodeType && exports;
+var freeModule3 = freeExports3 && typeof module == "object" && module && !module.nodeType && module;
+var moduleExports3 = freeModule3 && freeModule3.exports === freeExports3;
+var Buffer3 = moduleExports3 ? root_default.Buffer : void 0;
+var allocUnsafe = Buffer3 ? Buffer3.allocUnsafe : void 0;
+function cloneBuffer(buffer, isDeep) {
+  if (isDeep) {
+    return buffer.slice();
+  }
+  var length = buffer.length, result = allocUnsafe ? allocUnsafe(length) : new buffer.constructor(length);
+  buffer.copy(result);
+  return result;
+}
+var cloneBuffer_default = cloneBuffer;
+
+// node_modules/lodash-es/_copyArray.js
+function copyArray(source, array) {
+  var index = -1, length = source.length;
+  array || (array = Array(length));
+  while (++index < length) {
+    array[index] = source[index];
+  }
+  return array;
+}
+var copyArray_default = copyArray;
+
+// node_modules/lodash-es/_arrayFilter.js
+function arrayFilter(array, predicate) {
+  var index = -1, length = array == null ? 0 : array.length, resIndex = 0, result = [];
+  while (++index < length) {
+    var value = array[index];
+    if (predicate(value, index, array)) {
+      result[resIndex++] = value;
+    }
+  }
+  return result;
+}
+var arrayFilter_default = arrayFilter;
+
+// node_modules/lodash-es/stubArray.js
+function stubArray() {
+  return [];
+}
+var stubArray_default = stubArray;
+
+// node_modules/lodash-es/_getSymbols.js
+var objectProto14 = Object.prototype;
+var propertyIsEnumerable2 = objectProto14.propertyIsEnumerable;
+var nativeGetSymbols = Object.getOwnPropertySymbols;
+var getSymbols = !nativeGetSymbols ? stubArray_default : function(object) {
+  if (object == null) {
+    return [];
+  }
+  object = Object(object);
+  return arrayFilter_default(nativeGetSymbols(object), function(symbol) {
+    return propertyIsEnumerable2.call(object, symbol);
+  });
+};
+var getSymbols_default = getSymbols;
+
+// node_modules/lodash-es/_copySymbols.js
+function copySymbols(source, object) {
+  return copyObject_default(source, getSymbols_default(source), object);
+}
+var copySymbols_default = copySymbols;
+
+// node_modules/lodash-es/_arrayPush.js
+function arrayPush(array, values2) {
+  var index = -1, length = values2.length, offset = array.length;
+  while (++index < length) {
+    array[offset + index] = values2[index];
+  }
+  return array;
+}
+var arrayPush_default = arrayPush;
+
+// node_modules/lodash-es/_getSymbolsIn.js
+var nativeGetSymbols2 = Object.getOwnPropertySymbols;
+var getSymbolsIn = !nativeGetSymbols2 ? stubArray_default : function(object) {
+  var result = [];
+  while (object) {
+    arrayPush_default(result, getSymbols_default(object));
+    object = getPrototype_default(object);
+  }
+  return result;
+};
+var getSymbolsIn_default = getSymbolsIn;
+
+// node_modules/lodash-es/_copySymbolsIn.js
+function copySymbolsIn(source, object) {
+  return copyObject_default(source, getSymbolsIn_default(source), object);
+}
+var copySymbolsIn_default = copySymbolsIn;
+
+// node_modules/lodash-es/_baseGetAllKeys.js
+function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+  var result = keysFunc(object);
+  return isArray_default(object) ? result : arrayPush_default(result, symbolsFunc(object));
+}
+var baseGetAllKeys_default = baseGetAllKeys;
+
+// node_modules/lodash-es/_getAllKeys.js
+function getAllKeys(object) {
+  return baseGetAllKeys_default(object, keys_default, getSymbols_default);
+}
+var getAllKeys_default = getAllKeys;
+
+// node_modules/lodash-es/_getAllKeysIn.js
+function getAllKeysIn(object) {
+  return baseGetAllKeys_default(object, keysIn_default, getSymbolsIn_default);
+}
+var getAllKeysIn_default = getAllKeysIn;
+
+// node_modules/lodash-es/_initCloneArray.js
+var objectProto15 = Object.prototype;
+var hasOwnProperty13 = objectProto15.hasOwnProperty;
+function initCloneArray(array) {
+  var length = array.length, result = new array.constructor(length);
+  if (length && typeof array[0] == "string" && hasOwnProperty13.call(array, "index")) {
+    result.index = array.index;
+    result.input = array.input;
+  }
+  return result;
+}
+var initCloneArray_default = initCloneArray;
+
+// node_modules/lodash-es/_Uint8Array.js
+var Uint8Array2 = root_default.Uint8Array;
+var Uint8Array_default = Uint8Array2;
+
+// node_modules/lodash-es/_cloneArrayBuffer.js
+function cloneArrayBuffer(arrayBuffer) {
+  var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+  new Uint8Array_default(result).set(new Uint8Array_default(arrayBuffer));
+  return result;
+}
+var cloneArrayBuffer_default = cloneArrayBuffer;
+
+// node_modules/lodash-es/_cloneDataView.js
+function cloneDataView(dataView, isDeep) {
+  var buffer = isDeep ? cloneArrayBuffer_default(dataView.buffer) : dataView.buffer;
+  return new dataView.constructor(buffer, dataView.byteOffset, dataView.byteLength);
+}
+var cloneDataView_default = cloneDataView;
+
+// node_modules/lodash-es/_cloneRegExp.js
+var reFlags = /\w*$/;
+function cloneRegExp(regexp) {
+  var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
+  result.lastIndex = regexp.lastIndex;
+  return result;
+}
+var cloneRegExp_default = cloneRegExp;
+
+// node_modules/lodash-es/_cloneSymbol.js
+var symbolProto2 = Symbol_default ? Symbol_default.prototype : void 0;
+var symbolValueOf = symbolProto2 ? symbolProto2.valueOf : void 0;
+function cloneSymbol(symbol) {
+  return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
+}
+var cloneSymbol_default = cloneSymbol;
+
+// node_modules/lodash-es/_cloneTypedArray.js
+function cloneTypedArray(typedArray, isDeep) {
+  var buffer = isDeep ? cloneArrayBuffer_default(typedArray.buffer) : typedArray.buffer;
+  return new typedArray.constructor(buffer, typedArray.byteOffset, typedArray.length);
+}
+var cloneTypedArray_default = cloneTypedArray;
+
+// node_modules/lodash-es/_initCloneByTag.js
+var boolTag2 = "[object Boolean]";
+var dateTag2 = "[object Date]";
+var mapTag4 = "[object Map]";
+var numberTag2 = "[object Number]";
+var regexpTag2 = "[object RegExp]";
+var setTag4 = "[object Set]";
+var stringTag2 = "[object String]";
+var symbolTag2 = "[object Symbol]";
+var arrayBufferTag2 = "[object ArrayBuffer]";
+var dataViewTag3 = "[object DataView]";
+var float32Tag2 = "[object Float32Array]";
+var float64Tag2 = "[object Float64Array]";
+var int8Tag2 = "[object Int8Array]";
+var int16Tag2 = "[object Int16Array]";
+var int32Tag2 = "[object Int32Array]";
+var uint8Tag2 = "[object Uint8Array]";
+var uint8ClampedTag2 = "[object Uint8ClampedArray]";
+var uint16Tag2 = "[object Uint16Array]";
+var uint32Tag2 = "[object Uint32Array]";
+function initCloneByTag(object, tag, isDeep) {
+  var Ctor = object.constructor;
+  switch (tag) {
+    case arrayBufferTag2:
+      return cloneArrayBuffer_default(object);
+    case boolTag2:
+    case dateTag2:
+      return new Ctor(+object);
+    case dataViewTag3:
+      return cloneDataView_default(object, isDeep);
+    case float32Tag2:
+    case float64Tag2:
+    case int8Tag2:
+    case int16Tag2:
+    case int32Tag2:
+    case uint8Tag2:
+    case uint8ClampedTag2:
+    case uint16Tag2:
+    case uint32Tag2:
+      return cloneTypedArray_default(object, isDeep);
+    case mapTag4:
+      return new Ctor();
+    case numberTag2:
+    case stringTag2:
+      return new Ctor(object);
+    case regexpTag2:
+      return cloneRegExp_default(object);
+    case setTag4:
+      return new Ctor();
+    case symbolTag2:
+      return cloneSymbol_default(object);
+  }
+}
+var initCloneByTag_default = initCloneByTag;
+
+// node_modules/lodash-es/_baseCreate.js
+var objectCreate = Object.create;
+var baseCreate = /* @__PURE__ */ (function() {
+  function object() {
+  }
+  return function(proto) {
+    if (!isObject_default(proto)) {
+      return {};
+    }
+    if (objectCreate) {
+      return objectCreate(proto);
+    }
+    object.prototype = proto;
+    var result = new object();
+    object.prototype = void 0;
+    return result;
+  };
+})();
+var baseCreate_default = baseCreate;
+
+// node_modules/lodash-es/_initCloneObject.js
+function initCloneObject(object) {
+  return typeof object.constructor == "function" && !isPrototype_default(object) ? baseCreate_default(getPrototype_default(object)) : {};
+}
+var initCloneObject_default = initCloneObject;
+
+// node_modules/lodash-es/_baseIsMap.js
+var mapTag5 = "[object Map]";
+function baseIsMap(value) {
+  return isObjectLike_default(value) && getTag_default(value) == mapTag5;
+}
+var baseIsMap_default = baseIsMap;
+
+// node_modules/lodash-es/isMap.js
+var nodeIsMap = nodeUtil_default && nodeUtil_default.isMap;
+var isMap = nodeIsMap ? baseUnary_default(nodeIsMap) : baseIsMap_default;
+var isMap_default = isMap;
+
+// node_modules/lodash-es/_baseIsSet.js
+var setTag5 = "[object Set]";
+function baseIsSet(value) {
+  return isObjectLike_default(value) && getTag_default(value) == setTag5;
+}
+var baseIsSet_default = baseIsSet;
+
+// node_modules/lodash-es/isSet.js
+var nodeIsSet = nodeUtil_default && nodeUtil_default.isSet;
+var isSet = nodeIsSet ? baseUnary_default(nodeIsSet) : baseIsSet_default;
+var isSet_default = isSet;
+
+// node_modules/lodash-es/_baseClone.js
+var CLONE_DEEP_FLAG = 1;
+var CLONE_FLAT_FLAG = 2;
+var CLONE_SYMBOLS_FLAG = 4;
+var argsTag3 = "[object Arguments]";
+var arrayTag2 = "[object Array]";
+var boolTag3 = "[object Boolean]";
+var dateTag3 = "[object Date]";
+var errorTag2 = "[object Error]";
+var funcTag3 = "[object Function]";
+var genTag2 = "[object GeneratorFunction]";
+var mapTag6 = "[object Map]";
+var numberTag3 = "[object Number]";
+var objectTag4 = "[object Object]";
+var regexpTag3 = "[object RegExp]";
+var setTag6 = "[object Set]";
+var stringTag3 = "[object String]";
+var symbolTag3 = "[object Symbol]";
+var weakMapTag3 = "[object WeakMap]";
+var arrayBufferTag3 = "[object ArrayBuffer]";
+var dataViewTag4 = "[object DataView]";
+var float32Tag3 = "[object Float32Array]";
+var float64Tag3 = "[object Float64Array]";
+var int8Tag3 = "[object Int8Array]";
+var int16Tag3 = "[object Int16Array]";
+var int32Tag3 = "[object Int32Array]";
+var uint8Tag3 = "[object Uint8Array]";
+var uint8ClampedTag3 = "[object Uint8ClampedArray]";
+var uint16Tag3 = "[object Uint16Array]";
+var uint32Tag3 = "[object Uint32Array]";
+var cloneableTags = {};
+cloneableTags[argsTag3] = cloneableTags[arrayTag2] = cloneableTags[arrayBufferTag3] = cloneableTags[dataViewTag4] = cloneableTags[boolTag3] = cloneableTags[dateTag3] = cloneableTags[float32Tag3] = cloneableTags[float64Tag3] = cloneableTags[int8Tag3] = cloneableTags[int16Tag3] = cloneableTags[int32Tag3] = cloneableTags[mapTag6] = cloneableTags[numberTag3] = cloneableTags[objectTag4] = cloneableTags[regexpTag3] = cloneableTags[setTag6] = cloneableTags[stringTag3] = cloneableTags[symbolTag3] = cloneableTags[uint8Tag3] = cloneableTags[uint8ClampedTag3] = cloneableTags[uint16Tag3] = cloneableTags[uint32Tag3] = true;
+cloneableTags[errorTag2] = cloneableTags[funcTag3] = cloneableTags[weakMapTag3] = false;
+function baseClone(value, bitmask, customizer, key, object, stack) {
+  var result, isDeep = bitmask & CLONE_DEEP_FLAG, isFlat = bitmask & CLONE_FLAT_FLAG, isFull = bitmask & CLONE_SYMBOLS_FLAG;
+  if (customizer) {
+    result = object ? customizer(value, key, object, stack) : customizer(value);
+  }
+  if (result !== void 0) {
+    return result;
+  }
+  if (!isObject_default(value)) {
+    return value;
+  }
+  var isArr = isArray_default(value);
+  if (isArr) {
+    result = initCloneArray_default(value);
+    if (!isDeep) {
+      return copyArray_default(value, result);
+    }
+  } else {
+    var tag = getTag_default(value), isFunc = tag == funcTag3 || tag == genTag2;
+    if (isBuffer_default(value)) {
+      return cloneBuffer_default(value, isDeep);
+    }
+    if (tag == objectTag4 || tag == argsTag3 || isFunc && !object) {
+      result = isFlat || isFunc ? {} : initCloneObject_default(value);
+      if (!isDeep) {
+        return isFlat ? copySymbolsIn_default(value, baseAssignIn_default(result, value)) : copySymbols_default(value, baseAssign_default(result, value));
+      }
+    } else {
+      if (!cloneableTags[tag]) {
+        return object ? value : {};
+      }
+      result = initCloneByTag_default(value, tag, isDeep);
+    }
+  }
+  stack || (stack = new Stack_default());
+  var stacked = stack.get(value);
+  if (stacked) {
+    return stacked;
+  }
+  stack.set(value, result);
+  if (isSet_default(value)) {
+    value.forEach(function(subValue) {
+      result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
+    });
+  } else if (isMap_default(value)) {
+    value.forEach(function(subValue, key2) {
+      result.set(key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
+    });
+  }
+  var keysFunc = isFull ? isFlat ? getAllKeysIn_default : getAllKeys_default : isFlat ? keysIn_default : keys_default;
+  var props = isArr ? void 0 : keysFunc(value);
+  arrayEach_default(props || value, function(subValue, key2) {
+    if (props) {
+      key2 = subValue;
+      subValue = value[key2];
+    }
+    assignValue_default(result, key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
+  });
+  return result;
+}
+var baseClone_default = baseClone;
+
+// node_modules/lodash-es/last.js
+function last(array) {
+  var length = array == null ? 0 : array.length;
+  return length ? array[length - 1] : void 0;
+}
+var last_default = last;
+
+// node_modules/lodash-es/_baseSlice.js
+function baseSlice(array, start, end) {
+  var index = -1, length = array.length;
+  if (start < 0) {
+    start = -start > length ? 0 : length + start;
+  }
+  end = end > length ? length : end;
+  if (end < 0) {
+    end += length;
+  }
+  length = start > end ? 0 : end - start >>> 0;
+  start >>>= 0;
+  var result = Array(length);
+  while (++index < length) {
+    result[index] = array[index + start];
+  }
+  return result;
+}
+var baseSlice_default = baseSlice;
+
+// node_modules/lodash-es/_parent.js
+function parent(object, path) {
+  return path.length < 2 ? object : baseGet_default(object, baseSlice_default(path, 0, -1));
+}
+var parent_default = parent;
+
+// node_modules/lodash-es/_baseUnset.js
+var objectProto16 = Object.prototype;
+var hasOwnProperty14 = objectProto16.hasOwnProperty;
+function baseUnset(object, path) {
+  path = castPath_default(path, object);
+  var index = -1, length = path.length;
+  if (!length) {
+    return true;
+  }
+  while (++index < length) {
+    var key = toKey_default(path[index]);
+    if (key === "__proto__" && !hasOwnProperty14.call(object, "__proto__")) {
+      return false;
+    }
+    if ((key === "constructor" || key === "prototype") && index < length - 1) {
+      return false;
+    }
+  }
+  var obj = parent_default(object, path);
+  return obj == null || delete obj[toKey_default(last_default(path))];
+}
+var baseUnset_default = baseUnset;
+
+// node_modules/lodash-es/_customOmitClone.js
+function customOmitClone(value) {
+  return isPlainObject_default(value) ? void 0 : value;
+}
+var customOmitClone_default = customOmitClone;
+
+// node_modules/lodash-es/_isFlattenable.js
+var spreadableSymbol = Symbol_default ? Symbol_default.isConcatSpreadable : void 0;
+function isFlattenable(value) {
+  return isArray_default(value) || isArguments_default(value) || !!(spreadableSymbol && value && value[spreadableSymbol]);
+}
+var isFlattenable_default = isFlattenable;
+
+// node_modules/lodash-es/_baseFlatten.js
+function baseFlatten(array, depth, predicate, isStrict, result) {
+  var index = -1, length = array.length;
+  predicate || (predicate = isFlattenable_default);
+  result || (result = []);
+  while (++index < length) {
+    var value = array[index];
+    if (depth > 0 && predicate(value)) {
+      if (depth > 1) {
+        baseFlatten(value, depth - 1, predicate, isStrict, result);
+      } else {
+        arrayPush_default(result, value);
+      }
+    } else if (!isStrict) {
+      result[result.length] = value;
+    }
+  }
+  return result;
+}
+var baseFlatten_default = baseFlatten;
+
+// node_modules/lodash-es/flatten.js
+function flatten(array) {
+  var length = array == null ? 0 : array.length;
+  return length ? baseFlatten_default(array, 1) : [];
+}
+var flatten_default = flatten;
+
+// node_modules/lodash-es/_apply.js
+function apply(func, thisArg, args) {
+  switch (args.length) {
+    case 0:
+      return func.call(thisArg);
+    case 1:
+      return func.call(thisArg, args[0]);
+    case 2:
+      return func.call(thisArg, args[0], args[1]);
+    case 3:
+      return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+var apply_default = apply;
+
+// node_modules/lodash-es/_overRest.js
+var nativeMax = Math.max;
+function overRest(func, start, transform2) {
+  start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
+  return function() {
+    var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length);
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = transform2(array);
+    return apply_default(func, this, otherArgs);
+  };
+}
+var overRest_default = overRest;
+
+// node_modules/lodash-es/constant.js
+function constant(value) {
+  return function() {
+    return value;
+  };
+}
+var constant_default = constant;
+
+// node_modules/lodash-es/identity.js
+function identity(value) {
+  return value;
+}
+var identity_default = identity;
+
+// node_modules/lodash-es/_baseSetToString.js
+var baseSetToString = !defineProperty_default ? identity_default : function(func, string) {
+  return defineProperty_default(func, "toString", {
+    "configurable": true,
+    "enumerable": false,
+    "value": constant_default(string),
+    "writable": true
+  });
+};
+var baseSetToString_default = baseSetToString;
+
+// node_modules/lodash-es/_shortOut.js
+var HOT_COUNT = 800;
+var HOT_SPAN = 16;
+var nativeNow = Date.now;
+function shortOut(func) {
+  var count = 0, lastCalled = 0;
+  return function() {
+    var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
+    lastCalled = stamp;
+    if (remaining > 0) {
+      if (++count >= HOT_COUNT) {
+        return arguments[0];
+      }
+    } else {
+      count = 0;
+    }
+    return func.apply(void 0, arguments);
+  };
+}
+var shortOut_default = shortOut;
+
+// node_modules/lodash-es/_setToString.js
+var setToString = shortOut_default(baseSetToString_default);
+var setToString_default = setToString;
+
+// node_modules/lodash-es/_flatRest.js
+function flatRest(func) {
+  return setToString_default(overRest_default(func, void 0, flatten_default), func + "");
+}
+var flatRest_default = flatRest;
+
+// node_modules/lodash-es/omit.js
+var CLONE_DEEP_FLAG2 = 1;
+var CLONE_FLAT_FLAG2 = 2;
+var CLONE_SYMBOLS_FLAG2 = 4;
+var omit = flatRest_default(function(object, paths) {
+  var result = {};
+  if (object == null) {
+    return result;
+  }
+  var isDeep = false;
+  paths = arrayMap_default(paths, function(path) {
+    path = castPath_default(path, object);
+    isDeep || (isDeep = path.length > 1);
+    return path;
+  });
+  copyObject_default(object, getAllKeysIn_default(object), result);
+  if (isDeep) {
+    result = baseClone_default(result, CLONE_DEEP_FLAG2 | CLONE_FLAT_FLAG2 | CLONE_SYMBOLS_FLAG2, customOmitClone_default);
+  }
+  var length = paths.length;
+  while (length--) {
+    baseUnset_default(result, paths[length]);
+  }
+  return result;
+});
+var omit_default = omit;
+
+// node_modules/@rjsf/utils/lib/findSchemaDefinition.js
+function findEmbeddedSchemaRecursive(schema, ref) {
+  if (ID_KEY in schema && import_fast_uri.default.equal(schema[ID_KEY], ref)) {
+    return schema;
+  }
+  for (const subSchema of Object.values(schema)) {
+    if (Array.isArray(subSchema)) {
+      for (const item of subSchema) {
+        if (isObject_default(item)) {
+          const result = findEmbeddedSchemaRecursive(item, ref);
+          if (result !== void 0) {
+            return result;
+          }
+        }
+      }
+    } else if (isObject_default(subSchema)) {
+      const result = findEmbeddedSchemaRecursive(subSchema, ref);
+      if (result !== void 0) {
+        return result;
+      }
+    }
+  }
+  return void 0;
+}
+function makeAllReferencesAbsolute(schema, baseURI) {
+  const currentURI = get_default(schema, ID_KEY, baseURI);
+  let result = schema;
+  if (REF_KEY in result) {
+    result = { ...result, [REF_KEY]: import_fast_uri.default.resolve(currentURI, result[REF_KEY]) };
+  }
+  for (const [key, subSchema] of Object.entries(result)) {
+    if (Array.isArray(subSchema)) {
+      result = {
+        ...result,
+        [key]: subSchema.map((item) => isObject_default(item) ? makeAllReferencesAbsolute(item, currentURI) : item)
+      };
+    } else if (isObject_default(subSchema)) {
+      result = { ...result, [key]: makeAllReferencesAbsolute(subSchema, currentURI) };
+    }
+  }
+  return result;
+}
+function splitKeyElementFromObject(key, object) {
+  const value = object[key];
+  const remaining = omit_default(object, [key]);
+  return [remaining, value];
+}
+function findSchemaDefinitionRecursive($ref, rootSchema = {}, recurseList = [], baseURI = get_default(rootSchema, [ID_KEY])) {
+  const ref = $ref || "";
+  let current = void 0;
+  let currentBaseURI = baseURI;
+  if (ref.startsWith("#")) {
+    const decodedRef = decodeURIComponent(ref.substring(1));
+    if (currentBaseURI === void 0 || ID_KEY in rootSchema && rootSchema[ID_KEY] === currentBaseURI) {
+      current = import_jsonpointer.default.get(rootSchema, decodedRef);
+    } else if (rootSchema[SCHEMA_KEY] === JSON_SCHEMA_DRAFT_2020_12) {
+      current = findEmbeddedSchemaRecursive(rootSchema, currentBaseURI.replace(/\/$/, ""));
+      if (current !== void 0) {
+        current = import_jsonpointer.default.get(current, decodedRef);
+      }
+    }
+  } else if (rootSchema[SCHEMA_KEY] === JSON_SCHEMA_DRAFT_2020_12) {
+    const resolvedRef = currentBaseURI ? import_fast_uri.default.resolve(currentBaseURI, ref) : ref;
+    const [refId, ...refAnchor] = resolvedRef.replace(/#\/?$/, "").split("#");
+    current = findEmbeddedSchemaRecursive(rootSchema, refId.replace(/\/$/, ""));
+    if (current !== void 0) {
+      currentBaseURI = current[ID_KEY];
+      if (!isEmpty_default(refAnchor)) {
+        current = import_jsonpointer.default.get(current, decodeURIComponent(refAnchor.join("#")));
+      }
+    }
+  }
+  if (current === void 0) {
+    throw new Error(`Could not find a definition for ${$ref}.`);
+  }
+  const nextRef = current[REF_KEY];
+  if (nextRef) {
+    if (recurseList.includes(nextRef)) {
+      if (recurseList.length === 1) {
+        throw new Error(`Definition for ${$ref} is a circular reference`);
+      }
+      const [firstRef, ...restRefs] = recurseList;
+      const circularPath = [...restRefs, ref, firstRef].join(" -> ");
+      throw new Error(`Definition for ${firstRef} contains a circular reference through ${circularPath}`);
+    }
+    const [remaining, theRef] = splitKeyElementFromObject(REF_KEY, current);
+    const subSchema = findSchemaDefinitionRecursive(theRef, rootSchema, [...recurseList, ref], currentBaseURI);
+    if (Object.keys(remaining).length > 0) {
+      if (rootSchema[SCHEMA_KEY] === JSON_SCHEMA_DRAFT_2019_09 || rootSchema[SCHEMA_KEY] === JSON_SCHEMA_DRAFT_2020_12) {
+        return { [ALL_OF_KEY]: [remaining, subSchema] };
+      }
+      return { ...remaining, ...subSchema };
+    }
+    return subSchema;
+  }
+  return current;
+}
+function findSchemaDefinition($ref, rootSchema = {}, baseURI = get_default(rootSchema, [ID_KEY])) {
+  const recurseList = [];
+  return findSchemaDefinitionRecursive($ref, rootSchema, recurseList, baseURI);
+}
+
+// node_modules/lodash-es/_baseHas.js
+var objectProto17 = Object.prototype;
+var hasOwnProperty15 = objectProto17.hasOwnProperty;
+function baseHas(object, key) {
+  return object != null && hasOwnProperty15.call(object, key);
+}
+var baseHas_default = baseHas;
+
+// node_modules/lodash-es/_hasPath.js
+function hasPath(object, path, hasFunc) {
+  path = castPath_default(path, object);
+  var index = -1, length = path.length, result = false;
+  while (++index < length) {
+    var key = toKey_default(path[index]);
+    if (!(result = object != null && hasFunc(object, key))) {
+      break;
+    }
+    object = object[key];
+  }
+  if (result || ++index != length) {
+    return result;
+  }
+  length = object == null ? 0 : object.length;
+  return !!length && isLength_default(length) && isIndex_default(key, length) && (isArray_default(object) || isArguments_default(object));
+}
+var hasPath_default = hasPath;
+
+// node_modules/lodash-es/has.js
+function has(object, path) {
+  return object != null && hasPath_default(object, path, baseHas_default);
+}
+var has_default = has;
+
+// node_modules/lodash-es/isString.js
+var stringTag4 = "[object String]";
+function isString(value) {
+  return typeof value == "string" || !isArray_default(value) && isObjectLike_default(value) && baseGetTag_default(value) == stringTag4;
+}
+var isString_default = isString;
+
+// node_modules/@rjsf/utils/lib/getDiscriminatorFieldFromSchema.js
+function getDiscriminatorFieldFromSchema(schema) {
+  let discriminator;
+  const maybeString = get_default(schema, DISCRIMINATOR_PATH);
+  if (isString_default(maybeString)) {
+    discriminator = maybeString;
+  } else if (maybeString !== void 0) {
+    console.warn(`Expecting discriminator to be a string, got "${typeof maybeString}" instead`);
+  }
+  return discriminator;
+}
+
+// node_modules/lodash-es/flattenDeep.js
+var INFINITY3 = 1 / 0;
+function flattenDeep(array) {
+  var length = array == null ? 0 : array.length;
+  return length ? baseFlatten_default(array, INFINITY3) : [];
+}
+var flattenDeep_default = flattenDeep;
+
+// node_modules/lodash-es/_assignMergeValue.js
+function assignMergeValue(object, key, value) {
+  if (value !== void 0 && !eq_default(object[key], value) || value === void 0 && !(key in object)) {
+    baseAssignValue_default(object, key, value);
+  }
+}
+var assignMergeValue_default = assignMergeValue;
+
+// node_modules/lodash-es/_createBaseFor.js
+function createBaseFor(fromRight) {
+  return function(object, iteratee, keysFunc) {
+    var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length;
+    while (length--) {
+      var key = props[fromRight ? length : ++index];
+      if (iteratee(iterable[key], key, iterable) === false) {
+        break;
+      }
+    }
+    return object;
+  };
+}
+var createBaseFor_default = createBaseFor;
+
+// node_modules/lodash-es/_baseFor.js
+var baseFor = createBaseFor_default();
+var baseFor_default = baseFor;
+
+// node_modules/lodash-es/isArrayLikeObject.js
+function isArrayLikeObject(value) {
+  return isObjectLike_default(value) && isArrayLike_default(value);
+}
+var isArrayLikeObject_default = isArrayLikeObject;
+
+// node_modules/lodash-es/_safeGet.js
+function safeGet(object, key) {
+  if (key === "constructor" && typeof object[key] === "function") {
+    return;
+  }
+  if (key == "__proto__") {
+    return;
+  }
+  return object[key];
+}
+var safeGet_default = safeGet;
+
+// node_modules/lodash-es/toPlainObject.js
+function toPlainObject(value) {
+  return copyObject_default(value, keysIn_default(value));
+}
+var toPlainObject_default = toPlainObject;
+
+// node_modules/lodash-es/_baseMergeDeep.js
+function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
+  var objValue = safeGet_default(object, key), srcValue = safeGet_default(source, key), stacked = stack.get(srcValue);
+  if (stacked) {
+    assignMergeValue_default(object, key, stacked);
+    return;
+  }
+  var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack) : void 0;
+  var isCommon = newValue === void 0;
+  if (isCommon) {
+    var isArr = isArray_default(srcValue), isBuff = !isArr && isBuffer_default(srcValue), isTyped = !isArr && !isBuff && isTypedArray_default(srcValue);
+    newValue = srcValue;
+    if (isArr || isBuff || isTyped) {
+      if (isArray_default(objValue)) {
+        newValue = objValue;
+      } else if (isArrayLikeObject_default(objValue)) {
+        newValue = copyArray_default(objValue);
+      } else if (isBuff) {
+        isCommon = false;
+        newValue = cloneBuffer_default(srcValue, true);
+      } else if (isTyped) {
+        isCommon = false;
+        newValue = cloneTypedArray_default(srcValue, true);
+      } else {
+        newValue = [];
+      }
+    } else if (isPlainObject_default(srcValue) || isArguments_default(srcValue)) {
+      newValue = objValue;
+      if (isArguments_default(objValue)) {
+        newValue = toPlainObject_default(objValue);
+      } else if (!isObject_default(objValue) || isFunction_default(objValue)) {
+        newValue = initCloneObject_default(srcValue);
+      }
+    } else {
+      isCommon = false;
+    }
+  }
+  if (isCommon) {
+    stack.set(srcValue, newValue);
+    mergeFunc(newValue, srcValue, srcIndex, customizer, stack);
+    stack["delete"](srcValue);
+  }
+  assignMergeValue_default(object, key, newValue);
+}
+var baseMergeDeep_default = baseMergeDeep;
+
+// node_modules/lodash-es/_baseMerge.js
+function baseMerge(object, source, srcIndex, customizer, stack) {
+  if (object === source) {
+    return;
+  }
+  baseFor_default(source, function(srcValue, key) {
+    stack || (stack = new Stack_default());
+    if (isObject_default(srcValue)) {
+      baseMergeDeep_default(object, source, key, srcIndex, baseMerge, customizer, stack);
+    } else {
+      var newValue = customizer ? customizer(safeGet_default(object, key), srcValue, key + "", object, source, stack) : void 0;
+      if (newValue === void 0) {
+        newValue = srcValue;
+      }
+      assignMergeValue_default(object, key, newValue);
+    }
+  }, keysIn_default);
+}
+var baseMerge_default = baseMerge;
+
+// node_modules/lodash-es/_baseRest.js
+function baseRest(func, start) {
+  return setToString_default(overRest_default(func, start, identity_default), func + "");
+}
+var baseRest_default = baseRest;
+
+// node_modules/lodash-es/_isIterateeCall.js
+function isIterateeCall(value, index, object) {
+  if (!isObject_default(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == "number" ? isArrayLike_default(object) && isIndex_default(index, object.length) : type == "string" && index in object) {
+    return eq_default(object[index], value);
+  }
+  return false;
+}
+var isIterateeCall_default = isIterateeCall;
+
+// node_modules/lodash-es/_createAssigner.js
+function createAssigner(assigner) {
+  return baseRest_default(function(object, sources) {
+    var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+    customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
+    if (guard && isIterateeCall_default(sources[0], sources[1], guard)) {
+      customizer = length < 3 ? void 0 : customizer;
+      length = 1;
+    }
+    object = Object(object);
+    while (++index < length) {
+      var source = sources[index];
+      if (source) {
+        assigner(object, source, index, customizer);
+      }
+    }
+    return object;
+  });
+}
+var createAssigner_default = createAssigner;
+
+// node_modules/lodash-es/merge.js
+var merge = createAssigner_default(function(object, source, srcIndex) {
+  baseMerge_default(object, source, srcIndex);
+});
+var merge_default = merge;
+
+// node_modules/lodash-es/_baseSet.js
+function baseSet(object, path, value, customizer) {
+  if (!isObject_default(object)) {
+    return object;
+  }
+  path = castPath_default(path, object);
+  var index = -1, length = path.length, lastIndex = length - 1, nested = object;
+  while (nested != null && ++index < length) {
+    var key = toKey_default(path[index]), newValue = value;
+    if (key === "__proto__" || key === "constructor" || key === "prototype") {
+      return object;
+    }
+    if (index != lastIndex) {
+      var objValue = nested[key];
+      newValue = customizer ? customizer(objValue, key, nested) : void 0;
+      if (newValue === void 0) {
+        newValue = isObject_default(objValue) ? objValue : isIndex_default(path[index + 1]) ? [] : {};
+      }
+    }
+    assignValue_default(nested, key, newValue);
+    nested = nested[key];
+  }
+  return object;
+}
+var baseSet_default = baseSet;
+
+// node_modules/lodash-es/set.js
+function set(object, path, value) {
+  return object == null ? object : baseSet_default(object, path, value);
+}
+var set_default = set;
+
+// node_modules/lodash-es/_castFunction.js
+function castFunction(value) {
+  return typeof value == "function" ? value : identity_default;
+}
+var castFunction_default = castFunction;
+
+// node_modules/lodash-es/_trimmedEndIndex.js
+var reWhitespace = /\s/;
+function trimmedEndIndex(string) {
+  var index = string.length;
+  while (index-- && reWhitespace.test(string.charAt(index))) {
+  }
+  return index;
+}
+var trimmedEndIndex_default = trimmedEndIndex;
+
+// node_modules/lodash-es/_baseTrim.js
+var reTrimStart = /^\s+/;
+function baseTrim(string) {
+  return string ? string.slice(0, trimmedEndIndex_default(string) + 1).replace(reTrimStart, "") : string;
+}
+var baseTrim_default = baseTrim;
+
+// node_modules/lodash-es/toNumber.js
+var NAN = 0 / 0;
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+var reIsBinary = /^0b[01]+$/i;
+var reIsOctal = /^0o[0-7]+$/i;
+var freeParseInt = parseInt;
+function toNumber(value) {
+  if (typeof value == "number") {
+    return value;
+  }
+  if (isSymbol_default(value)) {
+    return NAN;
+  }
+  if (isObject_default(value)) {
+    var other = typeof value.valueOf == "function" ? value.valueOf() : value;
+    value = isObject_default(other) ? other + "" : other;
+  }
+  if (typeof value != "string") {
+    return value === 0 ? value : +value;
+  }
+  value = baseTrim_default(value);
+  var isBinary = reIsBinary.test(value);
+  return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
+}
+var toNumber_default = toNumber;
+
+// node_modules/lodash-es/toFinite.js
+var INFINITY4 = 1 / 0;
+var MAX_INTEGER = 17976931348623157e292;
+function toFinite(value) {
+  if (!value) {
+    return value === 0 ? value : 0;
+  }
+  value = toNumber_default(value);
+  if (value === INFINITY4 || value === -INFINITY4) {
+    var sign = value < 0 ? -1 : 1;
+    return sign * MAX_INTEGER;
+  }
+  return value === value ? value : 0;
+}
+var toFinite_default = toFinite;
+
+// node_modules/lodash-es/toInteger.js
+function toInteger(value) {
+  var result = toFinite_default(value), remainder = result % 1;
+  return result === result ? remainder ? result - remainder : result : 0;
+}
+var toInteger_default = toInteger;
+
+// node_modules/lodash-es/times.js
+var MAX_SAFE_INTEGER3 = 9007199254740991;
+var MAX_ARRAY_LENGTH = 4294967295;
+var nativeMin = Math.min;
+function times(n, iteratee) {
+  n = toInteger_default(n);
+  if (n < 1 || n > MAX_SAFE_INTEGER3) {
+    return [];
+  }
+  var index = MAX_ARRAY_LENGTH, length = nativeMin(n, MAX_ARRAY_LENGTH);
+  iteratee = castFunction_default(iteratee);
+  n -= MAX_ARRAY_LENGTH;
+  var result = baseTimes_default(length, iteratee);
+  while (++index < n) {
+    iteratee(index);
+  }
+  return result;
+}
+var times_default = times;
+
+// node_modules/lodash-es/_baseForOwn.js
+function baseForOwn(object, iteratee) {
+  return object && baseFor_default(object, iteratee, keys_default);
+}
+var baseForOwn_default = baseForOwn;
+
+// node_modules/lodash-es/_setCacheAdd.js
+var HASH_UNDEFINED3 = "__lodash_hash_undefined__";
+function setCacheAdd(value) {
+  this.__data__.set(value, HASH_UNDEFINED3);
+  return this;
+}
+var setCacheAdd_default = setCacheAdd;
+
+// node_modules/lodash-es/_setCacheHas.js
+function setCacheHas(value) {
+  return this.__data__.has(value);
+}
+var setCacheHas_default = setCacheHas;
+
+// node_modules/lodash-es/_SetCache.js
+function SetCache(values2) {
+  var index = -1, length = values2 == null ? 0 : values2.length;
+  this.__data__ = new MapCache_default();
+  while (++index < length) {
+    this.add(values2[index]);
+  }
+}
+SetCache.prototype.add = SetCache.prototype.push = setCacheAdd_default;
+SetCache.prototype.has = setCacheHas_default;
+var SetCache_default = SetCache;
+
+// node_modules/lodash-es/_arraySome.js
+function arraySome(array, predicate) {
+  var index = -1, length = array == null ? 0 : array.length;
+  while (++index < length) {
+    if (predicate(array[index], index, array)) {
+      return true;
+    }
+  }
+  return false;
+}
+var arraySome_default = arraySome;
+
+// node_modules/lodash-es/_cacheHas.js
+function cacheHas(cache, key) {
+  return cache.has(key);
+}
+var cacheHas_default = cacheHas;
+
+// node_modules/lodash-es/_equalArrays.js
+var COMPARE_PARTIAL_FLAG = 1;
+var COMPARE_UNORDERED_FLAG = 2;
+function equalArrays(array, other, bitmask, customizer, equalFunc, stack) {
+  var isPartial = bitmask & COMPARE_PARTIAL_FLAG, arrLength = array.length, othLength = other.length;
+  if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
+    return false;
+  }
+  var arrStacked = stack.get(array);
+  var othStacked = stack.get(other);
+  if (arrStacked && othStacked) {
+    return arrStacked == other && othStacked == array;
+  }
+  var index = -1, result = true, seen = bitmask & COMPARE_UNORDERED_FLAG ? new SetCache_default() : void 0;
+  stack.set(array, other);
+  stack.set(other, array);
+  while (++index < arrLength) {
+    var arrValue = array[index], othValue = other[index];
+    if (customizer) {
+      var compared = isPartial ? customizer(othValue, arrValue, index, other, array, stack) : customizer(arrValue, othValue, index, array, other, stack);
+    }
+    if (compared !== void 0) {
+      if (compared) {
+        continue;
+      }
+      result = false;
+      break;
+    }
+    if (seen) {
+      if (!arraySome_default(other, function(othValue2, othIndex) {
+        if (!cacheHas_default(seen, othIndex) && (arrValue === othValue2 || equalFunc(arrValue, othValue2, bitmask, customizer, stack))) {
+          return seen.push(othIndex);
+        }
+      })) {
+        result = false;
+        break;
+      }
+    } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
+      result = false;
+      break;
+    }
+  }
+  stack["delete"](array);
+  stack["delete"](other);
+  return result;
+}
+var equalArrays_default = equalArrays;
+
+// node_modules/lodash-es/_mapToArray.js
+function mapToArray(map) {
+  var index = -1, result = Array(map.size);
+  map.forEach(function(value, key) {
+    result[++index] = [key, value];
+  });
+  return result;
+}
+var mapToArray_default = mapToArray;
+
+// node_modules/lodash-es/_setToArray.js
+function setToArray(set2) {
+  var index = -1, result = Array(set2.size);
+  set2.forEach(function(value) {
+    result[++index] = value;
+  });
+  return result;
+}
+var setToArray_default = setToArray;
+
+// node_modules/lodash-es/_equalByTag.js
+var COMPARE_PARTIAL_FLAG2 = 1;
+var COMPARE_UNORDERED_FLAG2 = 2;
+var boolTag4 = "[object Boolean]";
+var dateTag4 = "[object Date]";
+var errorTag3 = "[object Error]";
+var mapTag7 = "[object Map]";
+var numberTag4 = "[object Number]";
+var regexpTag4 = "[object RegExp]";
+var setTag7 = "[object Set]";
+var stringTag5 = "[object String]";
+var symbolTag4 = "[object Symbol]";
+var arrayBufferTag4 = "[object ArrayBuffer]";
+var dataViewTag5 = "[object DataView]";
+var symbolProto3 = Symbol_default ? Symbol_default.prototype : void 0;
+var symbolValueOf2 = symbolProto3 ? symbolProto3.valueOf : void 0;
+function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
+  switch (tag) {
+    case dataViewTag5:
+      if (object.byteLength != other.byteLength || object.byteOffset != other.byteOffset) {
+        return false;
+      }
+      object = object.buffer;
+      other = other.buffer;
+    case arrayBufferTag4:
+      if (object.byteLength != other.byteLength || !equalFunc(new Uint8Array_default(object), new Uint8Array_default(other))) {
+        return false;
+      }
+      return true;
+    case boolTag4:
+    case dateTag4:
+    case numberTag4:
+      return eq_default(+object, +other);
+    case errorTag3:
+      return object.name == other.name && object.message == other.message;
+    case regexpTag4:
+    case stringTag5:
+      return object == other + "";
+    case mapTag7:
+      var convert = mapToArray_default;
+    case setTag7:
+      var isPartial = bitmask & COMPARE_PARTIAL_FLAG2;
+      convert || (convert = setToArray_default);
+      if (object.size != other.size && !isPartial) {
+        return false;
+      }
+      var stacked = stack.get(object);
+      if (stacked) {
+        return stacked == other;
+      }
+      bitmask |= COMPARE_UNORDERED_FLAG2;
+      stack.set(object, other);
+      var result = equalArrays_default(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
+      stack["delete"](object);
+      return result;
+    case symbolTag4:
+      if (symbolValueOf2) {
+        return symbolValueOf2.call(object) == symbolValueOf2.call(other);
+      }
+  }
+  return false;
+}
+var equalByTag_default = equalByTag;
+
+// node_modules/lodash-es/_equalObjects.js
+var COMPARE_PARTIAL_FLAG3 = 1;
+var objectProto18 = Object.prototype;
+var hasOwnProperty16 = objectProto18.hasOwnProperty;
+function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
+  var isPartial = bitmask & COMPARE_PARTIAL_FLAG3, objProps = getAllKeys_default(object), objLength = objProps.length, othProps = getAllKeys_default(other), othLength = othProps.length;
+  if (objLength != othLength && !isPartial) {
+    return false;
+  }
+  var index = objLength;
+  while (index--) {
+    var key = objProps[index];
+    if (!(isPartial ? key in other : hasOwnProperty16.call(other, key))) {
+      return false;
+    }
+  }
+  var objStacked = stack.get(object);
+  var othStacked = stack.get(other);
+  if (objStacked && othStacked) {
+    return objStacked == other && othStacked == object;
+  }
+  var result = true;
+  stack.set(object, other);
+  stack.set(other, object);
+  var skipCtor = isPartial;
+  while (++index < objLength) {
+    key = objProps[index];
+    var objValue = object[key], othValue = other[key];
+    if (customizer) {
+      var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack) : customizer(objValue, othValue, key, object, other, stack);
+    }
+    if (!(compared === void 0 ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack) : compared)) {
+      result = false;
+      break;
+    }
+    skipCtor || (skipCtor = key == "constructor");
+  }
+  if (result && !skipCtor) {
+    var objCtor = object.constructor, othCtor = other.constructor;
+    if (objCtor != othCtor && ("constructor" in object && "constructor" in other) && !(typeof objCtor == "function" && objCtor instanceof objCtor && typeof othCtor == "function" && othCtor instanceof othCtor)) {
+      result = false;
+    }
+  }
+  stack["delete"](object);
+  stack["delete"](other);
+  return result;
+}
+var equalObjects_default = equalObjects;
+
+// node_modules/lodash-es/_baseIsEqualDeep.js
+var COMPARE_PARTIAL_FLAG4 = 1;
+var argsTag4 = "[object Arguments]";
+var arrayTag3 = "[object Array]";
+var objectTag5 = "[object Object]";
+var objectProto19 = Object.prototype;
+var hasOwnProperty17 = objectProto19.hasOwnProperty;
+function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
+  var objIsArr = isArray_default(object), othIsArr = isArray_default(other), objTag = objIsArr ? arrayTag3 : getTag_default(object), othTag = othIsArr ? arrayTag3 : getTag_default(other);
+  objTag = objTag == argsTag4 ? objectTag5 : objTag;
+  othTag = othTag == argsTag4 ? objectTag5 : othTag;
+  var objIsObj = objTag == objectTag5, othIsObj = othTag == objectTag5, isSameTag = objTag == othTag;
+  if (isSameTag && isBuffer_default(object)) {
+    if (!isBuffer_default(other)) {
+      return false;
+    }
+    objIsArr = true;
+    objIsObj = false;
+  }
+  if (isSameTag && !objIsObj) {
+    stack || (stack = new Stack_default());
+    return objIsArr || isTypedArray_default(object) ? equalArrays_default(object, other, bitmask, customizer, equalFunc, stack) : equalByTag_default(object, other, objTag, bitmask, customizer, equalFunc, stack);
+  }
+  if (!(bitmask & COMPARE_PARTIAL_FLAG4)) {
+    var objIsWrapped = objIsObj && hasOwnProperty17.call(object, "__wrapped__"), othIsWrapped = othIsObj && hasOwnProperty17.call(other, "__wrapped__");
+    if (objIsWrapped || othIsWrapped) {
+      var objUnwrapped = objIsWrapped ? object.value() : object, othUnwrapped = othIsWrapped ? other.value() : other;
+      stack || (stack = new Stack_default());
+      return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
+    }
+  }
+  if (!isSameTag) {
+    return false;
+  }
+  stack || (stack = new Stack_default());
+  return equalObjects_default(object, other, bitmask, customizer, equalFunc, stack);
+}
+var baseIsEqualDeep_default = baseIsEqualDeep;
+
+// node_modules/lodash-es/_baseIsEqual.js
+function baseIsEqual(value, other, bitmask, customizer, stack) {
+  if (value === other) {
+    return true;
+  }
+  if (value == null || other == null || !isObjectLike_default(value) && !isObjectLike_default(other)) {
+    return value !== value && other !== other;
+  }
+  return baseIsEqualDeep_default(value, other, bitmask, customizer, baseIsEqual, stack);
+}
+var baseIsEqual_default = baseIsEqual;
+
+// node_modules/lodash-es/_baseIsMatch.js
+var COMPARE_PARTIAL_FLAG5 = 1;
+var COMPARE_UNORDERED_FLAG3 = 2;
+function baseIsMatch(object, source, matchData, customizer) {
+  var index = matchData.length, length = index, noCustomizer = !customizer;
+  if (object == null) {
+    return !length;
+  }
+  object = Object(object);
+  while (index--) {
+    var data = matchData[index];
+    if (noCustomizer && data[2] ? data[1] !== object[data[0]] : !(data[0] in object)) {
+      return false;
+    }
+  }
+  while (++index < length) {
+    data = matchData[index];
+    var key = data[0], objValue = object[key], srcValue = data[1];
+    if (noCustomizer && data[2]) {
+      if (objValue === void 0 && !(key in object)) {
+        return false;
+      }
+    } else {
+      var stack = new Stack_default();
+      if (customizer) {
+        var result = customizer(objValue, srcValue, key, object, source, stack);
+      }
+      if (!(result === void 0 ? baseIsEqual_default(srcValue, objValue, COMPARE_PARTIAL_FLAG5 | COMPARE_UNORDERED_FLAG3, customizer, stack) : result)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+var baseIsMatch_default = baseIsMatch;
+
+// node_modules/lodash-es/_isStrictComparable.js
+function isStrictComparable(value) {
+  return value === value && !isObject_default(value);
+}
+var isStrictComparable_default = isStrictComparable;
+
+// node_modules/lodash-es/_getMatchData.js
+function getMatchData(object) {
+  var result = keys_default(object), length = result.length;
+  while (length--) {
+    var key = result[length], value = object[key];
+    result[length] = [key, value, isStrictComparable_default(value)];
+  }
+  return result;
+}
+var getMatchData_default = getMatchData;
+
+// node_modules/lodash-es/_matchesStrictComparable.js
+function matchesStrictComparable(key, srcValue) {
+  return function(object) {
+    if (object == null) {
+      return false;
+    }
+    return object[key] === srcValue && (srcValue !== void 0 || key in Object(object));
+  };
+}
+var matchesStrictComparable_default = matchesStrictComparable;
+
+// node_modules/lodash-es/_baseMatches.js
+function baseMatches(source) {
+  var matchData = getMatchData_default(source);
+  if (matchData.length == 1 && matchData[0][2]) {
+    return matchesStrictComparable_default(matchData[0][0], matchData[0][1]);
+  }
+  return function(object) {
+    return object === source || baseIsMatch_default(object, source, matchData);
+  };
+}
+var baseMatches_default = baseMatches;
+
+// node_modules/lodash-es/_baseHasIn.js
+function baseHasIn(object, key) {
+  return object != null && key in Object(object);
+}
+var baseHasIn_default = baseHasIn;
+
+// node_modules/lodash-es/hasIn.js
+function hasIn(object, path) {
+  return object != null && hasPath_default(object, path, baseHasIn_default);
+}
+var hasIn_default = hasIn;
+
+// node_modules/lodash-es/_baseMatchesProperty.js
+var COMPARE_PARTIAL_FLAG6 = 1;
+var COMPARE_UNORDERED_FLAG4 = 2;
+function baseMatchesProperty(path, srcValue) {
+  if (isKey_default(path) && isStrictComparable_default(srcValue)) {
+    return matchesStrictComparable_default(toKey_default(path), srcValue);
+  }
+  return function(object) {
+    var objValue = get_default(object, path);
+    return objValue === void 0 && objValue === srcValue ? hasIn_default(object, path) : baseIsEqual_default(srcValue, objValue, COMPARE_PARTIAL_FLAG6 | COMPARE_UNORDERED_FLAG4);
+  };
+}
+var baseMatchesProperty_default = baseMatchesProperty;
+
+// node_modules/lodash-es/_baseProperty.js
+function baseProperty(key) {
+  return function(object) {
+    return object == null ? void 0 : object[key];
+  };
+}
+var baseProperty_default = baseProperty;
+
+// node_modules/lodash-es/_basePropertyDeep.js
+function basePropertyDeep(path) {
+  return function(object) {
+    return baseGet_default(object, path);
+  };
+}
+var basePropertyDeep_default = basePropertyDeep;
+
+// node_modules/lodash-es/property.js
+function property(path) {
+  return isKey_default(path) ? baseProperty_default(toKey_default(path)) : basePropertyDeep_default(path);
+}
+var property_default = property;
+
+// node_modules/lodash-es/_baseIteratee.js
+function baseIteratee(value) {
+  if (typeof value == "function") {
+    return value;
+  }
+  if (value == null) {
+    return identity_default;
+  }
+  if (typeof value == "object") {
+    return isArray_default(value) ? baseMatchesProperty_default(value[0], value[1]) : baseMatches_default(value);
+  }
+  return property_default(value);
+}
+var baseIteratee_default = baseIteratee;
+
+// node_modules/lodash-es/transform.js
+function transform(object, iteratee, accumulator) {
+  var isArr = isArray_default(object), isArrLike = isArr || isBuffer_default(object) || isTypedArray_default(object);
+  iteratee = baseIteratee_default(iteratee, 4);
+  if (accumulator == null) {
+    var Ctor = object && object.constructor;
+    if (isArrLike) {
+      accumulator = isArr ? new Ctor() : [];
+    } else if (isObject_default(object)) {
+      accumulator = isFunction_default(Ctor) ? baseCreate_default(getPrototype_default(object)) : {};
+    } else {
+      accumulator = {};
+    }
+  }
+  (isArrLike ? arrayEach_default : baseForOwn_default)(object, function(value, index, object2) {
+    return iteratee(accumulator, value, index, object2);
+  });
+  return accumulator;
+}
+var transform_default = transform;
+
+// node_modules/lodash-es/_baseFindIndex.js
+function baseFindIndex(array, predicate, fromIndex, fromRight) {
+  var length = array.length, index = fromIndex + (fromRight ? 1 : -1);
+  while (fromRight ? index-- : ++index < length) {
+    if (predicate(array[index], index, array)) {
+      return index;
+    }
+  }
+  return -1;
+}
+var baseFindIndex_default = baseFindIndex;
+
+// node_modules/lodash-es/_baseIsNaN.js
+function baseIsNaN(value) {
+  return value !== value;
+}
+var baseIsNaN_default = baseIsNaN;
+
+// node_modules/lodash-es/_strictIndexOf.js
+function strictIndexOf(array, value, fromIndex) {
+  var index = fromIndex - 1, length = array.length;
+  while (++index < length) {
+    if (array[index] === value) {
+      return index;
+    }
+  }
+  return -1;
+}
+var strictIndexOf_default = strictIndexOf;
+
+// node_modules/lodash-es/_baseIndexOf.js
+function baseIndexOf(array, value, fromIndex) {
+  return value === value ? strictIndexOf_default(array, value, fromIndex) : baseFindIndex_default(array, baseIsNaN_default, fromIndex);
+}
+var baseIndexOf_default = baseIndexOf;
+
+// node_modules/lodash-es/_arrayIncludes.js
+function arrayIncludes(array, value) {
+  var length = array == null ? 0 : array.length;
+  return !!length && baseIndexOf_default(array, value, 0) > -1;
+}
+var arrayIncludes_default = arrayIncludes;
+
+// node_modules/lodash-es/_arrayIncludesWith.js
+function arrayIncludesWith(array, value, comparator) {
+  var index = -1, length = array == null ? 0 : array.length;
+  while (++index < length) {
+    if (comparator(value, array[index])) {
+      return true;
+    }
+  }
+  return false;
+}
+var arrayIncludesWith_default = arrayIncludesWith;
+
+// node_modules/lodash-es/noop.js
+function noop() {
+}
+var noop_default = noop;
+
+// node_modules/lodash-es/_createSet.js
+var INFINITY5 = 1 / 0;
+var createSet = !(Set_default && 1 / setToArray_default(new Set_default([, -0]))[1] == INFINITY5) ? noop_default : function(values2) {
+  return new Set_default(values2);
+};
+var createSet_default = createSet;
+
+// node_modules/lodash-es/_baseUniq.js
+var LARGE_ARRAY_SIZE2 = 200;
+function baseUniq(array, iteratee, comparator) {
+  var index = -1, includes2 = arrayIncludes_default, length = array.length, isCommon = true, result = [], seen = result;
+  if (comparator) {
+    isCommon = false;
+    includes2 = arrayIncludesWith_default;
+  } else if (length >= LARGE_ARRAY_SIZE2) {
+    var set2 = iteratee ? null : createSet_default(array);
+    if (set2) {
+      return setToArray_default(set2);
+    }
+    isCommon = false;
+    includes2 = cacheHas_default;
+    seen = new SetCache_default();
+  } else {
+    seen = iteratee ? [] : result;
+  }
+  outer:
+    while (++index < length) {
+      var value = array[index], computed = iteratee ? iteratee(value) : value;
+      value = comparator || value !== 0 ? value : 0;
+      if (isCommon && computed === computed) {
+        var seenIndex = seen.length;
+        while (seenIndex--) {
+          if (seen[seenIndex] === computed) {
+            continue outer;
+          }
+        }
+        if (iteratee) {
+          seen.push(computed);
+        }
+        result.push(value);
+      } else if (!includes2(seen, computed, comparator)) {
+        if (seen !== result) {
+          seen.push(computed);
+        }
+        result.push(value);
+      }
+    }
+  return result;
+}
+var baseUniq_default = baseUniq;
+
+// node_modules/lodash-es/uniq.js
+function uniq(array) {
+  return array && array.length ? baseUniq_default(array) : [];
+}
+var uniq_default = uniq;
+
+// node_modules/@rjsf/utils/lib/guessType.js
+function guessType(value) {
+  if (Array.isArray(value)) {
+    return "array";
+  }
+  if (typeof value === "string") {
+    return "string";
+  }
+  if (value == null) {
+    return "null";
+  }
+  if (typeof value === "boolean") {
+    return "boolean";
+  }
+  if (typeof value === "number" && !Number.isNaN(value)) {
+    return "number";
+  }
+  if (typeof value === "object") {
+    return "object";
+  }
+  return "string";
+}
+
+// node_modules/lodash-es/union.js
+var union = baseRest_default(function(arrays) {
+  return baseUniq_default(baseFlatten_default(arrays, 1, isArrayLikeObject_default, true));
+});
+var union_default = union;
+
+// node_modules/@rjsf/utils/lib/getSchemaType.js
+function getSchemaType(schema) {
+  let { type } = schema;
+  if (!type && schema.const) {
+    return guessType(schema.const);
+  }
+  if (!type && schema.enum) {
+    return "string";
+  }
+  if (!type && (schema.properties || schema.additionalProperties || schema.patternProperties)) {
+    return "object";
+  }
+  if (Array.isArray(type)) {
+    if (type.length === 2 && type.includes("null")) {
+      type = type.find((t) => t !== "null");
+    } else {
+      type = type[0];
+    }
+  }
+  return type;
+}
+
+// node_modules/@rjsf/utils/lib/mergeSchemas.js
+function mergeSchemas(obj1, obj2) {
+  const acc = { ...obj1 };
+  return Object.keys(obj2).reduce((accumulator, key) => {
+    const left = obj1 ? obj1[key] : {}, right = obj2[key];
+    if (obj1 && key in obj1 && isObject(right)) {
+      accumulator[key] = mergeSchemas(left, right);
+    } else if (obj1 && obj2 && (getSchemaType(obj1) === "object" || getSchemaType(obj2) === "object") && key === REQUIRED_KEY && Array.isArray(left) && Array.isArray(right)) {
+      accumulator[key] = union_default(left, right);
+    } else {
+      accumulator[key] = right;
+    }
+    return accumulator;
+  }, acc);
+}
+
+// node_modules/lodash-es/isNumber.js
+var numberTag5 = "[object Number]";
+function isNumber(value) {
+  return typeof value == "number" || isObjectLike_default(value) && baseGetTag_default(value) == numberTag5;
+}
+var isNumber_default = isNumber;
+
+// node_modules/@rjsf/utils/lib/getOptionMatchingSimpleDiscriminator.js
+function getOptionMatchingSimpleDiscriminator(formData, options, discriminatorField) {
+  var _a;
+  if (formData && discriminatorField) {
+    const value = get_default(formData, discriminatorField);
+    if (value === void 0) {
+      return void 0;
+    }
+    for (let i2 = 0; i2 < options.length; i2 += 1) {
+      const option = options[i2];
+      const discriminator = get_default(option, [PROPERTIES_KEY, discriminatorField], {});
+      if (discriminator.type !== "object" && discriminator.type !== "array") {
+        if (discriminator.const === value) {
+          return i2;
+        }
+        if ((_a = discriminator.enum) === null || _a === void 0 ? void 0 : _a.includes(value)) {
+          return i2;
+        }
+      }
+    }
+  }
+  return void 0;
+}
+
+// node_modules/@rjsf/utils/lib/schema/getFirstMatchingOption.js
+function getFirstMatchingOption(validator, formData, options, rootSchema, discriminatorField) {
+  if (formData === void 0) {
+    return 0;
+  }
+  const simpleDiscriminatorMatch = getOptionMatchingSimpleDiscriminator(formData, options, discriminatorField);
+  if (isNumber_default(simpleDiscriminatorMatch)) {
+    return simpleDiscriminatorMatch;
+  }
+  for (let i2 = 0; i2 < options.length; i2 += 1) {
+    const option = options[i2];
+    if (discriminatorField && has_default(option, [PROPERTIES_KEY, discriminatorField])) {
+      const value = get_default(formData, discriminatorField);
+      const discriminator = get_default(option, [PROPERTIES_KEY, discriminatorField], {});
+      if (validator.isValid(discriminator, value, rootSchema)) {
+        return i2;
+      }
+    } else if (option[PROPERTIES_KEY]) {
+      const requiresAnyOf = {
+        anyOf: Object.keys(option[PROPERTIES_KEY]).map((key) => ({
+          required: [key]
+        }))
+      };
+      let augmentedSchema;
+      if (option.anyOf) {
+        const { ...shallowClone } = option;
+        if (!shallowClone.allOf) {
+          shallowClone.allOf = [];
+        } else {
+          shallowClone.allOf = shallowClone.allOf.slice();
+        }
+        shallowClone.allOf.push(requiresAnyOf);
+        augmentedSchema = shallowClone;
+      } else {
+        augmentedSchema = { ...option, ...requiresAnyOf };
+      }
+      delete augmentedSchema.required;
+      if (validator.isValid(augmentedSchema, formData, rootSchema)) {
+        return i2;
+      }
+    } else if (validator.isValid(option, formData, rootSchema)) {
+      return i2;
+    }
+  }
+  return 0;
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/object.js
+var objProto = Object.prototype;
+function isRecordEmpty(rec) {
+  for (const key in rec) {
+    if (objProto.hasOwnProperty.call(rec, key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/json-schema/json-schema.js
+var JSON_SCHEMA_TYPE_NAMES = [
+  "array",
+  "boolean",
+  "integer",
+  "null",
+  "number",
+  "object",
+  "string"
+];
+var SET_OF_JSON_SCHEMA_TYPE_NAMES = new Set(JSON_SCHEMA_TYPE_NAMES);
+var RECORDS_OF_SUB_SCHEMAS = [
+  "$defs",
+  "definitions",
+  "properties",
+  "patternProperties",
+  "dependencies"
+];
+var SET_OF_RECORDS_OF_SUB_SCHEMAS = new Set(RECORDS_OF_SUB_SCHEMAS);
+var ARRAYS_OF_SUB_SCHEMAS = [
+  "items",
+  "allOf",
+  "oneOf",
+  "anyOf"
+];
+var SET_OF_ARRAYS_OF_SUB_SCHEMAS = new Set(ARRAYS_OF_SUB_SCHEMAS);
+var SUB_SCHEMAS = [
+  "items",
+  "additionalItems",
+  "additionalProperties",
+  "propertyNames",
+  "contains",
+  "if",
+  "then",
+  "else",
+  "not"
+];
+var SET_OF_SUB_SCHEMAS = new Set(SUB_SCHEMAS);
+var ALL_SUB_SCHEMA_KEYS = [
+  ...RECORDS_OF_SUB_SCHEMAS,
+  ...ARRAYS_OF_SUB_SCHEMAS,
+  ...SUB_SCHEMAS
+];
+function isSchemaObject(schemaDef) {
+  return typeof schemaDef === "object";
+}
+function isAllowAnySchema(def) {
+  return isSchemaObject(def) ? isRecordEmpty(def) : def === true;
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/ord.js
+function ascComparator(a2, b2) {
+  if (a2 < b2)
+    return -1;
+  if (a2 > b2)
+    return 1;
+  return 0;
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/array.js
+function union2(larger, smaller) {
+  const ll = larger.length;
+  if (ll === 0) {
+    return smaller;
+  }
+  let sl = smaller.length;
+  if (sl === 0) {
+    return larger;
+  }
+  if (ll < sl) {
+    const tmp = larger;
+    larger = smaller;
+    smaller = tmp;
+    sl = ll;
+  }
+  const data = new Set(larger);
+  for (let i2 = 0; i2 < sl; i2++) {
+    data.add(smaller[i2]);
+  }
+  return Array.from(data);
+}
+function intersection(a2, b2) {
+  const result = [];
+  if (a2.length === 0 || b2.length === 0) {
+    return result;
+  }
+  if (a2.length > b2.length) {
+    const tmp = a2;
+    a2 = b2;
+    b2 = tmp;
+  }
+  const setB = new Set(b2);
+  for (let i2 = 0; i2 < a2.length && setB.size > 0; i2++) {
+    const val = a2[i2];
+    if (setB.delete(val)) {
+      result.push(val);
+    }
+  }
+  return result;
+}
+function isArrayEmpty(arr) {
+  return arr.length === 0;
+}
+function createArrayComparator(compare) {
+  return (a2, b2) => {
+    const d = a2.length - b2.length;
+    if (d !== 0) {
+      return d;
+    }
+    for (let i2 = 0; i2 < a2.length; i2++) {
+      if (a2[i2] !== b2[i2]) {
+        const d2 = compare(a2[i2], b2[i2]);
+        if (d2 !== 0) {
+          return d2;
+        }
+      }
+    }
+    return 0;
+  };
+}
+function createDeduplicator(compare, { threshold = 12 } = {}) {
+  return (arr) => {
+    const al = arr.length;
+    if (al === 0) {
+      return arr;
+    }
+    if (al <= threshold) {
+      const result = [];
+      let rl = 0;
+      outer: for (let i2 = 0; i2 < al; i2++) {
+        const item = arr[i2];
+        for (let j = 0; j < rl; j++) {
+          if (compare(item, result[j]) === 0) {
+            continue outer;
+          }
+        }
+        rl = result.push(item);
+      }
+      return result;
+    }
+    const sorted = arr.slice().sort(compare);
+    let wIndex = 0;
+    for (let rIndex = 1; rIndex < al; rIndex++) {
+      if (compare(sorted[wIndex], sorted[rIndex]) !== 0) {
+        if (++wIndex !== rIndex) {
+          sorted[wIndex] = sorted[rIndex];
+        }
+      }
+    }
+    sorted.length = wIndex + 1;
+    return sorted;
+  };
+}
+function createIntersector(compare) {
+  return (a2, b2) => {
+    const result = [];
+    let al = a2.length;
+    let bl = b2.length;
+    if (al === 0 || bl === 0) {
+      return result;
+    }
+    if (al > bl) {
+      const tmpArr = a2;
+      a2 = b2;
+      b2 = tmpArr;
+      const tmpL = al;
+      al = bl;
+      bl = tmpL;
+    }
+    const aSorted = [...a2].sort(compare);
+    const bSorted = [...b2].sort(compare);
+    let i2 = 0, j = 0;
+    while (i2 < al && j < bl) {
+      const cmp = compare(aSorted[i2], bSorted[j]);
+      if (cmp === 0) {
+        if (result.length === 0 || compare(result[result.length - 1], aSorted[i2]) !== 0) {
+          result.push(aSorted[i2]);
+        }
+        i2++;
+        j++;
+      } else if (cmp < 0) {
+        i2++;
+      } else {
+        j++;
+      }
+    }
+    return result;
+  };
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/memoize.js
+function memoize2(cache, func) {
+  return (arg) => {
+    if (cache.has(arg)) {
+      return cache.get(arg);
+    }
+    const ret = func(arg);
+    cache.set(arg, ret);
+    return ret;
+  };
+}
+var weakMemoize = memoize2;
+
+// node_modules/@x0k/json-schema-merge/dist/lib/json-schema/compare/compare.js
+var zero = () => 0;
+var isUndefined = (v3) => v3 === void 0;
+var isSchemaPrimitiveExceptNull = (value) => typeof value !== "object";
+var PRIMITIVE_TYPE_ORDER = {
+  boolean: 0,
+  number: 1,
+  string: 2
+};
+function compareSchemaPrimitive(a2, b2) {
+  const ta = typeof a2;
+  const tb = typeof b2;
+  return ta === tb ? ascComparator(a2, b2) : PRIMITIVE_TYPE_ORDER[ta] - PRIMITIVE_TYPE_ORDER[tb];
+}
+function insertUniqueValues(mutableTarget, mutableSource) {
+  const tl = mutableTarget.length;
+  if (tl === 0)
+    return mutableSource;
+  const sl = mutableSource.length;
+  if (sl === 0)
+    return mutableTarget;
+  if (sl > tl) {
+    const t = mutableTarget;
+    mutableTarget = mutableSource;
+    mutableSource = t;
+  }
+  const seen = new Set(mutableTarget);
+  const l = mutableSource.length;
+  for (let i2 = 0; i2 < l; i2++) {
+    const key = mutableSource[i2];
+    if (!seen.has(key)) {
+      mutableTarget.push(key);
+    }
+  }
+  return mutableTarget;
+}
+function createCmpMatcher(isEmpty2, compare, compareEmpty = zero) {
+  return (a2, b2) => {
+    if (isEmpty2(a2)) {
+      if (isEmpty2(b2)) {
+        return compareEmpty(a2, b2);
+      }
+      return -1;
+    }
+    if (isEmpty2(b2)) {
+      return 1;
+    }
+    return compare(a2, b2);
+  };
+}
+function createOptionalComparator(compare) {
+  return createCmpMatcher(isUndefined, compare);
+}
+function createNarrowingOptionalComparator(isEmpty2, compare) {
+  return createCmpMatcher((v3) => v3 === void 0 || isEmpty2(v3), compare);
+}
+function createArrayOrItemComparator(compare, compareArray) {
+  return createCmpMatcher(Array.isArray, compare, compareArray);
+}
+var compareOptionalSameTypeSchemaPrimitives = createOptionalComparator(ascComparator);
+var compareNumbersWithZeroDefault = createNarrowingOptionalComparator((v3) => v3 === 0, (a2, b2) => a2 - b2);
+function createComparator({ deduplicationCache = /* @__PURE__ */ new WeakMap(), sortedKeysCache = /* @__PURE__ */ new WeakMap() } = {}) {
+  const getSortedKeys = weakMemoize(sortedKeysCache, (obj) => Object.keys(obj).sort());
+  function createRecordsComparator(compare) {
+    return (a2, b2) => {
+      const aKeys = getSortedKeys(a2);
+      const bKeys = getSortedKeys(b2);
+      const l = Math.min(aKeys.length, bKeys.length);
+      for (let i2 = 0; i2 < l; i2++) {
+        const cmp = ascComparator(aKeys[i2], bKeys[i2]);
+        if (cmp !== 0) {
+          return cmp;
+        }
+      }
+      if (aKeys.length !== bKeys.length) {
+        return aKeys.length - bKeys.length;
+      }
+      for (let i2 = 0; i2 < l; i2++) {
+        const key = aKeys[i2];
+        const cmp = compare(a2[key], b2[key]);
+        if (cmp !== 0) {
+          return cmp;
+        }
+      }
+      return 0;
+    };
+  }
+  function createArrayComparatorWithDeduplication(compare) {
+    const cmp = createArrayComparator(compare);
+    const deduplicate = weakMemoize(
+      deduplicationCache,
+      // NOTE: Always sort output
+      createDeduplicator(compare, { threshold: 0 })
+    );
+    return (a2, b2) => cmp(deduplicate(a2), deduplicate(b2));
+  }
+  const compareArrayOfSameTypePrimitivesWithDeduplication = createArrayComparatorWithDeduplication(ascComparator);
+  function compareSchemaDefinitions2(a2, b2) {
+    if (isSchemaObject(a2)) {
+      if (isSchemaObject(b2)) {
+        const aKeys = Object.keys(a2);
+        const bKeys = Object.keys(b2);
+        const allKeys = insertUniqueValues(aKeys, bKeys);
+        const l = allKeys.length;
+        for (let i2 = 0; i2 < l; i2++) {
+          const key = allKeys[i2];
+          if (a2[key] === b2[key]) {
+            continue;
+          }
+          const cmp = COMPARATORS[key] ?? compareOptionalSchemaValues;
+          const d = cmp(a2[key], b2[key]);
+          if (d !== 0) {
+            return d;
+          }
+        }
+        return 0;
+      }
+      return b2 === true && isRecordEmpty(a2) ? 0 : 1;
+    }
+    if (isSchemaObject(b2)) {
+      return a2 === true && isRecordEmpty(b2) ? 0 : -1;
+    }
+    return ascComparator(a2, b2);
+  }
+  const compareOptionalSchemaValues = createOptionalComparator(compareSchemaValues2);
+  const compareNonNullSchemaValue = createCmpMatcher(isSchemaPrimitiveExceptNull, createArrayOrItemComparator(createRecordsComparator(compareOptionalSchemaValues), createArrayComparator(compareSchemaValues2)), compareSchemaPrimitive);
+  function compareSchemaValues2(a2, b2) {
+    if (a2 === null) {
+      return -1;
+    }
+    if (b2 === null) {
+      return 1;
+    }
+    return compareNonNullSchemaValue(a2, b2);
+  }
+  const compareOptionalSchemaDefinitions = createOptionalComparator(compareSchemaDefinitions2);
+  const compareRecordOfOptionalSchemasWithEmptyRecordDefault = createNarrowingOptionalComparator(isRecordEmpty, createRecordsComparator(compareOptionalSchemaDefinitions));
+  const compareOptionalArrayOfSchemasWithDeduplication = createOptionalComparator(createArrayComparatorWithDeduplication(compareSchemaDefinitions2));
+  const compareSchemaDefinitionsWithEmptyDefinitionDefault = createNarrowingOptionalComparator(isAllowAnySchema, compareSchemaDefinitions2);
+  const COMPARATORS = {
+    $id: compareOptionalSameTypeSchemaPrimitives,
+    $comment: compareOptionalSameTypeSchemaPrimitives,
+    $defs: compareRecordOfOptionalSchemasWithEmptyRecordDefault,
+    $ref: compareOptionalSameTypeSchemaPrimitives,
+    $schema: compareOptionalSameTypeSchemaPrimitives,
+    const: compareOptionalSchemaValues,
+    contains: compareOptionalSchemaDefinitions,
+    contentEncoding: compareOptionalSameTypeSchemaPrimitives,
+    contentMediaType: compareOptionalSameTypeSchemaPrimitives,
+    default: compareOptionalSchemaValues,
+    definitions: compareRecordOfOptionalSchemasWithEmptyRecordDefault,
+    description: compareOptionalSameTypeSchemaPrimitives,
+    else: compareOptionalSchemaDefinitions,
+    examples: compareOptionalSchemaValues,
+    exclusiveMaximum: compareOptionalSameTypeSchemaPrimitives,
+    exclusiveMinimum: compareOptionalSameTypeSchemaPrimitives,
+    format: compareOptionalSameTypeSchemaPrimitives,
+    if: compareOptionalSchemaDefinitions,
+    maximum: compareOptionalSameTypeSchemaPrimitives,
+    maxItems: compareOptionalSameTypeSchemaPrimitives,
+    maxLength: compareOptionalSameTypeSchemaPrimitives,
+    maxProperties: compareOptionalSameTypeSchemaPrimitives,
+    minimum: compareOptionalSameTypeSchemaPrimitives,
+    multipleOf: compareOptionalSameTypeSchemaPrimitives,
+    not: compareOptionalSchemaDefinitions,
+    pattern: compareOptionalSameTypeSchemaPrimitives,
+    propertyNames: compareOptionalSchemaDefinitions,
+    readOnly: compareOptionalSameTypeSchemaPrimitives,
+    then: compareOptionalSchemaDefinitions,
+    title: compareOptionalSameTypeSchemaPrimitives,
+    writeOnly: compareOptionalSameTypeSchemaPrimitives,
+    uniqueItems: createNarrowingOptionalComparator((v3) => v3 === false, zero),
+    minLength: compareNumbersWithZeroDefault,
+    minItems: compareNumbersWithZeroDefault,
+    minProperties: compareNumbersWithZeroDefault,
+    required: createNarrowingOptionalComparator(isArrayEmpty, compareArrayOfSameTypePrimitivesWithDeduplication),
+    enum: createNarrowingOptionalComparator(isArrayEmpty, createArrayComparatorWithDeduplication(compareSchemaValues2)),
+    type: createOptionalComparator((a2, b2) => {
+      const isAArr = Array.isArray(a2);
+      const isBArr = Array.isArray(b2);
+      if (!isAArr && !isBArr) {
+        return ascComparator(a2, b2);
+      }
+      return compareArrayOfSameTypePrimitivesWithDeduplication(isAArr ? a2 : [a2], isBArr ? b2 : [b2]);
+    }),
+    items: createNarrowingOptionalComparator((v3) => !Array.isArray(v3) && isAllowAnySchema(v3), createArrayOrItemComparator(compareSchemaDefinitions2, createArrayComparator(compareSchemaDefinitions2))),
+    anyOf: compareOptionalArrayOfSchemasWithDeduplication,
+    allOf: compareOptionalArrayOfSchemasWithDeduplication,
+    oneOf: compareOptionalArrayOfSchemasWithDeduplication,
+    properties: compareRecordOfOptionalSchemasWithEmptyRecordDefault,
+    patternProperties: compareRecordOfOptionalSchemasWithEmptyRecordDefault,
+    additionalProperties: compareSchemaDefinitionsWithEmptyDefinitionDefault,
+    additionalItems: compareSchemaDefinitionsWithEmptyDefinitionDefault,
+    dependencies: createNarrowingOptionalComparator(isRecordEmpty, createRecordsComparator(createOptionalComparator(createArrayOrItemComparator(compareSchemaDefinitions2, compareArrayOfSameTypePrimitivesWithDeduplication))))
+  };
+  return {
+    compareSchemaValues: compareSchemaValues2,
+    compareSchemaDefinitions: compareSchemaDefinitions2
+  };
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/function.js
+function identity2(v3) {
+  return v3;
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/math.js
+var gcd = (a2, b2) => a2 ? gcd(b2 % a2, a2) : b2;
+var lcm = (a2, b2) => Math.abs(a2 * b2) / gcd(a2, b2);
+
+// node_modules/@x0k/json-schema-merge/dist/lib/json-schema/merge/patterns.js
+function simplePatternsMerger(a2, b2) {
+  return a2 === b2 ? a2 : `(?=.*(?:${a2}))(?=.*(?:${b2}))`;
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/json-schema/merge/merge.js
+function createPairCombinations(l, r, action) {
+  const ll = l.length;
+  const rl = r.length;
+  if (ll > 0 && rl > 0) {
+    for (let i2 = 0; i2 < ll; i2++) {
+      const lv = l[i2];
+      for (let j = 0; j < rl; j++) {
+        action(lv, r[j]);
+      }
+    }
+  }
+}
+function mergeBooleans(l, r) {
+  return l || r;
+}
+function createRecordsMerge(merge2) {
+  return (left, right) => {
+    const target = { ...left };
+    const keys3 = Object.keys(right);
+    const l = keys3.length;
+    for (let i2 = 0; i2 < l; i2++) {
+      const key = keys3[i2];
+      target[key] = left[key] === void 0 ? right[key] : merge2(left[key], right[key]);
+    }
+    return target;
+  };
+}
+function createMap(items) {
+  const map = /* @__PURE__ */ new Map();
+  for (const pair of items) {
+    for (const key of pair[0]) {
+      map.set(key, pair[1]);
+    }
+  }
+  return map;
+}
+function assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, key, value) {
+  if (value === void 0 || isAllowAnySchema(value)) {
+    delete target[key];
+  } else {
+    target[key] = value;
+  }
+}
+var PROPERTIES_ASSIGNER_KEYS = [
+  "properties",
+  "patternProperties",
+  "additionalProperties"
+];
+function compilePatterns(patterns) {
+  const keys3 = Object.keys(patterns);
+  const l = keys3.length;
+  const result = [];
+  for (let i2 = 0; i2 < l; i2++) {
+    const source = keys3[i2];
+    result.push({
+      regExp: new RegExp(source),
+      schema: patterns[source]
+    });
+  }
+  return [result, keys3];
+}
+var EMPTY_PATTERNS_AND_KEYS = [[], []];
+function appendKeyConstraints(target, key, patterns) {
+  const l = patterns.length;
+  for (let i2 = 0; i2 < l; i2++) {
+    const p2 = patterns[i2];
+    if (!p2.regExp.test(key)) {
+      continue;
+    }
+    const s2 = p2.schema;
+    if (s2 === false) {
+      return true;
+    }
+    target.push(s2);
+  }
+  return false;
+}
+var ITEMS_ASSIGNER_KEYS = [
+  "items",
+  "additionalItems"
+];
+var CONDITION_ASSIGNER_KEYS = [
+  "if",
+  "then",
+  "else"
+];
+function assignCondition(target, source) {
+  if (source.if !== void 0) {
+    target.if = source.if;
+  }
+  if (source.then !== void 0) {
+    target.then = source.then;
+  }
+  if (source.else !== void 0) {
+    target.else = source.else;
+  }
+  return target;
+}
+function intersectSchemaTypes(a2, b2) {
+  if (a2 === b2) {
+    return a2;
+  }
+  switch (a2) {
+    case "number": {
+      if (b2 === "integer") {
+        return "integer";
+      }
+    }
+    // eslint-disable-next-line no-fallthrough
+    case "integer": {
+      if (b2 === "number") {
+        return "integer";
+      }
+    }
+    // eslint-disable-next-line no-fallthrough
+    default:
+      return void 0;
+  }
+}
+function check(a2, b2, check2) {
+  return [a2, b2, check2];
+}
+function createChecksMap(checks) {
+  const map = /* @__PURE__ */ new Map();
+  for (const [a2, b2, check2] of checks) {
+    const fn = (target) => {
+      if (!check2(target)) {
+        throw new Error(`Schema keys '${a2}' and '${b2}' are conflicting (${a2}: ${JSON.stringify(target[a2])}, ${b2}: ${JSON.stringify(target[b2])})`);
+      }
+    };
+    for (const k of [
+      [a2, b2],
+      [b2, a2]
+    ]) {
+      let arr = map.get(k[0]);
+      if (arr === void 0) {
+        arr = [];
+        map.set(k[0], arr);
+      }
+      arr.push({ oppositeKey: k[1], check: fn });
+    }
+  }
+  return map;
+}
+var DEFAULT_CHECKS = [
+  check("minimum", "maximum", (t) => t.maximum >= t.minimum),
+  check("exclusiveMinimum", "maximum", (t) => t.maximum > t.exclusiveMinimum),
+  check("minimum", "exclusiveMaximum", (t) => t.exclusiveMaximum > t.minimum),
+  check("exclusiveMinimum", "exclusiveMaximum", (t) => t.exclusiveMaximum > t.exclusiveMinimum),
+  check("minLength", "maxLength", (t) => t.maxLength >= t.minLength),
+  check("minItems", "maxItems", (t) => t.maxItems >= t.minItems),
+  check("minProperties", "maxProperties", (t) => t.maxProperties >= t.minProperties)
+];
+function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Object.is, intersectJson = intersection, deduplicateJsonSchemaDef = identity2, defaultMerger = identity2, assigners = [], checks = DEFAULT_CHECKS, mergers } = {}) {
+  function mergeArrayOfSchemaDefinitions2(schemas) {
+    const l = schemas.length;
+    let result = schemas[0];
+    for (let i2 = 1; i2 < l; i2++) {
+      const r = mergeSchemaDefinitions(result, schemas[i2]);
+      if (r === false) {
+        return false;
+      }
+      if (isAllowAnySchema(r)) {
+        continue;
+      }
+      result = r;
+    }
+    return result;
+  }
+  function createProperty(constraints, key, value, patterns, oppositeValue, oppositePatterns, oppositeAdditional) {
+    constraints.length = 0;
+    if (value === false) {
+      return false;
+    }
+    constraints.push(value);
+    const isOppositeValueDefined = oppositeValue !== void 0;
+    if (isOppositeValueDefined) {
+      if (oppositeValue === false) {
+        return false;
+      }
+      constraints.push(oppositeValue);
+    }
+    if (appendKeyConstraints(constraints, key, oppositePatterns)) {
+      return false;
+    }
+    const isNotYetAllowed = constraints.length < 2;
+    if (oppositeAdditional === false) {
+      if (isNotYetAllowed) {
+        return void 0;
+      }
+      if (appendKeyConstraints(constraints, key, patterns)) {
+        return false;
+      }
+    } else if (isNotYetAllowed && oppositeAdditional !== void 0) {
+      constraints.push(oppositeAdditional);
+    }
+    const l = constraints.length;
+    if (l === 1) {
+      return constraints[0];
+    }
+    return mergeArrayOfSchemaDefinitions2(constraints);
+  }
+  function assignPatternPropertiesAndAdditionalPropertiesMerge(target, patterns, patternKeys, matchedPatterns, oppositeAdditional, isOppositeTruthy) {
+    const l = patternKeys.length;
+    if (l > 0 && oppositeAdditional !== false) {
+      if (isOppositeTruthy) {
+        Object.assign(target, patterns);
+      } else {
+        for (let i2 = 0; i2 < l; i2++) {
+          const pattern = patternKeys[i2];
+          if (matchedPatterns.has(pattern)) {
+            continue;
+          }
+          target[pattern] = mergeSchemaDefinitions(patterns[pattern], oppositeAdditional);
+        }
+      }
+    }
+    return target;
+  }
+  const propertiesAssigner = (target, { properties: lProps = {}, patternProperties: lPatterns, additionalProperties: lAdditional = true }, { properties: rProps = {}, patternProperties: rPatterns, additionalProperties: rAdditional = true }) => {
+    const isLAddTruthy = isAllowAnySchema(lAdditional);
+    const isRAddTruthy = isAllowAnySchema(rAdditional);
+    if (isLAddTruthy && isRAddTruthy) {
+      assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "properties", mergeRecordsOfSchemaDefinitions(lProps, rProps));
+      assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "patternProperties", lPatterns && rPatterns ? mergeRecordsOfSchemaDefinitions(lPatterns, rPatterns) : lPatterns ?? rPatterns);
+      delete target.additionalProperties;
+      return target;
+    }
+    const additionalProperties = mergeSchemaDefinitions(lAdditional, rAdditional);
+    assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "additionalProperties", additionalProperties);
+    const properties = {};
+    const lKeys = Object.keys(lProps);
+    const lKeysLen = lKeys.length;
+    const [lCompiledPatterns, lPatternKeys] = lPatterns ? compilePatterns(lPatterns) : EMPTY_PATTERNS_AND_KEYS;
+    const [rCompiledPatterns, rPatternKeys] = rPatterns ? compilePatterns(rPatterns) : EMPTY_PATTERNS_AND_KEYS;
+    const constraints = [];
+    const lKeysSet = /* @__PURE__ */ new Set();
+    const mappedRAdditional = isRAddTruthy ? void 0 : rAdditional;
+    for (let i2 = 0; i2 < lKeysLen; i2++) {
+      const key = lKeys[i2];
+      lKeysSet.add(key);
+      const prop = createProperty(constraints, key, lProps[key], lCompiledPatterns, rProps[key], rCompiledPatterns, mappedRAdditional);
+      if (prop !== void 0) {
+        properties[key] = prop;
+      }
+    }
+    const rKeys = Object.keys(rProps);
+    const rKeysLen = rKeys.length;
+    const mappedLAdditional = isLAddTruthy ? void 0 : lAdditional;
+    for (let i2 = 0; i2 < rKeysLen; i2++) {
+      const key = rKeys[i2];
+      if (lKeysSet.has(key)) {
+        continue;
+      }
+      const prop = createProperty(constraints, key, rProps[key], rCompiledPatterns, void 0, lCompiledPatterns, mappedLAdditional);
+      if (prop !== void 0) {
+        properties[key] = prop;
+      }
+    }
+    assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "properties", properties);
+    let patterns = {};
+    const matchedPatterns = /* @__PURE__ */ new Set();
+    if (lPatternKeys.length > 0 && rPatternKeys.length > 0) {
+      createPairCombinations(lPatternKeys, rPatternKeys, (lKey, rKey) => {
+        if (isSubRegExp(lKey, rKey)) {
+          matchedPatterns.add(lKey);
+        }
+        if (isSubRegExp(rKey, lKey)) {
+          matchedPatterns.add(rKey);
+        }
+        patterns[mergePatterns(lKey, rKey)] = mergeSchemaDefinitions(lPatterns[lKey], rPatterns[rKey]);
+      });
+    }
+    patterns = assignPatternPropertiesAndAdditionalPropertiesMerge(patterns, lPatterns, lPatternKeys, matchedPatterns, rAdditional, isRAddTruthy);
+    patterns = assignPatternPropertiesAndAdditionalPropertiesMerge(patterns, rPatterns, rPatternKeys, matchedPatterns, lAdditional, isLAddTruthy);
+    assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "patternProperties", patterns);
+    return target;
+  };
+  const itemsAssigner = (target, { items: lItems = [], additionalItems: lAdditional }, { items: rItems = [], additionalItems: rAdditional }) => {
+    const isLArr = Array.isArray(lItems);
+    const isRArr = Array.isArray(rItems);
+    const itemsArray = [];
+    target.items = itemsArray;
+    if (isLArr && isRArr) {
+      const [l, additional, tail] = lItems.length < rItems.length ? [lItems.length, lAdditional, rItems] : [rItems.length, rAdditional, lItems];
+      let i2 = 0;
+      for (; i2 < l; i2++) {
+        itemsArray.push(mergeSchemaDefinitions(lItems[i2], rItems[i2]));
+      }
+      if (additional === false) {
+        target.additionalItems = false;
+      } else {
+        const isAdditionalTruthy = additional === void 0 || isAllowAnySchema(additional);
+        for (; i2 < tail.length; i2++) {
+          itemsArray.push(isAdditionalTruthy ? tail[i2] : mergeSchemaDefinitions(tail[i2], additional));
+        }
+        assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "additionalItems", lAdditional !== void 0 && rAdditional !== void 0 ? mergeSchemaDefinitions(lAdditional, rAdditional) : lAdditional ?? rAdditional);
+      }
+    } else if (isLArr || isRArr) {
+      const [arr, item, additional] = isLArr ? [lItems, rItems, lAdditional] : [rItems, lItems, rAdditional];
+      assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "additionalItems", additional && mergeSchemaDefinitions(additional, item));
+      for (let i2 = 0; i2 < arr.length; i2++) {
+        itemsArray.push(mergeSchemaDefinitions(arr[i2], item));
+      }
+    } else {
+      delete target.additionalItems;
+      target.items = mergeSchemaDefinitions(lItems, rItems);
+    }
+    return target;
+  };
+  const conditionAssigner = (target, l, r) => {
+    assignCondition(target, l);
+    const cond = assignCondition({}, r);
+    if (target.allOf === void 0) {
+      target.allOf = [cond];
+    } else {
+      target.allOf = target.allOf.concat(cond);
+    }
+    return target;
+  };
+  function mergeArraysOfSchemaDefinition(l, r) {
+    const definitions = [];
+    createPairCombinations(l, r, (a2, b2) => {
+      try {
+        definitions.push(mergeSchemaDefinitions(a2, b2));
+      } catch {
+      }
+    });
+    if (definitions.length === 0) {
+      throw new Error(`No valid schema combinations could be produced for "${JSON.stringify(l)}" and "${JSON.stringify(r)}"; the merged result is empty`);
+    }
+    return deduplicateJsonSchemaDef(definitions);
+  }
+  const ASSIGNERS_MAP = createMap([
+    [PROPERTIES_ASSIGNER_KEYS, propertiesAssigner],
+    [ITEMS_ASSIGNER_KEYS, itemsAssigner],
+    [CONDITION_ASSIGNER_KEYS, conditionAssigner],
+    ...assigners
+  ]);
+  const CHECKS_MAP = createChecksMap(checks);
+  function mergeSchemaDefinitions(left, right) {
+    if (left === false || right === false) {
+      return false;
+    }
+    if (isAllowAnySchema(left)) {
+      if (isAllowAnySchema(right)) {
+        return true;
+      }
+      return right;
+    }
+    if (isAllowAnySchema(right)) {
+      return left;
+    }
+    let target = { ...left };
+    const assigners2 = /* @__PURE__ */ new Set();
+    const checks2 = /* @__PURE__ */ new Set();
+    const rKeys = Reflect.ownKeys(right);
+    const l = rKeys.length;
+    for (let i2 = 0; i2 < l; i2++) {
+      const rKey = rKeys[i2];
+      const rv = right[rKey];
+      if (rv === void 0) {
+        continue;
+      }
+      const checkData = CHECKS_MAP.get(rKey);
+      if (checkData !== void 0) {
+        const l2 = checkData.length;
+        for (let j = 0; j < l2; j++) {
+          const item = checkData[j];
+          if (left[item.oppositeKey] !== void 0) {
+            checks2.add(item.check);
+          }
+        }
+      }
+      const lv = left[rKey];
+      if (lv === void 0) {
+        target[rKey] = rv;
+        continue;
+      }
+      const assign = ASSIGNERS_MAP.get(rKey);
+      if (assign) {
+        assigners2.add(assign);
+        continue;
+      }
+      const merge2 = MERGERS[rKey] ?? defaultMerger;
+      target[rKey] = merge2(lv, rv);
+    }
+    for (const assign of assigners2) {
+      target = assign(target, left, right);
+    }
+    for (const check2 of checks2) {
+      check2(target);
+    }
+    return target;
+  }
+  const mergeRecordsOfSchemaDefinitions = createRecordsMerge(mergeSchemaDefinitions);
+  const MERGERS = {
+    $id: defaultMerger,
+    $ref: defaultMerger,
+    $schema: defaultMerger,
+    $comment: defaultMerger,
+    $defs: mergeRecordsOfSchemaDefinitions,
+    definitions: mergeRecordsOfSchemaDefinitions,
+    type: (a2, b2) => {
+      if (a2 === b2) {
+        return a2;
+      }
+      const isAArr = Array.isArray(a2);
+      const isBArr = Array.isArray(b2);
+      if (!isAArr && !isBArr) {
+        const intersection3 = intersectSchemaTypes(a2, b2);
+        if (intersection3 !== void 0) {
+          return intersection3;
+        }
+      } else if (isAArr || isBArr) {
+        const r = /* @__PURE__ */ new Set();
+        if (isAArr && isBArr) {
+          createPairCombinations(a2, b2, (x, y) => {
+            const type = intersectSchemaTypes(x, y);
+            if (type !== void 0) {
+              r.add(type);
+            }
+          });
+        } else {
+          const arr = isAArr ? a2 : b2;
+          const el = isAArr ? b2 : a2;
+          const l = arr.length;
+          for (let i2 = 0; i2 < l; i2++) {
+            const intersection3 = intersectSchemaTypes(el, arr[i2]);
+            if (intersection3 !== void 0) {
+              r.add(intersection3);
+            }
+          }
+        }
+        const s2 = r.size;
+        if (s2 === 1) {
+          return r.values().next().value;
+        }
+        if (s2 > 1) {
+          return Array.from(r);
+        }
+      }
+      throw new Error(`It is not possible to create an intersection of the following incompatible types: ${a2.toString()}, ${b2.toString()}`);
+    },
+    default: defaultMerger,
+    description: defaultMerger,
+    title: defaultMerger,
+    const: defaultMerger,
+    format: defaultMerger,
+    contentEncoding: defaultMerger,
+    contentMediaType: defaultMerger,
+    not: (a2, b2) => {
+      const items = deduplicateJsonSchemaDef([a2, b2]);
+      return items.length === 1 ? items[0] : { anyOf: items };
+    },
+    pattern: mergePatterns,
+    readOnly: mergeBooleans,
+    writeOnly: mergeBooleans,
+    enum: (a2, b2) => {
+      const data = intersectJson(a2, b2);
+      if (data.length === 0) {
+        throw new Error(`Intersection of the following enums is empty: "${JSON.stringify(a2)}", "${JSON.stringify(b2)}"`);
+      }
+      return data;
+    },
+    anyOf: mergeArraysOfSchemaDefinition,
+    oneOf: mergeArraysOfSchemaDefinition,
+    allOf: (l, r) => deduplicateJsonSchemaDef(l.concat(r)),
+    propertyNames: mergeSchemaDefinitions,
+    contains: mergeSchemaDefinitions,
+    dependencies: createRecordsMerge((a2, b2) => {
+      if (Array.isArray(a2)) {
+        if (Array.isArray(b2)) {
+          return union2(a2, b2);
+        }
+        return mergeSchemaDefinitions(b2, { required: a2 });
+      }
+      if (Array.isArray(b2)) {
+        return mergeSchemaDefinitions(a2, { required: b2 });
+      }
+      return mergeSchemaDefinitions(a2, b2);
+    }),
+    examples: (l, r) => {
+      if (!Array.isArray(l) || !Array.isArray(r)) {
+        throw new Error(`Value of the 'examples' field should be an array, but got "${JSON.stringify(l)}" and "${JSON.stringify(r)}"`);
+      }
+      return union2(l, r);
+    },
+    multipleOf: (a2, b2) => {
+      let factor = 1;
+      while (!Number.isInteger(a2) || !Number.isInteger(b2)) {
+        factor *= 10;
+        a2 *= 10;
+        b2 *= 10;
+      }
+      return lcm(a2, b2) / factor;
+    },
+    exclusiveMaximum: Math.min,
+    maximum: Math.min,
+    maxItems: Math.min,
+    maxLength: Math.min,
+    maxProperties: Math.min,
+    exclusiveMinimum: Math.max,
+    minimum: Math.max,
+    minItems: Math.max,
+    minLength: Math.max,
+    minProperties: Math.max,
+    uniqueItems: mergeBooleans,
+    required: union2,
+    ...mergers
+  };
+  return {
+    mergeSchemaDefinitions,
+    mergeArrayOfSchemaDefinitions: mergeArrayOfSchemaDefinitions2
+  };
+}
+
+// node_modules/@x0k/json-schema-merge/dist/lib/json-schema/merge/all-of-merge.js
+function getAllOfSchemas(schema) {
+  const result = [];
+  const stack = [schema];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (typeof current === "boolean" || current.allOf === void 0) {
+      result.push(current);
+      continue;
+    }
+    const { allOf, ...rest } = current;
+    result.push(rest);
+    for (let i2 = allOf.length - 1; i2 >= 0; i2--) {
+      stack.push(allOf[i2]);
+    }
+  }
+  return result;
+}
+function createShallowAllOfMerge(mergeArrayOfSchemaDefinitions2) {
+  return (schema) => mergeArrayOfSchemaDefinitions2(getAllOfSchemas(schema));
+}
+
+// node_modules/@rjsf/utils/lib/schema/shallowAllOfMerge.js
+var { compareSchemaDefinitions, compareSchemaValues } = createComparator();
+var { mergeArrayOfSchemaDefinitions } = createMerger({
+  intersectJson: createIntersector(compareSchemaValues),
+  deduplicateJsonSchemaDef: createDeduplicator(compareSchemaDefinitions)
+});
+var shallowAllOfMerge_default = createShallowAllOfMerge(mergeArrayOfSchemaDefinitions);
+
+// node_modules/@rjsf/utils/lib/schema/retrieveSchema.js
+function retrieveSchema(validator, schema, rootSchema = {}, rawFormData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs = false) {
+  return retrieveSchemaInternal(validator, schema, rootSchema, rawFormData, void 0, void 0, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs)[0];
+}
+function resolveCondition(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
+  const { if: expression, then, else: otherwise, ...resolvedSchemaLessConditional } = schema;
+  const conditionValue = validator.isValid(expression, formData || {}, rootSchema);
+  let resolvedSchemas = [resolvedSchemaLessConditional];
+  let schemas = [];
+  if (expandAllBranches) {
+    if (then && typeof then !== "boolean") {
+      schemas = schemas.concat(retrieveSchemaInternal(validator, then, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+    }
+    if (otherwise && typeof otherwise !== "boolean") {
+      schemas = schemas.concat(retrieveSchemaInternal(validator, otherwise, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+    }
+  } else {
+    const conditionalSchema = conditionValue ? then : otherwise;
+    if (conditionalSchema && typeof conditionalSchema !== "boolean") {
+      schemas = schemas.concat(retrieveSchemaInternal(validator, conditionalSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+    }
+  }
+  if (schemas.length) {
+    resolvedSchemas = schemas.map((s2) => mergeSchemas(resolvedSchemaLessConditional, s2));
+  }
+  return resolvedSchemas.flatMap((s2) => retrieveSchemaInternal(validator, s2, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+}
+function getAllPermutationsOfXxxOf(listOfLists) {
+  const allPermutations = listOfLists.reduce((permutations, list) => {
+    if (list.length > 1) {
+      return list.flatMap((element) => times_default(permutations.length, (i2) => [...permutations[i2]].concat(element)));
+    }
+    permutations.forEach((permutation) => permutation.push(list[0]));
+    return permutations;
+  }, [[]]);
+  return allPermutations;
+}
+function getMatchingPatternProperties(schema, key) {
+  return Object.keys(schema.patternProperties).filter((pattern) => RegExp(pattern).test(key)).reduce((obj, pattern) => {
+    set_default(obj, [pattern], schema.patternProperties[pattern]);
+    return obj;
+  }, {});
+}
+function resolveSchema(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs) {
+  const updatedSchemas = resolveReference(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs);
+  if (updatedSchemas.length > 1 || updatedSchemas[0] !== schema) {
+    return updatedSchemas;
+  }
+  if (DEPENDENCIES_KEY in schema) {
+    const resolvedSchemas = resolveDependencies(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf);
+    return resolvedSchemas.flatMap((s2) => retrieveSchemaInternal(validator, s2, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+  }
+  if (ALL_OF_KEY in schema && Array.isArray(schema[ALL_OF_KEY])) {
+    const allOfSchemaElements = schema.allOf.map((allOfSubschema) => retrieveSchemaInternal(validator, allOfSubschema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+    const allPermutations = getAllPermutationsOfXxxOf(allOfSchemaElements);
+    return allPermutations.map((permutation) => ({
+      ...schema,
+      allOf: permutation
+    }));
+  }
+  return [schema];
+}
+function resolveReference(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs) {
+  const updatedSchema = resolveAllReferences(schema, rootSchema, recurseList, void 0, resolveAnyOfOrOneOfRefs);
+  if (updatedSchema !== schema) {
+    return retrieveSchemaInternal(validator, updatedSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs);
+  }
+  return [schema];
+}
+function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveAnyOfOrOneOfRefs) {
+  if (!isObject(schema)) {
+    return schema;
+  }
+  let resolvedSchema = schema;
+  let currentBaseURI = baseURI;
+  if (REF_KEY in resolvedSchema) {
+    const { $ref, ...localSchema } = resolvedSchema;
+    if (recurseList.includes($ref)) {
+      return resolvedSchema;
+    }
+    recurseList.push($ref);
+    const refSchema = findSchemaDefinition($ref, rootSchema, currentBaseURI);
+    resolvedSchema = { ...refSchema, ...localSchema, [RJSF_REF_KEY]: $ref };
+    if (ID_KEY in resolvedSchema) {
+      currentBaseURI = resolvedSchema[ID_KEY];
+    }
+  }
+  if (PROPERTIES_KEY in resolvedSchema) {
+    const childrenLists = [];
+    const updatedProps = transform_default(resolvedSchema[PROPERTIES_KEY], (acc, value, key) => {
+      const childList = [...recurseList];
+      acc[key] = resolveAllReferences(value, rootSchema, childList, currentBaseURI, resolveAnyOfOrOneOfRefs);
+      childrenLists.push(childList);
+    }, {});
+    merge_default(recurseList, uniq_default(flattenDeep_default(childrenLists)));
+    resolvedSchema = { ...resolvedSchema, [PROPERTIES_KEY]: updatedProps };
+  }
+  if (ITEMS_KEY in resolvedSchema && !Array.isArray(resolvedSchema.items) && typeof resolvedSchema.items !== "boolean") {
+    resolvedSchema = {
+      ...resolvedSchema,
+      items: resolveAllReferences(resolvedSchema.items, rootSchema, recurseList, currentBaseURI, resolveAnyOfOrOneOfRefs)
+    };
+  }
+  if (resolveAnyOfOrOneOfRefs) {
+    let key;
+    let schemas;
+    if (ANY_OF_KEY in schema && Array.isArray(schema[ANY_OF_KEY])) {
+      key = ANY_OF_KEY;
+      schemas = resolvedSchema[ANY_OF_KEY];
+    } else if (ONE_OF_KEY in schema && Array.isArray(schema[ONE_OF_KEY])) {
+      key = ONE_OF_KEY;
+      schemas = resolvedSchema[ONE_OF_KEY];
+    }
+    if (key && schemas) {
+      resolvedSchema = {
+        ...resolvedSchema,
+        [key]: schemas.map((s2) => resolveAllReferences(s2, rootSchema, recurseList, currentBaseURI, resolveAnyOfOrOneOfRefs))
+      };
+    }
+  }
+  return deepEquals_default(schema, resolvedSchema) ? schema : resolvedSchema;
+}
+function stubExistingAdditionalProperties(validator, theSchema, rootSchema, aFormData, experimental_customMergeAllOf) {
+  const schema = {
+    ...theSchema,
+    properties: { ...theSchema.properties }
+  };
+  const formData = aFormData && isObject(aFormData) ? aFormData : {};
+  Object.keys(formData).forEach((key) => {
+    if (key in schema.properties) {
+      return;
+    }
+    if (PATTERN_PROPERTIES_KEY in schema) {
+      const matchingProperties = getMatchingPatternProperties(schema, key);
+      if (!isEmpty_default(matchingProperties)) {
+        schema.properties[key] = retrieveSchema(validator, { [ALL_OF_KEY]: Object.values(matchingProperties) }, rootSchema, get_default(formData, [key]), experimental_customMergeAllOf);
+        set_default(schema.properties, [key, ADDITIONAL_PROPERTY_FLAG], true);
+        return;
+      }
+    }
+    if (ADDITIONAL_PROPERTIES_KEY in schema && schema.additionalProperties !== false) {
+      let additionalProperties;
+      if (typeof schema.additionalProperties !== "boolean") {
+        if (REF_KEY in schema.additionalProperties) {
+          additionalProperties = retrieveSchema(validator, { [REF_KEY]: get_default(schema.additionalProperties, [REF_KEY]) }, rootSchema, formData, experimental_customMergeAllOf);
+        } else if ("type" in schema.additionalProperties) {
+          additionalProperties = { ...schema.additionalProperties };
+        } else if (ANY_OF_KEY in schema.additionalProperties || ONE_OF_KEY in schema.additionalProperties) {
+          additionalProperties = {
+            type: "object",
+            ...schema.additionalProperties
+          };
+        } else {
+          additionalProperties = { type: guessType(get_default(formData, [key])) };
+        }
+      } else {
+        additionalProperties = { type: guessType(get_default(formData, [key])) };
+      }
+      schema.properties[key] = additionalProperties;
+      set_default(schema.properties, [key, ADDITIONAL_PROPERTY_FLAG], true);
+    } else {
+      schema.properties[key] = { type: "null" };
+      set_default(schema.properties, [key, ADDITIONAL_PROPERTY_FLAG], true);
+    }
+  });
+  return schema;
+}
+function mergeAllOf(schema) {
+  return shallowAllOfMerge_default(schema);
+}
+function retrieveSchemaInternal(validator, schema, rootSchema, rawFormData, expandAllBranches = false, recurseList = [], experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs) {
+  if (!isObject(schema)) {
+    return [{}];
+  }
+  const resolvedSchemas = resolveSchema(validator, schema, rootSchema, expandAllBranches, recurseList, rawFormData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs);
+  return resolvedSchemas.flatMap((s2) => {
+    var _a;
+    let resolvedSchema = s2;
+    if (IF_KEY in resolvedSchema) {
+      return resolveCondition(validator, resolvedSchema, rootSchema, expandAllBranches, recurseList, rawFormData, experimental_customMergeAllOf);
+    }
+    if (ALL_OF_KEY in resolvedSchema) {
+      if (expandAllBranches) {
+        const { allOf, ...restOfSchema } = resolvedSchema;
+        return [...allOf, restOfSchema];
+      }
+      try {
+        const withContainsSchemas = [];
+        const withoutContainsSchemas = [];
+        (_a = resolvedSchema.allOf) === null || _a === void 0 ? void 0 : _a.forEach((allOfItem) => {
+          if (typeof allOfItem === "object" && allOfItem.contains) {
+            withContainsSchemas.push(allOfItem);
+          } else {
+            withoutContainsSchemas.push(allOfItem);
+          }
+        });
+        if (withContainsSchemas.length) {
+          resolvedSchema = { ...resolvedSchema, allOf: withoutContainsSchemas };
+        }
+        resolvedSchema = experimental_customMergeAllOf ? experimental_customMergeAllOf(resolvedSchema) : mergeAllOf(resolvedSchema);
+        if (withContainsSchemas.length) {
+          resolvedSchema.allOf = withContainsSchemas;
+        }
+      } catch (e) {
+        console.warn("could not merge subschemas in allOf:\n", e);
+        const { allOf, ...resolvedSchemaWithoutAllOf } = resolvedSchema;
+        return resolvedSchemaWithoutAllOf;
+      }
+    }
+    if (PROPERTIES_KEY in resolvedSchema && PATTERN_PROPERTIES_KEY in resolvedSchema) {
+      resolvedSchema = Object.keys(resolvedSchema.properties).reduce((acc, key) => {
+        const matchingProperties = getMatchingPatternProperties(acc, key);
+        if (!isEmpty_default(matchingProperties)) {
+          acc.properties[key] = retrieveSchema(validator, { allOf: [acc.properties[key], ...Object.values(matchingProperties)] }, rootSchema, get_default(rawFormData, [key]), experimental_customMergeAllOf);
+        }
+        return acc;
+      }, {
+        ...resolvedSchema,
+        properties: { ...resolvedSchema.properties }
+      });
+    }
+    const hasAdditionalProperties = PATTERN_PROPERTIES_KEY in resolvedSchema || ADDITIONAL_PROPERTIES_KEY in resolvedSchema && resolvedSchema.additionalProperties !== false;
+    if (hasAdditionalProperties) {
+      return stubExistingAdditionalProperties(validator, resolvedSchema, rootSchema, rawFormData, experimental_customMergeAllOf);
+    }
+    return resolvedSchema;
+  });
+}
+function resolveAnyOrOneOfSchemas(validator, schema, rootSchema, expandAllBranches, rawFormData) {
+  let anyOrOneOf;
+  const { oneOf, anyOf, ...remaining } = schema;
+  if (Array.isArray(oneOf)) {
+    anyOrOneOf = oneOf;
+  } else if (Array.isArray(anyOf)) {
+    anyOrOneOf = anyOf;
+  }
+  if (anyOrOneOf) {
+    const formData = rawFormData === void 0 && expandAllBranches ? {} : rawFormData;
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    anyOrOneOf = anyOrOneOf.map((s2) => resolveAllReferences(s2, rootSchema, []));
+    const option = getFirstMatchingOption(validator, formData, anyOrOneOf, rootSchema, discriminator);
+    if (expandAllBranches) {
+      const relaxed = relaxOptionsForScoring(anyOrOneOf, false, rootSchema);
+      getFirstMatchingOption(validator, formData, relaxed, rootSchema, discriminator);
+      return anyOrOneOf.map((item) => mergeSchemas(remaining, item));
+    }
+    return [mergeSchemas(remaining, anyOrOneOf[option])];
+  }
+  return [schema];
+}
+function relaxOptionsForScoring(options, resolveRefs = false, rootSchema) {
+  return options.map((d) => {
+    if (!isObject(d)) {
+      return d ? {} : { not: {} };
+    }
+    const schema = resolveRefs && rootSchema ? resolveAllReferences(d, rootSchema, []) : d;
+    return schema.additionalProperties === false ? { ...schema, additionalProperties: true } : schema;
+  });
+}
+function resolveDependencies(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
+  const { dependencies, ...remainingSchema } = schema;
+  const resolvedSchemas = resolveAnyOrOneOfSchemas(validator, remainingSchema, rootSchema, expandAllBranches, formData);
+  return resolvedSchemas.flatMap((resolvedSchema) => processDependencies(validator, dependencies, resolvedSchema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf));
+}
+function processDependencies(validator, dependencies, resolvedSchema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
+  let schemas = [resolvedSchema];
+  for (const dependencyKey in dependencies) {
+    if ((expandAllBranches || get_default(formData, [dependencyKey]) !== void 0) && (!resolvedSchema.properties || dependencyKey in resolvedSchema.properties)) {
+      const [remainingDependencies, dependencyValue] = splitKeyElementFromObject(dependencyKey, dependencies);
+      if (Array.isArray(dependencyValue)) {
+        schemas[0] = withDependentProperties(resolvedSchema, dependencyValue);
+      } else if (isObject(dependencyValue)) {
+        schemas = withDependentSchema(validator, resolvedSchema, rootSchema, dependencyKey, dependencyValue, expandAllBranches, recurseList, formData, experimental_customMergeAllOf);
+      }
+      return schemas.flatMap((schema) => processDependencies(validator, remainingDependencies, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf));
+    }
+  }
+  return schemas;
+}
+function withDependentProperties(schema, additionallyRequired) {
+  if (!additionallyRequired) {
+    return schema;
+  }
+  const required = Array.isArray(schema.required) ? Array.from(/* @__PURE__ */ new Set([...schema.required, ...additionallyRequired])) : additionallyRequired;
+  return { ...schema, required };
+}
+function withDependentSchema(validator, schema, rootSchema, dependencyKey, dependencyValue, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
+  const dependentSchemas = retrieveSchemaInternal(validator, dependencyValue, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf);
+  return dependentSchemas.flatMap((dependent) => {
+    const { oneOf, ...dependentSchema } = dependent;
+    const mergedSchema = mergeSchemas(schema, dependentSchema);
+    if (oneOf === void 0) {
+      return mergedSchema;
+    }
+    const resolvedOneOfs = oneOf.map((subschema) => {
+      if (typeof subschema === "boolean" || !(REF_KEY in subschema)) {
+        return [subschema];
+      }
+      return resolveReference(validator, subschema, rootSchema, expandAllBranches, recurseList, formData);
+    });
+    const allPermutations = getAllPermutationsOfXxxOf(resolvedOneOfs);
+    return allPermutations.flatMap((resolvedOneOf) => withExactlyOneSubschema(validator, mergedSchema, rootSchema, dependencyKey, resolvedOneOf, expandAllBranches, recurseList, formData, experimental_customMergeAllOf));
+  });
+}
+function withExactlyOneSubschema(validator, schema, rootSchema, dependencyKey, oneOf, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
+  const validSubschemas = oneOf.filter((subschema) => {
+    if (typeof subschema === "boolean" || !subschema || !subschema.properties) {
+      return false;
+    }
+    const { [dependencyKey]: conditionPropertySchema } = subschema.properties;
+    if (conditionPropertySchema) {
+      const conditionSchema = {
+        type: "object",
+        properties: {
+          [dependencyKey]: conditionPropertySchema
+        }
+      };
+      return validator.isValid(conditionSchema, formData, rootSchema) || expandAllBranches;
+    }
+    return false;
+  });
+  if (!expandAllBranches && validSubschemas.length !== 1) {
+    console.warn("ignoring oneOf in dependencies because there isn't exactly one subschema that is valid");
+    return [schema];
+  }
+  return validSubschemas.flatMap((s2) => {
+    const subschema = s2;
+    const [dependentSubschema] = splitKeyElementFromObject(dependencyKey, subschema.properties);
+    const dependentSchema = { ...subschema, properties: dependentSubschema };
+    const schemas = retrieveSchemaInternal(validator, dependentSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf);
+    return schemas.map((resolvedSubschema) => mergeSchemas(schema, resolvedSubschema));
+  });
+}
+
+// node_modules/@rjsf/utils/lib/schema/findSelectedOptionInXxxOf.js
+function findSelectedOptionInXxxOf(validator, rootSchema, schema, fallbackField, xxx, formData = {}, experimental_customMergeAllOf) {
+  if (Array.isArray(schema[xxx])) {
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    const selectorField = discriminator || fallbackField;
+    const xxxOfs = schema[xxx].map((xxxOf) => retrieveSchema(validator, xxxOf, rootSchema, formData, experimental_customMergeAllOf));
+    const data = get_default(formData, selectorField);
+    if (data !== void 0) {
+      return xxxOfs.find((xxxOfOption) => deepEquals_default(get_default(xxxOfOption, [PROPERTIES_KEY, selectorField, DEFAULT_KEY], get_default(xxxOfOption, [PROPERTIES_KEY, selectorField, CONST_KEY])), data));
+    }
+  }
+  return void 0;
+}
+
+// node_modules/@rjsf/utils/lib/schema/getFromSchema.js
+function getFromSchemaInternal(validator, rootSchema, schema, path, experimental_customMergeAllOf) {
+  let fieldSchema = schema;
+  if (has_default(schema, REF_KEY)) {
+    fieldSchema = retrieveSchema(validator, schema, rootSchema, void 0, experimental_customMergeAllOf);
+  }
+  if (isEmpty_default(path)) {
+    return fieldSchema;
+  }
+  const pathList = Array.isArray(path) ? [...path] : path.split(".");
+  const [part, ...nestedPath] = pathList;
+  if (part !== void 0 && part !== "" && has_default(fieldSchema, part)) {
+    fieldSchema = get_default(fieldSchema, part);
+    return getFromSchemaInternal(validator, rootSchema, fieldSchema, nestedPath, experimental_customMergeAllOf);
+  }
+  return void 0;
+}
+function getFromSchema(validator, rootSchema, schema, path, defaultValue, experimental_customMergeAllOf) {
+  const result = getFromSchemaInternal(validator, rootSchema, schema, path, experimental_customMergeAllOf);
+  if (result === void 0) {
+    return defaultValue;
+  }
+  return result;
+}
+
+// node_modules/@rjsf/utils/lib/schema/findFieldInSchema.js
+var NOT_FOUND_SCHEMA = { title: "!@#$_UNKNOWN_$#@!" };
+function findFieldInSchema(validator, rootSchema, schema, path, formData = {}, experimental_customMergeAllOf) {
+  const pathList = Array.isArray(path) ? [...path] : path.split(".");
+  let parentField = schema;
+  const fieldName = pathList.pop();
+  const fieldNameKey = String(fieldName);
+  if (pathList.length) {
+    pathList.forEach((subPath) => {
+      parentField = getFromSchema(validator, rootSchema, parentField, [PROPERTIES_KEY, subPath], {}, experimental_customMergeAllOf);
+      if (has_default(parentField, ONE_OF_KEY)) {
+        parentField = findSelectedOptionInXxxOf(validator, rootSchema, parentField, fieldNameKey, ONE_OF_KEY, get_default(formData, subPath), experimental_customMergeAllOf);
+      } else if (has_default(parentField, ANY_OF_KEY)) {
+        parentField = findSelectedOptionInXxxOf(validator, rootSchema, parentField, fieldNameKey, ANY_OF_KEY, get_default(formData, subPath), experimental_customMergeAllOf);
+      }
+    });
+  }
+  if (has_default(parentField, ONE_OF_KEY)) {
+    parentField = findSelectedOptionInXxxOf(validator, rootSchema, parentField, fieldNameKey, ONE_OF_KEY, formData, experimental_customMergeAllOf);
+  } else if (has_default(parentField, ANY_OF_KEY)) {
+    parentField = findSelectedOptionInXxxOf(validator, rootSchema, parentField, fieldNameKey, ANY_OF_KEY, formData, experimental_customMergeAllOf);
+  }
+  let field = getFromSchema(validator, rootSchema, parentField, [PROPERTIES_KEY, fieldName], NOT_FOUND_SCHEMA, experimental_customMergeAllOf);
+  if (field === NOT_FOUND_SCHEMA) {
+    field = void 0;
+  }
+  const requiredArray = getFromSchema(validator, rootSchema, parentField, REQUIRED_KEY, [], experimental_customMergeAllOf);
+  let isRequired2;
+  if (field && Array.isArray(requiredArray)) {
+    isRequired2 = requiredArray.includes(fieldNameKey);
+  }
+  return { field, isRequired: isRequired2 };
+}
+
+// node_modules/lodash-es/_arrayReduce.js
+function arrayReduce(array, iteratee, accumulator, initAccum) {
+  var index = -1, length = array == null ? 0 : array.length;
+  if (initAccum && length) {
+    accumulator = array[++index];
+  }
+  while (++index < length) {
+    accumulator = iteratee(accumulator, array[index], index, array);
+  }
+  return accumulator;
+}
+var arrayReduce_default = arrayReduce;
+
+// node_modules/lodash-es/_createBaseEach.js
+function createBaseEach(eachFunc, fromRight) {
+  return function(collection, iteratee) {
+    if (collection == null) {
+      return collection;
+    }
+    if (!isArrayLike_default(collection)) {
+      return eachFunc(collection, iteratee);
+    }
+    var length = collection.length, index = fromRight ? length : -1, iterable = Object(collection);
+    while (fromRight ? index-- : ++index < length) {
+      if (iteratee(iterable[index], index, iterable) === false) {
+        break;
+      }
+    }
+    return collection;
+  };
+}
+var createBaseEach_default = createBaseEach;
+
+// node_modules/lodash-es/_baseEach.js
+var baseEach = createBaseEach_default(baseForOwn_default);
+var baseEach_default = baseEach;
+
+// node_modules/lodash-es/_baseReduce.js
+function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
+  eachFunc(collection, function(value, index, collection2) {
+    accumulator = initAccum ? (initAccum = false, value) : iteratee(accumulator, value, index, collection2);
+  });
+  return accumulator;
+}
+var baseReduce_default = baseReduce;
+
+// node_modules/lodash-es/reduce.js
+function reduce(collection, iteratee, accumulator) {
+  var func = isArray_default(collection) ? arrayReduce_default : baseReduce_default, initAccum = arguments.length < 3;
+  return func(collection, baseIteratee_default(iteratee, 4), accumulator, initAccum, baseEach_default);
+}
+var reduce_default = reduce;
+
+// node_modules/@rjsf/utils/lib/schema/getClosestMatchingOption.js
+var JUNK_OPTION = {
+  type: "object",
+  $id: JUNK_OPTION_ID,
+  properties: {
+    __not_really_there__: {
+      type: "number"
+    }
+  }
+};
+function calculateIndexScore(validator, rootSchema, schema, formData, experimental_customMergeAllOf) {
+  let totalScore = 0;
+  if (schema) {
+    if (isObject_default(schema.properties)) {
+      totalScore += reduce_default(schema.properties, (score, value, key) => {
+        const formValue = get_default(formData, key);
+        if (typeof value === "boolean") {
+          return score;
+        }
+        if (has_default(value, REF_KEY)) {
+          const newSchema = retrieveSchema(validator, value, rootSchema, formValue, experimental_customMergeAllOf);
+          return score + calculateIndexScore(validator, rootSchema, newSchema, formValue || {}, experimental_customMergeAllOf);
+        }
+        if ((has_default(value, ONE_OF_KEY) || has_default(value, ANY_OF_KEY)) && formValue) {
+          const xxxOfKey = has_default(value, ONE_OF_KEY) ? ONE_OF_KEY : ANY_OF_KEY;
+          const discriminator = getDiscriminatorFieldFromSchema(value);
+          return score + getClosestMatchingOption(validator, rootSchema, formValue, get_default(value, xxxOfKey), -1, discriminator, experimental_customMergeAllOf);
+        }
+        if (value.type === "object") {
+          const structureBoost = isObject_default(formValue) ? 1 : 0;
+          return score + structureBoost + calculateIndexScore(validator, rootSchema, value, formValue, experimental_customMergeAllOf);
+        }
+        if (value.type === guessType(formValue)) {
+          let newScore = score + 1;
+          if (value.default) {
+            newScore += formValue === value.default ? 1 : -1;
+          } else if (value.const) {
+            newScore += formValue === value.const ? 1 : -1;
+          }
+          return newScore;
+        }
+        return score;
+      }, 0);
+    } else if (isString_default(schema.type) && schema.type === guessType(formData)) {
+      totalScore += 1;
+    }
+  }
+  return totalScore;
+}
+function getClosestMatchingOption(validator, rootSchema, formData, options, selectedOption = -1, discriminatorField, experimental_customMergeAllOf) {
+  const resolvedOptions = options.map((option) => resolveAllReferences(option, rootSchema, []));
+  const simpleDiscriminatorMatch = getOptionMatchingSimpleDiscriminator(formData, options, discriminatorField);
+  if (isNumber_default(simpleDiscriminatorMatch)) {
+    return simpleDiscriminatorMatch;
+  }
+  const allValidIndexes = resolvedOptions.reduce((validList, option, index) => {
+    const testOptions = [JUNK_OPTION, option];
+    const match = getFirstMatchingOption(validator, formData, testOptions, rootSchema, discriminatorField);
+    if (match === 1) {
+      validList.push(index);
+    }
+    return validList;
+  }, []);
+  if (allValidIndexes.length === 1) {
+    return allValidIndexes[0];
+  }
+  if (!allValidIndexes.length) {
+    times_default(resolvedOptions.length, (i2) => allValidIndexes.push(i2));
+  }
+  const scoreCount = /* @__PURE__ */ new Set();
+  const { bestIndex } = allValidIndexes.reduce((scoreData, index) => {
+    const { bestScore } = scoreData;
+    const option = resolvedOptions[index];
+    const score = calculateIndexScore(validator, rootSchema, option, formData, experimental_customMergeAllOf);
+    scoreCount.add(score);
+    if (score > bestScore) {
+      return { bestIndex: index, bestScore: score };
+    }
+    return scoreData;
+  }, { bestIndex: selectedOption, bestScore: 0 });
+  if (scoreCount.size === 1 && selectedOption >= 0) {
+    return selectedOption;
+  }
+  return bestIndex;
+}
+
+// node_modules/@rjsf/utils/lib/constIsAjvDataReference.js
+function constIsAjvDataReference(schema) {
+  const schemaConst = schema[CONST_KEY];
+  const schemaType = getSchemaType(schema);
+  return isObject(schemaConst) && isString_default(schemaConst === null || schemaConst === void 0 ? void 0 : schemaConst.$data) && schemaType !== "object" && schemaType !== "array";
+}
+
+// node_modules/@rjsf/utils/lib/isConstant.js
+function isConstant(schema) {
+  return Array.isArray(schema.enum) && schema.enum.length === 1 || CONST_KEY in schema;
+}
+
+// node_modules/@rjsf/utils/lib/isFixedItems.js
+function isFixedItems(schema) {
+  return Array.isArray(schema.items) && schema.items.length > 0 && schema.items.every((item) => isObject(item));
+}
+
+// node_modules/lodash-es/isNil.js
+function isNil(value) {
+  return value == null;
+}
+var isNil_default = isNil;
+
+// node_modules/@rjsf/utils/lib/mergeDefaultsWithFormData.js
+function mergeDefaultsWithFormData(defaults, formData, mergeExtraArrayDefaults = false, defaultSupercedesUndefined = false, overrideFormDataWithDefaults = false) {
+  if (Array.isArray(formData)) {
+    const defaultsArray = Array.isArray(defaults) ? defaults : [];
+    const overrideArray = overrideFormDataWithDefaults ? defaultsArray : formData;
+    const overrideOppositeArray = overrideFormDataWithDefaults ? formData : defaultsArray;
+    const mapped = overrideArray.map((value, idx) => {
+      if (overrideOppositeArray[idx] !== void 0) {
+        return mergeDefaultsWithFormData(defaultsArray[idx], formData[idx], mergeExtraArrayDefaults, defaultSupercedesUndefined, overrideFormDataWithDefaults);
+      }
+      return value;
+    });
+    if ((mergeExtraArrayDefaults || overrideFormDataWithDefaults) && mapped.length < overrideOppositeArray.length) {
+      mapped.push(...overrideOppositeArray.slice(mapped.length));
+    }
+    return mapped;
+  }
+  if (isObject(formData)) {
+    const acc = Object.assign({}, defaults);
+    return Object.keys(formData).reduce((accumulator, key) => {
+      var _a;
+      const keyValue = get_default(formData, key);
+      const keyExistsInDefaults = isObject(defaults) && key in defaults;
+      const keyExistsInFormData = key in formData;
+      const keyDefault = (_a = get_default(defaults, key)) !== null && _a !== void 0 ? _a : {};
+      const defaultValueIsNestedObject = keyExistsInDefaults && isObject(keyDefault) && Object.values(keyDefault).some((v3) => isObject(v3));
+      const keyDefaultIsObject = keyExistsInDefaults && isObject(get_default(defaults, key));
+      const keyHasFormDataObject = keyExistsInFormData && isObject(keyValue);
+      if (keyDefaultIsObject && keyHasFormDataObject && !defaultValueIsNestedObject) {
+        accumulator[key] = {
+          ...get_default(defaults, key),
+          ...keyValue
+        };
+        return accumulator;
+      }
+      accumulator[key] = mergeDefaultsWithFormData(
+        get_default(defaults, key),
+        keyValue,
+        mergeExtraArrayDefaults,
+        defaultSupercedesUndefined,
+        // overrideFormDataWithDefaults can be true only when the key value exists in defaults
+        // Or if the key value doesn't exist in formData
+        overrideFormDataWithDefaults && (keyExistsInDefaults || !keyExistsInFormData)
+      );
+      return acc;
+    }, acc);
+  }
+  if (defaultSupercedesUndefined && (!(defaults === void 0) && isNil_default(formData) || typeof formData === "number" && Number.isNaN(formData)) || overrideFormDataWithDefaults && !isNil_default(formData)) {
+    return defaults;
+  }
+  return formData;
+}
+
+// node_modules/@rjsf/utils/lib/mergeObjects.js
+function mergeObjects(obj1, obj2, concatArrays = false) {
+  return Object.keys(obj2).reduce((acc, key) => {
+    const left = obj1 ? obj1[key] : {}, right = obj2[key];
+    if (obj1 && key in obj1 && isObject(right)) {
+      acc[key] = mergeObjects(left, right, concatArrays);
+    } else if (concatArrays && Array.isArray(left) && Array.isArray(right)) {
+      let toMerge = right;
+      if (concatArrays === "preventDuplicates") {
+        toMerge = right.reduce((result, value) => {
+          if (!left.includes(value)) {
+            result.push(value);
+          }
+          return result;
+        }, []);
+      }
+      acc[key] = left.concat(toMerge);
+    } else {
+      acc[key] = right;
+    }
+    return acc;
+  }, { ...obj1 });
+}
+
+// node_modules/@rjsf/utils/lib/toConstant.js
+function toConstant(schema) {
+  if (ENUM_KEY in schema && Array.isArray(schema.enum) && schema.enum.length === 1) {
+    return schema.enum[0];
+  }
+  if (CONST_KEY in schema) {
+    return schema.const;
+  }
+  throw new Error("schema cannot be inferred as a constant");
+}
+
+// node_modules/@rjsf/utils/lib/optionsList.js
+function applyEnumOrder(options, order) {
+  const optionsByValue = new Map(options.map((opt) => [String(opt.value), opt]));
+  const orderedKeys = new Set(order.filter((v3) => v3 !== "*").map(String));
+  const rest = options.filter((opt) => !orderedKeys.has(String(opt.value)));
+  return order.flatMap((entry) => {
+    if (entry === "*") {
+      return rest;
+    }
+    const opt = optionsByValue.get(String(entry));
+    return opt ? [opt] : [];
+  });
+}
+function optionsList(schema, uiSchema) {
+  if (schema.enum) {
+    let enumNames;
+    let enumOrder;
+    if (uiSchema) {
+      const { enumNames: uiEnumNames, enumOrder: uiEnumOrder } = getUiOptions(uiSchema);
+      enumNames = uiEnumNames;
+      enumOrder = uiEnumOrder;
+    }
+    let options = schema.enum.map((value, i2) => {
+      const label = Array.isArray(enumNames) ? enumNames[i2] || String(value) : (enumNames === null || enumNames === void 0 ? void 0 : enumNames[String(value)]) || String(value);
+      return { label, value };
+    });
+    if (enumOrder) {
+      options = applyEnumOrder(options, enumOrder);
+    }
+    return options;
+  }
+  let altSchemas = void 0;
+  let altUiSchemas = void 0;
+  if (schema.anyOf) {
+    altSchemas = schema.anyOf;
+    altUiSchemas = uiSchema === null || uiSchema === void 0 ? void 0 : uiSchema.anyOf;
+  } else if (schema.oneOf) {
+    altSchemas = schema.oneOf;
+    altUiSchemas = uiSchema === null || uiSchema === void 0 ? void 0 : uiSchema.oneOf;
+  }
+  let selectorField = getDiscriminatorFieldFromSchema(schema);
+  if (uiSchema) {
+    const { optionsSchemaSelector = selectorField } = getUiOptions(uiSchema);
+    selectorField = optionsSchemaSelector;
+  }
+  return altSchemas && altSchemas.map((aSchemaDef, index) => {
+    const { title } = getUiOptions(altUiSchemas === null || altUiSchemas === void 0 ? void 0 : altUiSchemas[index]);
+    const aSchema = aSchemaDef;
+    let value;
+    let label = title;
+    if (selectorField) {
+      const innerSchema = get_default(aSchema, [PROPERTIES_KEY, selectorField], {});
+      value = get_default(innerSchema, DEFAULT_KEY, get_default(innerSchema, CONST_KEY));
+      label = label || (innerSchema === null || innerSchema === void 0 ? void 0 : innerSchema.title) || aSchema.title || String(value);
+    } else {
+      value = toConstant(aSchema);
+      label = label || aSchema.title || String(value);
+    }
+    return {
+      schema: aSchema,
+      label,
+      value
+    };
+  });
+}
+
+// node_modules/@rjsf/utils/lib/schema/isSelect.js
+function isSelect(validator, theSchema, rootSchema = {}, experimental_customMergeAllOf) {
+  const schema = retrieveSchema(validator, theSchema, rootSchema, void 0, experimental_customMergeAllOf);
+  const altSchemas = schema.oneOf || schema.anyOf;
+  if (Array.isArray(schema.enum)) {
+    return true;
+  }
+  if (Array.isArray(altSchemas)) {
+    return altSchemas.every((altSchema) => typeof altSchema !== "boolean" && isConstant(altSchema));
+  }
+  return false;
+}
+
+// node_modules/@rjsf/utils/lib/schema/isMultiSelect.js
+function isMultiSelect(validator, schema, rootSchema, experimental_customMergeAllOf) {
+  if (!schema.uniqueItems || !schema.items || typeof schema.items === "boolean") {
+    return false;
+  }
+  return isSelect(validator, schema.items, rootSchema, experimental_customMergeAllOf);
+}
+
+// node_modules/@rjsf/utils/lib/schema/getDefaultFormState.js
+var PRIMITIVE_TYPES = ["string", "number", "integer", "boolean", "null"];
+var AdditionalItemsHandling;
+(function(AdditionalItemsHandling2) {
+  AdditionalItemsHandling2[AdditionalItemsHandling2["Ignore"] = 0] = "Ignore";
+  AdditionalItemsHandling2[AdditionalItemsHandling2["Invert"] = 1] = "Invert";
+  AdditionalItemsHandling2[AdditionalItemsHandling2["Fallback"] = 2] = "Fallback";
+})(AdditionalItemsHandling || (AdditionalItemsHandling = {}));
+function getInnerSchemaForArrayItem(schema, additionalItems = AdditionalItemsHandling.Ignore, idx = -1) {
+  if (idx >= 0) {
+    if (Array.isArray(schema.items) && idx < schema.items.length) {
+      const item = schema.items[idx];
+      if (typeof item !== "boolean") {
+        return item;
+      }
+    }
+  } else if (schema.items && !Array.isArray(schema.items) && typeof schema.items !== "boolean") {
+    return schema.items;
+  }
+  if (additionalItems !== AdditionalItemsHandling.Ignore && isObject(schema.additionalItems)) {
+    return schema.additionalItems;
+  }
+  return {};
+}
+function computeDefaultBasedOnSchemaTypeAndDefaults(schema, computedDefault) {
+  const { default: schemaDefault, type } = schema;
+  const shouldReturnNullAsDefault = Array.isArray(type) && type.includes("null") && isEmpty_default(computedDefault) && schemaDefault === null;
+  return shouldReturnNullAsDefault ? null : computedDefault;
+}
+function maybeAddDefaultToObject(acc, key, computedDefault, includeUndefinedValues, isParentRequired, requiredFields = [], experimental_defaultFormStateBehavior = {}, isConst = false, isNullType = false) {
+  const { emptyObjectFields = "populateAllDefaults" } = experimental_defaultFormStateBehavior;
+  if (includeUndefinedValues === true || isConst) {
+    acc[key] = computedDefault;
+  } else if (includeUndefinedValues === "excludeObjectChildren") {
+    if (isNullType && computedDefault !== void 0 || !isObject(computedDefault) || !isEmpty_default(computedDefault)) {
+      acc[key] = computedDefault;
+    }
+  } else if (emptyObjectFields !== "skipDefaults") {
+    const isSelfOrParentRequired = isParentRequired === void 0 ? requiredFields.includes(key) : isParentRequired;
+    if (isObject(computedDefault)) {
+      if (emptyObjectFields === "skipEmptyDefaults") {
+        if (!isEmpty_default(computedDefault)) {
+          acc[key] = computedDefault;
+        }
+      } else if ((!isEmpty_default(computedDefault) || requiredFields.includes(key)) && (isSelfOrParentRequired || emptyObjectFields !== "populateRequiredDefaults")) {
+        acc[key] = computedDefault;
+      }
+    } else if (
+      // Store computedDefault if it's a defined primitive (e.g., true) and satisfies certain conditions
+      // Condition 1: computedDefault is not undefined
+      // Condition 2: If emptyObjectFields is 'populateAllDefaults' or 'skipEmptyDefaults)
+      // Or if isSelfOrParentRequired is 'true' and the key is a required field
+      computedDefault !== void 0 && (emptyObjectFields === "populateAllDefaults" || emptyObjectFields === "skipEmptyDefaults" || isSelfOrParentRequired && requiredFields.includes(key))
+    ) {
+      acc[key] = computedDefault;
+    }
+  }
+}
+function computeDefaults(validator, rawSchema, computeDefaultsProps = {}) {
+  const { parentDefaults, rawFormData, rootSchema = {}, includeUndefinedValues = false, _recurseList = [], experimental_defaultFormStateBehavior = void 0, experimental_customMergeAllOf = void 0, required, shouldMergeDefaultsIntoFormData = false, initialDefaultsGenerated } = computeDefaultsProps;
+  let formData = isObject(rawFormData) ? rawFormData : {};
+  const schema = isObject(rawSchema) ? rawSchema : {};
+  let defaults = parentDefaults;
+  let schemaToCompute = null;
+  let experimental_dfsb_to_compute = experimental_defaultFormStateBehavior;
+  let updatedRecurseList = _recurseList;
+  if (schema[CONST_KEY] !== void 0 && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.constAsDefaults) !== "never" && !constIsAjvDataReference(schema)) {
+    defaults = schema[CONST_KEY];
+  } else if (isObject(defaults) && isObject(schema.default) && !schema[ANY_OF_KEY] && !schema[ONE_OF_KEY] && !schema[REF_KEY]) {
+    defaults = mergeObjects(defaults, schema.default);
+  } else if (DEFAULT_KEY in schema && !schema[ANY_OF_KEY] && !schema[ONE_OF_KEY] && !schema[REF_KEY]) {
+    defaults = schema.default;
+  } else if (REF_KEY in schema) {
+    const refName = schema[REF_KEY];
+    if (!_recurseList.includes(refName)) {
+      updatedRecurseList = _recurseList.concat(refName);
+      schemaToCompute = findSchemaDefinition(refName, rootSchema);
+    }
+    const hasNoExistingData = rawFormData === void 0 || isObject(rawFormData) && isEmpty_default(rawFormData);
+    if (schemaToCompute && !defaults && hasNoExistingData) {
+      defaults = schema.default;
+    }
+    if (shouldMergeDefaultsIntoFormData && schemaToCompute && !isObject(rawFormData)) {
+      formData = rawFormData;
+    }
+  } else if (DEPENDENCIES_KEY in schema) {
+    const defaultFormData = {
+      ...getDefaultBasedOnSchemaType(validator, schema, computeDefaultsProps, defaults),
+      ...formData
+    };
+    const resolvedSchema = resolveDependencies(validator, schema, rootSchema, false, [], defaultFormData, experimental_customMergeAllOf);
+    [schemaToCompute] = resolvedSchema;
+  } else if (isFixedItems(schema)) {
+    defaults = schema.items.map((itemSchema, idx) => computeDefaults(validator, itemSchema, {
+      rootSchema,
+      includeUndefinedValues,
+      _recurseList,
+      experimental_defaultFormStateBehavior,
+      experimental_customMergeAllOf,
+      parentDefaults: Array.isArray(parentDefaults) ? parentDefaults[idx] : void 0,
+      rawFormData: formData,
+      required,
+      shouldMergeDefaultsIntoFormData
+    }));
+  } else if (ONE_OF_KEY in schema) {
+    const { oneOf, ...remaining } = schema;
+    if (oneOf.length === 0) {
+      return void 0;
+    }
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    const { type = "null" } = remaining;
+    if (!Array.isArray(type) && PRIMITIVE_TYPES.includes(type) && (experimental_dfsb_to_compute === null || experimental_dfsb_to_compute === void 0 ? void 0 : experimental_dfsb_to_compute.constAsDefaults) === "skipOneOf") {
+      experimental_dfsb_to_compute = {
+        ...experimental_dfsb_to_compute,
+        constAsDefaults: "never"
+      };
+    }
+    schemaToCompute = oneOf[getClosestMatchingOption(validator, rootSchema, rawFormData !== null && rawFormData !== void 0 ? rawFormData : schema.default, oneOf, 0, discriminator, experimental_customMergeAllOf)];
+    schemaToCompute = mergeSchemas(remaining, schemaToCompute);
+  } else if (ANY_OF_KEY in schema) {
+    const { anyOf, ...remaining } = schema;
+    if (anyOf.length === 0) {
+      return void 0;
+    }
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    schemaToCompute = anyOf[getClosestMatchingOption(validator, rootSchema, rawFormData !== null && rawFormData !== void 0 ? rawFormData : schema.default, anyOf, 0, discriminator, experimental_customMergeAllOf)];
+    schemaToCompute = mergeSchemas(remaining, schemaToCompute);
+  }
+  if (schemaToCompute) {
+    return computeDefaults(validator, schemaToCompute, {
+      rootSchema,
+      includeUndefinedValues,
+      _recurseList: updatedRecurseList,
+      experimental_defaultFormStateBehavior: experimental_dfsb_to_compute,
+      experimental_customMergeAllOf,
+      parentDefaults: defaults,
+      rawFormData: rawFormData !== null && rawFormData !== void 0 ? rawFormData : formData,
+      required,
+      shouldMergeDefaultsIntoFormData,
+      initialDefaultsGenerated
+    });
+  }
+  if (defaults === void 0) {
+    defaults = schema.default;
+  }
+  const defaultBasedOnSchemaType = getDefaultBasedOnSchemaType(validator, schema, computeDefaultsProps, defaults);
+  let defaultsWithFormData = defaultBasedOnSchemaType !== null && defaultBasedOnSchemaType !== void 0 ? defaultBasedOnSchemaType : defaults;
+  if (shouldMergeDefaultsIntoFormData) {
+    const { arrayMinItems = {} } = experimental_defaultFormStateBehavior || {};
+    const { mergeExtraDefaults } = arrayMinItems;
+    const matchingFormData = ensureFormDataMatchingSchema(validator, schema, rootSchema, rawFormData, experimental_defaultFormStateBehavior, experimental_customMergeAllOf);
+    if (!isObject(rawFormData) || ALL_OF_KEY in schema) {
+      defaultsWithFormData = mergeDefaultsWithFormData(defaultsWithFormData, matchingFormData, mergeExtraDefaults, true);
+    }
+  }
+  return defaultsWithFormData;
+}
+function ensureFormDataMatchingSchema(validator, schema, rootSchema, formData, experimental_defaultFormStateBehavior, experimental_customMergeAllOf) {
+  const isSelectField = !isConstant(schema) && isSelect(validator, schema, rootSchema, experimental_customMergeAllOf);
+  let validFormData = formData;
+  if (isSelectField) {
+    const getOptionsList = optionsList(schema);
+    const isValid = getOptionsList === null || getOptionsList === void 0 ? void 0 : getOptionsList.some((option) => deepEquals_default(option.value, formData));
+    validFormData = isValid ? formData : void 0;
+  }
+  const constTakesPrecedence = schema[CONST_KEY] && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.constAsDefaults) === "always";
+  if (constTakesPrecedence) {
+    validFormData = schema.const;
+  }
+  return validFormData;
+}
+function getObjectDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, includeUndefinedValues = false, _recurseList = [], experimental_defaultFormStateBehavior = void 0, experimental_customMergeAllOf = void 0, required, shouldMergeDefaultsIntoFormData, initialDefaultsGenerated } = {}, defaults) {
+  {
+    const formData = isObject(rawFormData) ? rawFormData : {};
+    const schema = rawSchema;
+    const shouldRetrieveSchema = (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.allOf) === "populateDefaults" && ALL_OF_KEY in schema || (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.emptyObjectFields) !== "skipEmptyDefaults" && IF_KEY in schema;
+    const retrievedSchema = shouldRetrieveSchema ? retrieveSchema(validator, schema, rootSchema, formData, experimental_customMergeAllOf) : schema;
+    const parentConst = retrievedSchema[CONST_KEY];
+    const objectDefaults = Object.keys(retrievedSchema.properties || {}).reduce((acc, key) => {
+      var _a;
+      const propertySchema = get_default(retrievedSchema, [PROPERTIES_KEY, key], {});
+      const hasParentConst = isObject(parentConst) && parentConst[key] !== void 0;
+      const hasConst = (isObject(propertySchema) && CONST_KEY in propertySchema || hasParentConst) && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.constAsDefaults) !== "never" && !constIsAjvDataReference(propertySchema);
+      const computedDefault = computeDefaults(validator, propertySchema, {
+        rootSchema,
+        _recurseList,
+        experimental_defaultFormStateBehavior,
+        experimental_customMergeAllOf,
+        includeUndefinedValues: includeUndefinedValues === true,
+        parentDefaults: get_default(defaults, [key]),
+        rawFormData: get_default(formData, [key]),
+        required: (_a = retrievedSchema.required) === null || _a === void 0 ? void 0 : _a.includes(key),
+        shouldMergeDefaultsIntoFormData,
+        initialDefaultsGenerated
+      });
+      maybeAddDefaultToObject(acc, key, computedDefault, includeUndefinedValues, required, retrievedSchema.required, experimental_defaultFormStateBehavior, hasConst, (propertySchema === null || propertySchema === void 0 ? void 0 : propertySchema.type) === "null");
+      return acc;
+    }, {});
+    if (retrievedSchema.additionalProperties && !initialDefaultsGenerated) {
+      const additionalPropertiesSchema = isObject(retrievedSchema.additionalProperties) ? retrievedSchema.additionalProperties : {};
+      const keys3 = /* @__PURE__ */ new Set();
+      const formDataRequired = [];
+      Object.keys(formData).filter((key) => !retrievedSchema.properties || !retrievedSchema.properties[key]).forEach((key) => {
+        keys3.add(key);
+        formDataRequired.push(key);
+      });
+      if (isObject(defaults) && formDataRequired.length === 0) {
+        Object.keys(defaults).filter((key) => !retrievedSchema.properties || !retrievedSchema.properties[key]).forEach((key) => keys3.add(key));
+      }
+      keys3.forEach((key) => {
+        var _a;
+        const computedDefault = computeDefaults(validator, additionalPropertiesSchema, {
+          rootSchema,
+          _recurseList,
+          experimental_defaultFormStateBehavior,
+          experimental_customMergeAllOf,
+          includeUndefinedValues: includeUndefinedValues === true,
+          parentDefaults: get_default(defaults, [key]),
+          rawFormData: get_default(formData, [key]),
+          required: (_a = retrievedSchema.required) === null || _a === void 0 ? void 0 : _a.includes(key),
+          shouldMergeDefaultsIntoFormData,
+          initialDefaultsGenerated
+        });
+        maybeAddDefaultToObject(objectDefaults, key, computedDefault, includeUndefinedValues, required, formDataRequired);
+      });
+    }
+    return computeDefaultBasedOnSchemaTypeAndDefaults(rawSchema, objectDefaults);
+  }
+}
+function getArrayDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, _recurseList = [], experimental_defaultFormStateBehavior = void 0, experimental_customMergeAllOf = void 0, required, requiredAsRoot = false, shouldMergeDefaultsIntoFormData, initialDefaultsGenerated } = {}, initialDefaults) {
+  var _a, _b;
+  let defaults = initialDefaults;
+  const schema = rawSchema;
+  const arrayMinItemsStateBehavior = (_a = experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.arrayMinItems) !== null && _a !== void 0 ? _a : {};
+  const { populate: arrayMinItemsPopulate, mergeExtraDefaults: arrayMergeExtraDefaults } = arrayMinItemsStateBehavior;
+  const neverPopulate = arrayMinItemsPopulate === "never";
+  const ignoreMinItemsFlagSet = arrayMinItemsPopulate === "requiredOnly";
+  const isPopulateAll = arrayMinItemsPopulate === "all" || !neverPopulate && !ignoreMinItemsFlagSet;
+  const computeSkipPopulate = (_b = arrayMinItemsStateBehavior === null || arrayMinItemsStateBehavior === void 0 ? void 0 : arrayMinItemsStateBehavior.computeSkipPopulate) !== null && _b !== void 0 ? _b : (() => false);
+  const isSkipEmptyDefaults = (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.emptyObjectFields) === "skipEmptyDefaults";
+  const emptyDefault = isSkipEmptyDefaults ? void 0 : [];
+  if (Array.isArray(defaults)) {
+    defaults = defaults.map((item, idx) => {
+      const schemaItem = getInnerSchemaForArrayItem(schema, AdditionalItemsHandling.Fallback, idx);
+      const itemFormData = Array.isArray(rawFormData) ? rawFormData[idx] : void 0;
+      return computeDefaults(validator, schemaItem, {
+        rootSchema,
+        _recurseList,
+        experimental_defaultFormStateBehavior,
+        experimental_customMergeAllOf,
+        parentDefaults: item,
+        rawFormData: itemFormData,
+        required,
+        shouldMergeDefaultsIntoFormData,
+        initialDefaultsGenerated
+      });
+    });
+  }
+  if (Array.isArray(rawFormData)) {
+    const schemaItem = getInnerSchemaForArrayItem(schema);
+    if (neverPopulate) {
+      defaults = rawFormData;
+    } else {
+      const itemDefaults = rawFormData.map((item, idx) => computeDefaults(validator, schemaItem, {
+        rootSchema,
+        _recurseList,
+        experimental_defaultFormStateBehavior,
+        experimental_customMergeAllOf,
+        rawFormData: item,
+        parentDefaults: get_default(defaults, [idx]),
+        required,
+        shouldMergeDefaultsIntoFormData,
+        initialDefaultsGenerated
+      }));
+      const mergeExtraDefaults = (ignoreMinItemsFlagSet && required || isPopulateAll) && arrayMergeExtraDefaults;
+      defaults = mergeDefaultsWithFormData(defaults, itemDefaults, mergeExtraDefaults);
+    }
+  }
+  if (neverPopulate) {
+    return defaults !== null && defaults !== void 0 ? defaults : emptyDefault;
+  }
+  if (ignoreMinItemsFlagSet && !required) {
+    return defaults || void 0;
+  }
+  let arrayDefault;
+  const defaultsLength = Array.isArray(defaults) ? defaults.length : 0;
+  if (!schema.minItems || isMultiSelect(validator, schema, rootSchema, experimental_customMergeAllOf) || computeSkipPopulate(validator, schema, rootSchema) || schema.minItems <= defaultsLength) {
+    arrayDefault = defaults || !required && !requiredAsRoot ? defaults : emptyDefault;
+  } else {
+    const defaultEntries = defaults || [];
+    const fillerSchema = getInnerSchemaForArrayItem(schema, AdditionalItemsHandling.Invert);
+    const fillerDefault = fillerSchema.default;
+    const fillerEntries = Array.from({ length: schema.minItems - defaultsLength }, () => computeDefaults(validator, fillerSchema, {
+      parentDefaults: fillerDefault,
+      rootSchema,
+      _recurseList,
+      experimental_defaultFormStateBehavior,
+      experimental_customMergeAllOf,
+      required,
+      shouldMergeDefaultsIntoFormData
+    }));
+    arrayDefault = defaultEntries.concat(fillerEntries);
+  }
+  return computeDefaultBasedOnSchemaTypeAndDefaults(rawSchema, arrayDefault);
+}
+function getDefaultBasedOnSchemaType(validator, rawSchema, computeDefaultsProps = {}, defaults) {
+  switch (getSchemaType(rawSchema)) {
+    // We need to recurse for object schema inner default values.
+    case "object": {
+      return getObjectDefaults(validator, rawSchema, computeDefaultsProps, defaults);
+    }
+    case "array": {
+      return getArrayDefaults(validator, rawSchema, computeDefaultsProps, defaults);
+    }
+    default:
+      return void 0;
+  }
+}
+function getDefaultFormState(validator, theSchema, formData, rootSchema, includeUndefinedValues = false, experimental_defaultFormStateBehavior, experimental_customMergeAllOf, initialDefaultsGenerated) {
+  if (!isObject(theSchema)) {
+    throw new Error(`Invalid schema: ${theSchema}`);
+  }
+  const schema = retrieveSchema(validator, theSchema, rootSchema, formData, experimental_customMergeAllOf);
+  const defaults = computeDefaults(validator, schema, {
+    rootSchema,
+    includeUndefinedValues,
+    experimental_defaultFormStateBehavior,
+    experimental_customMergeAllOf,
+    rawFormData: formData,
+    shouldMergeDefaultsIntoFormData: true,
+    initialDefaultsGenerated,
+    requiredAsRoot: true
+  });
+  if (schema.type !== "object" && isObject(schema.default)) {
+    return {
+      ...defaults,
+      ...formData
+    };
+  }
+  if (isObject(formData) || Array.isArray(formData)) {
+    const { mergeDefaultsIntoFormData } = experimental_defaultFormStateBehavior || {};
+    const defaultSupercedesUndefined = mergeDefaultsIntoFormData === "useDefaultIfFormDataUndefined";
+    const result = mergeDefaultsWithFormData(
+      defaults,
+      formData,
+      true,
+      // set to true to add any additional default array entries.
+      defaultSupercedesUndefined,
+      true
+    );
+    return result;
+  }
+  return defaults;
+}
+
+// node_modules/@rjsf/utils/lib/isCustomWidget.js
+function isCustomWidget(uiSchema = {}) {
+  return (
+    // TODO: Remove the `&& uiSchema['ui:widget'] !== 'hidden'` once we support hidden widgets for arrays.
+    // https://rjsf-team.github.io/react-jsonschema-form/docs/usage/widgets/#hidden-widgets
+    "widget" in getUiOptions(uiSchema) && getUiOptions(uiSchema).widget !== "hidden"
+  );
+}
+
+// node_modules/@rjsf/utils/lib/schema/isFilesArray.js
+function isFilesArray(validator, schema, uiSchema = {}, rootSchema, experimental_customMergeAllOf) {
+  if (uiSchema[UI_WIDGET_KEY] === "files") {
+    return true;
+  }
+  if (schema.items) {
+    const itemsSchema = retrieveSchema(validator, schema.items, rootSchema, void 0, experimental_customMergeAllOf);
+    return itemsSchema.type === "string" && itemsSchema.format === "data-url";
+  }
+  return false;
+}
+
+// node_modules/@rjsf/utils/lib/schema/getDisplayLabel.js
+function getDisplayLabel(validator, schema, uiSchema = {}, rootSchema, globalOptions, experimental_customMergeAllOf) {
+  const uiOptions = getUiOptions(uiSchema, globalOptions);
+  const { label = true } = uiOptions;
+  let displayLabel = Boolean(label);
+  if (displayLabel) {
+    const schemaType = getSchemaType(schema);
+    const addedByAdditionalProperty = get_default(schema, ADDITIONAL_PROPERTY_FLAG, false);
+    if (schemaType === "array") {
+      displayLabel = addedByAdditionalProperty || isMultiSelect(validator, schema, rootSchema, experimental_customMergeAllOf) || isFilesArray(validator, schema, uiSchema, rootSchema, experimental_customMergeAllOf) || isCustomWidget(uiSchema);
+    }
+    if (schemaType === "object") {
+      displayLabel = addedByAdditionalProperty;
+    }
+    if (schemaType === "boolean" && uiSchema && !uiSchema[UI_WIDGET_KEY]) {
+      displayLabel = false;
+    }
+    if (uiSchema && uiSchema[UI_FIELD_KEY]) {
+      displayLabel = false;
+    }
+  }
+  return displayLabel;
+}
+
+// node_modules/lodash-es/_basePickBy.js
+function basePickBy(object, paths, predicate) {
+  var index = -1, length = paths.length, result = {};
+  while (++index < length) {
+    var path = paths[index], value = baseGet_default(object, path);
+    if (predicate(value, path)) {
+      baseSet_default(result, castPath_default(path, object), value);
+    }
+  }
+  return result;
+}
+var basePickBy_default = basePickBy;
+
+// node_modules/lodash-es/_basePick.js
+function basePick(object, paths) {
+  return basePickBy_default(object, paths, function(value, path) {
+    return hasIn_default(object, path);
+  });
+}
+var basePick_default = basePick;
+
+// node_modules/lodash-es/pick.js
+var pick = flatRest_default(function(object, paths) {
+  return object == null ? {} : basePick_default(object, paths);
+});
+var pick_default = pick;
+
+// node_modules/@rjsf/utils/lib/schema/omitExtraData.js
+function getUsedFormData(formData, fields2) {
+  if (fields2.length === 0 && typeof formData !== "object") {
+    return formData;
+  }
+  const data = pick_default(formData, fields2);
+  if (Array.isArray(formData)) {
+    return Object.keys(data).map((key) => data[key]);
+  }
+  return data;
+}
+function getFieldNames(pathSchema, formData) {
+  const formValueHasData = (value, isLeaf) => typeof value !== "object" || isEmpty_default(value) || isLeaf && !isEmpty_default(value);
+  const getAllPaths = (_obj, acc = [], paths = [[]]) => {
+    const objKeys = Object.keys(_obj);
+    objKeys.forEach((key) => {
+      const data = _obj[key];
+      if (typeof data === "object") {
+        const newPaths = paths.map((path) => [...path, key]);
+        if (data[RJSF_ADDITIONAL_PROPERTIES_FLAG] && data[NAME_KEY] !== "") {
+          acc.push(data[NAME_KEY]);
+        } else {
+          getAllPaths(data, acc, newPaths);
+        }
+      } else if (key === NAME_KEY && data !== "") {
+        paths.forEach((path) => {
+          const formValue = get_default(formData, path);
+          const isLeaf = objKeys.length === 1;
+          if (formValueHasData(formValue, isLeaf) || Array.isArray(formValue) && formValue.every((val) => formValueHasData(val, isLeaf))) {
+            acc.push(path);
+          }
+        });
+      }
+    });
+    return acc;
+  };
+  return getAllPaths(pathSchema);
+}
+function isValueEmpty(value) {
+  if (isNil_default(value) || value === "") {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.length === 0;
+  }
+  if (isObject(value)) {
+    return Object.values(value).every(isValueEmpty);
+  }
+  return false;
+}
+function doMergeAllOf(schema, experimental_customMergeAllOf) {
+  return experimental_customMergeAllOf ? experimental_customMergeAllOf(schema) : shallowAllOfMerge_default(schema);
+}
+function omitExtraData(validator, schema, rootSchema = {}, formData, experimental_customMergeAllOf) {
+  function isObjectValue(value) {
+    return isObject(value);
+  }
+  function isSchemaObj(schemaDef) {
+    return isObject(schemaDef);
+  }
+  function handleObject(childSchema, source, target) {
+    var _a;
+    const { properties, additionalProperties, patternProperties, propertyNames } = childSchema;
+    const requiredSet = new Set((_a = childSchema.required) !== null && _a !== void 0 ? _a : []);
+    function setProperty(key, schemaDef, value, required = false) {
+      var _a2;
+      const v3 = omit2(schemaDef, value, target[key]);
+      if (!required && isObject(v3)) {
+        let sd = isSchemaObj(schemaDef) ? schemaDef : {};
+        if (sd.$ref !== void 0) {
+          sd = findSchemaDefinition(sd.$ref, rootSchema);
+        }
+        const innerRequired = new Set((_a2 = sd.required) !== null && _a2 !== void 0 ? _a2 : []);
+        const shouldDrop = Object.entries(v3).every(([k, val]) => !innerRequired.has(k) && isValueEmpty(val));
+        if (shouldDrop) {
+          return;
+        }
+      }
+      if (v3 !== void 0) {
+        target[key] = v3;
+      }
+    }
+    if (properties !== void 0) {
+      for (const [key, schemaDef] of Object.entries(properties)) {
+        setProperty(key, schemaDef, source[key], requiredSet.has(key));
+      }
+    }
+    let patternPropertiesRest;
+    if (patternProperties !== void 0) {
+      patternPropertiesRest = [];
+      const patterns = Object.entries(patternProperties).map(([pattern, schemaDef]) => [
+        new RegExp(pattern),
+        schemaDef
+      ]);
+      const knownProperties = new Set(Object.keys(properties !== null && properties !== void 0 ? properties : {}));
+      for (const [key, value] of Object.entries(source)) {
+        if (!knownProperties.has(key)) {
+          const matched = patterns.find(([re]) => re.test(key));
+          if (matched === void 0) {
+            patternPropertiesRest.push(key);
+          } else {
+            setProperty(key, matched[1], value);
+          }
+        }
+      }
+    }
+    if (additionalProperties !== void 0 && additionalProperties !== false) {
+      const addlSchema = additionalProperties;
+      if (patternPropertiesRest !== void 0) {
+        for (const key of patternPropertiesRest) {
+          setProperty(key, addlSchema, source[key]);
+        }
+      } else {
+        const knownProperties = new Set(Object.keys(properties !== null && properties !== void 0 ? properties : {}));
+        for (const [key, value] of Object.entries(source)) {
+          if (!knownProperties.has(key)) {
+            setProperty(key, addlSchema, value);
+          }
+        }
+      }
+    }
+    if (propertyNames !== void 0) {
+      for (const [key, value] of Object.entries(source)) {
+        target[key] = value;
+      }
+    }
+    return target;
+  }
+  function handleArray(childSchema, source, target) {
+    const { items, additionalItems } = childSchema;
+    if (items !== void 0) {
+      if (Array.isArray(items)) {
+        for (let i2 = 0; i2 < items.length; i2 += 1) {
+          target.push(omit2(items[i2], source[i2]));
+        }
+      } else {
+        for (let i2 = 0; i2 < source.length; i2 += 1) {
+          target.push(omit2(items, source[i2]));
+        }
+      }
+    }
+    if (additionalItems) {
+      for (let i2 = target.length; i2 < source.length; i2 += 1) {
+        target.push(omit2(additionalItems, source[i2]));
+      }
+    }
+    return target;
+  }
+  function handleConditions(childSchema, source, target) {
+    const { if: condition, then, else: otherwise } = childSchema;
+    if (condition === void 0) {
+      return target;
+    }
+    const isThenBranch = isSchemaObj(condition) ? validator.isValid(condition, source, rootSchema) : condition;
+    const branch = isThenBranch ? then : otherwise;
+    return branch === void 0 ? target : omit2(branch, source, target);
+  }
+  function handleOneOf(oneOf, childSchema, source, target) {
+    if (!Array.isArray(oneOf) || isSelect(validator, childSchema, rootSchema, experimental_customMergeAllOf)) {
+      return target;
+    }
+    const scoringOptions = relaxOptionsForScoring(oneOf, true, rootSchema);
+    const bestIndex = getClosestMatchingOption(validator, rootSchema, source, scoringOptions, 0, getDiscriminatorFieldFromSchema(childSchema), experimental_customMergeAllOf);
+    const winning = oneOf[bestIndex];
+    const resolved = isObject(winning) ? resolveAllReferences(winning, rootSchema, []) : scoringOptions[bestIndex];
+    return omit2(resolved, source, target);
+  }
+  function handleAnyOf(childSchema, source, target) {
+    const { anyOf } = childSchema;
+    if (!Array.isArray(anyOf)) {
+      return target;
+    }
+    if (source === void 0 || Array.isArray(source) && source.length === 0 || isObject(source) && Object.keys(source).length === 0) {
+      let result = target;
+      for (const branch of anyOf) {
+        result = omit2(branch, source, result);
+      }
+      return result;
+    }
+    return handleOneOf(anyOf, childSchema, source, target);
+  }
+  function handleDependencies(childSchema, source, target) {
+    const { dependencies } = childSchema;
+    if (dependencies === void 0 || !isObjectValue(source)) {
+      return target;
+    }
+    let result = target;
+    for (const [key, deps] of Object.entries(dependencies)) {
+      if (key in source && !Array.isArray(deps)) {
+        result = omit2(deps, source, result);
+      }
+    }
+    return result;
+  }
+  function omit2(schemaDef, source, target) {
+    if (source === void 0 || schemaDef === false) {
+      return void 0;
+    }
+    if (schemaDef === true || isEmpty_default(schemaDef)) {
+      return source;
+    }
+    let localSchema = schemaDef;
+    const { $ref: ref, allOf } = localSchema;
+    if (ref !== void 0) {
+      return omit2(findSchemaDefinition(ref, rootSchema), source, target);
+    }
+    if (allOf) {
+      localSchema = doMergeAllOf(localSchema, experimental_customMergeAllOf);
+    }
+    let filtered = handleAnyOf(localSchema, source, handleOneOf(localSchema.oneOf, localSchema, source, target));
+    const type = getSchemaType(localSchema);
+    if (type === "object") {
+      if (!isObjectValue(source)) {
+        return void 0;
+      }
+      filtered = handleObject(localSchema, source, isObjectValue(filtered) ? filtered : {});
+    } else if (type === "array") {
+      if (!Array.isArray(source)) {
+        return void 0;
+      }
+      filtered = handleArray(localSchema, source, Array.isArray(filtered) ? filtered : []);
+    } else if (filtered === void 0) {
+      filtered = source;
+    }
+    return handleDependencies(localSchema, source, handleConditions(localSchema, source, filtered));
+  }
+  return omit2(schema, formData);
+}
+
+// node_modules/@rjsf/utils/lib/schema/sanitizeDataForNewSchema.js
+var NO_VALUE = /* @__PURE__ */ Symbol("no Value");
+function enumValuesForSchema(schema) {
+  if (Array.isArray(schema.enum)) {
+    return schema.enum;
+  }
+  const options = schema.oneOf || schema.anyOf;
+  if (!Array.isArray(options)) {
+    return void 0;
+  }
+  const values2 = options.map((option) => {
+    if (CONST_KEY in option) {
+      return option[CONST_KEY];
+    }
+    return Array.isArray(option.enum) && option.enum.length === 1 ? option.enum[0] : NO_VALUE;
+  }).filter((value) => value !== NO_VALUE);
+  return values2.length > 0 ? values2 : void 0;
+}
+function replacementForInvalidEnumValue(schema, formValue) {
+  const enumValues = enumValuesForSchema(schema);
+  if (!enumValues || enumValues.some((value) => deepEquals_default(value, formValue))) {
+    return NO_VALUE;
+  }
+  const defaultValue = get_default(schema, DEFAULT_KEY, NO_VALUE);
+  if (defaultValue !== NO_VALUE && enumValues.some((value) => deepEquals_default(value, defaultValue))) {
+    return defaultValue;
+  }
+  return enumValues.length === 1 ? enumValues[0] : void 0;
+}
+function sanitizeDataForNewSchema(validator, rootSchema, newSchema, oldSchema, data = {}, experimental_customMergeAllOf) {
+  let newFormData;
+  if (has_default(newSchema, PROPERTIES_KEY)) {
+    const removeOldSchemaData = {};
+    if (has_default(oldSchema, PROPERTIES_KEY)) {
+      const properties = get_default(oldSchema, PROPERTIES_KEY, {});
+      Object.keys(properties).forEach((key) => {
+        if (has_default(data, key)) {
+          removeOldSchemaData[key] = void 0;
+        }
+      });
+    }
+    const keys3 = Object.keys(get_default(newSchema, PROPERTIES_KEY, {}));
+    const nestedData = {};
+    keys3.forEach((key) => {
+      const formValue = get_default(data, key);
+      let oldKeyedSchema = get_default(oldSchema, [PROPERTIES_KEY, key], {});
+      let newKeyedSchema = get_default(newSchema, [PROPERTIES_KEY, key], {});
+      if (has_default(oldKeyedSchema, REF_KEY)) {
+        oldKeyedSchema = retrieveSchema(validator, oldKeyedSchema, rootSchema, formValue, experimental_customMergeAllOf);
+      }
+      if (has_default(newKeyedSchema, REF_KEY)) {
+        newKeyedSchema = retrieveSchema(validator, newKeyedSchema, rootSchema, formValue, experimental_customMergeAllOf);
+      }
+      const oldSchemaTypeForKey = get_default(oldKeyedSchema, "type");
+      const newSchemaTypeForKey = get_default(newKeyedSchema, "type");
+      if (!oldSchemaTypeForKey || oldSchemaTypeForKey === newSchemaTypeForKey) {
+        if (has_default(removeOldSchemaData, key)) {
+          delete removeOldSchemaData[key];
+        }
+        if (newSchemaTypeForKey === "object" || newSchemaTypeForKey === "array" && Array.isArray(formValue)) {
+          const itemData = sanitizeDataForNewSchema(validator, rootSchema, newKeyedSchema, oldKeyedSchema, formValue, experimental_customMergeAllOf);
+          if (itemData !== void 0 || newSchemaTypeForKey === "array") {
+            nestedData[key] = itemData;
+          }
+        } else {
+          const newOptionDefault = get_default(newKeyedSchema, DEFAULT_KEY, NO_VALUE);
+          const oldOptionDefault = get_default(oldKeyedSchema, DEFAULT_KEY, NO_VALUE);
+          if (newOptionDefault !== NO_VALUE && newOptionDefault !== formValue) {
+            if (oldOptionDefault === formValue) {
+              removeOldSchemaData[key] = newOptionDefault;
+            } else if (get_default(newKeyedSchema, "readOnly") === true) {
+              removeOldSchemaData[key] = void 0;
+            }
+          }
+          const newOptionConst = get_default(newKeyedSchema, CONST_KEY, NO_VALUE);
+          const oldOptionConst = get_default(oldKeyedSchema, CONST_KEY, NO_VALUE);
+          if (newOptionConst !== NO_VALUE && newOptionConst !== formValue) {
+            removeOldSchemaData[key] = oldOptionConst === formValue ? newOptionConst : void 0;
+          }
+          if (has_default(data, key)) {
+            const enumReplacement = replacementForInvalidEnumValue(newKeyedSchema, formValue);
+            if (enumReplacement !== NO_VALUE) {
+              removeOldSchemaData[key] = enumReplacement;
+            }
+          }
+        }
+      }
+    });
+    newFormData = {
+      ...typeof data === "string" || Array.isArray(data) ? void 0 : data,
+      ...removeOldSchemaData,
+      ...nestedData
+    };
+  } else if (get_default(oldSchema, "type") === "array" && get_default(newSchema, "type") === "array" && Array.isArray(data)) {
+    let oldSchemaItems = get_default(oldSchema, "items");
+    let newSchemaItems = get_default(newSchema, "items");
+    if (typeof oldSchemaItems === "object" && typeof newSchemaItems === "object" && !Array.isArray(oldSchemaItems) && !Array.isArray(newSchemaItems)) {
+      if (has_default(oldSchemaItems, REF_KEY)) {
+        oldSchemaItems = retrieveSchema(validator, oldSchemaItems, rootSchema, data, experimental_customMergeAllOf);
+      }
+      if (has_default(newSchemaItems, REF_KEY)) {
+        newSchemaItems = retrieveSchema(validator, newSchemaItems, rootSchema, data, experimental_customMergeAllOf);
+      }
+      const oldSchemaType = get_default(oldSchemaItems, "type");
+      const newSchemaType = get_default(newSchemaItems, "type");
+      if (!oldSchemaType || oldSchemaType === newSchemaType) {
+        const maxItems = get_default(newSchema, "maxItems", -1);
+        if (newSchemaType === "object") {
+          newFormData = data.reduce((newValue, aValue) => {
+            const itemValue = sanitizeDataForNewSchema(validator, rootSchema, newSchemaItems, oldSchemaItems, aValue, experimental_customMergeAllOf);
+            if (itemValue !== void 0 && (maxItems < 0 || newValue.length < maxItems)) {
+              newValue.push(itemValue);
+            }
+            return newValue;
+          }, []);
+        } else {
+          const newItemEnumValues = enumValuesForSchema(newSchemaItems);
+          const filteredData = newItemEnumValues ? data.filter((item) => newItemEnumValues.some((v3) => deepEquals_default(v3, item))) : data;
+          newFormData = maxItems > 0 && filteredData.length > maxItems ? filteredData.slice(0, maxItems) : filteredData;
+        }
+      }
+    } else if (typeof oldSchemaItems === "boolean" && typeof newSchemaItems === "boolean" && oldSchemaItems === newSchemaItems) {
+      newFormData = data;
+    }
+  }
+  return newFormData;
+}
+
+// node_modules/@rjsf/utils/lib/schema/toPathSchema.js
+function toPathSchemaInternal(validator, schema, name, rootSchema, formData, _recurseList = [], experimental_customMergeAllOf) {
+  if (REF_KEY in schema || DEPENDENCIES_KEY in schema || ALL_OF_KEY in schema || IF_KEY in schema) {
+    const innerSchema = retrieveSchema(validator, schema, rootSchema, formData, experimental_customMergeAllOf);
+    const sameSchemaIndex = _recurseList.findIndex((item) => deepEquals_default(item, innerSchema));
+    if (sameSchemaIndex === -1) {
+      return toPathSchemaInternal(validator, innerSchema, name, rootSchema, formData, _recurseList.concat(innerSchema), experimental_customMergeAllOf);
+    }
+  }
+  let pathSchema = {
+    [NAME_KEY]: name.replace(/^\./, "")
+  };
+  if (ONE_OF_KEY in schema || ANY_OF_KEY in schema) {
+    const xxxOf = ONE_OF_KEY in schema ? schema.oneOf : schema.anyOf;
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    const index = getClosestMatchingOption(validator, rootSchema, formData, xxxOf, 0, discriminator, experimental_customMergeAllOf);
+    const innerSchema = xxxOf[index];
+    pathSchema = {
+      ...pathSchema,
+      ...toPathSchemaInternal(validator, innerSchema, name, rootSchema, formData, _recurseList, experimental_customMergeAllOf)
+    };
+  }
+  if (ADDITIONAL_PROPERTIES_KEY in schema && schema[ADDITIONAL_PROPERTIES_KEY] !== false) {
+    set_default(pathSchema, RJSF_ADDITIONAL_PROPERTIES_FLAG, true);
+    const additionalSchema = isObject_default(schema[ADDITIONAL_PROPERTIES_KEY]) ? schema[ADDITIONAL_PROPERTIES_KEY] : {};
+    const definedProperties = get_default(schema, PROPERTIES_KEY, {});
+    for (const key of Object.keys(formData !== null && formData !== void 0 ? formData : {})) {
+      if (!(key in definedProperties)) {
+        pathSchema[key] = toPathSchemaInternal(validator, additionalSchema, `${name}.${key}`, rootSchema, get_default(formData, [key]), _recurseList, experimental_customMergeAllOf);
+      }
+    }
+  }
+  if (ITEMS_KEY in schema && Array.isArray(formData)) {
+    const { items: schemaItems, additionalItems: schemaAdditionalItems } = schema;
+    if (Array.isArray(schemaItems)) {
+      formData.forEach((element, i2) => {
+        if (schemaItems[i2]) {
+          pathSchema[i2] = toPathSchemaInternal(validator, schemaItems[i2], `${name}.${i2}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
+        } else if (schemaAdditionalItems) {
+          pathSchema[i2] = toPathSchemaInternal(validator, schemaAdditionalItems, `${name}.${i2}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
+        } else {
+          console.warn(`Unable to generate path schema for "${name}.${i2}". No schema defined for it`);
+        }
+      });
+    } else {
+      formData.forEach((element, i2) => {
+        pathSchema[i2] = toPathSchemaInternal(validator, schemaItems, `${name}.${i2}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
+      });
+    }
+  } else if (PROPERTIES_KEY in schema) {
+    for (const property2 in schema.properties) {
+      const field = get_default(schema, [PROPERTIES_KEY, property2], {});
+      pathSchema[property2] = toPathSchemaInternal(
+        validator,
+        field,
+        `${name}.${property2}`,
+        rootSchema,
+        // It's possible that formData is not an object -- this can happen if an
+        // array item has just been added, but not populated with data yet
+        get_default(formData, [property2]),
+        _recurseList,
+        experimental_customMergeAllOf
+      );
+    }
+  }
+  return pathSchema;
+}
+function toPathSchema(validator, schema, name = "", rootSchema, formData, experimental_customMergeAllOf) {
+  return toPathSchemaInternal(validator, schema, name, rootSchema, formData, void 0, experimental_customMergeAllOf);
+}
+
+// node_modules/@rjsf/utils/lib/createSchemaUtils.js
+var SchemaUtils = class {
+  /** Constructs the `SchemaUtils` instance with the given `validator` and `rootSchema` stored as instance variables
+   *
+   * @param validator - An implementation of the `ValidatorType` interface that will be forwarded to all the APIs
+   * @param rootSchema - The root schema that will be forwarded to all the APIs
+   * @param experimental_defaultFormStateBehavior - Configuration flags to allow users to override default form state behavior
+   * @param [experimental_customMergeAllOf] - Optional function that allows for custom merging of `allOf` schemas
+   */
+  constructor(validator, rootSchema, experimental_defaultFormStateBehavior, experimental_customMergeAllOf) {
+    if (rootSchema && rootSchema[SCHEMA_KEY] === JSON_SCHEMA_DRAFT_2020_12) {
+      this.rootSchema = makeAllReferencesAbsolute(rootSchema, get_default(rootSchema, ID_KEY, "#"));
+    } else {
+      this.rootSchema = rootSchema;
+    }
+    this.validator = validator;
+    this.experimental_defaultFormStateBehavior = experimental_defaultFormStateBehavior;
+    this.experimental_customMergeAllOf = experimental_customMergeAllOf;
+  }
+  /** Returns the `rootSchema` in the `SchemaUtilsType`
+   *
+   * @returns - The `rootSchema`
+   */
+  getRootSchema() {
+    return this.rootSchema;
+  }
+  /** Returns the `ValidatorType` in the `SchemaUtilsType`
+   *
+   * @returns - The `ValidatorType`
+   */
+  getValidator() {
+    return this.validator;
+  }
+  /** Determines whether either the `validator` and `rootSchema` differ from the ones associated with this instance of
+   * the `SchemaUtilsType`. If either `validator` or `rootSchema` are falsy, then return false to prevent the creation
+   * of a new `SchemaUtilsType` with incomplete properties.
+   *
+   * @param validator - An implementation of the `ValidatorType` interface that will be compared against the current one
+   * @param rootSchema - The root schema that will be compared against the current one
+   * @param [experimental_defaultFormStateBehavior] Optional configuration object, if provided, allows users to override default form state behavior
+   * @param [experimental_customMergeAllOf] - Optional function that allows for custom merging of `allOf` schemas
+   * @returns - True if the `SchemaUtilsType` differs from the given `validator` or `rootSchema`
+   */
+  doesSchemaUtilsDiffer(validator, rootSchema, experimental_defaultFormStateBehavior = {}, experimental_customMergeAllOf) {
+    if (!validator || !rootSchema) {
+      return false;
+    }
+    return this.validator !== validator || !deepEquals_default(this.rootSchema, rootSchema) || !deepEquals_default(this.experimental_defaultFormStateBehavior, experimental_defaultFormStateBehavior) || this.experimental_customMergeAllOf !== experimental_customMergeAllOf;
+  }
+  /** Finds the field specified by the `path` within the root or recursed `schema`. If there is no field for the specified
+   * `path`, then the default `{ field: undefined, isRequired: undefined }` is returned. It determines whether a leaf
+   * field is in the `required` list for its parent and if so, it is marked as required on return.
+   *
+   * @param schema - The current node within the JSON schema
+   * @param path - The remaining keys in the path to the desired field
+   * @param [formData] - The form data that is used to determine which oneOf option
+   * @returns - An object that contains the field and its required state. If no field can be found then
+   *            `{ field: undefined, isRequired: undefined }` is returned.
+   */
+  findFieldInSchema(schema, path, formData) {
+    return findFieldInSchema(this.validator, this.rootSchema, schema, path, formData, this.experimental_customMergeAllOf);
+  }
+  /** Finds the oneOf option inside the `schema['any/oneOf']` list which has the `properties[selectorField].default` that
+   * matches the `formData[selectorField]` value. For the purposes of this function, `selectorField` is either
+   * `schema.discriminator.propertyName` or `fallbackField`.
+   *
+   * @param schema - The schema element in which to search for the selected oneOf option
+   * @param fallbackField - The field to use as a backup selector field if the schema does not have a required field
+   * @param xxx - Either `oneOf` or `anyOf`, defines which value is being sought
+   * @param [formData={}] - The form data that is used to determine which oneOf option
+   * @returns - The anyOf/oneOf option that matches the selector field in the schema or undefined if nothing is selected
+   */
+  findSelectedOptionInXxxOf(schema, fallbackField, xxx, formData) {
+    return findSelectedOptionInXxxOf(this.validator, this.rootSchema, schema, fallbackField, xxx, formData, this.experimental_customMergeAllOf);
+  }
+  /** Returns the superset of `formData` that includes the given set updated to include any missing fields that have
+   * computed to have defaults provided in the `schema`.
+   *
+   * @param schema - The schema for which the default state is desired
+   * @param [formData] - The current formData, if any, onto which to provide any missing defaults
+   * @param [includeUndefinedValues=false] - Optional flag, if true, cause undefined values to be added as defaults.
+   *          If "excludeObjectChildren", pass `includeUndefinedValues` as false when computing defaults for any nested
+   *          object properties.
+   * @param initialDefaultsGenerated - Indicates whether or not initial defaults have been generated
+   * @returns - The resulting `formData` with all the defaults provided
+   */
+  getDefaultFormState(schema, formData, includeUndefinedValues = false, initialDefaultsGenerated) {
+    return getDefaultFormState(this.validator, schema, formData, this.rootSchema, includeUndefinedValues, this.experimental_defaultFormStateBehavior, this.experimental_customMergeAllOf, initialDefaultsGenerated);
+  }
+  /** Determines whether the combination of `schema` and `uiSchema` properties indicates that the label for the `schema`
+   * should be displayed in a UI.
+   *
+   * @param schema - The schema for which the display label flag is desired
+   * @param [uiSchema] - The UI schema from which to derive potentially displayable information
+   * @param [globalOptions={}] - The optional Global UI Schema from which to get any fallback `xxx` options
+   * @returns - True if the label should be displayed or false if it should not
+   */
+  getDisplayLabel(schema, uiSchema, globalOptions) {
+    return getDisplayLabel(this.validator, schema, uiSchema, this.rootSchema, globalOptions, this.experimental_customMergeAllOf);
+  }
+  /** Determines which of the given `options` provided most closely matches the `formData`.
+   * Returns the index of the option that is valid and is the closest match, or 0 if there is no match.
+   *
+   * The closest match is determined using the number of matching properties, and more heavily favors options with
+   * matching readOnly, default, or const values.
+   *
+   * @param formData - The form data associated with the schema
+   * @param options - The list of options that can be selected from
+   * @param [selectedOption] - The index of the currently selected option, defaulted to -1 if not specified
+   * @param [discriminatorField] - The optional name of the field within the options object whose value is used to
+   *          determine which option is selected
+   * @returns - The index of the option that is the closest match to the `formData` or the `selectedOption` if no match
+   */
+  getClosestMatchingOption(formData, options, selectedOption, discriminatorField) {
+    return getClosestMatchingOption(this.validator, this.rootSchema, formData, options, selectedOption, discriminatorField, this.experimental_customMergeAllOf);
+  }
+  /** Given the `formData` and list of `options`, attempts to find the index of the first option that matches the data.
+   * Always returns the first option if there is nothing that matches.
+   *
+   * @param formData - The current formData, if any, used to figure out a match
+   * @param options - The list of options to find a matching options from
+   * @param [discriminatorField] - The optional name of the field within the options object whose value is used to
+   *          determine which option is selected
+   * @returns - The firstindex of the matched option or 0 if none is available
+   */
+  getFirstMatchingOption(formData, options, discriminatorField) {
+    return getFirstMatchingOption(this.validator, formData, options, this.rootSchema, discriminatorField);
+  }
+  getFromSchema(schema, path, defaultValue) {
+    return getFromSchema(
+      this.validator,
+      this.rootSchema,
+      schema,
+      path,
+      // @ts-expect-error TS2769: No overload matches this call
+      defaultValue,
+      this.experimental_customMergeAllOf
+    );
+  }
+  /** Checks to see if the `schema` and `uiSchema` combination represents an array of files
+   *
+   * @param schema - The schema for which check for array of files flag is desired
+   * @param [uiSchema] - The UI schema from which to check the widget
+   * @returns - True if schema/uiSchema contains an array of files, otherwise false
+   */
+  isFilesArray(schema, uiSchema) {
+    return isFilesArray(this.validator, schema, uiSchema, this.rootSchema, this.experimental_customMergeAllOf);
+  }
+  /** Checks to see if the `schema` combination represents a multi-select
+   *
+   * @param schema - The schema for which check for a multi-select flag is desired
+   * @returns - True if schema contains a multi-select, otherwise false
+   */
+  isMultiSelect(schema) {
+    return isMultiSelect(this.validator, schema, this.rootSchema, this.experimental_customMergeAllOf);
+  }
+  /** Checks to see if the `schema` combination represents a select
+   *
+   * @param schema - The schema for which check for a select flag is desired
+   * @returns - True if schema contains a select, otherwise false
+   */
+  isSelect(schema) {
+    return isSelect(this.validator, schema, this.rootSchema, this.experimental_customMergeAllOf);
+  }
+  /**
+   * The function takes a `schema` and `formData` and returns a copy of the formData with any fields not defined in the schema removed.
+   * This is useful for ensuring that only data that is relevant to the schema is preserved. Objects with `additionalProperties`
+   * keyword set to `true` will not have their extra fields removed.
+   *
+   * @param schema - The schema to use for filtering the `formData`
+   * @param [formData] - The formData to filter
+   * @returns The new form data, with any fields not defined in the schema removed
+   */
+  omitExtraData(schema, formData) {
+    return omitExtraData(this.validator, schema, this.rootSchema, formData);
+  }
+  /** Retrieves an expanded schema that has had all of its conditions, additional properties, references and
+   * dependencies resolved and merged into the `schema` given a `rawFormData` that is used to do the potentially
+   * recursive resolution.
+   *
+   * @param schema - The schema for which retrieving a schema is desired
+   * @param [rawFormData] - The current formData, if any, to assist retrieving a schema
+   * @param [resolveAnyOfOrOneOfRefs] - Optional flag indicating whether to resolved refs in anyOf/oneOf lists
+   * @returns - The schema having its conditions, additional properties, references and dependencies resolved
+   */
+  retrieveSchema(schema, rawFormData, resolveAnyOfOrOneOfRefs) {
+    return retrieveSchema(this.validator, schema, this.rootSchema, rawFormData, this.experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs);
+  }
+  /** Sanitize the `data` associated with the `oldSchema` so it is considered appropriate for the `newSchema`. If the
+   * new schema does not contain any properties, then `undefined` is returned to clear all the form data. Due to the
+   * nature of schemas, this sanitization happens recursively for nested objects of data. Also, any properties in the
+   * old schemas that are non-existent in the new schema are set to `undefined`.
+   *
+   * @param [newSchema] - The new schema for which the data is being sanitized
+   * @param [oldSchema] - The old schema from which the data originated
+   * @param [data={}] - The form data associated with the schema, defaulting to an empty object when undefined
+   * @returns - The new form data, with all the fields uniquely associated with the old schema set
+   *      to `undefined`. Will return `undefined` if the new schema is not an object containing properties.
+   */
+  sanitizeDataForNewSchema(newSchema, oldSchema, data) {
+    return sanitizeDataForNewSchema(this.validator, this.rootSchema, newSchema, oldSchema, data, this.experimental_customMergeAllOf);
+  }
+  /** Generates an `PathSchema` object for the `schema`, recursively
+   *
+   * @param schema - The schema for which the display label flag is desired
+   * @param [name] - The base name for the schema
+   * @param [formData] - The current formData, if any, onto which to provide any missing defaults
+   * @returns - The `PathSchema` object for the `schema`
+   */
+  // oxlint-disable-next-line typescript/no-deprecated
+  toPathSchema(schema, name, formData) {
+    return toPathSchema(this.validator, schema, name, this.rootSchema, formData, this.experimental_customMergeAllOf);
+  }
+};
+function createSchemaUtils(validator, rootSchema, experimental_defaultFormStateBehavior = {}, experimental_customMergeAllOf) {
+  return new SchemaUtils(validator, rootSchema, experimental_defaultFormStateBehavior, experimental_customMergeAllOf);
+}
+
+// node_modules/@rjsf/utils/lib/dataURItoBlob.js
+function dataURItoBlob(dataURILike) {
+  var _a;
+  if (!dataURILike.includes("data:")) {
+    throw new Error("File is invalid: URI must be a dataURI");
+  }
+  const dataURI = dataURILike.slice(5);
+  const splitted = dataURI.split(";base64,");
+  if (splitted.length !== 2) {
+    throw new Error("File is invalid: dataURI must be base64");
+  }
+  const [media, base64] = splitted;
+  const [mime, ...mediaparams] = media.split(";");
+  const type = mime || "";
+  const name = decodeURI(
+    // parse the parameters into key-value pairs, find a key, and extract a value
+    // if no key is found, then the name is unknown
+    ((_a = mediaparams.map((param) => param.split("=")).find(([key]) => key === "name")) === null || _a === void 0 ? void 0 : _a[1]) || "unknown"
+  );
+  try {
+    const binary = atob(base64);
+    const array = new Array(binary.length);
+    for (let i2 = 0; i2 < binary.length; i2 += 1) {
+      array[i2] = binary.charCodeAt(i2);
+    }
+    const blob = new window.Blob([new Uint8Array(array)], { type });
+    return { blob, name };
+  } catch (error) {
+    throw new Error(`File is invalid: ${error.message}`);
+  }
+}
+
+// node_modules/@rjsf/utils/lib/pad.js
+function pad(num, width) {
+  let s2 = String(num);
+  while (s2.length < width) {
+    s2 = `0${s2}`;
+  }
+  return s2;
+}
+
+// node_modules/@rjsf/utils/lib/dateRangeOptions.js
+function dateRangeOptions(start, stop) {
+  const bothRelative = start <= 0 && stop <= 0;
+  const eitherNegative = start < 0 || stop < 0;
+  if (!bothRelative && eitherNegative) {
+    throw new Error(`Both start (${start}) and stop (${stop}) must both be <= 0 or > 0, got one of each`);
+  }
+  const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
+  const resolvedStart = bothRelative ? currentYear + start : start;
+  const resolvedStop = bothRelative ? currentYear + stop : stop;
+  if (resolvedStart > resolvedStop) {
+    return dateRangeOptions(stop, start).reverse();
+  }
+  const options = [];
+  for (let i2 = resolvedStart; i2 <= resolvedStop; i2 += 1) {
+    options.push({ value: i2, label: pad(i2, 2) });
+  }
+  return options;
+}
+
+// node_modules/@rjsf/utils/lib/replaceStringParameters.js
+function replaceStringParameters(inputString, params) {
+  let output = inputString;
+  if (Array.isArray(params)) {
+    const parts = output.split(/(%\d)/);
+    params.forEach((param, index) => {
+      const partIndex = parts.findIndex((part) => part === `%${index + 1}`);
+      if (partIndex >= 0) {
+        parts[partIndex] = param;
+      }
+    });
+    output = parts.join("");
+  }
+  return output;
+}
+
+// node_modules/@rjsf/utils/lib/englishStringTranslator.js
+function englishStringTranslator(stringToTranslate, params) {
+  return replaceStringParameters(stringToTranslate, params);
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionsValueForIndex.js
+function enumOptionsValueForIndex(valueIndex, allEnumOptions = [], emptyValue) {
+  if (Array.isArray(valueIndex)) {
+    return valueIndex.map((index2) => enumOptionsValueForIndex(index2, allEnumOptions)).filter((val) => val !== void 0);
+  }
+  const index = valueIndex === "" || valueIndex === null ? -1 : Number(valueIndex);
+  const option = allEnumOptions[index];
+  return option ? option.value : emptyValue;
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionsDeselectValue.js
+function enumOptionsDeselectValue(valueIndex, selected, allEnumOptions = []) {
+  const value = enumOptionsValueForIndex(valueIndex, allEnumOptions);
+  if (Array.isArray(selected)) {
+    return selected.filter((v3) => !deepEquals_default(v3, value));
+  }
+  return deepEquals_default(value, selected) ? void 0 : selected;
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionsIsSelected.js
+function enumOptionsIsSelected(value, selected) {
+  if (Array.isArray(selected)) {
+    return selected.some((sel) => deepEquals_default(sel, value));
+  }
+  return deepEquals_default(selected, value);
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionsIndexForValue.js
+function enumOptionsIndexForValue(value, allEnumOptions = [], multiple = false) {
+  const selectedIndexes = allEnumOptions.map((opt, index) => enumOptionsIsSelected(opt.value, value) ? String(index) : void 0).filter((opt) => typeof opt !== "undefined");
+  if (!multiple) {
+    return selectedIndexes[0];
+  }
+  return selectedIndexes;
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionSelectedValue.js
+function enumOptionSelectedValue(value, enumOptions, multiple, format = "indexed", emptyValue) {
+  const isEmpty2 = typeof value === "undefined" || multiple && Array.isArray(value) && value.length < 1 || !multiple && value === emptyValue;
+  if (isEmpty2) {
+    return emptyValue;
+  }
+  if (format === "realValue") {
+    return multiple ? value.map(String) : String(value);
+  }
+  const indexes = enumOptionsIndexForValue(value, enumOptions, multiple);
+  return typeof indexes === "undefined" ? emptyValue : indexes;
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionsSelectValue.js
+function enumOptionsSelectValue(valueIndex, selected, allEnumOptions = []) {
+  const value = enumOptionsValueForIndex(valueIndex, allEnumOptions);
+  if (!isNil_default(value)) {
+    const index = allEnumOptions.findIndex((opt) => value === opt.value);
+    const all = allEnumOptions.map(({ value: val }) => val);
+    const updated = selected.slice(0, index).concat(value, selected.slice(index));
+    return updated.sort((a2, b2) => Number(all.indexOf(a2) > all.indexOf(b2)));
+  }
+  return selected;
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionValueDecoder.js
+function decodeSingle(value, enumOptions, emptyValue) {
+  if (value === "" || !Array.isArray(enumOptions)) {
+    return emptyValue;
+  }
+  const match = enumOptions.find((opt) => String(opt.value) === value);
+  if (match) {
+    return match.value;
+  }
+  const index = Number(value);
+  if (!Number.isNaN(index) && index >= 0 && index < enumOptions.length) {
+    return enumOptions[index].value;
+  }
+  return emptyValue;
+}
+function enumOptionValueDecoder(value, enumOptions, format = "indexed", emptyValue) {
+  if (format !== "realValue") {
+    return enumOptionsValueForIndex(value, enumOptions, emptyValue);
+  }
+  if (Array.isArray(value)) {
+    return value.map((v3) => decodeSingle(v3, enumOptions, emptyValue));
+  }
+  return decodeSingle(value, enumOptions, emptyValue);
+}
+
+// node_modules/@rjsf/utils/lib/enumOptionValueEncoder.js
+function enumOptionValueEncoder(value, index, format = "indexed") {
+  if (format !== "realValue") {
+    return String(index);
+  }
+  if (isNil_default(value)) {
+    return "";
+  }
+  if (typeof value === "object") {
+    return String(index);
+  }
+  return String(value);
+}
+
+// node_modules/lodash-es/cloneDeep.js
+var CLONE_DEEP_FLAG3 = 1;
+var CLONE_SYMBOLS_FLAG3 = 4;
+function cloneDeep(value) {
+  return baseClone_default(value, CLONE_DEEP_FLAG3 | CLONE_SYMBOLS_FLAG3);
+}
+var cloneDeep_default = cloneDeep;
+
+// node_modules/lodash-es/setWith.js
+function setWith(object, path, value, customizer) {
+  customizer = typeof customizer == "function" ? customizer : void 0;
+  return object == null ? object : baseSet_default(object, path, value, customizer);
+}
+var setWith_default = setWith;
+
+// node_modules/@rjsf/utils/lib/ErrorSchemaBuilder.js
+var ErrorSchemaBuilder = class {
+  /** Construct an `ErrorSchemaBuilder` with an optional initial set of errors in an `ErrorSchema`.
+   *
+   * @param [initialSchema] - The optional set of initial errors, that will be cloned into the class
+   */
+  constructor(initialSchema) {
+    this.errorSchema = {};
+    this.resetAllErrors(initialSchema);
+  }
+  /** Returns the `ErrorSchema` that has been updated by the methods of the `ErrorSchemaBuilder`
+   */
+  get ErrorSchema() {
+    return this.errorSchema;
+  }
+  /** Will get an existing `ErrorSchema` at the specified `pathOfError` or create and return one.
+   *
+   * @param [pathOfError] - The optional path into the `ErrorSchema` at which to add the error(s)
+   * @returns - The error block for the given `pathOfError` or the root if not provided
+   * @private
+   */
+  getOrCreateErrorBlock(pathOfError) {
+    const hasPath2 = Array.isArray(pathOfError) && pathOfError.length > 0 || typeof pathOfError === "string";
+    let errorBlock = hasPath2 ? get_default(this.errorSchema, pathOfError) : this.errorSchema;
+    if (!errorBlock && pathOfError) {
+      errorBlock = {};
+      setWith_default(this.errorSchema, pathOfError, errorBlock, Object);
+    }
+    return errorBlock;
+  }
+  /** Resets all errors in the `ErrorSchemaBuilder` back to the `initialSchema` if provided, otherwise an empty set.
+   *
+   * @param [initialSchema] - The optional set of initial errors, that will be cloned into the class
+   * @returns - The `ErrorSchemaBuilder` object for chaining purposes
+   */
+  resetAllErrors(initialSchema) {
+    this.errorSchema = initialSchema ? cloneDeep_default(initialSchema) : {};
+    return this;
+  }
+  /** Adds the `errorOrList` to the list of errors in the `ErrorSchema` at either the root level or the location within
+   * the schema described by the `pathOfError`. For more information about how to specify the path see the
+   * [eslint lodash plugin docs](https://github.com/wix/eslint-plugin-lodash/blob/master/docs/rules/path-style.md).
+   *
+   * @param errorOrList - The error or list of errors to add into the `ErrorSchema`
+   * @param [pathOfError] - The optional path into the `ErrorSchema` at which to add the error(s)
+   * @returns - The `ErrorSchemaBuilder` object for chaining purposes
+   */
+  addErrors(errorOrList, pathOfError) {
+    const errorBlock = this.getOrCreateErrorBlock(pathOfError);
+    let errorsList = get_default(errorBlock, ERRORS_KEY);
+    if (!Array.isArray(errorsList)) {
+      errorsList = [];
+      errorBlock[ERRORS_KEY] = errorsList;
+    }
+    if (Array.isArray(errorOrList)) {
+      set_default(errorBlock, ERRORS_KEY, [.../* @__PURE__ */ new Set([...errorsList, ...errorOrList])]);
+    } else {
+      set_default(errorBlock, ERRORS_KEY, [.../* @__PURE__ */ new Set([...errorsList, errorOrList])]);
+    }
+    return this;
+  }
+  /** Sets/replaces the `errorOrList` as the error(s) in the `ErrorSchema` at either the root level or the location
+   * within the schema described by the `pathOfError`. For more information about how to specify the path see the
+   * [eslint lodash plugin docs](https://github.com/wix/eslint-plugin-lodash/blob/master/docs/rules/path-style.md).
+   *
+   * @param errorOrList - The error or list of errors to set into the `ErrorSchema`
+   * @param [pathOfError] - The optional path into the `ErrorSchema` at which to set the error(s)
+   * @returns - The `ErrorSchemaBuilder` object for chaining purposes
+   */
+  setErrors(errorOrList, pathOfError) {
+    const errorBlock = this.getOrCreateErrorBlock(pathOfError);
+    const listToAdd = Array.isArray(errorOrList) ? [.../* @__PURE__ */ new Set([...errorOrList])] : [errorOrList];
+    set_default(errorBlock, ERRORS_KEY, listToAdd);
+    return this;
+  }
+  /** Clears the error(s) in the `ErrorSchema` at either the root level or the location within the schema described by
+   * the `pathOfError`. For more information about how to specify the path see the
+   * [eslint lodash plugin docs](https://github.com/wix/eslint-plugin-lodash/blob/master/docs/rules/path-style.md).
+   *
+   * @param [pathOfError] - The optional path into the `ErrorSchema` at which to clear the error(s)
+   * @returns - The `ErrorSchemaBuilder` object for chaining purposes
+   */
+  clearErrors(pathOfError) {
+    const errorBlock = this.getOrCreateErrorBlock(pathOfError);
+    set_default(errorBlock, ERRORS_KEY, []);
+    return this;
+  }
+};
+
+// node_modules/lodash-es/_baseDifference.js
+var LARGE_ARRAY_SIZE3 = 200;
+function baseDifference(array, values2, iteratee, comparator) {
+  var index = -1, includes2 = arrayIncludes_default, isCommon = true, length = array.length, result = [], valuesLength = values2.length;
+  if (!length) {
+    return result;
+  }
+  if (iteratee) {
+    values2 = arrayMap_default(values2, baseUnary_default(iteratee));
+  }
+  if (comparator) {
+    includes2 = arrayIncludesWith_default;
+    isCommon = false;
+  } else if (values2.length >= LARGE_ARRAY_SIZE3) {
+    includes2 = cacheHas_default;
+    isCommon = false;
+    values2 = new SetCache_default(values2);
+  }
+  outer:
+    while (++index < length) {
+      var value = array[index], computed = iteratee == null ? value : iteratee(value);
+      value = comparator || value !== 0 ? value : 0;
+      if (isCommon && computed === computed) {
+        var valuesIndex = valuesLength;
+        while (valuesIndex--) {
+          if (values2[valuesIndex] === computed) {
+            continue outer;
+          }
+        }
+        result.push(value);
+      } else if (!includes2(values2, computed, comparator)) {
+        result.push(value);
+      }
+    }
+  return result;
+}
+var baseDifference_default = baseDifference;
+
+// node_modules/lodash-es/difference.js
+var difference = baseRest_default(function(array, values2) {
+  return isArrayLikeObject_default(array) ? baseDifference_default(array, baseFlatten_default(values2, 1, isArrayLikeObject_default, true)) : [];
+});
+var difference_default = difference;
+
+// node_modules/lodash-es/pickBy.js
+function pickBy(object, predicate) {
+  if (object == null) {
+    return {};
+  }
+  var props = arrayMap_default(getAllKeysIn_default(object), function(prop) {
+    return [prop];
+  });
+  predicate = baseIteratee_default(predicate);
+  return basePickBy_default(object, props, function(value, path) {
+    return predicate(value, path[0]);
+  });
+}
+var pickBy_default = pickBy;
+
+// node_modules/@rjsf/utils/lib/getChangedFields.js
+function getChangedFields(a2, b2) {
+  const aIsPlainObject = isPlainObject_default(a2);
+  const bIsPlainObject = isPlainObject_default(b2);
+  if (a2 === b2 || !aIsPlainObject && !bIsPlainObject) {
+    return [];
+  }
+  if (aIsPlainObject && !bIsPlainObject) {
+    return keys_default(a2);
+  }
+  if (!aIsPlainObject && bIsPlainObject) {
+    return keys_default(b2);
+  }
+  const unequalFields = keys_default(pickBy_default(a2, (value, key) => !deepEquals_default(value, get_default(b2, key))));
+  const diffFields = difference_default(keys_default(b2), keys_default(a2));
+  return [...unequalFields, ...diffFields];
+}
+
+// node_modules/@rjsf/utils/lib/getDateElementProps.js
+function getDateElementProps(date, time, yearRange = [1900, (/* @__PURE__ */ new Date()).getFullYear() + 2], format = "YMD") {
+  const { day, month, year, hour, minute, second } = date;
+  const dayObj = { type: "day", range: [1, 31], value: day };
+  const monthObj = { type: "month", range: [1, 12], value: month };
+  const yearObj = { type: "year", range: yearRange, value: year };
+  const dateElementProp = [];
+  switch (format) {
+    case "MDY":
+      dateElementProp.push(monthObj, dayObj, yearObj);
+      break;
+    case "DMY":
+      dateElementProp.push(dayObj, monthObj, yearObj);
+      break;
+    case "YMD":
+    default:
+      dateElementProp.push(yearObj, monthObj, dayObj);
+  }
+  if (time) {
+    dateElementProp.push({ type: "hour", range: [0, 23], value: hour }, { type: "minute", range: [0, 59], value: minute }, { type: "second", range: [0, 59], value: second });
+  }
+  return dateElementProp;
+}
+
+// node_modules/@rjsf/utils/lib/rangeSpec.js
+function rangeSpec(schema) {
+  const spec = {};
+  if (schema.multipleOf) {
+    spec.step = schema.multipleOf;
+  }
+  if (schema.minimum || schema.minimum === 0) {
+    spec.min = schema.minimum;
+  }
+  if (schema.maximum || schema.maximum === 0) {
+    spec.max = schema.maximum;
+  }
+  return spec;
+}
+
+// node_modules/@rjsf/utils/lib/getInputProps.js
+function getInputProps(schema, defaultType, options = {}, autoDefaultStepAny = true) {
+  const inputProps = {
+    type: defaultType || "text",
+    ...rangeSpec(schema)
+  };
+  if (options.inputType) {
+    inputProps.type = options.inputType;
+  } else if (!defaultType) {
+    if (schema.type === "number") {
+      inputProps.type = "number";
+      if (autoDefaultStepAny && inputProps.step === void 0) {
+        inputProps.step = "any";
+      }
+    } else if (schema.type === "integer") {
+      inputProps.type = "number";
+      if (inputProps.step === void 0) {
+        inputProps.step = 1;
+      }
+    }
+  }
+  if (["date", "datetime-local", "time", "week", "month"].includes(inputProps.type)) {
+    if (schema.formatMinimum !== void 0) {
+      inputProps.min = schema.formatMinimum;
+    }
+    if (schema.formatMaximum !== void 0) {
+      inputProps.max = schema.formatMaximum;
+    }
+  }
+  if (options.autocomplete) {
+    inputProps.autoComplete = options.autocomplete;
+  }
+  if (options.accept) {
+    inputProps.accept = options.accept;
+  }
+  return inputProps;
+}
+
+// node_modules/@rjsf/utils/lib/getOptionValueFormat.js
+function getOptionValueFormat(options) {
+  var _a;
+  return (_a = options === null || options === void 0 ? void 0 : options.optionValueFormat) !== null && _a !== void 0 ? _a : "indexed";
+}
+
+// node_modules/@rjsf/utils/lib/getSubmitButtonOptions.js
+var DEFAULT_OPTIONS = {
+  props: {
+    disabled: false
+  },
+  submitText: "Submit",
+  norender: false
+};
+function getSubmitButtonOptions(uiSchema = {}) {
+  const uiOptions = getUiOptions(uiSchema);
+  if (uiOptions && uiOptions[SUBMIT_BTN_OPTIONS_KEY]) {
+    const options = uiOptions[SUBMIT_BTN_OPTIONS_KEY];
+    return { ...DEFAULT_OPTIONS, ...options };
+  }
+  return DEFAULT_OPTIONS;
+}
+
+// node_modules/@rjsf/utils/lib/getTemplate.js
+function getTemplate(name, registry, uiOptions = {}) {
+  const { templates: templates2 } = registry;
+  if (name === "ButtonTemplates") {
+    return templates2[name];
+  }
+  if (Object.hasOwn(uiOptions, name) && typeof uiOptions[name] === "string" && Object.hasOwn(templates2, uiOptions[name])) {
+    const key = uiOptions[name];
+    return templates2[key];
+  }
+  return (
+    // Evaluating uiOptions[name] results in TS2590: Expression produces a union type that is too complex to represent
+    // To avoid that, we cast uiOptions to `any` before accessing the name field
+    uiOptions[name] || templates2[name]
+  );
+}
+
+// node_modules/lodash-es/uniqueId.js
+var idCounter = 0;
+function uniqueId(prefix) {
+  var id = ++idCounter;
+  return toString_default(prefix) + id;
+}
+var uniqueId_default = uniqueId;
+
+// node_modules/@rjsf/utils/lib/getTestIds.js
+function getTestIds() {
+  if (get_default(globalThis, "process.env.NODE_ENV") !== "test") {
+    return {};
+  }
+  const ids = /* @__PURE__ */ new Map();
+  return new Proxy({}, {
+    get(_obj, prop) {
+      if (!ids.has(prop)) {
+        ids.set(prop, uniqueId_default("test-id-"));
+      }
+      return ids.get(prop);
+    }
+  });
+}
+
+// node_modules/@rjsf/utils/lib/getWidget.js
+import { jsx as _jsx } from "react/jsx-runtime";
+import { createElement as createElement2 } from "react";
+var import_react_is = __toESM(require_react_is(), 1);
+var widgetMap = {
+  boolean: {
+    checkbox: "CheckboxWidget",
+    radio: "RadioWidget",
+    select: "SelectWidget",
+    hidden: "HiddenWidget"
+  },
+  string: {
+    text: "TextWidget",
+    password: "PasswordWidget",
+    email: "EmailWidget",
+    hostname: "TextWidget",
+    ipv4: "TextWidget",
+    ipv6: "TextWidget",
+    uri: "URLWidget",
+    "data-url": "FileWidget",
+    radio: "RadioWidget",
+    select: "SelectWidget",
+    textarea: "TextareaWidget",
+    hidden: "HiddenWidget",
+    date: "DateWidget",
+    datetime: "DateTimeWidget",
+    "date-time": "DateTimeWidget",
+    "alt-date": "AltDateWidget",
+    "alt-datetime": "AltDateTimeWidget",
+    time: "TimeWidget",
+    color: "ColorWidget",
+    file: "FileWidget"
+  },
+  number: {
+    text: "TextWidget",
+    select: "SelectWidget",
+    updown: "UpDownWidget",
+    range: "RangeWidget",
+    radio: "RadioWidget",
+    hidden: "HiddenWidget"
+  },
+  integer: {
+    text: "TextWidget",
+    select: "SelectWidget",
+    updown: "UpDownWidget",
+    range: "RangeWidget",
+    radio: "RadioWidget",
+    hidden: "HiddenWidget"
+  },
+  array: {
+    select: "SelectWidget",
+    checkboxes: "CheckboxesWidget",
+    files: "FileWidget",
+    hidden: "HiddenWidget"
+  }
+};
+function mergeWidgetOptions(AWidget) {
+  let MergedWidget = get_default(AWidget, "MergedWidget");
+  if (!MergedWidget) {
+    const defaultOptions = AWidget.defaultProps && AWidget.defaultProps.options || {};
+    MergedWidget = ({ options, ...props }) => _jsx(AWidget, { options: { ...defaultOptions, ...options }, ...props });
+    set_default(AWidget, "MergedWidget", MergedWidget);
+  }
+  return MergedWidget;
+}
+function getWidget(schema, widget, registeredWidgets = {}) {
+  const type = getSchemaType(schema);
+  if (typeof widget === "function" || widget && import_react_is.default.isForwardRef(createElement2(widget)) || import_react_is.default.isMemo(widget)) {
+    return mergeWidgetOptions(widget);
+  }
+  if (typeof widget !== "string") {
+    throw new Error(`Unsupported widget definition: ${typeof widget} in schema: ${JSON.stringify(schema)}`);
+  }
+  if (widget in registeredWidgets) {
+    const registeredWidget = registeredWidgets[widget];
+    return getWidget(schema, registeredWidget, registeredWidgets);
+  }
+  if (typeof type === "string") {
+    if (!(type in widgetMap)) {
+      throw new Error(`No widget for type '${type}' in schema: ${JSON.stringify(schema)}`);
+    }
+    if (widget in widgetMap[type]) {
+      const registeredWidget = registeredWidgets[widgetMap[type][widget]];
+      return getWidget(schema, registeredWidget, registeredWidgets);
+    }
+  }
+  throw new Error(`No widget '${widget}' for type '${type}' in schema: ${JSON.stringify(schema)}`);
+}
+
+// node_modules/@rjsf/utils/lib/hashForSchema.js
+function hashString(string) {
+  let hash = 0;
+  for (let i2 = 0; i2 < string.length; i2++) {
+    const chr = string.charCodeAt(i2);
+    hash = (hash << 5) - hash + chr;
+    hash &= hash;
+  }
+  return hash.toString(16);
+}
+function sortedJSONStringify(object) {
+  const allKeys = /* @__PURE__ */ new Set();
+  JSON.stringify(object, (key, value) => {
+    allKeys.add(key);
+    return value;
+  });
+  return JSON.stringify(object, Array.from(allKeys).sort());
+}
+function hashObject(object) {
+  return hashString(sortedJSONStringify(object));
+}
+function hashForSchema(schema) {
+  return hashObject(schema);
+}
+
+// node_modules/@rjsf/utils/lib/hasWidget.js
+function hasWidget(schema, widget, registeredWidgets = {}) {
+  try {
+    getWidget(schema, widget, registeredWidgets);
+    return true;
+  } catch (e) {
+    const err = e;
+    if (err.message && (err.message.startsWith("No widget") || err.message.startsWith("Unsupported widget"))) {
+      return false;
+    }
+    throw e;
+  }
+}
+
+// node_modules/@rjsf/utils/lib/idGenerators.js
+function idGenerator(id, suffix) {
+  const theId = isString_default(id) ? id : id[ID_KEY];
+  return `${theId}__${suffix}`;
+}
+function descriptionId(id) {
+  return idGenerator(id, "description");
+}
+function errorId(id) {
+  return idGenerator(id, "error");
+}
+function examplesId(id) {
+  return idGenerator(id, "examples");
+}
+function helpId(id) {
+  return idGenerator(id, "help");
+}
+function titleId(id) {
+  return idGenerator(id, "title");
+}
+function ariaDescribedByIds(id, includeExamples = false) {
+  const examples = includeExamples ? ` ${examplesId(id)}` : "";
+  return `${errorId(id)} ${descriptionId(id)} ${helpId(id)}${examples}`;
+}
+function optionId(id, optionIndex) {
+  return `${id}-${optionIndex}`;
+}
+function buttonId(id, btn) {
+  return idGenerator(id, btn);
+}
+function optionalControlsId(id, element) {
+  return idGenerator(id, `optional${element}`);
+}
+
+// node_modules/@rjsf/utils/lib/isFormDataAvailable.js
+function isFormDataAvailable(formData) {
+  return !isNil_default(formData) && (!isObject_default(formData) || Array.isArray(formData) || !isEmpty_default(formData));
+}
+
+// node_modules/@rjsf/utils/lib/isRootSchema.js
+function isRootSchema(registry, schemaToCompare) {
+  const { rootSchema, schemaUtils } = registry;
+  if (deepEquals_default(schemaToCompare, rootSchema)) {
+    return true;
+  }
+  if (REF_KEY in rootSchema) {
+    const resolvedSchema = schemaUtils.retrieveSchema(rootSchema);
+    return deepEquals_default(schemaToCompare, omit_default(resolvedSchema, RJSF_REF_KEY));
+  }
+  return false;
+}
+
+// node_modules/@rjsf/utils/lib/labelValue.js
+function labelValue(label, hideLabel, fallback) {
+  return hideLabel ? fallback : label;
+}
+
+// node_modules/@rjsf/utils/lib/localToUTC.js
+function localToUTC(dateString) {
+  return dateString ? new Date(dateString).toJSON() : void 0;
+}
+
+// node_modules/@rjsf/utils/lib/lookupFromFormContext.js
+function lookupFromFormContext(regOrFc, toLookup, fallback) {
+  const lookupPath = [LOOKUP_MAP_NAME];
+  if (has_default(regOrFc, FORM_CONTEXT_NAME)) {
+    lookupPath.unshift(FORM_CONTEXT_NAME);
+  }
+  return get_default(regOrFc, [...lookupPath, toLookup], fallback);
+}
+
+// node_modules/@rjsf/utils/lib/orderProperties.js
+function orderProperties(properties, order) {
+  if (!Array.isArray(order)) {
+    return properties;
+  }
+  const arrayToHash = (arr) => arr.reduce((acc, curr) => {
+    acc[curr] = true;
+    return acc;
+  }, {});
+  const errorPropList = (arr) => arr.length > 1 ? `properties '${arr.join("', '")}'` : `property '${arr[0]}'`;
+  const propertyHash = arrayToHash(properties);
+  const orderFiltered = order.filter((prop) => prop === "*" || propertyHash[prop]);
+  const orderHash = arrayToHash(orderFiltered);
+  const rest = properties.filter((prop) => !orderHash[prop]);
+  const restIndex = orderFiltered.indexOf("*");
+  if (restIndex === -1) {
+    if (rest.length) {
+      throw new Error(`uiSchema order list does not contain ${errorPropList(rest)}`);
+    }
+    return orderFiltered;
+  }
+  if (restIndex !== orderFiltered.lastIndexOf("*")) {
+    throw new Error("uiSchema order list contains more than one wildcard item");
+  }
+  const complete = [...orderFiltered];
+  complete.splice(restIndex, 1, ...rest);
+  return complete;
+}
+
+// node_modules/@rjsf/utils/lib/parseDateString.js
+function parseDateString(dateString, includeTime = true) {
+  if (!dateString) {
+    return {
+      year: -1,
+      month: -1,
+      day: -1,
+      hour: includeTime ? -1 : 0,
+      minute: includeTime ? -1 : 0,
+      second: includeTime ? -1 : 0
+    };
+  }
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Unable to parse date ${dateString}`);
+  }
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    // oh you, javascript.
+    day: date.getUTCDate(),
+    hour: includeTime ? date.getUTCHours() : 0,
+    minute: includeTime ? date.getUTCMinutes() : 0,
+    second: includeTime ? date.getUTCSeconds() : 0
+  };
+}
+
+// node_modules/@rjsf/utils/lib/resolveUiSchema.js
+function resolveUiSchema(schema, localUiSchema, registry) {
+  var _a, _b;
+  const ref = (_a = schema[RJSF_REF_KEY]) !== null && _a !== void 0 ? _a : schema[REF_KEY];
+  const definitions = registry.uiSchemaDefinitions;
+  const definitionUiSchema = ref && definitions ? definitions[ref] : void 0;
+  let result;
+  if (!definitionUiSchema) {
+    result = localUiSchema || {};
+  } else if (!localUiSchema || isEmpty_default(localUiSchema)) {
+    result = { ...definitionUiSchema };
+  } else {
+    result = mergeObjects(definitionUiSchema, localUiSchema);
+  }
+  if (definitions) {
+    let resolvedSchema = schema;
+    if (ref && schema[REF_KEY] && !schema[RJSF_REF_KEY]) {
+      try {
+        resolvedSchema = findSchemaDefinition(ref, registry.rootSchema);
+      } catch (e) {
+        console.warn("could not resolve $ref in resolveUiSchema:\n", e);
+        return result;
+      }
+    }
+    for (const keyword of [ONE_OF_KEY, ANY_OF_KEY]) {
+      const schemaOptions = resolvedSchema[keyword];
+      if (Array.isArray(schemaOptions) && schemaOptions.length > 0) {
+        const currentUiSchemaArray = result[keyword];
+        const uiSchemaArray = Array.isArray(currentUiSchemaArray) ? [...currentUiSchemaArray] : [];
+        let hasExpanded = false;
+        for (let i2 = 0; i2 < schemaOptions.length; i2++) {
+          const option = schemaOptions[i2];
+          const optionRef = (_b = option === null || option === void 0 ? void 0 : option[RJSF_REF_KEY]) !== null && _b !== void 0 ? _b : option === null || option === void 0 ? void 0 : option[REF_KEY];
+          if (optionRef && optionRef in definitions) {
+            const optionUiSchema = uiSchemaArray[i2] || {};
+            uiSchemaArray[i2] = mergeObjects(definitions[optionRef], optionUiSchema);
+            hasExpanded = true;
+          }
+        }
+        if (hasExpanded) {
+          result[keyword] = uiSchemaArray;
+        }
+      }
+    }
+  }
+  return result;
+}
+
+// node_modules/@rjsf/utils/lib/schemaRequiresTrueValue.js
+function schemaRequiresTrueValue(schema) {
+  if (schema.const) {
+    return true;
+  }
+  if (schema.enum && schema.enum.length === 1 && schema.enum[0] === true) {
+    return true;
+  }
+  if (schema.anyOf && schema.anyOf.length === 1) {
+    return schemaRequiresTrueValue(schema.anyOf[0]);
+  }
+  if (schema.oneOf && schema.oneOf.length === 1) {
+    return schemaRequiresTrueValue(schema.oneOf[0]);
+  }
+  if (schema.allOf) {
+    const schemaSome = (subSchema) => schemaRequiresTrueValue(subSchema);
+    return schema.allOf.some(schemaSome);
+  }
+  return false;
+}
+
+// node_modules/@rjsf/utils/lib/shallowEquals.js
+function shallowEquals(a2, b2) {
+  if (Object.is(a2, b2)) {
+    return true;
+  }
+  if (a2 == null || b2 == null) {
+    return false;
+  }
+  if (typeof a2 !== "object" || typeof b2 !== "object") {
+    return false;
+  }
+  const keysA = Object.keys(a2);
+  const keysB = Object.keys(b2);
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+  for (let i2 = 0; i2 < keysA.length; i2 += 1) {
+    const key = keysA[i2];
+    if (!Object.hasOwn(b2, key) || !Object.is(a2[key], b2[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// node_modules/@rjsf/utils/lib/shouldRender.js
+function shouldRender(component, nextProps, nextState, updateStrategy = "customDeep") {
+  if (updateStrategy === "always") {
+    return true;
+  }
+  if (updateStrategy === "shallow") {
+    const { props: props2, state: state2 } = component;
+    return !shallowEquals(props2, nextProps) || !shallowEquals(state2, nextState);
+  }
+  const { props, state } = component;
+  return !deepEquals_default(props, nextProps) || !deepEquals_default(state, nextState);
+}
+
+// node_modules/@rjsf/utils/lib/shouldRenderOptionalField.js
+function getSchemaTypesForXxxOf(schemas) {
+  const allTypes = uniq_default(schemas.map((s2) => isObject_default(s2) ? getSchemaType(s2) : void 0).flat().filter((t) => t !== void 0));
+  return allTypes.length === 1 ? allTypes[0] : allTypes;
+}
+function shouldRenderOptionalField(registry, schema, required, uiSchema) {
+  const { enableOptionalDataFieldForType = [] } = getUiOptions(uiSchema, registry.globalUiOptions);
+  let schemaType;
+  if (ANY_OF_KEY in schema && Array.isArray(schema[ANY_OF_KEY])) {
+    schemaType = getSchemaTypesForXxxOf(schema[ANY_OF_KEY]);
+  } else if (ONE_OF_KEY in schema && Array.isArray(schema[ONE_OF_KEY])) {
+    schemaType = getSchemaTypesForXxxOf(schema[ONE_OF_KEY]);
+  } else {
+    schemaType = getSchemaType(schema);
+  }
+  return !isRootSchema(registry, schema) && !required && !!schemaType && !Array.isArray(schemaType) && !!enableOptionalDataFieldForType.find((val) => val === schemaType);
+}
+
+// node_modules/@rjsf/utils/lib/toDateString.js
+function toDateString(dateObject, time = true) {
+  const { year, month, day, hour = 0, minute = 0, second = 0 } = dateObject;
+  const utcTime = Date.UTC(year, month - 1, day, hour, minute, second);
+  const datetime = new Date(utcTime).toJSON();
+  return time ? datetime : datetime.slice(0, 10);
+}
+
+// node_modules/@rjsf/utils/lib/toErrorList.js
+function toErrorList(errorSchema, fieldPath = []) {
+  if (!errorSchema) {
+    return [];
+  }
+  let errorList = [];
+  if (ERRORS_KEY in errorSchema) {
+    errorList = errorList.concat(errorSchema[ERRORS_KEY].map((message) => {
+      const property2 = `.${fieldPath.join(".")}`;
+      return {
+        property: property2,
+        message,
+        stack: `${property2} ${message}`
+      };
+    }));
+  }
+  return Object.keys(errorSchema).reduce((currentList, key) => {
+    if (key !== ERRORS_KEY) {
+      const childSchema = errorSchema[key];
+      if (isPlainObject_default(childSchema)) {
+        return currentList.concat(toErrorList(childSchema, [...fieldPath, key]));
+      }
+    }
+    return currentList;
+  }, errorList);
+}
+
+// node_modules/lodash-es/toPath.js
+function toPath(value) {
+  if (isArray_default(value)) {
+    return arrayMap_default(value, toKey_default);
+  }
+  return isSymbol_default(value) ? [value] : copyArray_default(stringToPath_default(toString_default(value)));
+}
+var toPath_default = toPath;
+
+// node_modules/@rjsf/utils/lib/toErrorSchema.js
+function toErrorSchema(errors) {
+  const builder = new ErrorSchemaBuilder();
+  if (errors.length) {
+    errors.forEach((error) => {
+      const { property: property2, message } = error;
+      const path = property2 === "." ? [] : toPath_default(property2);
+      if (path.length > 0 && path[0] === "") {
+        path.splice(0, 1);
+      }
+      if (message) {
+        builder.addErrors(message, path);
+      }
+    });
+  }
+  return builder.ErrorSchema;
+}
+
+// node_modules/@rjsf/utils/lib/toFieldPathId.js
+function toFieldPathId(fieldPath, globalFormOptions, parentPath, isMultiValue) {
+  const basePath = Array.isArray(parentPath) ? parentPath : parentPath === null || parentPath === void 0 ? void 0 : parentPath.path;
+  const childPath = fieldPath === "" ? [] : [fieldPath];
+  const path = basePath ? basePath.concat(...childPath) : childPath;
+  const id = [globalFormOptions.idPrefix, ...path].join(globalFormOptions.idSeparator);
+  let name;
+  if (globalFormOptions.nameGenerator && path.length > 0) {
+    name = globalFormOptions.nameGenerator(path, globalFormOptions.idPrefix, isMultiValue);
+  }
+  return { path, [ID_KEY]: id, ...name !== void 0 && { name } };
+}
+
+// node_modules/@rjsf/utils/lib/unwrapErrorHandler.js
+function unwrapErrorHandler(errorHandler) {
+  return Object.keys(errorHandler).reduce((acc, key) => {
+    if (key === "addError") {
+      return acc;
+    }
+    const childSchema = errorHandler[key];
+    if (isPlainObject_default(childSchema)) {
+      return {
+        ...acc,
+        [key]: unwrapErrorHandler(childSchema)
+      };
+    }
+    return { ...acc, [key]: childSchema };
+  }, {});
+}
+
+// node_modules/@rjsf/utils/lib/useAltDateWidgetProps.js
+import { jsx as _jsx2 } from "react/jsx-runtime";
+import { useCallback, useEffect as useEffect3, useMemo, useState as useState15 } from "react";
+function readyForChange(state) {
+  return Object.values(state).every((value) => value !== -1);
+}
+function DateElement(props) {
+  const { className = "form-control", type, range, value, select, rootId, name, disabled, readonly, autofocus, registry, onBlur, onFocus } = props;
+  const id = `${rootId}_${type}`;
+  const { SelectWidget: SelectWidget2 } = registry.widgets;
+  const onChange = useCallback((newValue) => select(type, newValue), [select, type]);
+  return _jsx2(SelectWidget2, { schema: { type: "integer" }, id, name, className, options: { enumOptions: dateRangeOptions(range[0], range[1]) }, placeholder: type, value, disabled, readonly, autofocus, onChange, onBlur, onFocus, registry, label: "", "aria-describedby": ariaDescribedByIds(rootId) });
+}
+function useAltDateWidgetProps(props) {
+  const { time = false, disabled = false, readonly = false, options, onChange, value } = props;
+  const [state, setState] = useState15(parseDateString(value, time));
+  useEffect3(() => {
+    setState(parseDateString(value, time));
+  }, [time, value]);
+  const handleChange = useCallback((property2, newValue) => {
+    const nextState = {
+      ...state,
+      [property2]: typeof newValue === "undefined" ? -1 : newValue
+    };
+    if (readyForChange(nextState)) {
+      onChange(toDateString(nextState, time));
+    } else {
+      setState(nextState);
+    }
+  }, [state, onChange, time]);
+  const handleClear = useCallback((event) => {
+    event.preventDefault();
+    if (disabled || readonly) {
+      return;
+    }
+    onChange(void 0);
+  }, [disabled, readonly, onChange]);
+  const handleSetNow = useCallback((event) => {
+    event.preventDefault();
+    if (disabled || readonly) {
+      return;
+    }
+    const nextState = parseDateString((/* @__PURE__ */ new Date()).toJSON(), time);
+    onChange(toDateString(nextState, time));
+  }, [disabled, readonly, time, onChange]);
+  const elements = useMemo(() => getDateElementProps(state, time, options.yearsRange, options.format), [state, time, options.yearsRange, options.format]);
+  return { elements, handleChange, handleClear, handleSetNow };
+}
+
+// node_modules/@rjsf/utils/lib/useDeepCompareMemo.js
+import { useRef as useRef2 } from "react";
+function useDeepCompareMemo(newValue) {
+  const valueRef = useRef2(newValue);
+  if (!deepEquals_default(newValue, valueRef.current)) {
+    valueRef.current = newValue;
+  }
+  return valueRef.current;
+}
+
+// node_modules/@rjsf/utils/lib/useFileWidgetProps.js
+import { useCallback as useCallback2, useMemo as useMemo2 } from "react";
+function addNameToDataURL(dataURL, name) {
+  return dataURL.replace(";base64", `;name=${encodeURIComponent(name)};base64`);
+}
+function processFile(file) {
+  const { name, size, type } = file;
+  return new Promise((resolve, reject) => {
+    const reader = new window.FileReader();
+    reader.onerror = reject;
+    reader.onload = (event) => {
+      var _a;
+      if (typeof ((_a = event.target) === null || _a === void 0 ? void 0 : _a.result) === "string") {
+        resolve({
+          dataURL: addNameToDataURL(event.target.result, name),
+          name,
+          size,
+          type
+        });
+      } else {
+        resolve({
+          dataURL: null,
+          name,
+          size,
+          type
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function processFiles(files) {
+  return Promise.all(Array.from(files).map(processFile));
+}
+function extractFileInfo(dataURLs) {
+  return dataURLs.reduce((acc, dataURL) => {
+    if (!dataURL) {
+      return acc;
+    }
+    try {
+      const { blob, name } = dataURItoBlob(dataURL);
+      return [
+        ...acc,
+        {
+          dataURL,
+          name,
+          size: blob.size,
+          type: blob.type
+        }
+      ];
+    } catch (_a) {
+      return acc;
+    }
+  }, []);
+}
+function useFileWidgetProps(value, onChange, multiple = false) {
+  const values2 = useMemo2(() => {
+    if (multiple && value) {
+      return Array.isArray(value) ? value : [value];
+    }
+    return [];
+  }, [value, multiple]);
+  const filesInfo = useMemo2(() => Array.isArray(value) ? extractFileInfo(value) : extractFileInfo([value || ""]), [value]);
+  const handleChange = useCallback2(async (files) => {
+    const filesInfoEvent = await processFiles(files);
+    const newValue = filesInfoEvent.map((fileInfo) => fileInfo.dataURL || null);
+    if (multiple) {
+      onChange(values2.concat(...newValue));
+    } else {
+      onChange(newValue[0]);
+    }
+  }, [values2, multiple, onChange]);
+  const handleRemove = useCallback2((index) => {
+    if (multiple) {
+      const newValue = values2.filter((_2, i2) => i2 !== index);
+      onChange(newValue);
+    } else {
+      onChange(void 0);
+    }
+  }, [values2, multiple, onChange]);
+  return { filesInfo, handleChange, handleRemove };
+}
+
+// node_modules/@rjsf/utils/lib/utcToLocal.js
+function utcToLocal(jsonDate) {
+  if (!jsonDate) {
+    return "";
+  }
+  const date = new Date(jsonDate);
+  const yyyy = pad(date.getFullYear(), 4);
+  const MM = pad(date.getMonth() + 1, 2);
+  const dd = pad(date.getDate(), 2);
+  const hh = pad(date.getHours(), 2);
+  const mm = pad(date.getMinutes(), 2);
+  const ss = pad(date.getSeconds(), 2);
+  const SSS = pad(date.getMilliseconds(), 3);
+  return `${yyyy}-${MM}-${dd}T${hh}:${mm}:${ss}.${SSS}`;
+}
+
+// node_modules/@rjsf/utils/lib/validationDataMerge.js
+function validationDataMerge(validationData, additionalErrorSchema, preventDuplicates = false) {
+  if (!additionalErrorSchema) {
+    return validationData;
+  }
+  const { errors: oldErrors, errorSchema: oldErrorSchema } = validationData;
+  let errors = toErrorList(additionalErrorSchema);
+  let errorSchema = additionalErrorSchema;
+  if (!isEmpty_default(oldErrorSchema)) {
+    errorSchema = mergeObjects(oldErrorSchema, additionalErrorSchema, preventDuplicates ? "preventDuplicates" : true);
+    errors = [...oldErrors].concat(errors);
+  }
+  return { errorSchema, errors };
+}
+
+// node_modules/@rjsf/utils/lib/withIdRefPrefix.js
+function withIdRefPrefixObject(node) {
+  const realObj = node;
+  for (const key in realObj) {
+    if (Object.hasOwn(realObj, key)) {
+      const value = realObj[key];
+      if (key === REF_KEY && typeof value === "string" && value.startsWith("#")) {
+        realObj[key] = ROOT_SCHEMA_PREFIX + value;
+      } else {
+        realObj[key] = withIdRefPrefix(value);
+      }
+    }
+  }
+  return node;
+}
+function withIdRefPrefixArray(node) {
+  return node.map((item) => withIdRefPrefix(item));
+}
+function withIdRefPrefix(schemaNode) {
+  if (Array.isArray(schemaNode)) {
+    return withIdRefPrefixArray([...schemaNode]);
+  }
+  if (isObject_default(schemaNode)) {
+    return withIdRefPrefixObject({ ...schemaNode });
+  }
+  return schemaNode;
+}
+
+// node_modules/@rjsf/utils/lib/enums.js
+var TranslatableString;
+(function(TranslatableString2) {
+  TranslatableString2["ArrayItemTitle"] = "Item";
+  TranslatableString2["MissingItems"] = "Missing items definition";
+  TranslatableString2["EmptyArray"] = "No items yet. Use the button below to add some.";
+  TranslatableString2["YesLabel"] = "Yes";
+  TranslatableString2["NoLabel"] = "No";
+  TranslatableString2["CloseLabel"] = "Close";
+  TranslatableString2["ErrorsLabel"] = "Errors";
+  TranslatableString2["NewStringDefault"] = "New Value";
+  TranslatableString2["AddButton"] = "Add";
+  TranslatableString2["AddItemButton"] = "Add Item";
+  TranslatableString2["CopyButton"] = "Copy";
+  TranslatableString2["MoveDownButton"] = "Move down";
+  TranslatableString2["MoveUpButton"] = "Move up";
+  TranslatableString2["RemoveButton"] = "Remove";
+  TranslatableString2["NowLabel"] = "Now";
+  TranslatableString2["ClearLabel"] = "Clear";
+  TranslatableString2["AriaDateLabel"] = "Select a date";
+  TranslatableString2["PreviewLabel"] = "Preview";
+  TranslatableString2["DecrementAriaLabel"] = "Decrease value by 1";
+  TranslatableString2["IncrementAriaLabel"] = "Increase value by 1";
+  TranslatableString2["OptionalObjectAdd"] = "Add data for optional field";
+  TranslatableString2["OptionalObjectRemove"] = "Remove data for optional field";
+  TranslatableString2["OptionalObjectEmptyMsg"] = "No data for optional field";
+  TranslatableString2["Type"] = "Type";
+  TranslatableString2["Value"] = "Value";
+  TranslatableString2["ClearButton"] = "clear input";
+  TranslatableString2["UnknownFieldType"] = "Unknown field type %1";
+  TranslatableString2["OptionPrefix"] = "Option %1";
+  TranslatableString2["TitleOptionPrefix"] = "%1 option %2";
+  TranslatableString2["KeyLabel"] = "%1 Key";
+  TranslatableString2["DeprecatedLabel"] = "%1 (deprecated)";
+  TranslatableString2["InvalidObjectField"] = 'Invalid "%1" object field configuration: _%2_.';
+  TranslatableString2["UnsupportedField"] = "Unsupported field schema.";
+  TranslatableString2["UnsupportedFieldWithId"] = "Unsupported field schema for field `%1`.";
+  TranslatableString2["UnsupportedFieldWithReason"] = "Unsupported field schema: _%1_.";
+  TranslatableString2["UnsupportedFieldWithIdAndReason"] = "Unsupported field schema for field `%1`: _%2_.";
+  TranslatableString2["FilesInfo"] = "**%1** (%2, %3 bytes)";
+})(TranslatableString || (TranslatableString = {}));
+
+// node_modules/lodash-es/forEach.js
+function forEach(collection, iteratee) {
+  var func = isArray_default(collection) ? arrayEach_default : baseEach_default;
+  return func(collection, castFunction_default(iteratee));
+}
+var forEach_default = forEach;
+
+// node_modules/lodash-es/unset.js
+function unset(object, path) {
+  return object == null ? true : baseUnset_default(object, path);
+}
+var unset_default = unset;
+
+// node_modules/@rjsf/core/lib/components/fields/ArrayField.js
+import { jsx as _jsx3 } from "react/jsx-runtime";
+import { memo, useCallback as useCallback3, useMemo as useMemo3, useRef as useRef3, useState as useState16 } from "react";
+function generateRowId() {
+  return uniqueId_default("rjsf-array-item-");
+}
+function generateKeyedFormData(formData) {
+  return !Array.isArray(formData) ? [] : formData.map((item) => ({
+    key: generateRowId(),
+    item
+  }));
+}
+function keyedToPlainFormData(keyedFormData) {
+  if (Array.isArray(keyedFormData)) {
+    return keyedFormData.map((keyedItem) => keyedItem.item);
+  }
+  return [];
+}
+function isItemRequired(itemSchema) {
+  if (Array.isArray(itemSchema.type)) {
+    return !itemSchema.type.includes("null");
+  }
+  return itemSchema.type !== "null";
+}
+function canAddItem(registry, schema, formItems, uiSchema) {
+  let { addable } = getUiOptions(uiSchema, registry.globalUiOptions);
+  if (addable !== false) {
+    if (schema.maxItems !== void 0) {
+      addable = formItems.length < schema.maxItems;
+    } else {
+      addable = true;
+    }
+  }
+  return addable;
+}
+function computeItemUiSchema(uiSchema, item, index, formContext) {
+  if (typeof uiSchema.items === "function") {
+    try {
+      const result = uiSchema.items(item, index, formContext);
+      return result;
+    } catch (e) {
+      console.error(`Error executing dynamic uiSchema.items function for item at index ${index}:`, e);
+      return void 0;
+    }
+  } else {
+    return uiSchema.items;
+  }
+}
+function getNewFormDataRow(registry, schema) {
+  const { schemaUtils, globalFormOptions } = registry;
+  let itemSchema = schema.items;
+  if (globalFormOptions.useFallbackUiForUnsupportedType && !itemSchema) {
+    itemSchema = {};
+  } else if (isFixedItems(schema) && allowAdditionalItems(schema)) {
+    itemSchema = schema.additionalItems;
+  }
+  return schemaUtils.getDefaultFormState(itemSchema);
+}
+function ArrayAsMultiSelect(props) {
+  const { schema, fieldPathId, uiSchema, formData: items = [], disabled = false, readonly = false, autofocus = false, required = false, placeholder, onBlur, onFocus, registry, rawErrors, name, onSelectChange } = props;
+  const { widgets: widgets2, schemaUtils, globalFormOptions, globalUiOptions } = registry;
+  const itemsSchema = schemaUtils.retrieveSchema(schema.items, items);
+  const itemsUiSchema = uiSchema?.items ?? uiSchema;
+  const enumOptions = optionsList(itemsSchema, itemsUiSchema);
+  const { widget = "select", title: uiTitle, ...options } = getUiOptions(uiSchema, globalUiOptions);
+  const Widget = getWidget(schema, widget, widgets2);
+  const label = uiTitle ?? schema.title ?? name;
+  const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+  const multiValueFieldPathId = useDeepCompareMemo(toFieldPathId("", globalFormOptions, fieldPathId, true));
+  return _jsx3(Widget, { id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, options: { ...options, enumOptions }, schema, uiSchema, registry, value: items, disabled, readonly, required, label, hideLabel: !displayLabel, placeholder, autofocus, rawErrors, htmlName: multiValueFieldPathId.name });
+}
+function ArrayAsCustomWidget(props) {
+  const { schema, fieldPathId, uiSchema, disabled = false, readonly = false, autofocus = false, required = false, hideError, placeholder, onBlur, onFocus, formData: items = [], registry, rawErrors, name, onSelectChange } = props;
+  const { widgets: widgets2, schemaUtils, globalFormOptions, globalUiOptions } = registry;
+  const { widget, title: uiTitle, ...options } = getUiOptions(uiSchema, globalUiOptions);
+  const Widget = getWidget(schema, widget, widgets2);
+  const label = uiTitle ?? schema.title ?? name;
+  const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+  const multiValueFieldPathId = useDeepCompareMemo(toFieldPathId("", globalFormOptions, fieldPathId, true));
+  return _jsx3(Widget, { id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, options, schema, uiSchema, registry, value: items, disabled, readonly, hideError, required, label, hideLabel: !displayLabel, placeholder, autofocus, rawErrors, htmlName: multiValueFieldPathId.name });
+}
+function ArrayAsFiles(props) {
+  const { schema, uiSchema, fieldPathId, name, disabled = false, readonly = false, autofocus = false, required = false, onBlur, onFocus, registry, formData: items = [], rawErrors, onSelectChange } = props;
+  const { widgets: widgets2, schemaUtils, globalFormOptions, globalUiOptions } = registry;
+  const { widget = "files", title: uiTitle, ...options } = getUiOptions(uiSchema, globalUiOptions);
+  const Widget = getWidget(schema, widget, widgets2);
+  const label = uiTitle ?? schema.title ?? name;
+  const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+  const multiValueFieldPathId = useDeepCompareMemo(toFieldPathId("", globalFormOptions, fieldPathId, true));
+  return _jsx3(Widget, { options, id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, schema, uiSchema, value: items, disabled, readonly, required, registry, autofocus, rawErrors, label, hideLabel: !displayLabel, htmlName: multiValueFieldPathId.name });
+}
+function ArrayFieldItemInner(props) {
+  const { itemKey, index, name, disabled, hideError, readonly, registry, uiOptions, parentUiSchema, canAdd, canRemove = true, canMoveUp, canMoveDown, rawItemSchema, itemData, itemUiSchema, parentFieldPathId, itemErrorSchema, autofocus, onBlur, onFocus, onChange, rawErrors, totalItems, title, handleAddItem, handleCopyItem, handleRemoveItem, handleReorderItems } = props;
+  const { schemaUtils, fields: { ArraySchemaField, SchemaField: SchemaField2 }, globalUiOptions, globalFormOptions } = registry;
+  const itemSchema = useMemo3(() => schemaUtils.retrieveSchema(rawItemSchema, itemData), [schemaUtils, rawItemSchema, itemData]);
+  const fieldPathId = useMemo3(() => toFieldPathId(index, globalFormOptions, parentFieldPathId), [index, globalFormOptions, parentFieldPathId]);
+  const ItemSchemaField = ArraySchemaField || SchemaField2;
+  const ArrayFieldItemTemplate2 = getTemplate("ArrayFieldItemTemplate", registry, uiOptions);
+  const displayLabel = schemaUtils.getDisplayLabel(itemSchema, itemUiSchema, globalUiOptions);
+  const { description } = getUiOptions(itemUiSchema);
+  const hasDescription = !!description || !!itemSchema.description;
+  const { orderable = true, removable = true, copyable = false } = uiOptions;
+  const has2 = {
+    moveUp: orderable && canMoveUp,
+    moveDown: orderable && canMoveDown,
+    copy: copyable && canAdd,
+    remove: removable && canRemove,
+    toolbar: false
+  };
+  has2.toolbar = Object.keys(has2).some((key) => has2[key]);
+  const onAddItem = useCallback3((event) => {
+    handleAddItem(event, index + 1);
+  }, [handleAddItem, index]);
+  const onCopyItem = useCallback3((event) => {
+    handleCopyItem(event, index);
+  }, [handleCopyItem, index]);
+  const onRemoveItem = useCallback3((event) => {
+    handleRemoveItem(event, index);
+  }, [handleRemoveItem, index]);
+  const onMoveUpItem = useCallback3((event) => {
+    handleReorderItems(event, index, index - 1);
+  }, [handleReorderItems, index]);
+  const onMoveDownItem = useCallback3((event) => {
+    handleReorderItems(event, index, index + 1);
+  }, [handleReorderItems, index]);
+  const templateProps = {
+    children: _jsx3(ItemSchemaField, { name, title, index, schema: itemSchema, uiSchema: itemUiSchema, formData: itemData, errorSchema: itemErrorSchema, fieldPathId, required: isItemRequired(itemSchema), onChange, onBlur, onFocus, registry, disabled, readonly, hideError, autofocus, rawErrors }),
+    buttonsProps: {
+      fieldPathId,
+      disabled,
+      readonly,
+      canAdd,
+      hasCopy: has2.copy,
+      hasMoveUp: has2.moveUp,
+      hasMoveDown: has2.moveDown,
+      hasRemove: has2.remove,
+      index,
+      totalItems,
+      onAddItem,
+      onCopyItem,
+      onRemoveItem,
+      onMoveUpItem,
+      onMoveDownItem,
+      registry,
+      schema: itemSchema,
+      uiSchema: itemUiSchema
+    },
+    itemKey,
+    className: "rjsf-array-item",
+    disabled,
+    hasToolbar: has2.toolbar,
+    index,
+    totalItems,
+    readonly,
+    registry,
+    schema: itemSchema,
+    uiSchema: itemUiSchema,
+    parentUiSchema,
+    displayLabel,
+    hasDescription
+  };
+  return _jsx3(ArrayFieldItemTemplate2, { ...templateProps });
+}
+var ArrayFieldItem = memo(ArrayFieldItemInner);
+function NormalArray(props) {
+  const { schema, uiSchema = {}, errorSchema, fieldPathId, formData: formDataFromProps, name, title, disabled = false, readonly = false, autofocus = false, required = false, hideError = false, registry, onBlur, onFocus, rawErrors, onChange, keyedFormData, handleAddItem, handleCopyItem, handleRemoveItem, handleReorderItems } = props;
+  const fieldTitle = schema.title || title || name;
+  const { schemaUtils, fields: fields2, formContext, globalUiOptions } = registry;
+  const { OptionalDataControlsField: OptionalDataControlsField2 } = fields2;
+  const uiOptions = useMemo3(() => getUiOptions(uiSchema, globalUiOptions), [uiSchema, globalUiOptions]);
+  const schemaItems = useMemo3(() => isObject_default(schema.items) ? schema.items : {}, [schema.items]);
+  const itemsSchema = useMemo3(() => schemaUtils.retrieveSchema(schemaItems), [schemaUtils, schemaItems]);
+  const formData = useMemo3(() => keyedToPlainFormData(keyedFormData), [keyedFormData]);
+  const renderOptionalField = shouldRenderOptionalField(registry, schema, required, uiSchema);
+  const hasFormData = isFormDataAvailable(formDataFromProps);
+  const canAdd = useMemo3(() => canAddItem(registry, schema, formData, uiSchema) && (!renderOptionalField || hasFormData), [registry, schema, formData, uiSchema, renderOptionalField, hasFormData]);
+  const actualFormData = hasFormData ? keyedFormData : [];
+  const extraClass = renderOptionalField ? " rjsf-optional-array-field" : "";
+  const childFieldPathId = props.childFieldPathId ?? fieldPathId;
+  const optionalDataControl = renderOptionalField ? _jsx3(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId }) : void 0;
+  const arrayProps = {
+    canAdd,
+    items: actualFormData.map((keyedItem, index) => {
+      const { key, item } = keyedItem;
+      const itemCast = item;
+      const itemErrorSchema = errorSchema ? errorSchema[index] : void 0;
+      const itemUiSchema = computeItemUiSchema(uiSchema, item, index, formContext);
+      const itemProps = {
+        itemKey: key,
+        index,
+        name: name && `${name}-${index}`,
+        registry,
+        uiOptions,
+        parentUiSchema: uiSchema,
+        hideError,
+        readonly,
+        disabled,
+        required,
+        title: fieldTitle ? `${fieldTitle}-${index + 1}` : void 0,
+        canAdd,
+        canMoveUp: index > 0,
+        canMoveDown: index < formData.length - 1,
+        rawItemSchema: schemaItems,
+        parentFieldPathId: childFieldPathId,
+        itemErrorSchema,
+        itemData: itemCast,
+        itemUiSchema,
+        autofocus: autofocus && index === 0,
+        onBlur,
+        onFocus,
+        rawErrors,
+        totalItems: keyedFormData.length,
+        handleAddItem,
+        handleCopyItem,
+        handleRemoveItem,
+        handleReorderItems,
+        onChange
+      };
+      return _jsx3(ArrayFieldItem, { ...itemProps }, key);
+    }),
+    className: `rjsf-field rjsf-field-array rjsf-field-array-of-${itemsSchema.type}${extraClass}`,
+    disabled,
+    fieldPathId,
+    uiSchema,
+    onAddClick: handleAddItem,
+    readonly,
+    required,
+    schema,
+    title: fieldTitle,
+    formData,
+    rawErrors,
+    registry,
+    optionalDataControl
+  };
+  const Template = getTemplate("ArrayFieldTemplate", registry, uiOptions);
+  return _jsx3(Template, { ...arrayProps });
+}
+function FixedArray(props) {
+  const { schema, uiSchema = {}, formData, errorSchema, fieldPathId, name, title, disabled = false, readonly = false, autofocus = false, required = false, hideError = false, registry, onBlur, onFocus, rawErrors, keyedFormData, onChange, handleAddItem, handleCopyItem, handleRemoveItem, handleReorderItems } = props;
+  let { formData: items = [] } = props;
+  const fieldTitle = schema.title || title || name;
+  const { fields: fields2, formContext, globalUiOptions } = registry;
+  const uiOptions = useMemo3(() => getUiOptions(uiSchema, globalUiOptions), [uiSchema, globalUiOptions]);
+  const { OptionalDataControlsField: OptionalDataControlsField2 } = fields2;
+  const renderOptionalField = shouldRenderOptionalField(registry, schema, required, uiSchema);
+  const hasFormData = isFormDataAvailable(formData);
+  const schemaItems = useMemo3(() => isObject_default(schema.items) ? schema.items : [], [schema.items]);
+  const hasAdditionalItems = isObject_default(schema.additionalItems);
+  const childFieldPathId = props.childFieldPathId ?? fieldPathId;
+  if (items.length < schemaItems.length) {
+    items = items.concat(new Array(schemaItems.length - items.length));
+  }
+  const actualFormData = hasFormData ? keyedFormData : [];
+  const extraClass = renderOptionalField ? " rjsf-optional-array-field" : "";
+  const optionalDataControl = renderOptionalField ? _jsx3(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId }) : void 0;
+  const canAdd = canAddItem(registry, schema, items, uiSchema) && hasAdditionalItems && (!renderOptionalField || hasFormData);
+  const arrayProps = {
+    canAdd,
+    className: `rjsf-field rjsf-field-array rjsf-field-array-fixed-items${extraClass}`,
+    disabled,
+    fieldPathId,
+    formData,
+    items: actualFormData.map((keyedItem, index) => {
+      const { key, item } = keyedItem;
+      const itemCast = item;
+      const additional = index >= schemaItems.length;
+      const rawItemSchema = (additional && isObject_default(schema.additionalItems) ? schema.additionalItems : schemaItems[index]) || {};
+      let itemUiSchema;
+      if (additional) {
+        itemUiSchema = uiSchema.additionalItems;
+      } else if (Array.isArray(uiSchema.items)) {
+        itemUiSchema = uiSchema.items[index];
+      } else {
+        itemUiSchema = computeItemUiSchema(uiSchema, item, index, formContext);
+      }
+      const itemErrorSchema = errorSchema ? errorSchema[index] : void 0;
+      const itemProps = {
+        index,
+        itemKey: key,
+        name: name && `${name}-${index}`,
+        registry,
+        uiOptions,
+        parentUiSchema: uiSchema,
+        hideError,
+        readonly,
+        disabled,
+        required,
+        title: fieldTitle ? `${fieldTitle}-${index + 1}` : void 0,
+        canAdd,
+        canRemove: additional,
+        canMoveUp: index >= schemaItems.length + 1,
+        canMoveDown: additional && index < items.length - 1,
+        rawItemSchema,
+        itemData: itemCast,
+        itemUiSchema,
+        parentFieldPathId: childFieldPathId,
+        itemErrorSchema,
+        autofocus: autofocus && index === 0,
+        onBlur,
+        onFocus,
+        rawErrors,
+        totalItems: keyedFormData.length,
+        onChange,
+        handleAddItem,
+        handleCopyItem,
+        handleRemoveItem,
+        handleReorderItems
+      };
+      return _jsx3(ArrayFieldItem, { ...itemProps }, key);
+    }),
+    onAddClick: handleAddItem,
+    readonly,
+    required,
+    registry,
+    schema,
+    uiSchema,
+    title: fieldTitle,
+    errorSchema,
+    rawErrors,
+    optionalDataControl
+  };
+  const Template = getTemplate("ArrayFieldTemplate", registry, uiOptions);
+  return _jsx3(Template, { ...arrayProps });
+}
+function useKeyedFormData(formData = []) {
+  const newHash = useMemo3(() => hashObject(formData), [formData]);
+  const [state, setState] = useState16(() => ({
+    formDataHash: newHash,
+    keyedFormData: generateKeyedFormData(formData)
+  }));
+  let { keyedFormData, formDataHash } = state;
+  if (newHash !== formDataHash) {
+    const nextFormData = Array.isArray(formData) ? formData : [];
+    const previousKeyedFormData = keyedFormData || [];
+    keyedFormData = nextFormData.length === previousKeyedFormData.length ? previousKeyedFormData.map((previousKeyedFormDatum, index) => ({
+      key: previousKeyedFormDatum.key,
+      item: nextFormData[index]
+    })) : generateKeyedFormData(nextFormData);
+    formDataHash = newHash;
+    setState({ formDataHash, keyedFormData });
+  }
+  const updateKeyedFormData = useCallback3((newData) => {
+    const plainFormData = keyedToPlainFormData(newData);
+    const updatedHash = hashObject(plainFormData);
+    setState({ formDataHash: updatedHash, keyedFormData: newData });
+    return plainFormData;
+  }, []);
+  return { keyedFormData, updateKeyedFormData };
+}
+function ArrayField(props) {
+  const { schema, uiSchema, errorSchema, fieldPathId, registry, formData, onChange } = props;
+  const { globalFormOptions, schemaUtils, translateString } = registry;
+  const { keyedFormData, updateKeyedFormData } = useKeyedFormData(formData);
+  const keyedFormDataRef = useRef3(keyedFormData);
+  keyedFormDataRef.current = keyedFormData;
+  const errorSchemaRef = useRef3(errorSchema);
+  errorSchemaRef.current = errorSchema;
+  const childFieldPathId = props.childFieldPathId ?? fieldPathId;
+  const handleAddItem = useCallback3((event, index) => {
+    if (event) {
+      event.preventDefault();
+    }
+    let newErrorSchema;
+    if (errorSchemaRef.current) {
+      newErrorSchema = {};
+      for (const idx of Object.keys(errorSchemaRef.current)) {
+        const i2 = parseInt(idx, 10);
+        if (index === void 0 || i2 < index) {
+          set_default(newErrorSchema, [i2], errorSchemaRef.current[i2]);
+        } else if (i2 >= index) {
+          set_default(newErrorSchema, [i2 + 1], errorSchemaRef.current[i2]);
+        }
+      }
+    }
+    const newKeyedFormDataRow = {
+      key: generateRowId(),
+      item: getNewFormDataRow(registry, schema)
+    };
+    const newKeyedFormData = [...keyedFormDataRef.current];
+    if (index !== void 0) {
+      newKeyedFormData.splice(index, 0, newKeyedFormDataRow);
+    } else {
+      newKeyedFormData.push(newKeyedFormDataRow);
+    }
+    onChange(updateKeyedFormData(newKeyedFormData), childFieldPathId.path, newErrorSchema);
+  }, [registry, schema, onChange, updateKeyedFormData, childFieldPathId]);
+  const handleCopyItem = useCallback3((event, index) => {
+    if (event) {
+      event.preventDefault();
+    }
+    let newErrorSchema;
+    if (errorSchemaRef.current) {
+      newErrorSchema = {};
+      for (const idx of Object.keys(errorSchemaRef.current)) {
+        const i2 = parseInt(idx, 10);
+        if (i2 <= index) {
+          set_default(newErrorSchema, [i2], errorSchemaRef.current[i2]);
+        } else if (i2 > index) {
+          set_default(newErrorSchema, [i2 + 1], errorSchemaRef.current[i2]);
+        }
+      }
+    }
+    const newKeyedFormDataRow = {
+      key: generateRowId(),
+      item: cloneDeep_default(keyedFormDataRef.current[index].item)
+    };
+    const newKeyedFormData = [...keyedFormDataRef.current];
+    if (index !== void 0) {
+      newKeyedFormData.splice(index + 1, 0, newKeyedFormDataRow);
+    } else {
+      newKeyedFormData.push(newKeyedFormDataRow);
+    }
+    onChange(updateKeyedFormData(newKeyedFormData), childFieldPathId.path, newErrorSchema);
+  }, [onChange, updateKeyedFormData, childFieldPathId]);
+  const handleRemoveItem = useCallback3((event, index) => {
+    if (event) {
+      event.preventDefault();
+    }
+    let newErrorSchema;
+    if (errorSchemaRef.current) {
+      newErrorSchema = {};
+      for (const idx of Object.keys(errorSchemaRef.current)) {
+        const i2 = parseInt(idx, 10);
+        if (i2 < index) {
+          set_default(newErrorSchema, [i2], errorSchemaRef.current[i2]);
+        } else if (i2 > index) {
+          set_default(newErrorSchema, [i2 - 1], errorSchemaRef.current[i2]);
+        }
+      }
+    }
+    const newKeyedFormData = keyedFormDataRef.current.filter((_2, i2) => i2 !== index);
+    onChange(updateKeyedFormData(newKeyedFormData), childFieldPathId.path, newErrorSchema);
+  }, [onChange, updateKeyedFormData, childFieldPathId]);
+  const handleReorderItems = useCallback3((event, index, newIndex) => {
+    if (event) {
+      event.preventDefault();
+      event.currentTarget.blur();
+    }
+    let newErrorSchema;
+    if (errorSchemaRef.current) {
+      newErrorSchema = {};
+      for (const idx of Object.keys(errorSchemaRef.current)) {
+        const i2 = parseInt(idx, 10);
+        if (i2 === index) {
+          set_default(newErrorSchema, [newIndex], errorSchemaRef.current[index]);
+        } else if (i2 === newIndex) {
+          set_default(newErrorSchema, [index], errorSchemaRef.current[newIndex]);
+        } else {
+          set_default(newErrorSchema, [idx], errorSchemaRef.current[i2]);
+        }
+      }
+    }
+    function reOrderArray() {
+      const newKeyedFormData2 = keyedFormDataRef.current.slice();
+      newKeyedFormData2.splice(index, 1);
+      newKeyedFormData2.splice(newIndex, 0, keyedFormDataRef.current[index]);
+      return newKeyedFormData2;
+    }
+    const newKeyedFormData = reOrderArray();
+    onChange(updateKeyedFormData(newKeyedFormData), childFieldPathId.path, newErrorSchema);
+  }, [onChange, updateKeyedFormData, childFieldPathId]);
+  const handleChange = useCallback3((value, path, newErrorSchema, id) => {
+    const lastPathIsItemIndex = typeof path.at(-1) === "number";
+    onChange(
+      // We need to treat undefined items as nulls to have validation.
+      // See https://github.com/tdegrunt/jsonschema/issues/206
+      // Only set to null for array items, and not for object properties within array items
+      lastPathIsItemIndex && value === void 0 ? null : value,
+      path,
+      newErrorSchema,
+      id
+    );
+  }, [onChange]);
+  const onSelectChange = useCallback3((value) => {
+    onChange(value, childFieldPathId.path, void 0, childFieldPathId?.[ID_KEY]);
+  }, [onChange, childFieldPathId]);
+  const arrayAsMultiProps = {
+    ...props,
+    formData,
+    fieldPathId: childFieldPathId,
+    onSelectChange
+  };
+  const arrayProps = {
+    ...props,
+    handleAddItem,
+    handleCopyItem,
+    handleRemoveItem,
+    handleReorderItems,
+    keyedFormData,
+    onChange: handleChange
+  };
+  if (!(ITEMS_KEY in schema)) {
+    if (!globalFormOptions.useFallbackUiForUnsupportedType) {
+      const uiOptions = getUiOptions(uiSchema);
+      const UnsupportedFieldTemplate = getTemplate("UnsupportedFieldTemplate", registry, uiOptions);
+      return _jsx3(UnsupportedFieldTemplate, { schema, fieldPathId, reason: translateString(TranslatableString.MissingItems), registry });
+    }
+    const fallbackSchema = { ...schema, [ITEMS_KEY]: { type: void 0 } };
+    arrayAsMultiProps.schema = fallbackSchema;
+    arrayProps.schema = fallbackSchema;
+  }
+  if (schemaUtils.isMultiSelect(arrayAsMultiProps.schema)) {
+    return _jsx3(ArrayAsMultiSelect, { ...arrayAsMultiProps });
+  }
+  if (isCustomWidget(uiSchema)) {
+    return _jsx3(ArrayAsCustomWidget, { ...arrayAsMultiProps });
+  }
+  if (isFixedItems(arrayAsMultiProps.schema)) {
+    return _jsx3(FixedArray, { ...arrayProps });
+  }
+  if (schemaUtils.isFilesArray(arrayAsMultiProps.schema, uiSchema)) {
+    return _jsx3(ArrayAsFiles, { ...arrayAsMultiProps });
+  }
+  return _jsx3(NormalArray, { ...arrayProps });
+}
+
+// node_modules/@rjsf/core/lib/components/fields/BooleanField.js
+import { jsx as _jsx4 } from "react/jsx-runtime";
+import { useCallback as useCallback4 } from "react";
+function BooleanField(props) {
+  const { schema, name, uiSchema, fieldPathId, formData, registry, required, disabled, readonly, hideError, autofocus, title, onChange, onFocus, onBlur, rawErrors } = props;
+  const { title: schemaTitle } = schema;
+  const { widgets: widgets2, translateString, globalUiOptions } = registry;
+  const {
+    widget = "checkbox",
+    title: uiTitle,
+    // Unlike the other fields, don't use `getDisplayLabel()` since it always returns false for the boolean type
+    label: displayLabel = true,
+    enumNames,
+    ...options
+  } = getUiOptions(uiSchema, globalUiOptions);
+  const Widget = getWidget(schema, widget, widgets2);
+  const yes = translateString(TranslatableString.YesLabel);
+  const no = translateString(TranslatableString.NoLabel);
+  let enumOptions;
+  const label = uiTitle ?? schemaTitle ?? title ?? name;
+  if (Array.isArray(schema.oneOf)) {
+    enumOptions = optionsList({
+      oneOf: schema.oneOf.map((option) => {
+        if (isObject_default(option)) {
+          return {
+            ...option,
+            title: option.title || (option.const === true ? yes : no)
+          };
+        }
+        return void 0;
+      }).filter((o2) => o2)
+      // cast away the error that typescript can't grok is fixed
+    }, uiSchema);
+  } else {
+    const enums = schema.enum ?? [true, false];
+    if (!enumNames && enums.length === 2 && enums.every((v3) => typeof v3 === "boolean")) {
+      enumOptions = [
+        {
+          value: enums[0],
+          label: enums[0] ? yes : no
+        },
+        {
+          value: enums[1],
+          label: enums[1] ? yes : no
+        }
+      ];
+    } else {
+      enumOptions = optionsList({ enum: enums }, uiSchema);
+    }
+  }
+  const onWidgetChange = useCallback4((value, errorSchema, id) => onChange(value, fieldPathId.path, errorSchema, id), [onChange, fieldPathId]);
+  return _jsx4(Widget, { options: { ...options, enumOptions }, schema, uiSchema, id: fieldPathId.$id, name, onChange: onWidgetChange, onFocus, onBlur, label, hideLabel: !displayLabel, value: formData, required, disabled, readonly, hideError, registry, autofocus, rawErrors, htmlName: fieldPathId.name });
+}
+var BooleanField_default = BooleanField;
+
+// node_modules/@rjsf/core/lib/components/fields/FallbackField.js
+import { jsx as _jsx5 } from "react/jsx-runtime";
+import { useMemo as useMemo4, useState as useState17 } from "react";
+function getFallbackTypeSelectionSchema(title) {
+  return {
+    type: "string",
+    enum: ["string", "number", "boolean", "object", "array"],
+    default: "string",
+    title
+  };
+}
+function getTypeOfFormData(formData) {
+  const dataType = typeof formData;
+  if (dataType === "string" || dataType === "number" || dataType === "boolean") {
+    return dataType;
+  }
+  if (dataType === "object") {
+    return Array.isArray(formData) ? "array" : "object";
+  }
+  return "string";
+}
+function castToNewType(formData, newType) {
+  switch (newType) {
+    case "string":
+      return String(formData);
+    case "number": {
+      const castedNumber = Number(formData);
+      return Number.isNaN(castedNumber) ? 0 : castedNumber;
+    }
+    case "boolean":
+      return Boolean(formData);
+    default:
+      return formData;
+  }
+}
+function FallbackField(props) {
+  const { id, formData, displayLabel = true, schema, name, uiSchema, required, disabled = false, readonly = false, onBlur, onFocus, registry, fieldPathId, onChange, errorSchema } = props;
+  const { translateString, fields: fields2, globalFormOptions } = registry;
+  const [type, setType] = useState17(getTypeOfFormData(formData));
+  const uiOptions = getUiOptions(uiSchema);
+  const typeSelectorInnerFieldPathId = useDeepCompareMemo(toFieldPathId("__internal_type_selector", globalFormOptions, fieldPathId));
+  const schemaTitle = translateString(TranslatableString.Type);
+  const typesOptionSchema = useMemo4(() => getFallbackTypeSelectionSchema(schemaTitle), [schemaTitle]);
+  const onTypeChange = (newType) => {
+    if (newType != null) {
+      setType(newType);
+      onChange(castToNewType(formData, newType), fieldPathId.path, errorSchema, id);
+    }
+  };
+  if (!globalFormOptions.useFallbackUiForUnsupportedType) {
+    const { reason = translateString(TranslatableString.UnknownFieldType, [String(schema.type)]) } = props;
+    const UnsupportedFieldTemplate = getTemplate("UnsupportedFieldTemplate", registry, uiOptions);
+    return _jsx5(UnsupportedFieldTemplate, { schema, fieldPathId, reason, registry });
+  }
+  const FallbackFieldTemplate2 = getTemplate("FallbackFieldTemplate", registry, uiOptions);
+  const { SchemaField: SchemaField2 } = fields2;
+  return _jsx5(FallbackFieldTemplate2, { schema, registry, typeSelector: _jsx5(SchemaField2, { fieldPathId: typeSelectorInnerFieldPathId, name: `${name}__fallback_type`, schema: typesOptionSchema, formData: type, onChange: onTypeChange, onBlur, onFocus, registry, hideLabel: !displayLabel, disabled, readonly, required }, formData ? hashObject(formData) : "__empty__"), schemaField: _jsx5(SchemaField2, { ...props, schema: {
+    type,
+    title: translateString(TranslatableString.Value),
+    ...type === "object" && { additionalProperties: true }
+  } }) });
+}
+
+// node_modules/@rjsf/core/lib/components/fields/LayoutGridField.js
+import { createElement as _createElement } from "react";
+import { jsx as _jsx6 } from "react/jsx-runtime";
+
+// node_modules/lodash-es/_baseValues.js
+function baseValues(object, props) {
+  return arrayMap_default(props, function(key) {
+    return object[key];
+  });
+}
+var baseValues_default = baseValues;
+
+// node_modules/lodash-es/values.js
+function values(object) {
+  return object == null ? [] : baseValues_default(object, keys_default(object));
+}
+var values_default = values;
+
+// node_modules/lodash-es/includes.js
+var nativeMax2 = Math.max;
+function includes(collection, value, fromIndex, guard) {
+  collection = isArrayLike_default(collection) ? collection : values_default(collection);
+  fromIndex = fromIndex && !guard ? toInteger_default(fromIndex) : 0;
+  var length = collection.length;
+  if (fromIndex < 0) {
+    fromIndex = nativeMax2(length + fromIndex, 0);
+  }
+  return isString_default(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf_default(collection, value, fromIndex) > -1;
+}
+var includes_default = includes;
+
+// node_modules/lodash-es/_baseIntersection.js
+var nativeMin2 = Math.min;
+function baseIntersection(arrays, iteratee, comparator) {
+  var includes2 = comparator ? arrayIncludesWith_default : arrayIncludes_default, length = arrays[0].length, othLength = arrays.length, othIndex = othLength, caches = Array(othLength), maxLength = Infinity, result = [];
+  while (othIndex--) {
+    var array = arrays[othIndex];
+    if (othIndex && iteratee) {
+      array = arrayMap_default(array, baseUnary_default(iteratee));
+    }
+    maxLength = nativeMin2(array.length, maxLength);
+    caches[othIndex] = !comparator && (iteratee || length >= 120 && array.length >= 120) ? new SetCache_default(othIndex && array) : void 0;
+  }
+  array = arrays[0];
+  var index = -1, seen = caches[0];
+  outer:
+    while (++index < length && result.length < maxLength) {
+      var value = array[index], computed = iteratee ? iteratee(value) : value;
+      value = comparator || value !== 0 ? value : 0;
+      if (!(seen ? cacheHas_default(seen, computed) : includes2(result, computed, comparator))) {
+        othIndex = othLength;
+        while (--othIndex) {
+          var cache = caches[othIndex];
+          if (!(cache ? cacheHas_default(cache, computed) : includes2(arrays[othIndex], computed, comparator))) {
+            continue outer;
+          }
+        }
+        if (seen) {
+          seen.push(computed);
+        }
+        result.push(value);
+      }
+    }
+  return result;
+}
+var baseIntersection_default = baseIntersection;
+
+// node_modules/lodash-es/_castArrayLikeObject.js
+function castArrayLikeObject(value) {
+  return isArrayLikeObject_default(value) ? value : [];
+}
+var castArrayLikeObject_default = castArrayLikeObject;
+
+// node_modules/lodash-es/intersection.js
+var intersection2 = baseRest_default(function(arrays) {
+  var mapped = arrayMap_default(arrays, castArrayLikeObject_default);
+  return mapped.length && mapped[0] === arrays[0] ? baseIntersection_default(mapped) : [];
+});
+var intersection_default = intersection2;
+
+// node_modules/lodash-es/isEqual.js
+function isEqual(value, other) {
+  return baseIsEqual_default(value, other);
+}
+var isEqual_default = isEqual;
+
+// node_modules/lodash-es/isUndefined.js
+function isUndefined2(value) {
+  return value === void 0;
+}
+var isUndefined_default = isUndefined2;
+
+// node_modules/@rjsf/core/lib/components/fields/LayoutGridField.js
+var GridType;
+(function(GridType2) {
+  GridType2["ROW"] = "ui:row";
+  GridType2["COLUMN"] = "ui:col";
+  GridType2["COLUMNS"] = "ui:columns";
+  GridType2["CONDITION"] = "ui:condition";
+})(GridType || (GridType = {}));
+var Operators;
+(function(Operators2) {
+  Operators2["ALL"] = "all";
+  Operators2["SOME"] = "some";
+  Operators2["NONE"] = "none";
+})(Operators || (Operators = {}));
+var LOOKUP_REGEX = /^\$lookup=(.+)/;
+var LAYOUT_GRID_UI_OPTION = "layoutGrid";
+var LAYOUT_GRID_OPTION = `ui:${LAYOUT_GRID_UI_OPTION}`;
+function getNonNullishValue(value, fallback) {
+  return value ?? fallback;
+}
+function isNumericIndex(str) {
+  return /^\d+?$/.test(str);
+}
+var LAYOUT_GRID_FIELD_TEST_IDS = getTestIds();
+function computeFieldUiSchema(field, uiProps, uiSchema, schemaReadonly, forceReadonly) {
+  const globalUiOptions = get_default(uiSchema, [UI_GLOBAL_OPTIONS_KEY], {});
+  const localUiSchema = get_default(uiSchema, field);
+  const localUiOptions = { ...get_default(localUiSchema, [UI_OPTIONS_KEY], {}), ...uiProps, ...globalUiOptions };
+  const fieldUiSchema = { ...localUiSchema };
+  if (!isEmpty_default(localUiOptions)) {
+    set_default(fieldUiSchema, [UI_OPTIONS_KEY], localUiOptions);
+  }
+  if (!isEmpty_default(globalUiOptions)) {
+    set_default(fieldUiSchema, [UI_GLOBAL_OPTIONS_KEY], globalUiOptions);
+  }
+  let { readonly: uiReadonly } = getUiOptions(fieldUiSchema);
+  if (forceReadonly === true || isUndefined_default(uiReadonly) && schemaReadonly === true) {
+    uiReadonly = true;
+    if (has_default(localUiOptions, READONLY_KEY)) {
+      set_default(fieldUiSchema, [UI_OPTIONS_KEY, READONLY_KEY], true);
+    } else {
+      set_default(fieldUiSchema, `ui:${READONLY_KEY}`, true);
+    }
+  }
+  return { fieldUiSchema, uiReadonly };
+}
+function conditionMatches(operator, datum, value = "$0m3tH1nG Un3xP3cT3d") {
+  const data = flatten_default([datum]).sort();
+  const values2 = flatten_default([value]).sort();
+  switch (operator) {
+    case Operators.ALL:
+      return isEqual_default(data, values2);
+    case Operators.SOME:
+      return intersection_default(data, values2).length > 0;
+    case Operators.NONE:
+      return intersection_default(data, values2).length === 0;
+    default:
+      return false;
+  }
+}
+function findChildrenAndProps(layoutGridSchema, schemaKey, registry) {
+  let gridProps = {};
+  let children = layoutGridSchema[schemaKey];
+  if (isPlainObject_default(children)) {
+    const { children: elements, className: toMapClassNames, ...otherProps } = children;
+    children = elements;
+    if (toMapClassNames) {
+      const classes = toMapClassNames.split(" ");
+      const className = classes.map((ele) => lookupFromFormContext(registry, ele, ele)).join(" ");
+      gridProps = { ...otherProps, className };
+    } else {
+      gridProps = otherProps;
+    }
+  }
+  if (!Array.isArray(children)) {
+    throw new TypeError(`Expected array for "${schemaKey}" in ${JSON.stringify(layoutGridSchema)}`);
+  }
+  return { children, gridProps };
+}
+function computeArraySchemasIfPresent(schema, fieldPathId, potentialIndex) {
+  let rawSchema;
+  let resultPathId = fieldPathId;
+  if (isNumericIndex(potentialIndex) && schema && schema?.type === "array" && has_default(schema, ITEMS_KEY)) {
+    const index = Number(potentialIndex);
+    const items = schema[ITEMS_KEY];
+    if (Array.isArray(items)) {
+      if (index > items.length) {
+        rawSchema = last_default(items);
+      } else {
+        rawSchema = items[index];
+      }
+    } else {
+      rawSchema = items;
+    }
+    resultPathId = {
+      [ID_KEY]: fieldPathId[ID_KEY],
+      path: [...fieldPathId.path.slice(0, fieldPathId.path.length - 1), index]
+    };
+  }
+  return { rawSchema, fieldPathId: resultPathId };
+}
+function getSchemaDetailsForField(registry, dottedPath, initialSchema, formData, initialFieldIdPath) {
+  const { schemaUtils, globalFormOptions } = registry;
+  let rawSchema = initialSchema;
+  let fieldPathId = initialFieldIdPath;
+  const parts = dottedPath.split(".");
+  const leafPath = parts.pop();
+  let schema = schemaUtils.retrieveSchema(rawSchema, formData);
+  let innerData = formData;
+  let isReadonly = schema.readOnly;
+  parts.forEach((part) => {
+    fieldPathId = toFieldPathId(part, globalFormOptions, fieldPathId);
+    if (has_default(schema, PROPERTIES_KEY)) {
+      rawSchema = get_default(schema, [PROPERTIES_KEY, part], {});
+    } else if (schema && (has_default(schema, ONE_OF_KEY) || has_default(schema, ANY_OF_KEY))) {
+      const xxx = has_default(schema, ONE_OF_KEY) ? ONE_OF_KEY : ANY_OF_KEY;
+      const selectedSchema = schemaUtils.findSelectedOptionInXxxOf(schema, part, xxx, innerData);
+      rawSchema = get_default(selectedSchema, [PROPERTIES_KEY, part], {});
+    } else {
+      const result = computeArraySchemasIfPresent(schema, fieldPathId, part);
+      rawSchema = result.rawSchema ?? {};
+      fieldPathId = result.fieldPathId;
+    }
+    innerData = get_default(innerData, part, {});
+    schema = schemaUtils.retrieveSchema(rawSchema, innerData);
+    isReadonly = getNonNullishValue(schema.readOnly, isReadonly);
+  });
+  let optionsInfo;
+  let isRequired2 = false;
+  if (isEmpty_default(schema)) {
+    schema = void 0;
+  }
+  if (schema && leafPath) {
+    if (schema && (has_default(schema, ONE_OF_KEY) || has_default(schema, ANY_OF_KEY))) {
+      const xxx = has_default(schema, ONE_OF_KEY) ? ONE_OF_KEY : ANY_OF_KEY;
+      schema = schemaUtils.findSelectedOptionInXxxOf(schema, leafPath, xxx, innerData);
+    }
+    fieldPathId = toFieldPathId(leafPath, globalFormOptions, fieldPathId);
+    isRequired2 = schema !== void 0 && Array.isArray(schema.required) && includes_default(schema.required, leafPath);
+    const result = computeArraySchemasIfPresent(schema, fieldPathId, leafPath);
+    if (result.rawSchema) {
+      schema = result.rawSchema;
+      fieldPathId = result.fieldPathId;
+    } else {
+      schema = get_default(schema, [PROPERTIES_KEY, leafPath]);
+      schema = schema ? schemaUtils.retrieveSchema(schema) : schema;
+    }
+    isReadonly = getNonNullishValue(schema?.readOnly, isReadonly);
+    if (schema && (has_default(schema, ONE_OF_KEY) || has_default(schema, ANY_OF_KEY))) {
+      const xxx = has_default(schema, ONE_OF_KEY) ? ONE_OF_KEY : ANY_OF_KEY;
+      const discriminator = getDiscriminatorFieldFromSchema(schema);
+      optionsInfo = { options: schema[xxx], hasDiscriminator: !!discriminator };
+    }
+  }
+  return { schema, isRequired: isRequired2, isReadonly, optionsInfo, fieldPathId };
+}
+function getCustomRenderComponent(render, registry) {
+  let customRenderer = render;
+  if (isString_default(customRenderer)) {
+    customRenderer = lookupFromFormContext(registry, customRenderer);
+  }
+  if (isFunction_default(customRenderer)) {
+    return customRenderer;
+  }
+  return null;
+}
+function computeUIComponentPropsFromGridSchema(registry, gridSchema) {
+  let name;
+  let UIComponent = null;
+  let uiProps = {};
+  let rendered;
+  if (isString_default(gridSchema) || isUndefined_default(gridSchema)) {
+    name = gridSchema ?? "";
+  } else {
+    const { name: innerName = "", render, ...innerProps } = gridSchema;
+    name = innerName;
+    uiProps = innerProps;
+    if (!isEmpty_default(uiProps)) {
+      forEach_default(uiProps, (prop, key) => {
+        if (isString_default(prop)) {
+          const match = LOOKUP_REGEX.exec(prop);
+          if (Array.isArray(match) && match.length > 1) {
+            const lookupName = match[1];
+            uiProps[key] = lookupFromFormContext(registry, lookupName, lookupName);
+          }
+        }
+      });
+    }
+    UIComponent = getCustomRenderComponent(render, registry);
+    if (!innerName && UIComponent) {
+      rendered = _jsx6(UIComponent, { ...innerProps, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.uiComponent });
+    }
+  }
+  return { name, UIComponent, uiProps, rendered };
+}
+function LayoutGridFieldChildren(props) {
+  const { childrenLayoutGridSchemaId, ...layoutGridFieldProps } = props;
+  const { registry, schema: rawSchema, formData } = layoutGridFieldProps;
+  const { schemaUtils } = registry;
+  const schema = schemaUtils.retrieveSchema(rawSchema, formData);
+  return childrenLayoutGridSchemaId.map((layoutGridSchema) => _createElement(LayoutGridField, { ...layoutGridFieldProps, key: `layoutGrid-${hashObject(layoutGridSchema)}`, schema, layoutGridSchema }));
+}
+function LayoutGridCondition(props) {
+  const { layoutGridSchema, ...layoutGridFieldProps } = props;
+  const { formData, registry } = layoutGridFieldProps;
+  const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.CONDITION, registry);
+  const { operator, field = "", value } = gridProps;
+  const fieldData = get_default(formData, field, null);
+  if (conditionMatches(operator, fieldData, value)) {
+    return _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children });
+  }
+  return null;
+}
+function LayoutGridCol(props) {
+  const { layoutGridSchema, ...layoutGridFieldProps } = props;
+  const { registry, uiSchema } = layoutGridFieldProps;
+  const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.COLUMN, registry);
+  const uiOptions = getUiOptions(uiSchema);
+  const GridTemplate2 = getTemplate("GridTemplate", registry, uiOptions);
+  return _jsx6(GridTemplate2, { column: true, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.col, ...gridProps, children: _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children }) });
+}
+function LayoutGridColumns(props) {
+  const { layoutGridSchema, ...layoutGridFieldProps } = props;
+  const { registry, uiSchema } = layoutGridFieldProps;
+  const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.COLUMNS, registry);
+  const uiOptions = getUiOptions(uiSchema);
+  const GridTemplate2 = getTemplate("GridTemplate", registry, uiOptions);
+  return children.map((child) => _jsx6(GridTemplate2, { column: true, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.col, ...gridProps, children: _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: [child] }) }, `column-${hashObject(child)}`));
+}
+function LayoutGridRow(props) {
+  const { layoutGridSchema, ...layoutGridFieldProps } = props;
+  const { registry, uiSchema } = layoutGridFieldProps;
+  const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.ROW, registry);
+  const uiOptions = getUiOptions(uiSchema);
+  const GridTemplate2 = getTemplate("GridTemplate", registry, uiOptions);
+  return _jsx6(GridTemplate2, { ...gridProps, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.row, children: _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children }) });
+}
+function LayoutGridFieldComponent(props) {
+  const {
+    gridSchema,
+    schema: initialSchema,
+    uiSchema,
+    errorSchema,
+    fieldPathId,
+    onBlur,
+    onFocus,
+    formData,
+    readonly,
+    registry,
+    layoutGridSchema,
+    // Used to pull this out of otherProps since we don't want to pass it through
+    ...otherProps
+  } = props;
+  const { onChange } = otherProps;
+  const { fields: fields2 } = registry;
+  const { SchemaField: SchemaField2, LayoutMultiSchemaField: LayoutMultiSchemaField2 } = fields2;
+  const uiComponentProps = computeUIComponentPropsFromGridSchema(registry, gridSchema);
+  const { name, UIComponent, uiProps } = uiComponentProps;
+  const { schema, isRequired: isRequired2, isReadonly, optionsInfo, fieldPathId: fieldIdSchema } = getSchemaDetailsForField(registry, name, initialSchema, formData, fieldPathId);
+  const memoFieldPathId = useDeepCompareMemo(fieldIdSchema);
+  if (uiComponentProps.rendered) {
+    return uiComponentProps.rendered;
+  }
+  if (schema) {
+    const Field = optionsInfo?.hasDiscriminator ? LayoutMultiSchemaField2 : SchemaField2;
+    const { fieldUiSchema, uiReadonly } = computeFieldUiSchema(name, uiProps, uiSchema, isReadonly, readonly);
+    return _jsx6(Field, { "data-testid": optionsInfo?.hasDiscriminator ? LAYOUT_GRID_FIELD_TEST_IDS.layoutMultiSchemaField : LAYOUT_GRID_FIELD_TEST_IDS.field, ...otherProps, name, required: isRequired2, readonly: uiReadonly, schema, uiSchema: fieldUiSchema, errorSchema: get_default(errorSchema, name), fieldPathId: memoFieldPathId, formData: get_default(formData, name), onChange, onBlur, onFocus, options: optionsInfo?.options, registry });
+  }
+  if (UIComponent) {
+    return _jsx6(UIComponent, { "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.uiComponent, ...otherProps, name, required: isRequired2, formData, readOnly: !!isReadonly || readonly, errorSchema, uiSchema, schema: initialSchema, fieldPathId, onBlur, onFocus, registry, ...uiProps });
+  }
+  return null;
+}
+function LayoutGridField(props) {
+  const { uiSchema } = props;
+  let { layoutGridSchema } = props;
+  const uiOptions = getUiOptions(uiSchema);
+  if (!layoutGridSchema && LAYOUT_GRID_UI_OPTION in uiOptions && isObject_default(uiOptions[LAYOUT_GRID_UI_OPTION])) {
+    layoutGridSchema = uiOptions[LAYOUT_GRID_UI_OPTION];
+  }
+  if (isObject_default(layoutGridSchema)) {
+    if (GridType.ROW in layoutGridSchema) {
+      return _jsx6(LayoutGridRow, { ...props, layoutGridSchema });
+    }
+    if (GridType.COLUMN in layoutGridSchema) {
+      return _jsx6(LayoutGridCol, { ...props, layoutGridSchema });
+    }
+    if (GridType.COLUMNS in layoutGridSchema) {
+      return _jsx6(LayoutGridColumns, { ...props, layoutGridSchema });
+    }
+    if (GridType.CONDITION in layoutGridSchema) {
+      return _jsx6(LayoutGridCondition, { ...props, layoutGridSchema });
+    }
+  }
+  return _jsx6(LayoutGridFieldComponent, { ...props, gridSchema: layoutGridSchema });
+}
+LayoutGridField.TEST_IDS = LAYOUT_GRID_FIELD_TEST_IDS;
+
+// node_modules/@rjsf/core/lib/components/fields/LayoutHeaderField.js
+import { jsx as _jsx7 } from "react/jsx-runtime";
+function LayoutHeaderField(props) {
+  const { fieldPathId, title, schema, uiSchema, required, registry, name } = props;
+  const options = getUiOptions(uiSchema, registry.globalUiOptions);
+  const { title: uiTitle } = options;
+  const { title: schemaTitle } = schema;
+  const fieldTitle = uiTitle || title || schemaTitle || name;
+  if (!fieldTitle) {
+    return null;
+  }
+  const TitleFieldTemplate = getTemplate("TitleFieldTemplate", registry, options);
+  return _jsx7(TitleFieldTemplate, { id: titleId(fieldPathId), title: fieldTitle, required, schema, uiSchema, registry });
+}
+
+// node_modules/@rjsf/core/lib/components/fields/LayoutMultiSchemaField.js
+import { jsx as _jsx8 } from "react/jsx-runtime";
+import { useState as useState18, useEffect as useEffect4 } from "react";
+function getSelectedOption(options, selectorField, value) {
+  const defaultValue = "!@#!@$@#$!@$#";
+  const schemaOptions = options.map(({ schema }) => schema);
+  return schemaOptions.find((option) => {
+    const selector = get_default(option, [PROPERTIES_KEY, selectorField]);
+    const result = get_default(selector, DEFAULT_KEY, get_default(selector, CONST_KEY, defaultValue));
+    return result === value;
+  });
+}
+function computeEnumOptions(schema, options, schemaUtils, uiSchema, formData) {
+  const realOptions = options.map((opt) => schemaUtils.retrieveSchema(opt, formData));
+  let tempSchema = schema;
+  if (has_default(schema, ONE_OF_KEY)) {
+    tempSchema = { ...schema, [ONE_OF_KEY]: realOptions };
+  } else if (has_default(schema, ANY_OF_KEY)) {
+    tempSchema = { ...schema, [ANY_OF_KEY]: realOptions };
+  }
+  const enumOptions = optionsList(tempSchema, uiSchema);
+  if (!enumOptions) {
+    throw new Error(`No enumOptions were computed from the schema ${JSON.stringify(tempSchema)}`);
+  }
+  return enumOptions;
+}
+function LayoutMultiSchemaField(props) {
+  const { name, baseType, disabled = false, formData, fieldPathId, onBlur, onChange, options, onFocus, registry, uiSchema, schema, autofocus, readonly, required, errorSchema, hideError = false } = props;
+  const { widgets: widgets2, schemaUtils, globalUiOptions } = registry;
+  const [enumOptions, setEnumOptions] = useState18(computeEnumOptions(schema, options, schemaUtils, uiSchema, formData));
+  const id = get_default(fieldPathId, ID_KEY);
+  const discriminator = getDiscriminatorFieldFromSchema(schema);
+  const FieldErrorTemplate2 = getTemplate("FieldErrorTemplate", registry, options);
+  const FieldTemplate2 = getTemplate("FieldTemplate", registry, options);
+  const schemaHash = hashObject(schema);
+  const optionsHash = hashObject(options);
+  const uiSchemaHash = uiSchema ? hashObject(uiSchema) : "";
+  const formDataHash = formData ? hashObject(formData) : "";
+  useEffect4(() => {
+    setEnumOptions(computeEnumOptions(schema, options, schemaUtils, uiSchema, formData));
+  }, [schemaHash, optionsHash, schemaUtils, uiSchemaHash, formDataHash]);
+  const { widget = discriminator ? "radio" : "select", title = "", placeholder = "", optionsSchemaSelector: selectorField = discriminator, hideError: uiSchemaHideError, ...uiOptions } = getUiOptions(uiSchema);
+  if (!selectorField) {
+    throw new Error("No selector field provided for the LayoutMultiSchemaField");
+  }
+  const selectedOption = get_default(formData, selectorField);
+  let optionSchema = get_default(enumOptions[0]?.schema, [PROPERTIES_KEY, selectorField], {});
+  const option = getSelectedOption(enumOptions, selectorField, selectedOption);
+  optionSchema = optionSchema?.type ? optionSchema : { ...optionSchema, type: option?.type || baseType };
+  const Widget = getWidget(optionSchema, widget, widgets2);
+  const hideFieldError = uiSchemaHideError === void 0 ? hideError : Boolean(uiSchemaHideError);
+  const rawErrors = get_default(errorSchema, [ERRORS_KEY], []);
+  const fieldErrorSchema = omit_default(errorSchema, [ERRORS_KEY]);
+  const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+  const onOptionChange = (opt) => {
+    if (disabled || readonly) {
+      return;
+    }
+    const newOption = getSelectedOption(enumOptions, selectorField, opt);
+    const oldOption = getSelectedOption(enumOptions, selectorField, selectedOption);
+    let newFormData = schemaUtils.sanitizeDataForNewSchema(newOption, oldOption, formData);
+    if (newFormData && newOption) {
+      newFormData = schemaUtils.getDefaultFormState(newOption, newFormData, "excludeObjectChildren");
+    }
+    if (newFormData) {
+      set_default(newFormData, selectorField, opt);
+    }
+    onChange(newFormData, fieldPathId.path, void 0, id);
+  };
+  const widgetOptions = { enumOptions, ...uiOptions };
+  const errors = !hideFieldError && rawErrors.length > 0 ? _jsx8(FieldErrorTemplate2, { fieldPathId, schema, errors: rawErrors, registry }) : void 0;
+  return _jsx8(FieldTemplate2, { fieldPathId, id, schema, label: (title || schema.title) ?? "", disabled: disabled || Array.isArray(enumOptions) && isEmpty_default(enumOptions), uiSchema, required, readonly: !!readonly, registry, displayLabel, errors, onChange, onKeyRename: noop_default, onKeyRenameBlur: noop_default, onRemoveProperty: noop_default, children: _jsx8(Widget, { id, name, schema, label: (title || schema.title) ?? "", disabled: disabled || Array.isArray(enumOptions) && isEmpty_default(enumOptions), uiSchema, autofocus, readonly, required, registry, multiple: false, rawErrors, hideError: hideFieldError, hideLabel: !displayLabel, errorSchema: fieldErrorSchema, placeholder, onChange: onOptionChange, onBlur, onFocus, value: selectedOption, options: widgetOptions, htmlName: fieldPathId.name }) });
+}
+
+// node_modules/@rjsf/core/lib/components/fields/MultiSchemaField.js
+import { jsx as _jsx9 } from "react/jsx-runtime";
+import { Component } from "react";
+var AnyOfField = class extends Component {
+  /** Constructs an `AnyOfField` with the given `props` to initialize the initially selected option in state
+   *
+   * @param props - The `FieldProps` for this template
+   */
+  constructor(props) {
+    super(props);
+    /** Flag to skip the formData-change-driven option recalculation when the user just selected an option.
+     * Set to true in the setState callback of onOptionChange (after onChange is called), consumed and reset in
+     * componentDidUpdate. This prevents the matching-option recalculation from overriding a user's explicit choice
+     * when getDefaultFormState populates undefined properties that make deepEquals see a false formData change.
+     */
+    __publicField(this, "skipNextOptionRecalculation", false);
+    /** Callback handler to remember what the currently selected option is. In addition to that the `formData` is updated
+     * to remove properties that are not part of the newly selected option schema, and then the updated data is passed to
+     * the `onChange` handler.
+     *
+     * @param option - The new option value being selected
+     */
+    __publicField(this, "onOptionChange", (option) => {
+      const { selectedOption, retrievedOptions } = this.state;
+      const { disabled = false, formData, onChange, readonly = false, registry, fieldPathId } = this.props;
+      if (disabled || readonly) {
+        return;
+      }
+      const { schemaUtils } = registry;
+      const intOption = option !== void 0 ? parseInt(option, 10) : -1;
+      if (intOption === selectedOption) {
+        return;
+      }
+      const newOption = intOption >= 0 ? retrievedOptions[intOption] : void 0;
+      const oldOption = selectedOption >= 0 ? retrievedOptions[selectedOption] : void 0;
+      let newFormData = schemaUtils.sanitizeDataForNewSchema(newOption, oldOption, formData);
+      if (newOption) {
+        newFormData = schemaUtils.getDefaultFormState(newOption, newFormData, "excludeObjectChildren");
+      }
+      this.setState({ selectedOption: intOption }, () => {
+        this.skipNextOptionRecalculation = true;
+        onChange(newFormData, fieldPathId.path, void 0, this.getFieldId());
+      });
+    });
+    const { formData, options, registry: { schemaUtils } } = this.props;
+    const retrievedOptions = options.map((opt) => schemaUtils.retrieveSchema(opt, formData));
+    this.state = {
+      retrievedOptions,
+      selectedOption: this.getMatchingOption(0, formData, retrievedOptions)
+    };
+  }
+  /** React lifecycle method that is called when the props and/or state for this component is updated. It recomputes the
+   * currently selected option based on the overall `formData`
+   *
+   * @param prevProps - The previous `FieldProps` for this template
+   * @param prevState - The previous `AnyOfFieldState` for this template
+   */
+  componentDidUpdate(prevProps, prevState) {
+    const { formData, options, fieldPathId } = this.props;
+    const { selectedOption } = this.state;
+    let newState = this.state;
+    if (!deepEquals_default(prevProps.options, options)) {
+      const { registry: { schemaUtils } } = this.props;
+      const retrievedOptions = options.map((opt) => schemaUtils.retrieveSchema(opt, formData));
+      newState = { selectedOption, retrievedOptions };
+    }
+    if (!deepEquals_default(formData, prevProps.formData) && fieldPathId.$id === prevProps.fieldPathId.$id) {
+      if (this.skipNextOptionRecalculation) {
+        this.skipNextOptionRecalculation = false;
+      } else {
+        const { retrievedOptions } = newState;
+        const matchingOption = this.getMatchingOption(selectedOption, formData, retrievedOptions);
+        if (prevState && matchingOption !== selectedOption) {
+          newState = { selectedOption: matchingOption, retrievedOptions };
+        }
+      }
+    }
+    if (newState !== this.state) {
+      this.setState(newState);
+    }
+  }
+  /** Determines the best matching option for the given `formData` and `options`.
+   *
+   * @param formData - The new formData
+   * @param options - The list of options to choose from
+   * @return - The index of the `option` that best matches the `formData`
+   */
+  getMatchingOption(selectedOption, formData, options) {
+    const { schema, registry: { schemaUtils } } = this.props;
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    const option = schemaUtils.getClosestMatchingOption(formData, options, selectedOption, discriminator);
+    return option;
+  }
+  getFieldId() {
+    const { fieldPathId, schema } = this.props;
+    return `${fieldPathId.$id}${schema.oneOf ? "__oneof_select" : "__anyof_select"}`;
+  }
+  /** Renders the `AnyOfField` selector along with a `SchemaField` for the value of the `formData`
+   */
+  render() {
+    const { name, disabled = false, errorSchema = {}, formData, onBlur, onFocus, readonly, required = false, registry, schema, uiSchema } = this.props;
+    const { widgets: widgets2, fields: fields2, translateString, globalUiOptions, schemaUtils } = registry;
+    const { SchemaField: SchemaFieldComponent } = fields2;
+    const MultiSchemaFieldTemplate2 = getTemplate("MultiSchemaFieldTemplate", registry, globalUiOptions);
+    const isOptionalRender = shouldRenderOptionalField(registry, schema, required, uiSchema);
+    const hasFormData = isFormDataAvailable(formData);
+    const { selectedOption, retrievedOptions } = this.state;
+    const { widget = "select", placeholder, autofocus, autocomplete, title = schema.title, ...uiOptions } = getUiOptions(uiSchema, globalUiOptions);
+    const Widget = getWidget({ type: "number" }, widget, widgets2);
+    const rawErrors = get_default(errorSchema, ERRORS_KEY, []);
+    const fieldErrorSchema = omit_default(errorSchema, [ERRORS_KEY]);
+    const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+    const option = selectedOption >= 0 ? retrievedOptions[selectedOption] || null : null;
+    let optionSchema;
+    if (option) {
+      const { required: schemaRequired } = schema;
+      optionSchema = schemaRequired ? mergeSchemas({ required: schemaRequired }, option) : option;
+    }
+    let optionsUiSchema = [];
+    if (ONE_OF_KEY in schema && uiSchema && ONE_OF_KEY in uiSchema) {
+      if (Array.isArray(uiSchema[ONE_OF_KEY])) {
+        optionsUiSchema = uiSchema[ONE_OF_KEY];
+      } else {
+        console.warn(`uiSchema.oneOf is not an array for "${title || name}"`);
+      }
+    } else if (ANY_OF_KEY in schema && uiSchema && ANY_OF_KEY in uiSchema) {
+      if (Array.isArray(uiSchema[ANY_OF_KEY])) {
+        optionsUiSchema = uiSchema[ANY_OF_KEY];
+      } else {
+        console.warn(`uiSchema.anyOf is not an array for "${title || name}"`);
+      }
+    }
+    let optionUiSchema = uiSchema;
+    if (selectedOption >= 0 && optionsUiSchema.length > selectedOption) {
+      optionUiSchema = optionsUiSchema[selectedOption];
+    }
+    const translateEnum = title ? TranslatableString.TitleOptionPrefix : TranslatableString.OptionPrefix;
+    const translateParams = title ? [title] : [];
+    const enumOptions = retrievedOptions.map((opt, index) => {
+      const { title: uiTitle = opt.title } = getUiOptions(optionsUiSchema[index]);
+      return {
+        label: uiTitle || translateString(translateEnum, translateParams.concat(String(index + 1))),
+        value: index
+      };
+    });
+    const selector = !isOptionalRender || hasFormData ? _jsx9(Widget, { id: this.getFieldId(), name: `${name}${schema.oneOf ? "__oneof_select" : "__anyof_select"}`, schema: { type: "number", default: 0 }, onChange: this.onOptionChange, onBlur, onFocus, disabled: disabled || isEmpty_default(enumOptions), multiple: false, rawErrors, errorSchema: fieldErrorSchema, value: selectedOption >= 0 ? selectedOption : void 0, options: { enumOptions, ...uiOptions }, registry, placeholder, autocomplete, autofocus, label: title ?? name, hideLabel: !displayLabel, readonly }) : void 0;
+    const optionsSchemaField = optionSchema && optionSchema.type !== "null" && _jsx9(SchemaFieldComponent, { ...this.props, schema: optionSchema, uiSchema: optionUiSchema }) || null;
+    return _jsx9(MultiSchemaFieldTemplate2, { schema, registry, uiSchema, selector, optionSchemaField: optionsSchemaField });
+  }
+};
+var MultiSchemaField_default = AnyOfField;
+
+// node_modules/@rjsf/core/lib/components/fields/NullField.js
+import { useEffect as useEffect5 } from "react";
+function NullField(props) {
+  const { formData, onChange, fieldPathId } = props;
+  useEffect5(() => {
+    if (formData === void 0) {
+      onChange(null, fieldPathId.path);
+    }
+  }, [fieldPathId, formData, onChange]);
+  return null;
+}
+var NullField_default = NullField;
+
+// node_modules/@rjsf/core/lib/components/fields/NumberField.js
+import { jsx as _jsx10 } from "react/jsx-runtime";
+import { useState as useState19, useCallback as useCallback5 } from "react";
+var trailingCharMatcherWithPrefix = /\.([0-9]*0)*$/;
+var trailingCharMatcher = /[0.]0*$/;
+function NumberField2(props) {
+  const { registry, onChange, formData, value: initialValue } = props;
+  const [lastValue, setLastValue] = useState19(initialValue);
+  const { StringField: StringField2 } = registry.fields;
+  let value = formData;
+  const handleChange = useCallback5((newValue, path, errorSchema, id) => {
+    setLastValue(newValue);
+    const normalizedValue = `${newValue}`.startsWith(".") ? `0${newValue}` : newValue;
+    const processed = typeof normalizedValue === "string" && normalizedValue.match(trailingCharMatcherWithPrefix) ? asNumber(normalizedValue.replace(trailingCharMatcher, "")) : asNumber(normalizedValue);
+    onChange(processed, path, errorSchema, id);
+  }, [onChange]);
+  if (typeof lastValue === "string" && typeof value === "number") {
+    const re = new RegExp(`^(${String(value).replace(".", "\\.")})?\\.?0*$`);
+    if (lastValue.match(re)) {
+      value = lastValue;
+    }
+  }
+  return _jsx10(StringField2, { ...props, formData: value, onChange: handleChange });
+}
+var NumberField_default = NumberField2;
+
+// node_modules/@rjsf/core/lib/components/fields/ObjectField.js
+import { jsx as _jsx11, jsxs as _jsxs } from "react/jsx-runtime";
+import { memo as memo2, useCallback as useCallback6, useMemo as useMemo6, useRef as useRef5, useState as useState20 } from "react";
+
+// node_modules/markdown-to-jsx/dist/react.js
+import * as c0 from "react";
+
+// node_modules/markdown-to-jsx/dist/entities.generated.js
+var q = { af: "\u2061", applyfunction: "\u2061", ic: "\u2063", invisiblecomma: "\u2063", invisibletimes: "\u2062", it: "\u2062", lrm: "\u200E", negativemediumspace: "\u200B", negativethickspace: "\u200B", negativethinspace: "\u200B", negativeverythinspace: "\u200B", nobreak: "\u2060", rlm: "\u200F", shy: "\xAD", zerowidthspace: "\u200B", zwj: "\u200D", zwnj: "\u200C", downbreve: "\u0311", tdot: "\u20DB", tripledot: "\u20DB", dotdot: "\u20DC", tab: "	", newline: `
+`, emsp: "\u2003", emsp13: "\u2004", emsp14: "\u2005", ensp: "\u2002", hairsp: "\u200A", mediumspace: "\u205F", puncsp: "\u2008", thinsp: "\u2009", thinspace: "\u2009", verythinspace: "\u200A", nbsp: "\xA0", nonbreakingspace: "\xA0", numsp: "\u2007", thickspace: "\u205F\u200A", oline: "\u203E", overbar: "\u203E", lowbar: "_", underbar: "_", dash: "\u2010", hyphen: "\u2010", ndash: "\u2013", mdash: "\u2014", horbar: "\u2015", comma: ",", semi: ";", bsemi: "\u204F", colon: ":", Colone: "\u2A74", excl: "!", iexcl: "\xA1", quest: "?", iquest: "\xBF", period: ".", nldr: "\u2025", hellip: "\u2026", mldr: "\u2026", centerdot: "\xB7", middot: "\xB7", apos: "'", lsquo: "\u2018", opencurlyquote: "\u2018", closecurlyquote: "\u2019", rsquo: "\u2019", rsquor: "\u2019", lsquor: "\u201A", sbquo: "\u201A", lsaquo: "\u2039", rsaquo: "\u203A", quot: '"', ldquo: "\u201C", opencurlydoublequote: "\u201C", closecurlydoublequote: "\u201D", rdquo: "\u201D", rdquor: "\u201D", bdquo: "\u201E", ldquor: "\u201E", laquo: "\xAB", raquo: "\xBB", lpar: "(", rpar: ")", lbrack: "[", lsqb: "[", rbrack: "]", rsqb: "]", lbrace: "{", lcub: "{", rbrace: "}", rcub: "}", lceil: "\u2308", leftceiling: "\u2308", rceil: "\u2309", rightceiling: "\u2309", leftfloor: "\u230A", lfloor: "\u230A", rfloor: "\u230B", rightfloor: "\u230B", lopar: "\u2985", ropar: "\u2986", lbrke: "\u298B", rbrke: "\u298C", lbrkslu: "\u298D", rbrksld: "\u298E", lbrksld: "\u298F", rbrkslu: "\u2990", langd: "\u2991", rangd: "\u2992", lparlt: "\u2993", rpargt: "\u2994", gtlpar: "\u2995", ltrpar: "\u2996", leftdoublebracket: "\u27E6", lobrk: "\u27E6", rightdoublebracket: "\u27E7", robrk: "\u27E7", lang: "\u27E8", langle: "\u27E8", leftanglebracket: "\u27E8", rang: "\u27E9", rangle: "\u27E9", rightanglebracket: "\u27E9", Lang: "\u27EA", Rang: "\u27EB", loang: "\u27EC", roang: "\u27ED", lbbrk: "\u2772", rbbrk: "\u2773", Verbar: "\u2016", Vert: "\u2016", sect: "\xA7", para: "\xB6", commat: "@", ast: "*", midast: "*", sol: "/", bsol: "\\", amp: "&", num: "#", percnt: "%", permil: "\u2030", pertenk: "\u2031", dagger: "\u2020", Dagger: "\u2021", ddagger: "\u2021", bull: "\u2022", bullet: "\u2022", hybull: "\u2043", prime: "\u2032", Prime: "\u2033", tprime: "\u2034", qprime: "\u2057", backprime: "\u2035", bprime: "\u2035", caret: "\u2041", diacriticalgrave: "`", grave: "`", acute: "\xB4", diacriticalacute: "\xB4", diacriticaltilde: "\u02DC", tilde: "\u02DC", hat: "^", macr: "\xAF", strns: "\xAF", breve: "\u02D8", diacriticaldot: "\u02D9", dot: "\u02D9", die: "\xA8", Dot: "\xA8", doubledot: "\xA8", uml: "\xA8", ring: "\u02DA", dblac: "\u02DD", diacriticaldoubleacute: "\u02DD", cedil: "\xB8", cedilla: "\xB8", ogon: "\u02DB", circ: "\u02C6", caron: "\u02C7", hacek: "\u02C7", deg: "\xB0", copy: "\xA9", circledr: "\xAE", reg: "\xAE", copysr: "\u2117", weierp: "\u2118", wp: "\u2118", rx: "\u211E", mho: "\u2127", iiota: "\u2129", larr: "\u2190", leftarrow: "\u2190", shortleftarrow: "\u2190", slarr: "\u2190", nlarr: "\u219A", nleftarrow: "\u219A", rarr: "\u2192", rightarrow: "\u2192", shortrightarrow: "\u2192", srarr: "\u2192", nrarr: "\u219B", nrightarrow: "\u219B", shortuparrow: "\u2191", uarr: "\u2191", uparrow: "\u2191", darr: "\u2193", downarrow: "\u2193", shortdownarrow: "\u2193", harr: "\u2194", leftrightarrow: "\u2194", nharr: "\u21AE", nleftrightarrow: "\u21AE", updownarrow: "\u2195", varr: "\u2195", nwarr: "\u2196", nwarrow: "\u2196", upperleftarrow: "\u2196", nearr: "\u2197", nearrow: "\u2197", upperrightarrow: "\u2197", lowerrightarrow: "\u2198", searr: "\u2198", searrow: "\u2198", lowerleftarrow: "\u2199", swarr: "\u2199", swarrow: "\u2199", rarrw: "\u219D", rightsquigarrow: "\u219D", nrarrw: "\u219D\u0338", Larr: "\u219E", twoheadleftarrow: "\u219E", Uarr: "\u219F", Rarr: "\u21A0", twoheadrightarrow: "\u21A0", Darr: "\u21A1", larrtl: "\u21A2", leftarrowtail: "\u21A2", rarrtl: "\u21A3", rightarrowtail: "\u21A3", leftteearrow: "\u21A4", mapstoleft: "\u21A4", mapstoup: "\u21A5", upteearrow: "\u21A5", map: "\u21A6", mapsto: "\u21A6", rightteearrow: "\u21A6", downteearrow: "\u21A7", mapstodown: "\u21A7", hookleftarrow: "\u21A9", larrhk: "\u21A9", hookrightarrow: "\u21AA", rarrhk: "\u21AA", larrlp: "\u21AB", looparrowleft: "\u21AB", looparrowright: "\u21AC", rarrlp: "\u21AC", harrw: "\u21AD", leftrightsquigarrow: "\u21AD", lsh: "\u21B0", rsh: "\u21B1", ldsh: "\u21B2", rdsh: "\u21B3", crarr: "\u21B5", cularr: "\u21B6", curvearrowleft: "\u21B6", curarr: "\u21B7", curvearrowright: "\u21B7", circlearrowleft: "\u21BA", olarr: "\u21BA", circlearrowright: "\u21BB", orarr: "\u21BB", leftharpoonup: "\u21BC", leftvector: "\u21BC", lharu: "\u21BC", downleftvector: "\u21BD", leftharpoondown: "\u21BD", lhard: "\u21BD", rightupvector: "\u21BE", uharr: "\u21BE", upharpoonright: "\u21BE", leftupvector: "\u21BF", uharl: "\u21BF", upharpoonleft: "\u21BF", rharu: "\u21C0", rightharpoonup: "\u21C0", rightvector: "\u21C0", downrightvector: "\u21C1", rhard: "\u21C1", rightharpoondown: "\u21C1", dharr: "\u21C2", downharpoonright: "\u21C2", rightdownvector: "\u21C2", dharl: "\u21C3", downharpoonleft: "\u21C3", leftdownvector: "\u21C3", rightarrowleftarrow: "\u21C4", rightleftarrows: "\u21C4", rlarr: "\u21C4", udarr: "\u21C5", uparrowdownarrow: "\u21C5", leftarrowrightarrow: "\u21C6", leftrightarrows: "\u21C6", lrarr: "\u21C6", leftleftarrows: "\u21C7", llarr: "\u21C7", upuparrows: "\u21C8", uuarr: "\u21C8", rightrightarrows: "\u21C9", rrarr: "\u21C9", ddarr: "\u21CA", downdownarrows: "\u21CA", leftrightharpoons: "\u21CB", lrhar: "\u21CB", reverseequilibrium: "\u21CB", equilibrium: "\u21CC", rightleftharpoons: "\u21CC", rlhar: "\u21CC", doubleleftarrow: "\u21D0", lArr: "\u21D0", Leftarrow: "\u21D0", nlArr: "\u21CD", nLeftarrow: "\u21CD", doubleuparrow: "\u21D1", uArr: "\u21D1", Uparrow: "\u21D1", doublerightarrow: "\u21D2", implies: "\u21D2", rArr: "\u21D2", Rightarrow: "\u21D2", nrArr: "\u21CF", nRightarrow: "\u21CF", dArr: "\u21D3", doubledownarrow: "\u21D3", Downarrow: "\u21D3", doubleleftrightarrow: "\u21D4", hArr: "\u21D4", iff: "\u21D4", Leftrightarrow: "\u21D4", nhArr: "\u21CE", nLeftrightarrow: "\u21CE", doubleupdownarrow: "\u21D5", Updownarrow: "\u21D5", vArr: "\u21D5", nwArr: "\u21D6", neArr: "\u21D7", seArr: "\u21D8", swArr: "\u21D9", laarr: "\u21DA", lleftarrow: "\u21DA", raarr: "\u21DB", rrightarrow: "\u21DB", zigrarr: "\u21DD", larrb: "\u21E4", leftarrowbar: "\u21E4", rarrb: "\u21E5", rightarrowbar: "\u21E5", downarrowuparrow: "\u21F5", duarr: "\u21F5", loarr: "\u21FD", roarr: "\u21FE", hoarr: "\u21FF", forall: "\u2200", comp: "\u2201", complement: "\u2201", part: "\u2202", partiald: "\u2202", npart: "\u2202\u0338", exist: "\u2203", exists: "\u2203", nexist: "\u2204", nexists: "\u2204", notexists: "\u2204", empty: "\u2205", emptyset: "\u2205", emptyv: "\u2205", varnothing: "\u2205", del: "\u2207", nabla: "\u2207", element: "\u2208", in: "\u2208", isin: "\u2208", isinv: "\u2208", notelement: "\u2209", notin: "\u2209", notinva: "\u2209", ni: "\u220B", niv: "\u220B", reverseelement: "\u220B", suchthat: "\u220B", notni: "\u220C", notniva: "\u220C", notreverseelement: "\u220C", backepsilon: "\u03F6", bepsi: "\u03F6", prod: "\u220F", product: "\u220F", coprod: "\u2210", coproduct: "\u2210", sum: "\u2211", plus: "+", plusminus: "\xB1", plusmn: "\xB1", pm: "\xB1", div: "\xF7", divide: "\xF7", times: "\xD7", lt: "<", nless: "\u226E", nlt: "\u226E", notless: "\u226E", nvlt: "<\u20D2", equals: "=", ne: "\u2260", notequal: "\u2260", bne: "=\u20E5", equal: "\u2A75", gt: ">", ngt: "\u226F", ngtr: "\u226F", notgreater: "\u226F", nvgt: ">\u20D2", not: "\xAC", verbar: "|", vert: "|", verticalline: "|", brvbar: "\xA6", minus: "\u2212", minusplus: "\u2213", mnplus: "\u2213", mp: "\u2213", dotplus: "\u2214", plusdo: "\u2214", frasl: "\u2044", backslash: "\u2216", setminus: "\u2216", setmn: "\u2216", smallsetminus: "\u2216", ssetmn: "\u2216", lowast: "\u2217", compfn: "\u2218", smallcircle: "\u2218", radic: "\u221A", sqrt: "\u221A", prop: "\u221D", proportional: "\u221D", propto: "\u221D", varpropto: "\u221D", vprop: "\u221D", infin: "\u221E", angrt: "\u221F", ang: "\u2220", angle: "\u2220", nang: "\u2220\u20D2", angmsd: "\u2221", measuredangle: "\u2221", angsph: "\u2222", mid: "\u2223", shortmid: "\u2223", smid: "\u2223", verticalbar: "\u2223", nmid: "\u2224", notverticalbar: "\u2224", nshortmid: "\u2224", nsmid: "\u2224", doubleverticalbar: "\u2225", par: "\u2225", parallel: "\u2225", shortparallel: "\u2225", spar: "\u2225", notdoubleverticalbar: "\u2226", npar: "\u2226", nparallel: "\u2226", nshortparallel: "\u2226", nspar: "\u2226", and: "\u2227", wedge: "\u2227", or: "\u2228", vee: "\u2228", cap: "\u2229", caps: "\u2229\uFE00", cup: "\u222A", cups: "\u222A\uFE00", int: "\u222B", integral: "\u222B", Int: "\u222C", iiint: "\u222D", tint: "\u222D", iiiint: "\u2A0C", qint: "\u2A0C", conint: "\u222E", contourintegral: "\u222E", oint: "\u222E", Conint: "\u222F", doublecontourintegral: "\u222F", cconint: "\u2230", cwint: "\u2231", clockwisecontourintegral: "\u2232", cwconint: "\u2232", awconint: "\u2233", counterclockwisecontourintegral: "\u2233", there4: "\u2234", therefore: "\u2234", becaus: "\u2235", because: "\u2235", ratio: "\u2236", Colon: "\u2237", proportion: "\u2237", dotminus: "\u2238", minusd: "\u2238", mddot: "\u223A", homtht: "\u223B", sim: "\u223C", thicksim: "\u223C", thksim: "\u223C", Tilde: "\u223C", nottilde: "\u2241", nsim: "\u2241", nvsim: "\u223C\u20D2", backsim: "\u223D", bsim: "\u223D", race: "\u223D\u0331", ac: "\u223E", mstpos: "\u223E", ace: "\u223E\u0333", acd: "\u223F", verticaltilde: "\u2240", wr: "\u2240", wreath: "\u2240", eqsim: "\u2242", equaltilde: "\u2242", esim: "\u2242", nesim: "\u2242\u0338", notequaltilde: "\u2242\u0338", sime: "\u2243", simeq: "\u2243", tildeequal: "\u2243", nottildeequal: "\u2244", nsime: "\u2244", nsimeq: "\u2244", cong: "\u2245", tildefullequal: "\u2245", ncong: "\u2247", nottildefullequal: "\u2247", simne: "\u2246", ap: "\u2248", approx: "\u2248", asymp: "\u2248", thickapprox: "\u2248", thkap: "\u2248", tildetilde: "\u2248", nap: "\u2249", napprox: "\u2249", nottildetilde: "\u2249", ape: "\u224A", approxeq: "\u224A", apid: "\u224B", napid: "\u224B\u0338", backcong: "\u224C", bcong: "\u224C", asympeq: "\u224D", CupCap: "\u224D", notcupcap: "\u226D", nvap: "\u224D\u20D2", bump: "\u224E", Bumpeq: "\u224E", humpdownhump: "\u224E", nbump: "\u224E\u0338", nothumpdownhump: "\u224E\u0338", bumpe: "\u224F", bumpeq: "\u224F", humpequal: "\u224F", nbumpe: "\u224F\u0338", nothumpequal: "\u224F\u0338", doteq: "\u2250", dotequal: "\u2250", esdot: "\u2250", nedot: "\u2250\u0338", doteqdot: "\u2251", eDot: "\u2251", efdot: "\u2252", fallingdotseq: "\u2252", erdot: "\u2253", risingdotseq: "\u2253", assign: "\u2254", colone: "\u2254", coloneq: "\u2254", ecolon: "\u2255", eqcolon: "\u2255", ecir: "\u2256", eqcirc: "\u2256", circeq: "\u2257", cire: "\u2257", wedgeq: "\u2259", veeeq: "\u225A", triangleq: "\u225C", trie: "\u225C", equest: "\u225F", questeq: "\u225F", congruent: "\u2261", equiv: "\u2261", nequiv: "\u2262", notcongruent: "\u2262", bnequiv: "\u2261\u20E5", le: "\u2264", leq: "\u2264", nle: "\u2270", nleq: "\u2270", notlessequal: "\u2270", nvle: "\u2264\u20D2", ge: "\u2265", geq: "\u2265", greaterequal: "\u2265", nge: "\u2271", ngeq: "\u2271", notgreaterequal: "\u2271", nvge: "\u2265\u20D2", lE: "\u2266", leqq: "\u2266", lessfullequal: "\u2266", nlE: "\u2266\u0338", nleqq: "\u2266\u0338", gE: "\u2267", geqq: "\u2267", greaterfullequal: "\u2267", ngE: "\u2267\u0338", ngeqq: "\u2267\u0338", notgreaterfullequal: "\u2267\u0338", lnE: "\u2268", lneqq: "\u2268", lvertneqq: "\u2268\uFE00", lvne: "\u2268\uFE00", gnE: "\u2269", gneqq: "\u2269", gvertneqq: "\u2269\uFE00", gvne: "\u2269\uFE00", ll: "\u226A", Lt: "\u226A", nestedlessless: "\u226A", nltv: "\u226A\u0338", notlessless: "\u226A\u0338", nLt: "\u226A\u20D2", gg: "\u226B", Gt: "\u226B", nestedgreatergreater: "\u226B", ngtv: "\u226B\u0338", notgreatergreater: "\u226B\u0338", nGt: "\u226B\u20D2", between: "\u226C", twixt: "\u226C", lesssim: "\u2272", lesstilde: "\u2272", lsim: "\u2272", nlsim: "\u2274", notlesstilde: "\u2274", greatertilde: "\u2273", gsim: "\u2273", gtrsim: "\u2273", ngsim: "\u2275", notgreatertilde: "\u2275", lessgreater: "\u2276", lessgtr: "\u2276", lg: "\u2276", notlessgreater: "\u2278", ntlg: "\u2278", gl: "\u2277", greaterless: "\u2277", gtrless: "\u2277", notgreaterless: "\u2279", ntgl: "\u2279", pr: "\u227A", prec: "\u227A", precedes: "\u227A", notprecedes: "\u2280", npr: "\u2280", nprec: "\u2280", sc: "\u227B", succ: "\u227B", succeeds: "\u227B", notsucceeds: "\u2281", nsc: "\u2281", nsucc: "\u2281", prcue: "\u227C", preccurlyeq: "\u227C", precedesslantequal: "\u227C", notprecedesslantequal: "\u22E0", nprcue: "\u22E0", sccue: "\u227D", succcurlyeq: "\u227D", succeedsslantequal: "\u227D", notsucceedsslantequal: "\u22E1", nsccue: "\u22E1", precedestilde: "\u227E", precsim: "\u227E", prsim: "\u227E", scsim: "\u227F", succeedstilde: "\u227F", succsim: "\u227F", notsucceedstilde: "\u227F\u0338", sub: "\u2282", subset: "\u2282", nsub: "\u2284", notsubset: "\u2282\u20D2", nsubset: "\u2282\u20D2", vnsub: "\u2282\u20D2", sup: "\u2283", superset: "\u2283", supset: "\u2283", nsup: "\u2285", notsuperset: "\u2283\u20D2", nsupset: "\u2283\u20D2", vnsup: "\u2283\u20D2", sube: "\u2286", subseteq: "\u2286", subsetequal: "\u2286", notsubsetequal: "\u2288", nsube: "\u2288", nsubseteq: "\u2288", supe: "\u2287", supersetequal: "\u2287", supseteq: "\u2287", notsupersetequal: "\u2289", nsupe: "\u2289", nsupseteq: "\u2289", subne: "\u228A", subsetneq: "\u228A", varsubsetneq: "\u228A\uFE00", vsubne: "\u228A\uFE00", supne: "\u228B", supsetneq: "\u228B", varsupsetneq: "\u228B\uFE00", vsupne: "\u228B\uFE00", cupdot: "\u228D", unionplus: "\u228E", uplus: "\u228E", sqsub: "\u228F", sqsubset: "\u228F", squaresubset: "\u228F", notsquaresubset: "\u228F\u0338", sqsup: "\u2290", sqsupset: "\u2290", squaresuperset: "\u2290", notsquaresuperset: "\u2290\u0338", sqsube: "\u2291", sqsubseteq: "\u2291", squaresubsetequal: "\u2291", notsquaresubsetequal: "\u22E2", nsqsube: "\u22E2", sqsupe: "\u2292", sqsupseteq: "\u2292", squaresupersetequal: "\u2292", notsquaresupersetequal: "\u22E3", nsqsupe: "\u22E3", sqcap: "\u2293", sqcaps: "\u2293\uFE00", squareintersection: "\u2293", sqcup: "\u2294", sqcups: "\u2294\uFE00", squareunion: "\u2294", circleplus: "\u2295", oplus: "\u2295", circleminus: "\u2296", ominus: "\u2296", circletimes: "\u2297", otimes: "\u2297", osol: "\u2298", circledot: "\u2299", odot: "\u2299", circledcirc: "\u229A", ocir: "\u229A", circledast: "\u229B", oast: "\u229B", circleddash: "\u229D", odash: "\u229D", boxplus: "\u229E", plusb: "\u229E", boxminus: "\u229F", minusb: "\u229F", boxtimes: "\u22A0", timesb: "\u22A0", dotsquare: "\u22A1", sdotb: "\u22A1", righttee: "\u22A2", vdash: "\u22A2", nvdash: "\u22AC", dashv: "\u22A3", lefttee: "\u22A3", downtee: "\u22A4", top: "\u22A4", bot: "\u22A5", bottom: "\u22A5", perp: "\u22A5", uptee: "\u22A5", models: "\u22A7", doublerighttee: "\u22A8", vDash: "\u22A8", nvDash: "\u22AD", Vdash: "\u22A9", nVdash: "\u22AE", vvdash: "\u22AA", VDash: "\u22AB", nVDash: "\u22AF", prurel: "\u22B0", lefttriangle: "\u22B2", vartriangleleft: "\u22B2", vltri: "\u22B2", nltri: "\u22EA", notlefttriangle: "\u22EA", ntriangleleft: "\u22EA", righttriangle: "\u22B3", vartriangleright: "\u22B3", vrtri: "\u22B3", notrighttriangle: "\u22EB", nrtri: "\u22EB", ntriangleright: "\u22EB", lefttriangleequal: "\u22B4", ltrie: "\u22B4", trianglelefteq: "\u22B4", nltrie: "\u22EC", notlefttriangleequal: "\u22EC", ntrianglelefteq: "\u22EC", nvltrie: "\u22B4\u20D2", righttriangleequal: "\u22B5", rtrie: "\u22B5", trianglerighteq: "\u22B5", notrighttriangleequal: "\u22ED", nrtrie: "\u22ED", ntrianglerighteq: "\u22ED", nvrtrie: "\u22B5\u20D2", origof: "\u22B6", imof: "\u22B7", multimap: "\u22B8", mumap: "\u22B8", hercon: "\u22B9", intcal: "\u22BA", intercal: "\u22BA", veebar: "\u22BB", barvee: "\u22BD", angrtvb: "\u22BE", lrtri: "\u22BF", bigwedge: "\u22C0", Wedge: "\u22C0", xwedge: "\u22C0", bigvee: "\u22C1", Vee: "\u22C1", xvee: "\u22C1", bigcap: "\u22C2", intersection: "\u22C2", xcap: "\u22C2", bigcup: "\u22C3", union: "\u22C3", xcup: "\u22C3", diam: "\u22C4", diamond: "\u22C4", sdot: "\u22C5", sstarf: "\u22C6", Star: "\u22C6", divideontimes: "\u22C7", divonx: "\u22C7", bowtie: "\u22C8", ltimes: "\u22C9", rtimes: "\u22CA", leftthreetimes: "\u22CB", lthree: "\u22CB", rightthreetimes: "\u22CC", rthree: "\u22CC", backsimeq: "\u22CD", bsime: "\u22CD", curlyvee: "\u22CE", cuvee: "\u22CE", curlywedge: "\u22CF", cuwed: "\u22CF", Sub: "\u22D0", Subset: "\u22D0", Sup: "\u22D1", Supset: "\u22D1", Cap: "\u22D2", Cup: "\u22D3", fork: "\u22D4", pitchfork: "\u22D4", epar: "\u22D5", lessdot: "\u22D6", ltdot: "\u22D6", gtdot: "\u22D7", gtrdot: "\u22D7", Ll: "\u22D8", nll: "\u22D8\u0338", Gg: "\u22D9", ggg: "\u22D9", ngg: "\u22D9\u0338", leg: "\u22DA", lesg: "\u22DA\uFE00", lesseqgtr: "\u22DA", lessequalgreater: "\u22DA", gel: "\u22DB", gesl: "\u22DB\uFE00", greaterequalless: "\u22DB", gtreqless: "\u22DB", cuepr: "\u22DE", curlyeqprec: "\u22DE", cuesc: "\u22DF", curlyeqsucc: "\u22DF", lnsim: "\u22E6", gnsim: "\u22E7", precnsim: "\u22E8", prnsim: "\u22E8", scnsim: "\u22E9", succnsim: "\u22E9", vellip: "\u22EE", ctdot: "\u22EF", utdot: "\u22F0", dtdot: "\u22F1", disin: "\u22F2", isinsv: "\u22F3", isins: "\u22F4", isindot: "\u22F5", notindot: "\u22F5\u0338", notinvc: "\u22F6", notinvb: "\u22F7", isine: "\u22F9", notine: "\u22F9\u0338", nisd: "\u22FA", xnis: "\u22FB", nis: "\u22FC", notnivc: "\u22FD", notnivb: "\u22FE", barwed: "\u2305", barwedge: "\u2305", Barwed: "\u2306", doublebarwedge: "\u2306", drcrop: "\u230C", dlcrop: "\u230D", urcrop: "\u230E", ulcrop: "\u230F", bnot: "\u2310", profline: "\u2312", profsurf: "\u2313", telrec: "\u2315", target: "\u2316", ulcorn: "\u231C", ulcorner: "\u231C", urcorn: "\u231D", urcorner: "\u231D", dlcorn: "\u231E", llcorner: "\u231E", drcorn: "\u231F", lrcorner: "\u231F", frown: "\u2322", sfrown: "\u2322", smile: "\u2323", ssmile: "\u2323", cylcty: "\u232D", profalar: "\u232E", topbot: "\u2336", ovbar: "\u233D", solbar: "\u233F", angzarr: "\u237C", lmoust: "\u23B0", lmoustache: "\u23B0", rmoust: "\u23B1", rmoustache: "\u23B1", overbracket: "\u23B4", tbrk: "\u23B4", bbrk: "\u23B5", underbracket: "\u23B5", bbrktbrk: "\u23B6", overparenthesis: "\u23DC", underparenthesis: "\u23DD", overbrace: "\u23DE", underbrace: "\u23DF", trpezium: "\u23E2", elinters: "\u23E7", blank: "\u2423", boxh: "\u2500", horizontalline: "\u2500", boxv: "\u2502", boxdr: "\u250C", boxdl: "\u2510", boxur: "\u2514", boxul: "\u2518", boxvr: "\u251C", boxvl: "\u2524", boxhd: "\u252C", boxhu: "\u2534", boxvh: "\u253C", boxH: "\u2550", boxV: "\u2551", boxdR: "\u2552", boxDr: "\u2553", boxDR: "\u2554", boxdL: "\u2555", boxDl: "\u2556", boxDL: "\u2557", boxuR: "\u2558", boxUr: "\u2559", boxUR: "\u255A", boxuL: "\u255B", boxUl: "\u255C", boxUL: "\u255D", boxvR: "\u255E", boxVr: "\u255F", boxVR: "\u2560", boxvL: "\u2561", boxVl: "\u2562", boxVL: "\u2563", boxHd: "\u2564", boxhD: "\u2565", boxHD: "\u2566", boxHu: "\u2567", boxhU: "\u2568", boxHU: "\u2569", boxvH: "\u256A", boxVh: "\u256B", boxVH: "\u256C", uhblk: "\u2580", lhblk: "\u2584", block: "\u2588", blk14: "\u2591", blk12: "\u2592", blk34: "\u2593", squ: "\u25A1", square: "\u25A1", blacksquare: "\u25AA", filledverysmallsquare: "\u25AA", squarf: "\u25AA", squf: "\u25AA", emptyverysmallsquare: "\u25AB", rect: "\u25AD", marker: "\u25AE", fltns: "\u25B1", bigtriangleup: "\u25B3", xutri: "\u25B3", blacktriangle: "\u25B4", utrif: "\u25B4", triangle: "\u25B5", utri: "\u25B5", blacktriangleright: "\u25B8", rtrif: "\u25B8", rtri: "\u25B9", triangleright: "\u25B9", bigtriangledown: "\u25BD", xdtri: "\u25BD", blacktriangledown: "\u25BE", dtrif: "\u25BE", dtri: "\u25BF", triangledown: "\u25BF", blacktriangleleft: "\u25C2", ltrif: "\u25C2", ltri: "\u25C3", triangleleft: "\u25C3", loz: "\u25CA", lozenge: "\u25CA", cir: "\u25CB", tridot: "\u25EC", bigcirc: "\u25EF", xcirc: "\u25EF", ultri: "\u25F8", urtri: "\u25F9", lltri: "\u25FA", emptysmallsquare: "\u25FB", filledsmallsquare: "\u25FC", bigstar: "\u2605", starf: "\u2605", star: "\u2606", phone: "\u260E", female: "\u2640", male: "\u2642", spades: "\u2660", spadesuit: "\u2660", clubs: "\u2663", clubsuit: "\u2663", hearts: "\u2665", heartsuit: "\u2665", diamondsuit: "\u2666", diams: "\u2666", sung: "\u266A", check: "\u2713", checkmark: "\u2713", cross: "\u2717", malt: "\u2720", maltese: "\u2720", sext: "\u2736", verticalseparator: "\u2758", bsolhsub: "\u27C8", suphsol: "\u27C9", longleftarrow: "\u27F5", xlarr: "\u27F5", longrightarrow: "\u27F6", xrarr: "\u27F6", longleftrightarrow: "\u27F7", xharr: "\u27F7", doublelongleftarrow: "\u27F8", Longleftarrow: "\u27F8", xlArr: "\u27F8", doublelongrightarrow: "\u27F9", Longrightarrow: "\u27F9", xrArr: "\u27F9", doublelongleftrightarrow: "\u27FA", Longleftrightarrow: "\u27FA", xhArr: "\u27FA", longmapsto: "\u27FC", xmap: "\u27FC", dzigrarr: "\u27FF", nvlarr: "\u2902", nvrarr: "\u2903", nvharr: "\u2904", Map: "\u2905", lbarr: "\u290C", bkarow: "\u290D", lBarr: "\u290E", dbkarow: "\u290F", rBarr: "\u290F", drbkarow: "\u2910", rbarr: "\u2910", RBarr: "\u2910", ddotrahd: "\u2911", uparrowbar: "\u2912", downarrowbar: "\u2913", Rarrtl: "\u2916", latail: "\u2919", ratail: "\u291A", lAtail: "\u291B", rAtail: "\u291C", larrfs: "\u291D", rarrfs: "\u291E", larrbfs: "\u291F", rarrbfs: "\u2920", nwarhk: "\u2923", nearhk: "\u2924", hksearow: "\u2925", searhk: "\u2925", hkswarow: "\u2926", swarhk: "\u2926", nwnear: "\u2927", nesear: "\u2928", toea: "\u2928", seswar: "\u2929", tosa: "\u2929", swnwar: "\u292A", rarrc: "\u2933", nrarrc: "\u2933\u0338", cudarrr: "\u2935", ldca: "\u2936", rdca: "\u2937", cudarrl: "\u2938", larrpl: "\u2939", curarrm: "\u293C", cularrp: "\u293D", rarrpl: "\u2945", harrcir: "\u2948", uarrocir: "\u2949", lurdshar: "\u294A", ldrushar: "\u294B", leftrightvector: "\u294E", rightupdownvector: "\u294F", downleftrightvector: "\u2950", leftupdownvector: "\u2951", leftvectorbar: "\u2952", rightvectorbar: "\u2953", rightupvectorbar: "\u2954", rightdownvectorbar: "\u2955", downleftvectorbar: "\u2956", downrightvectorbar: "\u2957", leftupvectorbar: "\u2958", leftdownvectorbar: "\u2959", leftteevector: "\u295A", rightteevector: "\u295B", rightupteevector: "\u295C", rightdownteevector: "\u295D", downleftteevector: "\u295E", downrightteevector: "\u295F", leftupteevector: "\u2960", leftdownteevector: "\u2961", lhar: "\u2962", uhar: "\u2963", rhar: "\u2964", dhar: "\u2965", luruhar: "\u2966", ldrdhar: "\u2967", ruluhar: "\u2968", rdldhar: "\u2969", lharul: "\u296A", llhard: "\u296B", rharul: "\u296C", lrhard: "\u296D", udhar: "\u296E", upequilibrium: "\u296E", duhar: "\u296F", reverseupequilibrium: "\u296F", roundimplies: "\u2970", erarr: "\u2971", simrarr: "\u2972", larrsim: "\u2973", rarrsim: "\u2974", rarrap: "\u2975", ltlarr: "\u2976", gtrarr: "\u2978", subrarr: "\u2979", suplarr: "\u297B", lfisht: "\u297C", rfisht: "\u297D", ufisht: "\u297E", dfisht: "\u297F", vzigzag: "\u299A", vangrt: "\u299C", angrtvbd: "\u299D", ange: "\u29A4", range: "\u29A5", dwangle: "\u29A6", uwangle: "\u29A7", angmsdaa: "\u29A8", angmsdab: "\u29A9", angmsdac: "\u29AA", angmsdad: "\u29AB", angmsdae: "\u29AC", angmsdaf: "\u29AD", angmsdag: "\u29AE", angmsdah: "\u29AF", bemptyv: "\u29B0", demptyv: "\u29B1", cemptyv: "\u29B2", raemptyv: "\u29B3", laemptyv: "\u29B4", ohbar: "\u29B5", omid: "\u29B6", opar: "\u29B7", operp: "\u29B9", olcross: "\u29BB", odsold: "\u29BC", olcir: "\u29BE", ofcir: "\u29BF", olt: "\u29C0", ogt: "\u29C1", cirscir: "\u29C2", cirE: "\u29C3", solb: "\u29C4", bsolb: "\u29C5", boxbox: "\u29C9", trisb: "\u29CD", rtriltri: "\u29CE", lefttrianglebar: "\u29CF", notlefttrianglebar: "\u29CF\u0338", righttrianglebar: "\u29D0", notrighttrianglebar: "\u29D0\u0338", iinfin: "\u29DC", infintie: "\u29DD", nvinfin: "\u29DE", eparsl: "\u29E3", smeparsl: "\u29E4", eqvparsl: "\u29E5", blacklozenge: "\u29EB", lozf: "\u29EB", ruledelayed: "\u29F4", dsol: "\u29F6", bigodot: "\u2A00", xodot: "\u2A00", bigoplus: "\u2A01", xoplus: "\u2A01", bigotimes: "\u2A02", xotime: "\u2A02", biguplus: "\u2A04", xuplus: "\u2A04", bigsqcup: "\u2A06", xsqcup: "\u2A06", fpartint: "\u2A0D", cirfnint: "\u2A10", awint: "\u2A11", rppolint: "\u2A12", scpolint: "\u2A13", npolint: "\u2A14", pointint: "\u2A15", quatint: "\u2A16", intlarhk: "\u2A17", pluscir: "\u2A22", plusacir: "\u2A23", simplus: "\u2A24", plusdu: "\u2A25", plussim: "\u2A26", plustwo: "\u2A27", mcomma: "\u2A29", minusdu: "\u2A2A", loplus: "\u2A2D", roplus: "\u2A2E", Cross: "\u2A2F", timesd: "\u2A30", timesbar: "\u2A31", smashp: "\u2A33", lotimes: "\u2A34", rotimes: "\u2A35", otimesas: "\u2A36", Otimes: "\u2A37", odiv: "\u2A38", triplus: "\u2A39", triminus: "\u2A3A", tritime: "\u2A3B", intprod: "\u2A3C", iprod: "\u2A3C", amalg: "\u2A3F", capdot: "\u2A40", ncup: "\u2A42", ncap: "\u2A43", capand: "\u2A44", cupor: "\u2A45", cupcap: "\u2A46", capcup: "\u2A47", cupbrcap: "\u2A48", capbrcup: "\u2A49", cupcup: "\u2A4A", capcap: "\u2A4B", ccups: "\u2A4C", ccaps: "\u2A4D", ccupssm: "\u2A50", And: "\u2A53", Or: "\u2A54", andand: "\u2A55", oror: "\u2A56", orslope: "\u2A57", andslope: "\u2A58", andv: "\u2A5A", orv: "\u2A5B", andd: "\u2A5C", ord: "\u2A5D", wedbar: "\u2A5F", sdote: "\u2A66", simdot: "\u2A6A", congdot: "\u2A6D", ncongdot: "\u2A6D\u0338", easter: "\u2A6E", apacir: "\u2A6F", apE: "\u2A70", nape: "\u2A70\u0338", eplus: "\u2A71", pluse: "\u2A72", Esim: "\u2A73", ddotseq: "\u2A77", eddot: "\u2A77", equivdd: "\u2A78", ltcir: "\u2A79", gtcir: "\u2A7A", ltquest: "\u2A7B", gtquest: "\u2A7C", leqslant: "\u2A7D", les: "\u2A7D", lessslantequal: "\u2A7D", nleqslant: "\u2A7D\u0338", nles: "\u2A7D\u0338", notlessslantequal: "\u2A7D\u0338", geqslant: "\u2A7E", ges: "\u2A7E", greaterslantequal: "\u2A7E", ngeqslant: "\u2A7E\u0338", nges: "\u2A7E\u0338", notgreaterslantequal: "\u2A7E\u0338", lesdot: "\u2A7F", gesdot: "\u2A80", lesdoto: "\u2A81", gesdoto: "\u2A82", lesdotor: "\u2A83", gesdotol: "\u2A84", lap: "\u2A85", lessapprox: "\u2A85", gap: "\u2A86", gtrapprox: "\u2A86", lne: "\u2A87", lneq: "\u2A87", gne: "\u2A88", gneq: "\u2A88", lnap: "\u2A89", lnapprox: "\u2A89", gnap: "\u2A8A", gnapprox: "\u2A8A", lEg: "\u2A8B", lesseqqgtr: "\u2A8B", gEl: "\u2A8C", gtreqqless: "\u2A8C", lsime: "\u2A8D", gsime: "\u2A8E", lsimg: "\u2A8F", gsiml: "\u2A90", lge: "\u2A91", gle: "\u2A92", lesges: "\u2A93", gesles: "\u2A94", els: "\u2A95", eqslantless: "\u2A95", egs: "\u2A96", eqslantgtr: "\u2A96", elsdot: "\u2A97", egsdot: "\u2A98", el: "\u2A99", eg: "\u2A9A", siml: "\u2A9D", simg: "\u2A9E", simle: "\u2A9F", simge: "\u2AA0", lessless: "\u2AA1", notnestedlessless: "\u2AA1\u0338", greatergreater: "\u2AA2", notnestedgreatergreater: "\u2AA2\u0338", glj: "\u2AA4", gla: "\u2AA5", ltcc: "\u2AA6", gtcc: "\u2AA7", lescc: "\u2AA8", gescc: "\u2AA9", smt: "\u2AAA", lat: "\u2AAB", smte: "\u2AAC", smtes: "\u2AAC\uFE00", late: "\u2AAD", lates: "\u2AAD\uFE00", bumpE: "\u2AAE", pre: "\u2AAF", precedesequal: "\u2AAF", preceq: "\u2AAF", notprecedesequal: "\u2AAF\u0338", npre: "\u2AAF\u0338", npreceq: "\u2AAF\u0338", sce: "\u2AB0", succeedsequal: "\u2AB0", succeq: "\u2AB0", notsucceedsequal: "\u2AB0\u0338", nsce: "\u2AB0\u0338", nsucceq: "\u2AB0\u0338", prE: "\u2AB3", scE: "\u2AB4", precneqq: "\u2AB5", prne: "\u2AB5", scne: "\u2AB6", succneqq: "\u2AB6", prap: "\u2AB7", precapprox: "\u2AB7", scap: "\u2AB8", succapprox: "\u2AB8", precnapprox: "\u2AB9", prnap: "\u2AB9", scnap: "\u2ABA", succnapprox: "\u2ABA", Pr: "\u2ABB", Sc: "\u2ABC", subdot: "\u2ABD", supdot: "\u2ABE", subplus: "\u2ABF", supplus: "\u2AC0", submult: "\u2AC1", supmult: "\u2AC2", subedot: "\u2AC3", supedot: "\u2AC4", subE: "\u2AC5", subseteqq: "\u2AC5", nsubE: "\u2AC5\u0338", nsubseteqq: "\u2AC5\u0338", supE: "\u2AC6", supseteqq: "\u2AC6", nsupE: "\u2AC6\u0338", nsupseteqq: "\u2AC6\u0338", subsim: "\u2AC7", supsim: "\u2AC8", subnE: "\u2ACB", subsetneqq: "\u2ACB", varsubsetneqq: "\u2ACB\uFE00", vsubnE: "\u2ACB\uFE00", supnE: "\u2ACC", supsetneqq: "\u2ACC", varsupsetneqq: "\u2ACC\uFE00", vsupnE: "\u2ACC\uFE00", csub: "\u2ACF", csup: "\u2AD0", csube: "\u2AD1", csupe: "\u2AD2", subsup: "\u2AD3", supsub: "\u2AD4", subsub: "\u2AD5", supsup: "\u2AD6", suphsub: "\u2AD7", supdsub: "\u2AD8", forkv: "\u2AD9", topfork: "\u2ADA", mlcp: "\u2ADB", Dashv: "\u2AE4", doublelefttee: "\u2AE4", vdashl: "\u2AE6", barv: "\u2AE7", vbar: "\u2AE8", vbarv: "\u2AE9", Vbar: "\u2AEB", Not: "\u2AEC", bNot: "\u2AED", rnmid: "\u2AEE", cirmid: "\u2AEF", midcir: "\u2AF0", topcir: "\u2AF1", nhpar: "\u2AF2", parsim: "\u2AF3", parsl: "\u2AFD", nparsl: "\u2AFD\u20E5", flat: "\u266D", natur: "\u266E", natural: "\u266E", sharp: "\u266F", curren: "\xA4", cent: "\xA2", dollar: "$", pound: "\xA3", yen: "\xA5", euro: "\u20AC", sup1: "\xB9", frac12: "\xBD", half: "\xBD", frac13: "\u2153", frac14: "\xBC", frac15: "\u2155", frac16: "\u2159", frac18: "\u215B", sup2: "\xB2", frac23: "\u2154", frac25: "\u2156", sup3: "\xB3", frac34: "\xBE", frac35: "\u2157", frac38: "\u215C", frac45: "\u2158", frac56: "\u215A", frac58: "\u215D", frac78: "\u215E", afr: "\u{1D51E}", aopf: "\u{1D552}", ascr: "\u{1D4B6}", Afr: "\u{1D504}", Aopf: "\u{1D538}", Ascr: "\u{1D49C}", ordf: "\xAA", aacute: "\xE1", Aacute: "\xC1", agrave: "\xE0", Agrave: "\xC0", abreve: "\u0103", Abreve: "\u0102", acirc: "\xE2", Acirc: "\xC2", aring: "\xE5", angst: "\xC5", Aring: "\xC5", auml: "\xE4", Auml: "\xC4", atilde: "\xE3", Atilde: "\xC3", aogon: "\u0105", Aogon: "\u0104", amacr: "\u0101", Amacr: "\u0100", aelig: "\xC6", AElig: "\xC6", bfr: "\u{1D51F}", bopf: "\u{1D553}", bscr: "\u{1D4B7}", bernou: "\u212C", bernoullis: "\u212C", Bfr: "\u{1D505}", Bopf: "\u{1D539}", Bscr: "\u212C", cfr: "\u{1D520}", copf: "\u{1D554}", cscr: "\u{1D4B8}", cayleys: "\u212D", Cfr: "\u212D", complexes: "\u2102", Copf: "\u2102", Cscr: "\u{1D49E}", cacute: "\u0107", Cacute: "\u0106", ccirc: "\u0109", Ccirc: "\u0108", ccaron: "\u010D", Ccaron: "\u010C", cdot: "\u010B", Cdot: "\u010A", ccedil: "\xE7", Ccedil: "\xC7", incare: "\u2105", dfr: "\u{1D521}", differentiald: "\u2146", dopf: "\u{1D555}", dscr: "\u{1D4B9}", capitaldifferentiald: "\u2145", dd: "\u2145", DD: "\u2145", Dfr: "\u{1D507}", Dopf: "\u{1D53B}", Dscr: "\u{1D49F}", dcaron: "\u010F", Dcaron: "\u010E", dstrok: "\u0111", Dstrok: "\u0110", eth: "\xF0", ETH: "\xD0", ee: "\u2147", efr: "\u{1D522}", eopf: "\u{1D556}", escr: "\u212F", exponentiale: "\u2147", Efr: "\u{1D508}", Eopf: "\u{1D53C}", Escr: "\u2130", expectation: "\u2130", eacute: "\xE9", Eacute: "\xC9", egrave: "\xE8", Egrave: "\xC8", ecirc: "\xEA", Ecirc: "\xCA", ecaron: "\u011B", Ecaron: "\u011A", euml: "\xEB", Euml: "\xCB", edot: "\u0117", Edot: "\u0116", eogon: "\u0119", Eogon: "\u0118", emacr: "\u0113", Emacr: "\u0112", ffr: "\u{1D523}", fopf: "\u{1D557}", fscr: "\u{1D4BB}", Ffr: "\u{1D509}", Fopf: "\u{1D53D}", fouriertrf: "\u2131", Fscr: "\u2131", fflig: "\uFB00", ffilig: "\uFB03", ffllig: "\uFB04", filig: "\uFB01", fjlig: "fj", fllig: "\uFB02", fnof: "\u0192", gfr: "\u{1D524}", gopf: "\u{1D558}", gscr: "\u210A", Gfr: "\u{1D50A}", Gopf: "\u{1D53E}", Gscr: "\u{1D4A2}", gacute: "\u01F5", gbreve: "\u011F", Gbreve: "\u011E", gcirc: "\u011D", Gcirc: "\u011C", gdot: "\u0121", Gdot: "\u0120", gcedil: "\u0122", hfr: "\u{1D525}", hopf: "\u{1D559}", hscr: "\u{1D4BD}", planckh: "\u210E", hamilt: "\u210B", Hfr: "\u210C", hilbertspace: "\u210B", Hopf: "\u210D", Hscr: "\u210B", poincareplane: "\u210C", quaternions: "\u210D", hcirc: "\u0125", Hcirc: "\u0124", hbar: "\u210F", hslash: "\u210F", hstrok: "\u0127", planck: "\u210F", plankv: "\u210F", Hstrok: "\u0126", ifr: "\u{1D526}", ii: "\u2148", imaginaryi: "\u2148", iopf: "\u{1D55A}", iscr: "\u{1D4BE}", Ifr: "\u2111", im: "\u2111", image: "\u2111", imagline: "\u2110", imagpart: "\u2111", Iopf: "\u{1D540}", Iscr: "\u2110", iacute: "\xED", Iacute: "\xCD", igrave: "\xEC", Igrave: "\xCC", icirc: "\xEE", Icirc: "\xCE", iuml: "\xEF", Iuml: "\xCF", itilde: "\u0129", Itilde: "\u0128", idot: "\u0130", iogon: "\u012F", Iogon: "\u012E", imacr: "\u012B", Imacr: "\u012A", ijlig: "\u0132", IJlig: "\u0132", imath: "\u0131", inodot: "\u0131", jfr: "\u{1D527}", jopf: "\u{1D55B}", jscr: "\u{1D4BF}", Jfr: "\u{1D50D}", Jopf: "\u{1D541}", Jscr: "\u{1D4A5}", jcirc: "\u0135", Jcirc: "\u0134", jmath: "\u0237", kfr: "\u{1D528}", kopf: "\u{1D55C}", kscr: "\u{1D4C0}", Kfr: "\u{1D50E}", Kopf: "\u{1D542}", Kscr: "\u{1D4A6}", kcedil: "\u0137", Kcedil: "\u0136", ell: "\u2113", lfr: "\u{1D529}", lopf: "\u{1D55D}", lscr: "\u{1D4C1}", lagran: "\u2112", laplacetrf: "\u2112", Lfr: "\u{1D50F}", Lopf: "\u{1D543}", Lscr: "\u2112", lacute: "\u013A", Lacute: "\u0139", lcaron: "\u013E", Lcaron: "\u013D", lcedil: "\u013C", Lcedil: "\u013B", lstrok: "\u0142", Lstrok: "\u0141", lmidot: "\u0140", Lmidot: "\u013F", mfr: "\u{1D52A}", mopf: "\u{1D55E}", mscr: "\u{1D4C2}", mellintrf: "\u2133", Mfr: "\u{1D510}", Mopf: "\u{1D544}", Mscr: "\u2133", phmmat: "\u2133", nfr: "\u{1D52B}", nopf: "\u{1D55F}", nscr: "\u{1D4C3}", naturals: "\u2115", Nfr: "\u{1D511}", Nopf: "\u2115", Nscr: "\u{1D4A9}", nacute: "\u0144", Nacute: "\u0143", ncaron: "\u0148", Ncaron: "\u0147", ntilde: "\xF1", Ntilde: "\xD1", ncedil: "\u0146", Ncedil: "\u0145", numero: "\u2116", eng: "\u014B", ENG: "\u014A", ofr: "\u{1D52C}", oopf: "\u{1D560}", order: "\u2134", orderof: "\u2134", oscr: "\u2134", Ofr: "\u{1D512}", Oopf: "\u{1D546}", Oscr: "\u{1D4AA}", ordm: "\xBA", oacute: "\xF3", Oacute: "\xD3", ograve: "\xF2", Ograve: "\xD2", ocirc: "\xF4", Ocirc: "\xD4", ouml: "\xF6", Ouml: "\xD6", odblac: "\u0151", Odblac: "\u0150", otilde: "\xF5", Otilde: "\xD5", oslash: "\xF8", Oslash: "\xD8", omacr: "\u014D", Omacr: "\u014C", oelig: "\u0152", OElig: "\u0152", pfr: "\u{1D52D}", popf: "\u{1D561}", pscr: "\u{1D4C5}", Pfr: "\u{1D513}", Popf: "\u2119", primes: "\u2119", Pscr: "\u{1D4AB}", qfr: "\u{1D52E}", qopf: "\u{1D562}", qscr: "\u{1D4C6}", Qfr: "\u{1D514}", Qopf: "\u211A", Qscr: "\u{1D4AC}", rationals: "\u211A", kgreen: "\u0138", rfr: "\u{1D52F}", ropf: "\u{1D563}", rscr: "\u{1D4C7}", re: "\u211C", real: "\u211C", realine: "\u211B", realpart: "\u211C", reals: "\u211D", Rfr: "\u211C", Ropf: "\u211D", Rscr: "\u211B", racute: "\u0155", Racute: "\u0154", rcaron: "\u0159", Rcaron: "\u0158", rcedil: "\u0157", Rcedil: "\u0156", sfr: "\u{1D530}", sopf: "\u{1D564}", sscr: "\u{1D4C8}", Sfr: "\u{1D516}", Sopf: "\u{1D54A}", Sscr: "\u{1D4AE}", circleds: "\u24C8", os: "\u24C8", sacute: "\u015B", Sacute: "\u015A", scirc: "\u015D", Scirc: "\u015C", scaron: "\u0161", Scaron: "\u0160", scedil: "\u015F", Scedil: "\u015E", szlig: "\xDF", tfr: "\u{1D531}", topf: "\u{1D565}", tscr: "\u{1D4C9}", Tfr: "\u{1D517}", Topf: "\u{1D54B}", Tscr: "\u{1D4AF}", tcaron: "\u0165", Tcaron: "\u0164", tcedil: "\u0163", Tcedil: "\u0162", trade: "\u2122", tstrok: "\u0167", Tstrok: "\u0166", ufr: "\u{1D532}", uopf: "\u{1D566}", uscr: "\u{1D4CA}", Ufr: "\u{1D518}", Uopf: "\u{1D54C}", Uscr: "\u{1D4B0}", uacute: "\xFA", Uacute: "\xDA", ugrave: "\xF9", Ugrave: "\xD9", ubreve: "\u016D", Ubreve: "\u016C", ucirc: "\xFB", Ucirc: "\xDB", uring: "\u016F", Uring: "\u016E", uuml: "\xFC", Uuml: "\xDC", udblac: "\u0171", Udblac: "\u0170", utilde: "\u0169", Utilde: "\u0168", uogon: "\u0173", Uogon: "\u0172", umacr: "\u016B", Umacr: "\u016A", vfr: "\u{1D533}", vopf: "\u{1D567}", vscr: "\u{1D4CB}", Vfr: "\u{1D519}", Vopf: "\u{1D54D}", Vscr: "\u{1D4B1}", wfr: "\u{1D534}", wopf: "\u{1D568}", wscr: "\u{1D4CC}", Wfr: "\u{1D51A}", Wopf: "\u{1D54E}", Wscr: "\u{1D4B2}", wcirc: "\u0175", Wcirc: "\u0174", xfr: "\u{1D535}", xopf: "\u{1D569}", xscr: "\u{1D4CD}", Xfr: "\u{1D51B}", Xopf: "\u{1D54F}", Xscr: "\u{1D4B3}", yfr: "\u{1D536}", yopf: "\u{1D56A}", yscr: "\u{1D4CE}", Yfr: "\u{1D51C}", Yopf: "\u{1D550}", Yscr: "\u{1D4B4}", yacute: "\xFD", Yacute: "\xDD", ycirc: "\u0177", Ycirc: "\u0176", yuml: "\xFF", Yuml: "\u0178", zfr: "\u{1D537}", zopf: "\u{1D56B}", zscr: "\u{1D4CF}", integers: "\u2124", zeetrf: "\u2128", Zfr: "\u2128", Zopf: "\u2124", Zscr: "\u{1D4B5}", zacute: "\u017A", Zacute: "\u0179", zcaron: "\u017E", Zcaron: "\u017D", zdot: "\u017C", Zdot: "\u017B", imped: "\u01B5", thorn: "\xFE", THORN: "\xDE", napos: "\u0149", alpha: "\u03B1", Alpha: "\u0391", beta: "\u03B2", Beta: "\u0392", gamma: "\u03B3", Gamma: "\u0393", delta: "\u03B4", Delta: "\u0394", epsi: "\u03B5", epsilon: "\u03B5", epsiv: "\u03F5", straightepsilon: "\u03F5", varepsilon: "\u03F5", Epsilon: "\u0395", digamma: "\u03DD", gammad: "\u03DD", Gammad: "\u03DC", zeta: "\u03B6", Zeta: "\u0396", eta: "\u03B7", Eta: "\u0397", theta: "\u03B8", thetasym: "\u03D1", thetav: "\u03D1", vartheta: "\u03D1", Theta: "\u0398", iota: "\u03B9", Iota: "\u0399", kappa: "\u03BA", kappav: "\u03F0", varkappa: "\u03F0", Kappa: "\u039A", lambda: "\u03BB", Lambda: "\u039B", mu: "\u03BC", micro: "\xB5", Mu: "\u039C", nu: "\u03BD", Nu: "\u039D", xi: "\u03BE", Xi: "\u039E", omicron: "\u03BF", Omicron: "\u039F", pi: "\u03C0", piv: "\u03D6", varpi: "\u03D6", Pi: "\u03A0", rho: "\u03C1", rhov: "\u03F1", varrho: "\u03F1", Rho: "\u03A1", sigma: "\u03C3", Sigma: "\u03A3", sigmaf: "\u03C2", sigmav: "\u03C2", varsigma: "\u03C2", tau: "\u03C4", Tau: "\u03A4", upsi: "\u03C5", upsilon: "\u03C5", Upsilon: "\u03A5", Upsi: "\u03D2", upsih: "\u03D2", phi: "\u03C6", phiv: "\u03D5", straightphi: "\u03D5", varphi: "\u03D5", Phi: "\u03A6", chi: "\u03C7", Chi: "\u03A7", psi: "\u03C8", Psi: "\u03A8", omega: "\u03C9", ohm: "\u03A9", Omega: "\u03A9", acy: "\u0430", Acy: "\u0410", bcy: "\u0431", Bcy: "\u0411", vcy: "\u0432", Vcy: "\u0412", gcy: "\u0433", Gcy: "\u0413", gjcy: "\u0403", GJcy: "\u0403", dcy: "\u0434", Dcy: "\u0414", djcy: "\u0402", DJcy: "\u0402", iecy: "\u0415", IEcy: "\u0415", iocy: "\u0401", IOcy: "\u0401", jukcy: "\u0454", Jukcy: "\u0404", zhcy: "\u0416", ZHcy: "\u0416", zcy: "\u0437", Zcy: "\u0417", dscy: "\u0405", DScy: "\u0405", icy: "\u0438", Icy: "\u0418", iukcy: "\u0456", Iukcy: "\u0406", yicy: "\u0407", YIcy: "\u0407", jcy: "\u0439", Jcy: "\u0419", jsercy: "\u0458", Jsercy: "\u0408", kcy: "\u043A", Kcy: "\u041A", kjcy: "\u040C", KJcy: "\u040C", lcy: "\u043B", Lcy: "\u041B", ljcy: "\u0409", LJcy: "\u0409", mcy: "\u043C", Mcy: "\u041C", ncy: "\u043D", Ncy: "\u041D", njcy: "\u040A", NJcy: "\u040A", ocy: "\u043E", Ocy: "\u041E", pcy: "\u043F", Pcy: "\u041F", rcy: "\u0440", Rcy: "\u0420", scy: "\u0441", Scy: "\u0421", tcy: "\u0442", Tcy: "\u0422", tshcy: "\u045B", TSHcy: "\u040B", ucy: "\u0443", Ucy: "\u0423", ubrcy: "\u045E", Ubrcy: "\u040E", fcy: "\u0444", Fcy: "\u0424", khcy: "\u0425", KHcy: "\u0425", tscy: "\u0426", TScy: "\u0426", chcy: "\u0427", CHcy: "\u0427", dzcy: "\u040F", DZcy: "\u040F", shcy: "\u0428", SHcy: "\u0428", shchcy: "\u0449", SHCHcy: "\u0429", hardcy: "\u044A", HARDcy: "\u042A", ycy: "\u044B", Ycy: "\u042B", softcy: "\u044C", SOFTcy: "\u042C", ecy: "\u044D", Ecy: "\u042D", yucy: "\u042E", YUcy: "\u042E", yacy: "\u042F", YAcy: "\u042F", alefsym: "\u2135", aleph: "\u2135", beth: "\u2136", gimel: "\u2137", daleth: "\u2138" };
+function v(j) {
+  return q[j] || q[j.toLowerCase()];
+}
+
+// node_modules/markdown-to-jsx/dist/react.js
+var v2 = 32;
+var b = 9;
+var _5 = 13;
+var E = 10;
+var $0 = 96;
+var N0 = 126;
+var A0 = 91;
+var U5 = 94;
+var o = 62;
+var Y5 = 35;
+var G9 = 37;
+var p = 45;
+var G5 = 61;
+var y0 = 92;
+var _0 = 42;
+var H0 = 95;
+var G0 = 60;
+var j9 = 64;
+var K5 = 93;
+var p0 = 33;
+var K9 = 38;
+var f0 = 58;
+var J9 = 70;
+var I5 = 102;
+var X9 = 104;
+var k5 = 119;
+var h5 = 116;
+var _9 = 112;
+var f9 = 115;
+var W$ = 160;
+var z$ = 12;
+var H$ = 44;
+var U9 = 59;
+var a5 = 63;
+var s0 = 46;
+var M0 = 47;
+var S5 = 39;
+var v5 = 34;
+var N5 = 43;
+var k0 = 124;
+var L5 = 123;
+var I9 = 125;
+var F5 = 40;
+var q5 = 41;
+var O$ = 120;
+var B$ = 88;
+var v9 = 30;
+var i = 48;
+var a = 57;
+var h = 65;
+var c = 90;
+var K0 = 97;
+var W0 = 122;
+var n5 = 128;
+var J5 = 32;
+var k4 = { blockQuote: 0, breakLine: 1, breakThematic: 2, codeBlock: 3, codeInline: 4, footnote: 5, footnoteReference: 6, frontmatter: 7, gfmTask: 8, heading: 9, htmlBlock: 10, htmlComment: 11, htmlSelfClosing: 12, image: 13, link: 14, orderedList: 15, paragraph: 16, ref: 17, refCollection: 18, table: 19, text: 20, textFormatted: 21, unorderedList: 22 };
+var _ = k4;
+function I$($) {
+  if (!A$($, "---")) return null;
+  let Q = 3;
+  for (; Q < $.length && ($[Q] === " " || $[Q] === "	"); ) Q++;
+  if (Q < $.length && $[Q] === "\r" && Q++, Q >= $.length || $[Q] !== `
+`) return null;
+  Q++;
+  let Z = false;
+  for (; Q < $.length; ) {
+    let V = Q;
+    for (; Q < $.length && $[Q] !== `
+` && $[Q] !== "\r"; ) Q++;
+    if (Q >= $.length) break;
+    let Y = Q;
+    if ($[Q] === "\r" && Q++, Q < $.length && $[Q] === `
+` && Q++, A$($, "---", V)) return { endPos: Q, hasValidYaml: Z };
+    if (!Z) {
+      let G = x4($, V, Y);
+      if (G < Y) {
+        let K = $.charCodeAt(G);
+        if (K >= K0 && K <= W0 || K >= h && K <= c || K >= i && K <= a || K === H0) {
+          for (G++; G < Y && (K = $.charCodeAt(G), K >= K0 && K <= W0 || K >= h && K <= c || K >= i && K <= a || K === H0 || K === p || K === s0); ) G++;
+          G < Y && $.charCodeAt(G) === f0 && (G++, G >= Y ? Z = true : (K = $.charCodeAt(G), (K === v2 || K === b) && (Z = true)));
+        }
+      }
+    }
+  }
+  return null;
+}
+var L4 = /&([a-zA-Z0-9]+|#[0-9]{1,7}|#x[0-9a-fA-F]{1,6});/gi;
+var E4 = { class: "className", for: "htmlFor", allowfullscreen: "allowFullScreen", allowtransparency: "allowTransparency", autocomplete: "autoComplete", autofocus: "autoFocus", autoplay: "autoPlay", cellpadding: "cellPadding", cellspacing: "cellSpacing", charset: "charSet", classid: "classId", colspan: "colSpan", contenteditable: "contentEditable", contextmenu: "contextMenu", crossorigin: "crossOrigin", enctype: "encType", formaction: "formAction", formenctype: "formEncType", formmethod: "formMethod", formnovalidate: "formNoValidate", formtarget: "formTarget", frameborder: "frameBorder", hreflang: "hrefLang", inputmode: "inputMode", keyparams: "keyParams", keytype: "keyType", marginheight: "marginHeight", marginwidth: "marginWidth", maxlength: "maxLength", mediagroup: "mediaGroup", minlength: "minLength", novalidate: "noValidate", radiogroup: "radioGroup", readonly: "readOnly", rowspan: "rowSpan", spellcheck: "spellCheck", srcdoc: "srcDoc", srclang: "srcLang", srcset: "srcSet", tabindex: "tabIndex", usemap: "useMap", viewbox: "viewBox" };
+var g4 = {};
+function t0($) {
+  if (!$) return g4;
+  var Q = {};
+  for (var Z in $) {
+    var V = Z.toLowerCase(), Y = E4[V];
+    if (Y) Q[Y] = $[Z];
+    else {
+      var G = Z.indexOf(":");
+      G !== -1 ? Q[Z.slice(0, G) + Z[G + 1].toUpperCase() + Z.slice(G + 2)] = $[Z] : Q[Z] = $[Z];
+    }
+  }
+  return Q;
+}
+var v$ = /(\n|^[-*]\s|^#|^ {2,}|^-{2,}|^>\s|^<(div|p|h[1-6]|ul|ol|li|blockquote|pre|table|thead|tbody|tr|td|th|dl|dt|dd|hr|address|article|aside|details|dialog|figure|figcaption|footer|form|header|main|menu|nav|section|summary|textarea|fieldset|legend|center|dir|hgroup|marquee|search|output|template)\b)/i;
+function s5($) {
+  return $.indexOf("&") === -1 ? $ : $.replace(L4, (Q, Z) => {
+    var V = v(Z);
+    if (V) return V;
+    if (Z[0] === "#") {
+      var Y = Z[1] === "x" || Z[1] === "X" ? parseInt(Z.slice(2), 16) : parseInt(Z.slice(1), 10);
+      return Y === 0 || Y >= 55296 && Y <= 57343 || Y > 1114111 ? "\uFFFD" : Y <= 65535 ? String.fromCharCode(Y) : String.fromCharCode(55296 + (Y - 65536 >> 10), 56320 + (Y - 65536 & 1023));
+    }
+    return Q;
+  });
+}
+var D$ = /(javascript|vbscript|data(?!:image)):/i;
+function c5($) {
+  if (D$.test($)) return null;
+  if ($.indexOf("%") === -1) return $;
+  try {
+    let Q = decodeURIComponent($).replace(/[^A-Za-z0-9/:]/g, "");
+    if (D$.test(Q)) return null;
+  } catch {
+    return null;
+  }
+  return $;
+}
+var d0 = {};
+var o0;
+var E0;
+for (o0 = [192, 193, 194, 195, 196, 197, 224, 225, 226, 227, 228, 229, 230, 198], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "a";
+for (d0[231] = d0[199] = "c", d0[240] = d0[208] = "d", o0 = [200, 201, 202, 203, 233, 232, 234, 235], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "e";
+for (o0 = [207, 239, 206, 238, 205, 237, 204, 236], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "i";
+for (d0[209] = d0[241] = "n", o0 = [248, 216, 339, 338, 213, 245, 212, 244, 211, 243, 210, 242], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "o";
+for (o0 = [220, 252, 219, 251, 218, 250, 217, 249], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "u";
+d0[376] = d0[255] = d0[221] = d0[253] = "y";
+function C0($) {
+  for (var Q = "", Z = -1, V = $.length, Y = 0; Y < V; Y++) {
+    var G = $.charCodeAt(Y);
+    if (G >= K0 && G <= W0 || G >= i && G <= a) {
+      Z < 0 && (Z = Y);
+      continue;
+    }
+    if (G >= h && G <= c) {
+      Z >= 0 && (Q += $.slice(Z, Y), Z = -1), Q += String.fromCharCode(G + J5);
+      continue;
+    }
+    if (G === v2 || G === p) {
+      Z >= 0 && (Q += $.slice(Z, Y), Z = -1), Q += "-";
+      continue;
+    }
+    Z >= 0 && (Q += $.slice(Z, Y), Z = -1);
+    var K = d0[G];
+    K && (Q += K);
+  }
+  return Z >= 0 && (Q += $.slice(Z)), Q;
+}
+function A$($, Q, Z) {
+  return $.startsWith(Q, Z);
+}
+var M$ = /* @__PURE__ */ new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr", "circle", "ellipse", "line", "path", "polygon", "polyline", "rect", "use", "stop", "animate", "set"]);
+function l5($) {
+  let Q = $.toLowerCase();
+  if (M$.has(Q)) return true;
+  let Z = Q.indexOf(":");
+  return Z !== -1 ? (Q = Q.slice(Z + 1), M$.has(Q)) : false;
+}
+var E5 = 1;
+var j$ = 2;
+var p5 = 4;
+var _$ = 8;
+var T4 = 16;
+var W5 = 32;
+var P5 = 64;
+var N$ = (function() {
+  var $ = new Uint8Array(128), Q;
+  for ($[b] = E5, $[E] = E5 | j$, $[z$] = E5, $[_5] = E5 | j$, $[v2] = E5, Q = p0; Q <= M0; Q++) $[Q] = p5;
+  for (Q = f0; Q <= j9; Q++) $[Q] = p5;
+  for (Q = A0; Q <= $0; Q++) $[Q] = p5;
+  for (Q = L5; Q <= N0; Q++) $[Q] = p5;
+  for (Q = i; Q <= a; Q++) $[Q] = T4;
+  for (Q = h; Q <= c; Q++) $[Q] = _$;
+  for (Q = K0; Q <= W0; Q++) $[Q] = _$;
+  return $;
+})();
+var P$ = /[\p{P}\p{S}]/u;
+var b$ = /\p{Zs}/u;
+var u5 = [];
+function w$($) {
+  var Q = $.indexOf("\r"), Z = $.indexOf("\0");
+  if (Q === -1 && Z === -1) return $;
+  var V = $.length;
+  u5.length = 0;
+  var Y = 0, G = 0;
+  for (Q === -1 ? G = Z : Z === -1 ? G = Q : G = Q < Z ? Q : Z; G < V; G++) {
+    var K = $.charCodeAt(G);
+    K === _5 ? (Y < G && u5.push($.slice(Y, G)), G + 1 < V && $.charCodeAt(G + 1) === E && G++, u5.push(`
+`), Y = G + 1) : K === 0 && (Y < G && u5.push($.slice(Y, G)), u5.push("\uFFFD"), Y = G + 1);
+  }
+  return Y < V && u5.push($.slice(Y)), u5.join("");
+}
+function x4($, Q, Z) {
+  let V = Z ?? $.length;
+  for (; Q < V && ($[Q] === " " || $[Q] === "	"); ) Q++;
+  return Q;
+}
+function P9($) {
+  if (!$) return false;
+  for (var Q in $) return true;
+  return false;
+}
+function R$($) {
+  return { attrs: {}, children: [{ type: _.text, text: $ }], d: true, type: _.htmlBlock, tag: "header" };
+}
+var f4 = /^\n+/;
+function y$($) {
+  for (var Q = $.length; Q > 0 && ($[Q - 1] === `
+` || $[Q - 1] === "\r"); ) Q--;
+  return $.slice(0, Q).replace(f4, "") + `
+
+`;
+}
+function d5($) {
+  if (($.type === _.htmlSelfClosing || $.type === _.htmlBlock) && $.b) return [];
+  if ($.type === _.paragraph) {
+    var Q = $.children;
+    return Q ? Q.flatMap(d5) : [];
+  }
+  return $.type === _.text ? $.text?.trim() ? [$] : [] : $.type === _.htmlBlock && $.children ? [{ ...$, children: $.children?.flatMap(d5) }] : [$];
+}
+function m9($) {
+  for (var Q = 0; Q < $.length; Q++) {
+    if ($[Q].type === _.htmlBlock) {
+      var Z = $[Q], V = false;
+      if (Z.d && Z.a && Q === $.length - 1) {
+        var Y = "</" + String(Z.tag).toLowerCase() + ">", G = Z.a.toLowerCase().indexOf(Y);
+        if (G !== -1) {
+          var K = Z.a.slice(G + Y.length).replace(/<\/[a-z][a-z0-9-]*\s*>/gi, "");
+          K.trim() && (V = true);
+        }
+      }
+      V || (Z.d = false);
+    }
+    "children" in $[Q] && $[Q].children && m9($[Q].children);
+  }
+}
+function k$($, Q) {
+  for (var Z = 0; Z < $.length; Z++) {
+    var V = $[Z];
+    if (V.type === _.paragraph && V.children) for (var Y = V.children, G = 0; G < Y.length; G++) {
+      var K = Y[G];
+      if (K.type === _.htmlSelfClosing && K.b && K.tag.toLowerCase() === Q) {
+        var J = $.slice(0, Z);
+        G > 0 && J.push({ type: _.paragraph, children: Y.slice(0, G) });
+        var X = [];
+        if (G + 1 < Y.length) {
+          var U = Y.slice(G + 1).filter(function(q2) {
+            return !(q2.type === _.htmlSelfClosing && q2.b);
+          });
+          U.length > 0 && (X = U);
+        }
+        return X = X.concat($.slice(Z + 1)), { found: true, beforeClose: J, afterClose: X };
+      }
+    }
+    if ((V.type === _.htmlSelfClosing || V.type === _.htmlBlock) && V.b && V.tag.toLowerCase() === Q) return { found: true, beforeClose: $.slice(0, Z), afterClose: $.slice(Z + 1) };
+  }
+  return { found: false, beforeClose: $, afterClose: [] };
+}
+function S$($, Q, Z) {
+  var V = $.replace(new RegExp("\\s*</" + Q + ">\\s*$", "i"), "");
+  return Z ? p9(V) : V;
+}
+function h9($) {
+  var Q = "";
+  for (var Z in $) {
+    var V = $[Z];
+    V === true ? Q += " " + Z : V != null && V !== false && (Q += " " + Z + '="' + String(V) + '"');
+  }
+  return Q;
+}
+function L$($) {
+  var Q = [];
+  if (!$) return Q;
+  for (var Z in $) Z.charCodeAt(0) === 94 && Q.push({ identifier: Z, footnote: $[Z].target });
+  return Q;
+}
+function t5($, Q, Z) {
+  if (Q.indexOf(".") === -1) return $?.[Q] || Z;
+  for (var V = $, Y = Q.split("."), G = 0; G < Y.length && (V = V?.[Y[G]], V !== void 0); ) G++;
+  return V || Z;
+}
+function E$($) {
+  for (var Q = false, Z = 0; Z < $.length; Z++) {
+    var V = $.charCodeAt(Z);
+    if (V <= v2 || V === v5 || V === G9 || V === G0 || V === o || V === A0 || V === y0 || V === K5 || V === U5 || V === $0 || V >= 123) {
+      Q = true;
+      break;
+    }
+  }
+  if (!Q) return $;
+  for (var Y = "", Z = 0; Z < $.length; Z++) {
+    var V = $.charCodeAt(Z);
+    if (V === G9 && Z + 2 < $.length) {
+      var G = $.charCodeAt(Z + 1), K = $.charCodeAt(Z + 2);
+      if ((G >= i && G <= a || G >= h && G <= J9 || G >= K0 && G <= I5) && (K >= i && K <= a || K >= h && K <= J9 || K >= K0 && K <= I5)) {
+        Y += $[Z] + $[Z + 1] + $[Z + 2], Z += 2;
+        continue;
+      }
+    }
+    Y += encodeURI($[Z]);
+  }
+  return Y;
+}
+function g$(...$) {
+  return $.filter(Boolean).join(" ");
+}
+var C4 = /* @__PURE__ */ new Set(["title", "textarea", "style", "xmp", "iframe", "noembed", "noframes", "script", "plaintext"]);
+var N9 = /<(\/?)(title|textarea|style|xmp|iframe|noembed|noframes|script|plaintext)(\s|>|\/)/gi;
+function u9($) {
+  return C4.has($.toLowerCase());
+}
+function T$($) {
+  return N9.lastIndex = 0, N9.test($);
+}
+function p9($) {
+  return N9.lastIndex = 0, $.replace(N9, function(Q, Z, V, Y) {
+    return "&lt;" + Z + V + Y;
+  });
+}
+var i$ = /^<([a-zA-Z][a-zA-Z0-9-]*)\s[^>]*>/;
+var a$ = /^<[A-Z]/;
+var c9 = ["script", "pre", "style", "textarea"];
+var z9 = new Set(c9);
+var m4 = /<(?:pre|script|style|textarea)\b/i;
+var f$ = /<(?:pre|script|style|textarea)\b/iy;
+var d9 = /^(\s{0,3}#[#\s]|\s{0,3}[-*+]\s|\s{0,3}\d+\.\s|\s{0,3}>\s|\s{0,3}```)/m;
+var C$ = /^<([a-z][^ >/\n\r]*) ?([^>]*?)>/im;
+var n$ = new Uint8Array(128);
+(function() {
+  for (var $ = [$0, _0, H0, N0, G5, A0, p0, G0, y0, K9, E, X9, k5, I5], Q = 0; Q < $.length; Q++) n$[$[Q]] = 1;
+})();
+var m$ = /([a-zA-Z_][a-zA-Z0-9_-]*)=(?:"([^"]*)"|'([^']*)')/g;
+function s$($) {
+  return z9.has($);
+}
+function t$($) {
+  return m4.test($);
+}
+function e$($, Q, Z) {
+  for (var V = Q, Y = Z; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+  if (V >= Y) return false;
+  $.charCodeAt(V) === k0 && V++;
+  for (var G = 0; V < Y; ) {
+    for (; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+    if (V >= Y) break;
+    if ($.charCodeAt(V) === k0 && G > 0) {
+      for (var K = V + 1; K < Y && ($.charCodeAt(K) === v2 || $.charCodeAt(K) === b); ) K++;
+      if (K >= Y) return true;
+    }
+    if ($.charCodeAt(V) === f0 && V++, V >= Y || $.charCodeAt(V) !== p) return false;
+    for (; V < Y && $.charCodeAt(V) === p; ) V++;
+    for (V < Y && $.charCodeAt(V) === f0 && V++, G++; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+    if (V < Y) if ($.charCodeAt(V) === k0) V++;
+    else return false;
+  }
+  return G > 0;
+}
+function w5($, Q) {
+  if ($.charCodeAt(Q) !== G0) return null;
+  let Z = Q + 1, V = $.length, Y = false;
+  $.charCodeAt(Z) === M0 && (Z++, Y = true);
+  let G = Z, K = $.charCodeAt(Z);
+  if (!(K >= K0 && K <= W0 || K >= h && K <= c)) return null;
+  for (; Z < V && ($.charCodeAt(Z) >= K0 && $.charCodeAt(Z) <= W0 || $.charCodeAt(Z) >= h && $.charCodeAt(Z) <= c || $.charCodeAt(Z) >= i && $.charCodeAt(Z) <= a || $.charCodeAt(Z) === p); ) Z++;
+  let J = $.slice(G, Z);
+  if (!J) return null;
+  let X = Z;
+  for (; Z < V && ($.charCodeAt(Z) === v2 || $.charCodeAt(Z) === b || $.charCodeAt(Z) === E); ) Z++;
+  let U = $.slice(X, Z);
+  if (Z === X && Z < V) {
+    var q2 = $.charCodeAt(Z);
+    if (q2 !== o && q2 !== M0) return null;
+  }
+  let W = Z, z = {}, F = false;
+  for (; Z < V; ) {
+    let k = $.charCodeAt(Z);
+    if (k === o) {
+      let S = $.slice(W, Z);
+      return { tag: J, attrs: z, selfClosing: false, end: Z + 1, rawAttrs: S, whitespaceBeforeAttrs: U, isClosing: Y, hasSpaceBeforeSlash: F };
+    }
+    if (k === v2 || k === b || k === E) {
+      Z++;
+      continue;
+    }
+    if (k === M0 && Z + 1 < V && $.charCodeAt(Z + 1) === o) {
+      let S = $.slice(W, Z);
+      return F = Z > W && $.charCodeAt(Z - 1) === v2, { tag: J, attrs: z, selfClosing: true, end: Z + 2, rawAttrs: S, whitespaceBeforeAttrs: U, isClosing: Y, hasSpaceBeforeSlash: F };
+    }
+    var D = Z, O = $.charCodeAt(Z);
+    if (!(O >= K0 && O <= W0 || O >= h && O <= c || O === H0 || O === f0)) return null;
+    for (Z++; Z < V; ) {
+      var H = $.charCodeAt(Z);
+      if (H >= K0 && H <= W0 || H >= h && H <= c || H >= i && H <= a || H === H0 || H === s0 || H === f0 || H === p) Z++;
+      else break;
+    }
+    for (var B = $.slice(D, Z); Z < V && ($.charCodeAt(Z) === v2 || $.charCodeAt(Z) === b); ) Z++;
+    if ($.charCodeAt(Z) !== G5) {
+      z[B] = "";
+      continue;
+    }
+    for (Z++; Z < V && ($.charCodeAt(Z) === v2 || $.charCodeAt(Z) === b); ) Z++;
+    var M = $.charCodeAt(Z);
+    if (M === v5 || M === S5) {
+      Z++;
+      for (var j = Z; Z < V && $.charCodeAt(Z) !== M; ) Z++;
+      if (Z >= V) return null;
+      if (z[B] = $.slice(j, Z), Z++, Z < V) {
+        var w = $.charCodeAt(Z);
+        if (w !== v2 && w !== b && w !== E && w !== o && w !== M0) return null;
+      }
+    } else if (M === L5) {
+      var I = 1, j = Z;
+      for (Z++; Z < V && I > 0; ) {
+        var H = $.charCodeAt(Z);
+        H === L5 ? I++ : H === I9 && I--, Z++;
+      }
+      z[B] = $.slice(j, Z);
+    } else {
+      for (var j = Z; Z < V; ) {
+        var A = $.charCodeAt(Z);
+        if (A === v2 || A === b || A === o || A === E || A === v5 || A === S5 || A === G5 || A === G0 || A === $0) break;
+        Z++;
+      }
+      if (Z === j) return null;
+      z[B] = $.slice(j, Z);
+    }
+  }
+  return null;
+}
+function h4($, Q, Z) {
+  if (!Z.optimizeForStreaming && $.indexOf("[") === -1) return false;
+  for (var V = 0, Y = $.length, G = false, K = false; V < Y; ) {
+    for (var J = $.indexOf(`
+`, V), X = J < 0 ? Y : J, U = V, q2 = 0; U < X && q2 < 4; ) if ($.charCodeAt(U) === v2) q2++, U++;
+    else if ($.charCodeAt(U) === b) q2 += 4, U++;
+    else break;
+    if (U >= X) {
+      G = false, V = J < 0 ? Y : J + 1;
+      continue;
+    }
+    if (q2 < 4) {
+      var W = $.charCodeAt(U);
+      if (W === $0 || W === N0) {
+        for (var z = W, F = 0, D = U; D < X && $.charCodeAt(D) === z; ) F++, D++;
+        if (F >= 3) {
+          var O = true;
+          if (z === $0) {
+            for (var H = D; H < X; H++) if ($.charCodeAt(H) === $0) {
+              O = false;
+              break;
+            }
+          }
+          if (O) {
+            G = false;
+            for (var B = J < 0 ? Y : J + 1; B < Y; ) {
+              for (var M = B, j = 0; M < Y && j < 4; ) {
+                var w = $.charCodeAt(M);
+                if (w === v2) j++, M++;
+                else if (w === b) j += 4, M++;
+                else break;
+              }
+              if (j < 4 && M < Y && $.charCodeAt(M) === z) {
+                for (var I = 0; M < Y && $.charCodeAt(M) === z; ) I++, M++;
+                if (I >= F) {
+                  for (; M < Y && ($.charCodeAt(M) === v2 || $.charCodeAt(M) === b); ) M++;
+                  if (M >= Y || $.charCodeAt(M) === E) {
+                    V = M >= Y ? Y : M + 1;
+                    break;
+                  }
+                }
+              }
+              for (; B < Y && $.charCodeAt(B) !== E; ) B++;
+              B < Y && B++;
+            }
+            B >= Y && (V = Y, K = true);
+            continue;
+          }
+        }
+      }
+    }
+    for (var A = U; A < X && $.charCodeAt(A) === o; ) {
+      A++, A < X && $.charCodeAt(A) === v2 && A++;
+      for (var k = 0; A < X && k < 4; ) if ($.charCodeAt(A) === v2) k++, A++;
+      else if ($.charCodeAt(A) === b) k += 4, A++;
+      else break;
+      if (k >= 4) break;
+      G = false;
+    }
+    if (!G && q2 < 4 && A < X && $.charCodeAt(A) === A0 && !(A + 1 < Y && $.charCodeAt(A + 1) === U5)) {
+      var S = $4($, A, Q);
+      if (S) {
+        V = S, G = false;
+        continue;
+      }
+    }
+    var R = $.charCodeAt(U);
+    if (R === Y5 && q2 < 4) G = false;
+    else if (q2 < 4 && (R === p || R === _0 || R === H0)) {
+      for (var N = U, T = 0; N < X; ) {
+        var L = $.charCodeAt(N);
+        if (L === R) T++;
+        else if (L !== v2 && L !== b) break;
+        N++;
+      }
+      G = !(T >= 3 && N >= X);
+    } else G = true;
+    V = J < 0 ? Y : J + 1;
+  }
+  return K;
+}
+function $4($, Q, Z) {
+  let V = $.length;
+  if ($.charCodeAt(Q) !== A0) return null;
+  let Y = Q + 1 < V && $.charCodeAt(Q + 1) === U5, G = Q + 1;
+  for (; G < V; ) {
+    var K = $.charCodeAt(G);
+    if (K === K5) {
+      G++;
+      break;
+    }
+    if (K === A0) return null;
+    K === y0 && G + 1 < V && G++, G++;
+  }
+  if (G > V || $.charCodeAt(G - 1) !== K5) return null;
+  let J = $.slice(Q + 1, G - 1);
+  if (J.length > 999) return null;
+  let X = b9(J);
+  if (!X || G >= V || $.charCodeAt(G) !== f0) return null;
+  G++;
+  let U = false;
+  for (; G < V; ) {
+    let u = $.charCodeAt(G);
+    if (u === v2 || u === b) G++;
+    else if (u === E && !U) U = true, G++;
+    else break;
+  }
+  if (Y) {
+    let u = $.indexOf(`
+`, G), x = u < 0 ? V : u, g = $.slice(G, x).trim();
+    return Z[X] = { target: g, title: void 0 }, u < 0 ? V : u + 1;
+  }
+  var q2;
+  if (G < V && $.charCodeAt(G) === G0) {
+    G++;
+    for (var W = G; G < V && $.charCodeAt(G) !== o && $.charCodeAt(G) !== E; ) $.charCodeAt(G) === y0 && G + 1 < V && G++, G++;
+    if (G >= V || $.charCodeAt(G) !== o) return null;
+    q2 = $.slice(W, G), G++;
+    for (var z = $.indexOf(`
+`, G), F = z < 0 ? V : z, D = G; D < F && ($.charCodeAt(D) === v2 || $.charCodeAt(D) === b); ) D++;
+    if (D < F) {
+      if (D === G) return null;
+      var O = $.charCodeAt(D);
+      if (O !== v5 && O !== S5 && O !== F5) return null;
+    }
+  } else {
+    for (var W = G, H = 0; G < V; ) {
+      var K = $.charCodeAt(G);
+      if (K === F5) H++;
+      else if (K === q5) {
+        if (H === 0) break;
+        H--;
+      } else {
+        if (K === v2 || K === b || K === E) break;
+        K === y0 && G + 1 < V && G++;
+      }
+      G++;
+    }
+    if (q2 = $.slice(W, G), !q2) return null;
+  }
+  for (; G < V && ($.charCodeAt(G) === v2 || $.charCodeAt(G) === b); ) G++;
+  var B = $.indexOf(`
+`, G), M = B < 0 ? V : B, j, w = false, I = G, A = G;
+  if (G === M && G < V) for (A = G + 1; A < V && ($.charCodeAt(A) === v2 || $.charCodeAt(A) === b); ) A++;
+  if (A < V) {
+    var k = $.charCodeAt(A);
+    if (k === v5 || k === S5 || k === F5) {
+      for (var S = k === F5 ? 41 : k, R = A + 1, N = R; R < V; ) {
+        var T = $.charCodeAt(R);
+        if (T === S) {
+          for (var L = R + 1; L < V && ($.charCodeAt(L) === v2 || $.charCodeAt(L) === b); ) L++;
+          (L >= V || $.charCodeAt(L) === E) && (j = $.slice(N, R), w = true, I = L < V ? L + 1 : V);
+          break;
+        }
+        if (T === y0 && R + 1 < V) {
+          R += 2;
+          continue;
+        }
+        if (T === E && R + 1 < V && $.charCodeAt(R + 1) === E) break;
+        R++;
+      }
+      if (!w && A === G) return null;
+    }
+  }
+  if (w) return Z[X] || (Z[X] = { target: e5(q2), title: j !== void 0 ? s5(e5(j)) : j }), I;
+  for (; G < M && ($.charCodeAt(G) === v2 || $.charCodeAt(G) === b); ) G++;
+  return G < M ? null : (Z[X] || (Z[X] = { target: e5(q2), title: j }), B < 0 ? V : B + 1);
+}
+var $5 = new Uint8Array(N$);
+for ($5[Y5] |= W5, $5[o] |= W5, $5[p] |= W5 | P5, $5[N5] |= W5, $5[_0] |= W5 | P5, $5[H0] |= W5 | P5, $5[$0] |= W5 | P5, $5[N0] |= W5 | P5, $5[G0] |= W5 | P5, $5[A0] |= P5, $5[p0] |= P5, $5[k0] |= W5, F9 = i; F9 <= a; F9++) $5[F9] |= W5;
+var F9;
+function h$($) {
+  if ($.indexOf("[") < 0 && $.indexOf("]") < 0) return false;
+  for (var Q = 0; Q < $.length; Q++) {
+    if ($.charCodeAt(Q) === y0) {
+      Q++;
+      continue;
+    }
+    if ($.charCodeAt(Q) === A0 || $.charCodeAt(Q) === K5) return true;
+  }
+  return false;
+}
+function b9($) {
+  for (var Q = $.length, Z = true, V = Q > 0, Y = 0; Y < Q; Y++) {
+    var G = $.charCodeAt(Y);
+    if (G === v2) {
+      if (Z) {
+        V = false;
+        break;
+      }
+      Z = true;
+    } else if (G < 33 || G > 126 || G >= h && G <= c) {
+      V = false;
+      break;
+    } else Z = false;
+  }
+  if (V && !Z) return $;
+  var K = $.replace(/\s+/g, " ").trim();
+  return K.indexOf("\u1E9E") !== -1 ? K.replace(/\u1E9E/g, "ss").toLowerCase() : K.toLowerCase();
+}
+function n9($) {
+  return $ < n5 ? $5[$] : $ === W$ ? E5 : 0;
+}
+function e5($) {
+  return $.indexOf("\\") === -1 ? $ : $.replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g, "$1");
+}
+var l9 = null;
+var r9 = -1;
+var w9 = -1;
+function X0($, Q) {
+  if (Q >= r9 && Q <= w9 && $ === l9) return w9;
+  var Z = $.indexOf(`
+`, Q), V = Z < 0 ? $.length : Z;
+  return l9 = $, r9 = Q, w9 = V, V;
+}
+function s($, Q) {
+  let Z = X0($, Q);
+  return Z < $.length ? Z + 1 : Z;
+}
+function W9($, Q, Z) {
+  for (; Q < Z; ) {
+    let V = $.charCodeAt(Q);
+    if (V !== v2 && V !== b) break;
+    Q++;
+  }
+  return Q;
+}
+function u$($, Q) {
+  let Z = s($, Q);
+  for (; Z < $.length; ) {
+    let V = X0($, Z);
+    if (e0($, Z, V)) return Z;
+    Z = s($, Z);
+  }
+  return $.length;
+}
+function C5($, Q, Z, V) {
+  let Y = 0;
+  for (; Q + Y < Z && $.charCodeAt(Q + Y) === V; ) Y++;
+  return Y;
+}
+var J0 = 0;
+var Z0 = 0;
+function P0($, Q, Z) {
+  for (J0 = 0, Z0 = 0; Q + Z0 < Z; ) {
+    let V = $.charCodeAt(Q + Z0);
+    if (V === b) J0 += 4 - J0 % 4;
+    else if (V === v2) J0++;
+    else break;
+    Z0++;
+  }
+}
+function e0($, Q, Z) {
+  return W9($, Q, Z) >= Z;
+}
+function u4($, Q, Z, V) {
+  let Y = X0($, Q);
+  if (P0($, Q, Y), J0 > 3) return null;
+  let G = Q + Z0;
+  if ($.charCodeAt(G) !== Y5) return null;
+  let K = C5($, G, Y, 35);
+  if (K < 1 || K > 6 || (G += K, G < Y && $.charCodeAt(G) !== v2 && $.charCodeAt(G) !== b)) return null;
+  G = W9($, G, Y);
+  for (var J = Y; J > G && $.charCodeAt(J - 1) === v2; ) J--;
+  for (var X = J; J > G && $.charCodeAt(J - 1) === Y5; ) J--;
+  if (J < X) if (J === G || $.charCodeAt(J - 1) === v2) for (; J > G && $.charCodeAt(J - 1) === v2; ) J--;
+  else J = X;
+  let U = $.slice(G, J), q2 = $9(U, false, Z, V), z = (V?.slugify || C0)(U);
+  return { node: { type: _.heading, level: K, children: q2, id: z }, end: s($, Y) };
+}
+function p4($, Q, Z) {
+  var V = $.charCodeAt(Q);
+  if (V !== G5 && V !== p) return false;
+  for (var Y = Q; Y < Z && $.charCodeAt(Y) === V; ) Y++;
+  for (; Y < Z && ($.charCodeAt(Y) === v2 || $.charCodeAt(Y) === b); ) Y++;
+  return Y >= Z;
+}
+function x5($, Q) {
+  let Z = X0($, Q);
+  if (P0($, Q, Z), J0 > 3) return null;
+  let V = Q + Z0, Y = $.charCodeAt(V);
+  if (Y !== p && Y !== _0 && Y !== H0) return null;
+  let G = 0;
+  for (; V < Z; ) {
+    let K = $.charCodeAt(V);
+    if (K === Y) G++;
+    else if (K !== v2 && K !== b) return null;
+    V++;
+  }
+  return G < 3 ? null : { node: { type: _.breakThematic }, end: s($, Z) };
+}
+function d4($, Q, Z) {
+  let V = X0($, Q);
+  if (P0($, Q, V), J0 > 3) return null;
+  let Y = J0, G = Z0, K = Q + Z0, J = $.charCodeAt(K);
+  if (J !== $0 && J !== N0) return null;
+  let X = C5($, K, V, J);
+  if (X < 3) return null;
+  K += X;
+  let U = W9($, K, V), q2 = V;
+  if (J === $0) {
+    for (let g = U; g < V; g++) if ($.charCodeAt(g) === $0) return null;
+  }
+  for (; q2 > U && ($.charCodeAt(q2 - 1) === v2 || $.charCodeAt(q2 - 1) === b); ) q2--;
+  let W = $.slice(U, q2), z = "", F = "", D = W.indexOf(" ");
+  D === -1 ? z = W : (z = W.slice(0, D), F = W.slice(D + 1).trim()), z = e5(z);
+  var O = void 0;
+  if (F) {
+    m$.lastIndex = 0;
+    for (var H; (H = m$.exec(F)) !== null; ) O || (O = {}), O[H[1]] = H[2] !== void 0 ? H[2] : H[3];
+  }
+  let B = s($, V), M = $.length, j = $.length;
+  for (var w = String.fromCharCode(J).repeat(X), I = B; I < $.length; ) {
+    var A = $.indexOf(w, I);
+    if (A === -1) break;
+    for (var k = A, S = 0; k > 0 && S < 4 && $.charCodeAt(k - 1) === v2; ) k--, S++;
+    if (S <= 3 && (k === 0 || $.charCodeAt(k - 1) === E)) {
+      for (var R = A + X; R < $.length && $.charCodeAt(R) === J; ) R++;
+      var N = X0($, R);
+      if (e0($, R, N)) {
+        M = k, j = s($, N);
+        break;
+      }
+    }
+    I = A + 1;
+  }
+  var T;
+  if (Y === 0) T = M > B && $.charCodeAt(M - 1) === E ? $.slice(B, M - 1) : $.slice(B, M);
+  else {
+    T = "";
+    for (var L = B; L < M; ) {
+      var u = X0($, L);
+      P0($, L, u);
+      var x = Math.min(Z0, Y);
+      T += $.slice(L + x, u) + `
+`, L = s($, u);
+    }
+    T.length > 0 && T.charCodeAt(T.length - 1) === E && (T = T.slice(0, -1));
+  }
+  return { node: { type: _.codeBlock, lang: z || void 0, text: T, infoString: F || void 0, attrs: O }, end: j };
+}
+function c4($, Q) {
+  let Z = X0($, Q);
+  if (P0($, Q, Z), J0 < 4) return null;
+  let V = "", Y = Q;
+  for (; Y < $.length; ) {
+    let F = X0($, Y);
+    if (P0($, Y, F), e0($, Y, F)) {
+      for (var G = 0, K = s($, F); K < $.length; ) {
+        var J = X0($, K);
+        if (e0($, K, J)) {
+          G++, K = s($, J);
+          continue;
+        }
+        if (P0($, K, J), J0 >= 4) {
+          for (var X = 0; X <= G; X++) V += `
+`;
+          Y = K;
+          break;
+        }
+        break;
+      }
+      if (Y !== K) break;
+      continue;
+    }
+    if (J0 < 4) break;
+    let D = 0, O = 0;
+    var U = 0;
+    for (let H = Y; H < F && O < 4; H++) {
+      if ($.charCodeAt(H) === b) {
+        var q2 = 4 - O % 4;
+        O + q2 > 4 && (U = O + q2 - 4), O += q2;
+      } else O++;
+      D++;
+    }
+    var W = "";
+    if (U > 0) for (var z = 0; z < U; z++) W += " ";
+    W += $.slice(Y + D, F), V += W + `
+`, Y = s($, F);
+  }
+  for (; V.length > 0 && V.charCodeAt(V.length - 1) === E; ) V = V.slice(0, -1);
+  return V ? { node: { type: _.codeBlock, lang: void 0, text: V, infoString: void 0, attrs: void 0 }, end: Y } : null;
+}
+function l4($, Q, Z, V) {
+  let Y = X0($, Q);
+  if (P0($, Q, Y), J0 > 3) return null;
+  let G = Q + Z0;
+  if ($.charCodeAt(G) !== o) return null;
+  let K = "", J = Q, X, U = false, q2 = false, W = false;
+  for (; J < $.length; ) {
+    let P = X0($, J);
+    P0($, J, P);
+    let C = J + Z0;
+    if ($.charCodeAt(C) === o) {
+      let d = C + 1;
+      var z = J0 + 1, F = false;
+      if (d < P) {
+        var D = $.charCodeAt(d);
+        D === v2 ? (d++, z++, F = true) : D === b && (F = true);
+      }
+      for (var O = "", H = false, B = d; B < P; B++) if ($.charCodeAt(B) === b) {
+        H = true;
+        break;
+      }
+      if (H) {
+        var M = z;
+        if (F && d < P && $.charCodeAt(d) === b) {
+          for (var j = 4 - M % 4, w = 0; w < j - 1; w++) O += " ";
+          M += j, d++;
+        }
+        for (var I = d; I < P; I++) if ($.charCodeAt(I) === b) {
+          for (var A = 4 - M % 4, k = 0; k < A; k++) O += " ";
+          M += A;
+        } else O += $[I], M++;
+      } else O = $.slice(d, P);
+      if (!K && !X) {
+        let f = O.match(/^\[!([A-Za-z]+)\]\s*$/);
+        if (f) {
+          X = f[1].toUpperCase(), J = s($, P);
+          continue;
+        }
+      }
+      K += O + `
+`;
+      var S = O.trimStart();
+      S.startsWith("```") || S.startsWith("~~~") ? W = !W : (O.startsWith("    ") || O.startsWith("	")) && (W = true), q2 = S.length > 0, J = s($, P);
+    } else if (K && !e0($, J, P) && q2) {
+      if (J0 < 4) {
+        var R = J + Z0, N = R < P ? $.charCodeAt(R) : 0;
+        if (N === Y5 || N === o || N === $0 || N === N0 || N === G0 || (N === p || N === _0 || N === H0) && x5($, J) || (N === p || N === _0 || N === N5) && R + 1 < P && ($.charCodeAt(R + 1) === v2 || $.charCodeAt(R + 1) === b)) break;
+        if (N >= i && N <= a) {
+          for (var T = R; T < P && $.charCodeAt(T) >= i && $.charCodeAt(T) <= a; ) T++;
+          if (T < P && ($.charCodeAt(T) === s0 || $.charCodeAt(T) === q5)) break;
+        }
+      }
+      if (W) break;
+      K += $.slice(J, P) + `
+`, U = true, J = s($, P);
+    } else break;
+  }
+  if (!K && !X) return null;
+  var { inBlockQuote: L, f: u } = Z;
+  Z.inBlockQuote = true, U && (Z.f = true);
+  let x = f5(K || "", Z, V);
+  return Z.inBlockQuote = L, Z.f = u, { node: { type: _.blockQuote, children: x, alert: X || void 0 }, end: J };
+}
+function Z4($, Q, Z) {
+  for (var V = 0, Y = Q; Y < Z; Y++) $.charCodeAt(Y) === b ? V += 4 - V % 4 : V++;
+  return V;
+}
+function g5($, Q, Z) {
+  if (P0($, Q, Z), J0 > 3) return null;
+  var V = Q + Z0;
+  if (V >= Z) return null;
+  var Y = $.charCodeAt(V), G = J0, K = V;
+  if (Y === p || Y === _0 || Y === N5) {
+    if (K = V + 1, K < Z && $.charCodeAt(K) !== v2 && $.charCodeAt(K) !== b && $.charCodeAt(K) !== E) return null;
+  } else if (Y >= i && Y <= a) {
+    for (var J = V; J < Z && J - V < 9; ) {
+      var X = $.charCodeAt(J);
+      if (X < i || X > a) break;
+      J++;
+    }
+    if (J > V && J < Z) {
+      var U = $.charCodeAt(J);
+      if (U === s0 || U === q5) {
+        if (K = J + 1, K < Z && $.charCodeAt(K) !== v2 && $.charCodeAt(K) !== b && $.charCodeAt(K) !== E) return null;
+      } else return null;
+    } else return null;
+  } else return null;
+  var q2 = K, W = Z4($, Q, K), z = 0, F = q2, D = W;
+  if (q2 >= Z) return { ordered: Y >= i && Y <= a, marker: Y >= i && Y <= a ? $[J] : $[V], start: Y >= i && Y <= a ? parseInt($.slice(V, J), 10) : void 0, contentStart: q2, contentCol: W + 1, markerCol: G, isEmpty: true };
+  for (; F < Z && ($.charCodeAt(F) === v2 || $.charCodeAt(F) === b); ) {
+    if ($.charCodeAt(F) === b) {
+      var O = 4 - D % 4;
+      D += O;
+    } else D++;
+    F++, z++;
+  }
+  var H = F >= Z, B = D - W;
+  return H || B > 4 ? (D = W + 1, F = q2 + 1, z = 1) : z === 0 && (D = W + 1, F = q2, z = 1), { ordered: Y >= i && Y <= a, marker: Y >= i && Y <= a ? $[J] : $[V], start: Y >= i && Y <= a ? parseInt($.slice(V, J), 10) : void 0, contentStart: F, contentCol: D, markerCol: G, isEmpty: H };
+}
+var R9 = 0;
+function r4($, Q, Z, V) {
+  var Y = 0, G = Q;
+  for (R9 = 0; G < Z && Y < V; ) {
+    var K = $.charCodeAt(G);
+    if (K === b) {
+      var J = 4 - Y % 4;
+      if (Y + J > V) {
+        R9 = Y + J - V, G++, Y = V;
+        break;
+      }
+      Y += J;
+    } else if (K === v2) Y++;
+    else break;
+    G++;
+  }
+  return G;
+}
+function p$($, Q, Z, V) {
+  var Y = X0($, Q), G = g5($, Q, Y);
+  if (!G) return null;
+  var K = [], J = Q, X = G.contentCol, U = "", q2 = G.isEmpty, W = false, z = false;
+  if (!G.isEmpty) {
+    for (var F = false, D = G.contentStart; D < Y; D++) if ($.charCodeAt(D) === b) {
+      F = true;
+      break;
+    }
+    if (F) {
+      var O = "", H = Z4($, Q, G.contentStart), B = H - G.contentCol;
+      if (B > 0) for (var M = 0; M < B; M++) O += " ";
+      for (var j = G.contentStart; j < Y; j++) if ($.charCodeAt(j) === b) {
+        for (var w = 4 - H % 4, I = 0; I < w; I++) O += " ";
+        H += w;
+      } else O += $[j], H++;
+      U = O + `
+`;
+    } else U = $.slice(G.contentStart, Y) + `
+`;
+  }
+  for (J = s($, Y); J < $.length; ) {
+    var A = X0($, J);
+    P0($, J, A);
+    var k = $.charCodeAt(J + Z0);
+    if (J0 < X && (k === p || k === _0 || k === H0) && J0 <= 3 && x5($, J)) break;
+    var S = g5($, J, A);
+    if (S && S.ordered === G.ordered && S.marker === G.marker && S.markerCol < X) {
+      K.push({ contentCol: X, raw: U, hasBlankAfter: W, isEmpty: q2 }), W && (z = true), X = S.contentCol, q2 = S.isEmpty, W = false, U = S.isEmpty ? "" : $.slice(S.contentStart, A) + `
+`, J = s($, A);
+      continue;
+    }
+    if (e0($, J, A)) {
+      U += `
+`, J = s($, A);
+      for (var R = false, N = 0; N < U.length; N++) {
+        var T = U.charCodeAt(N);
+        if (T !== E && T !== _5 && T !== v2 && T !== b) {
+          R = true;
+          break;
+        }
+      }
+      if (q2 && !R) if (J < $.length) {
+        var L = X0($, J), u = g5($, J, L);
+        if (!u || u.ordered !== G.ordered || u.marker !== G.marker) break;
+        W = true;
+      } else break;
+      if (J < $.length) {
+        var x = X0($, J);
+        P0($, J, x);
+        var g = $.charCodeAt(J + Z0);
+        if ((g === p || g === _0 || g === H0) && J0 <= 3 && x5($, J)) break;
+        var P = g5($, J, x);
+        if (P && P.ordered === G.ordered && P.marker === G.marker && P.markerCol < X) {
+          W = true;
+          continue;
+        }
+        if (!e0($, J, x) && J0 < X) break;
+      }
+      continue;
+    }
+    if (J0 >= X) {
+      var C = r4($, J, A, X);
+      if (R9 > 0) {
+        for (var d = "", f = X, U0 = 0; U0 < R9; U0++) d += " ", f++;
+        for (var n = C; n < A; n++) if ($.charCodeAt(n) === b) {
+          for (var m0 = 4 - f % 4, x0 = 0; x0 < m0; x0++) d += " ";
+          f += m0;
+        } else d += $[n], f++;
+        U += d + `
+`;
+      } else U += $.slice(C, A) + `
+`;
+      J = s($, A);
+      continue;
+    }
+    for (var v0 = false, l = 0; l < U.length; l++) {
+      var t = U.charCodeAt(l);
+      if (t !== E && t !== _5 && t !== v2 && t !== b) {
+        v0 = true;
+        break;
+      }
+    }
+    if (!W && v0 && !q2) {
+      var b0 = J + Z0, r = $.charCodeAt(b0), z0 = r === Y5 || r === o || r === G0 || r === $0 || r === N0 || (r === p || r === _0 || r === H0 || r === N5) && (x5($, J) !== null || g5($, J, A) !== null) || r >= i && r <= a && g5($, J, A) !== null;
+      if (!z0) {
+        U += "" + $.slice(b0, A) + `
+`, J = s($, A);
+        continue;
+      }
+    }
+    break;
+  }
+  if (K.push({ contentCol: X, raw: U, hasBlankAfter: W, isEmpty: q2 }), K.length === 0) return null;
+  var Q0 = z;
+  if (!Q0) for (var I0 = 0; I0 < K.length; I0++) {
+    if (K[I0].hasBlankAfter && I0 < K.length - 1) {
+      Q0 = true;
+      break;
+    }
+    if (!K[I0].isEmpty) {
+      for (var q0 = K[I0].raw, V0 = q0.length, O0 = 0, m = false, w0 = false, g0 = false, R0 = false, Z5 = 0, i0 = 0, T0 = -1; O0 < V0; ) {
+        var e = q0.indexOf(`
+`, O0);
+        if (e < 0 && (e = V0), R0) {
+          P0(q0, O0, e);
+          for (var Y0 = q0.slice(O0 + Z0, e), a0 = 0; a0 < Y0.length && Y0.charCodeAt(a0) === Z5; ) a0++;
+          a0 >= i0 && Y0.slice(a0).trim() === "" && (R0 = false), O0 = e < V0 ? e + 1 : V0;
+          continue;
+        }
+        if (e0(q0, O0, e)) {
+          T0 >= 0 ? g0 = true : m && (w0 = true), O0 = e < V0 ? e + 1 : V0;
+          continue;
+        }
+        if (P0(q0, O0, e), T0 >= 0) {
+          if (J0 >= T0) {
+            O0 = e < V0 ? e + 1 : V0;
+            continue;
+          }
+          var B0 = g5(q0, O0, e);
+          if (B0 && B0.markerCol < T0 && B0.contentCol <= T0) {
+            O0 = e < V0 ? e + 1 : V0;
+            continue;
+          }
+          if (B0) {
+            O0 = e < V0 ? e + 1 : V0;
+            continue;
+          }
+          T0 = -1, g0 && (w0 = true, g0 = false);
+        }
+        var A5 = q0.slice(O0 + Z0, e), y = A5.charCodeAt(0);
+        if ((y === $0 || y === N0) && J0 <= 3) {
+          for (var F0 = 0; F0 < A5.length && A5.charCodeAt(F0) === y; ) F0++;
+          if (F0 >= 3) {
+            if (w0 && m) {
+              Q0 = true;
+              break;
+            }
+            R0 = true, Z5 = y, i0 = F0, m = true, O0 = e < V0 ? e + 1 : V0;
+            continue;
+          }
+        }
+        var l0 = J0 <= 3 ? g5(q0, O0, e) : null;
+        if (l0 && m) {
+          if (w0) {
+            Q0 = true;
+            break;
+          }
+          T0 = l0.contentCol, g0 = false, O0 = e < V0 ? e + 1 : V0, m = true;
+          continue;
+        }
+        if (w0) {
+          Q0 = true;
+          break;
+        }
+        m = true, O0 = e < V0 ? e + 1 : V0;
+      }
+      if (Q0) break;
+    }
+  }
+  for (var X5 = [], M5 = 0; M5 < K.length; M5++) {
+    for (var r0 = K[M5], D0 = r0.raw, S0 = D0.length; S0 > 0 && D0.charCodeAt(S0 - 1) === E; ) S0--;
+    var L0 = S0 < D0.length ? D0.slice(0, S0) : D0, h0 = null;
+    if (L0.length >= 3 && L0.charCodeAt(0) === A0) {
+      var Q5 = L0[1];
+      (Q5 === " " || Q5 === "x" || Q5 === "X") && L0.charCodeAt(2) === K5 && (h0 = { type: _.gfmTask, completed: Q5 === "x" || Q5 === "X" }, L0 = L0.slice(3));
+    }
+    var j0;
+    if (r0.isEmpty && L0.trim() === "") j0 = [];
+    else if (Q0) {
+      var R5 = Z.inList;
+      Z.inList = true, j0 = f5(L0, Z, V), Z.inList = R5;
+    } else {
+      var z5 = Z.inList;
+      if (Z.inList = true, j0 = f5(L0, Z, V), Z.inList = z5, j0.length === 1 && j0[0].type === _.paragraph) j0 = j0[0].children;
+      else if (Z.h) {
+        var H5 = [];
+        Z.h.push({ src: j0, dest: H5, unwrap: true }), j0 = H5;
+      } else {
+        for (var o5 = [], j5 = 0; j5 < j0.length; j5++) if (j0[j5].type === _.paragraph) for (var O5 = j0[j5].children, Z9 = 0; Z9 < O5.length; Z9++) o5.push(O5[Z9]);
+        else o5.push(j0[j5]);
+        j0 = o5;
+      }
+    }
+    if (h0) {
+      var Q9 = [h0, { type: _.text, text: " " }];
+      if (Z.h) Z.h.push({ src: j0, dest: Q9, unwrap: false });
+      else for (var B5 = 0; B5 < j0.length; B5++) Q9.push(j0[B5]);
+      X5.push(Q9);
+    } else X5.push(j0);
+  }
+  return { node: { type: G.ordered ? _.orderedList : _.unorderedList, start: G.ordered ? G.start : void 0, items: X5 }, end: J };
+}
+var y9 = /* @__PURE__ */ new Set(["address", "article", "aside", "base", "basefont", "blockquote", "body", "caption", "center", "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "iframe", "legend", "li", "link", "main", "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p", "param", "search", "section", "summary", "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track", "ul"]);
+function b5($, Q, Z) {
+  let V = {};
+  for (let [K, J] of Object.entries($)) {
+    let X = K.toLowerCase();
+    if (X === "style" && typeof J == "string") {
+      let U = {}, q2 = [], W = 0, z = 0;
+      for (let D = 0; D < J.length; D++) {
+        let O = J.charCodeAt(D);
+        O === F5 ? W++ : O === q5 ? W-- : O === U9 && W === 0 && (q2.push(J.slice(z, D)), z = D + 1);
+      }
+      z < J.length && q2.push(J.slice(z));
+      let F = false;
+      q2.forEach((D) => {
+        let O = D.indexOf(":");
+        if (O === -1) return;
+        let H = D.slice(0, O).trim(), B = D.slice(O + 1).trim();
+        if (H && B) {
+          if (/url\s*\(\s*(javascript|vbscript|data:(?!image\/))/i.test(B)) {
+            F = true;
+            return;
+          }
+          let M = H.indexOf("-") !== -1 ? H.replace(/-([a-z])/g, (j, w) => w.toUpperCase()) : H;
+          U[M] = B;
+        }
+      }), !F && Object.keys(U).length > 0 && (V[K] = U);
+    } else if ((X === "href" || X === "src") && Z?.sanitizer) {
+      let U = Z.sanitizer(J, Q, X);
+      U !== null && (V[K] = U);
+    } else if (J === "") V[K] = true;
+    else if (J.length >= 2 && J.charCodeAt(0) === L5 && J.charCodeAt(J.length - 1) === I9) {
+      var Y = J.slice(1, -1);
+      if (Y.length > 0) {
+        var G = Y.charCodeAt(0);
+        if (G === A0 || G === L5) try {
+          V[K] = JSON.parse(Y);
+          continue;
+        } catch {
+        }
+      }
+      if (Y === "true") {
+        V[K] = true;
+        continue;
+      }
+      if (Y === "false") {
+        V[K] = false;
+        continue;
+      }
+      if (Z?.evalUnserializableExpressions) try {
+        V[K] = (0, eval)("(" + Y + ")");
+        continue;
+      } catch {
+      }
+      V[K] = Y;
+    } else V[K] = J;
+  }
+  return V;
+}
+function T5($, Q, Z) {
+  let V = Q.length;
+  if (V === 0) return Z;
+  var Y = Q.charCodeAt(0), G = Y >= h && Y <= c || Y >= K0 && Y <= W0;
+  if (!G) {
+    for (var K = String.fromCharCode(Y), J = $.length - V, X = Z; X <= J; ) {
+      var U = $.indexOf(K, X);
+      if (U === -1 || U > J) return -1;
+      for (var q2 = true, W = 1; W < V; W++) {
+        var z = $.charCodeAt(U + W), F = Q.charCodeAt(W);
+        if (z >= h && z <= c && (z += J5), F >= h && F <= c && (F += J5), z !== F) {
+          q2 = false;
+          break;
+        }
+      }
+      if (q2) return U;
+      X = U + 1;
+    }
+    return -1;
+  }
+  Y >= h && Y <= c && (Y += J5);
+  for (let O = Z; O <= $.length - V; O++) {
+    var D = $.charCodeAt(O);
+    if (D >= h && D <= c && (D += J5), D !== Y) continue;
+    let H = true;
+    for (let B = 1; B < V; B++) {
+      let M = $.charCodeAt(O + B), j = Q.charCodeAt(B);
+      if (M >= h && M <= c && (M += J5), j >= h && j <= c && (j += J5), M !== j) {
+        H = false;
+        break;
+      }
+    }
+    if (H) return O;
+  }
+  return -1;
+}
+function o4($, Q, Z) {
+  let V = Q.length;
+  var Y = Q.charCodeAt(0);
+  Y >= h && Y <= c && (Y += J5);
+  for (let K = Math.min(Z, $.length - V); K >= 0; K--) {
+    var G = $.charCodeAt(K);
+    if (G >= h && G <= c && (G += J5), G !== Y) continue;
+    let J = true;
+    for (let X = 1; X < V; X++) {
+      let U = $.charCodeAt(K + X), q2 = Q.charCodeAt(X);
+      if (U >= h && U <= c && (U += J5), q2 >= h && q2 <= c && (q2 += J5), U !== q2) {
+        J = false;
+        break;
+      }
+    }
+    if (J) return K;
+  }
+  return -1;
+}
+var k9 = -1;
+function o9($, Q, Z) {
+  let V = Z.toLowerCase(), Y = "<" + V, G = "</" + V, K = 1, J = Q, X = $.length;
+  for (k9 = -1; J < X && K > 0; ) {
+    let W = T5($, Y, J), z = T5($, G, J);
+    if (z === -1) return -1;
+    if (W !== -1 && W < z) {
+      let F = w5($, W);
+      F ? (F.tag.toLowerCase() === V && !F.isClosing && !F.selfClosing && !l5(F.tag) && K++, J = F.end) : J = W + 1;
+    } else {
+      var U = z + G.length, q2 = U < X ? $.charCodeAt(U) : 62;
+      if ((q2 === o || q2 === v2 || q2 === b || q2 === E) && (K--, K === 0)) {
+        k9 = z;
+        let F = z + G.length;
+        for (; F < X && $.charCodeAt(F) !== o; ) F++;
+        return F + 1;
+      }
+      J = z + 1;
+    }
+  }
+  return -1;
+}
+function Q4($, Q, Z, V) {
+  if (V.ignoreHTMLBlocks || V.disableParsingRawHTML) return null;
+  var Y = X0($, Q);
+  if (P0($, Q, Y), J0 > 3 && !Z.inHTML) return null;
+  var G = Q + Z0;
+  if ($.charCodeAt(G) !== G0) return null;
+  var K = $.indexOf(">", G + 1);
+  if (K !== -1 && K < Y) {
+    var J = $.slice(G + 1, K);
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(J) || /^[^\s@]+@[^\s@]+$/.test(J)) return null;
+  }
+  var X = i4($, G);
+  if (X >= 1 && X <= 5) {
+    var U = $.length;
+    if (X === 1) {
+      for (var q2 = $.length, W = 0; W < c9.length; W++) {
+        var z = T5($, "</" + c9[W] + ">", G);
+        z >= 0 && z < q2 && (q2 = z);
+      }
+      if (q2 < $.length) {
+        var F = $.indexOf(">", q2);
+        U = F >= 0 ? s($, F + 1) : $.length;
+      }
+    } else {
+      var D = X === 2 ? "-->" : X === 3 ? "?>" : X === 4 ? ">" : "]]>", O = $.indexOf(D, G);
+      O >= 0 && (U = s($, O + D.length));
+    }
+    var H = $.slice(G, U);
+    if (X >= 2) return { node: { type: _.htmlComment, text: H, l: false, raw: true }, end: U };
+    var B = "div", M = H.match(/^<\/?([a-zA-Z][a-zA-Z0-9-]*)/);
+    M && (B = M[1]);
+    var j = w5($, G), w = {}, I;
+    j && !j.isClosing && (w = b5(j.attrs, B, V), I = j.whitespaceBeforeAttrs + j.rawAttrs);
+    var A = [], k = B.toLowerCase(), S = "</" + k, R = T5(H, S, 0), N = H, T = "";
+    if (j && j.isClosing) for (N = H.slice(j.end - G); N.length > 0 && N.charCodeAt(N.length - 1) === E; ) N = N.slice(0, -1);
+    else if (j && !j.isClosing) {
+      var L = j.end - G;
+      if (R !== -1) for (N = H.slice(L), N.charCodeAt(0) === E && (N = N.slice(1)); N.length > 0 && N.charCodeAt(N.length - 1) === E; ) N = N.slice(0, -1);
+      else for (N = H; N.length > 0 && N.charCodeAt(N.length - 1) === E; ) N = N.slice(0, -1);
+      if (R !== -1) {
+        var u = H.slice(L, R);
+        T = u.trim();
+      }
+    }
+    var x = j ? j.isClosing : false;
+    return { node: { type: _.htmlBlock, tag: B, attrs: w, i: I, children: A, a: N, text: T, d: true, b: x }, end: U };
+  }
+  if (X === 6 || X === 7) {
+    var g = u$($, Q), P = g < $.length ? g : $.length, C = $.slice(G, P), d = g < $.length ? s($, g) : $.length, f = w5($, G);
+    if (f) {
+      var U0 = f.tag, n = U0.toLowerCase(), m0 = f.isClosing;
+      if (m0) {
+        var x0 = $.slice(f.end, P);
+        return { node: { type: _.htmlBlock, tag: U0, attrs: {}, children: [], a: x0, text: x0, d: true, b: true }, end: d };
+      }
+      if (f.selfClosing || l5(U0)) return { node: { type: _.htmlBlock, tag: U0, attrs: b5(f.attrs, U0, V), i: f.whitespaceBeforeAttrs + f.rawAttrs, children: [], a: "", text: "", d: false, b: false }, end: f.end < $.length && $.charCodeAt(f.end) === E ? f.end + 1 : f.end };
+      var v0 = Z.c || 0, l = $.slice(G, P), t = -1, b0 = -1;
+      if (v0 < 10) {
+        for (var r = "</" + n, z0 = f.end - G, Q0 = 1, I0 = z0; I0 < l.length && Q0 > 0; ) {
+          var q0 = T5(l, "<" + n, I0), V0 = T5(l, r, I0);
+          if (V0 === -1) break;
+          if (q0 !== -1 && q0 < V0) {
+            var O0 = q0 + n.length + 1;
+            if (O0 < l.length) {
+              var m = l.charCodeAt(O0);
+              (m === v2 || m === b || m === E || m === o || m === M0) && Q0++;
+            }
+            I0 = q0 + 1;
+          } else {
+            var w0 = V0 + r.length;
+            if (w0 < l.length) {
+              var g0 = l.charCodeAt(w0);
+              if ((g0 === o || g0 === v2 || g0 === b || g0 === E) && (Q0--, Q0 === 0)) {
+                t = V0;
+                for (var R0 = w0; R0 < l.length && l.charCodeAt(R0) !== o; ) R0++;
+                b0 = R0 + 1;
+                break;
+              }
+            } else if (Q0--, Q0 === 0) {
+              t = V0, b0 = l.length;
+              break;
+            }
+            I0 = V0 + 1;
+          }
+        }
+        var Z5 = false;
+        if (t === -1 && X === 6 && !f.isClosing) {
+          var i0 = o9($, f.end, n);
+          if (i0 !== -1) {
+            for (var T0 = k9, e = f.end, Y0 = false, a0 = false, B0 = false, A5 = 0, y = false, F0 = false, l0 = e; l0 < T0; ) {
+              var X5 = $.charCodeAt(l0);
+              if (X5 === E) F0 && (Y0 = true), y || A5++, F0 = true, l0++;
+              else if (X5 === v2 || X5 === b) l0++;
+              else {
+                if (!y && (y = true, A5 >= 2 && X5 === G0)) {
+                  B0 = true;
+                  break;
+                }
+                if (F0 = false, X5 === G0) {
+                  var M5 = $.charCodeAt(l0 + 1) | 32;
+                  if ((M5 === _9 || M5 === f9 || M5 === h5) && (f$.lastIndex = l0, f$.test($))) {
+                    a0 = true;
+                    break;
+                  }
+                }
+                l0++;
+              }
+            }
+            if (Y0 && !B0 && !a0) {
+              var r0 = X0($, i0);
+              P = r0, d = s($, r0), l = $.slice(G, P), C = $.slice(G, P), t = T0 - G, b0 = i0 - G, Z5 = true;
+            }
+          }
+        }
+      }
+      var D0 = f.rawAttrs.indexOf(`
+`) !== -1 || f.whitespaceBeforeAttrs.indexOf(`
+`) !== -1, S0 = false;
+      if (t !== -1) {
+        var L0 = l.slice(b0).trim();
+        S0 = L0.length === 0;
+      }
+      var h0 = false, Q5 = P, j0 = d;
+      if (t !== -1) {
+        var R5 = G + b0, z5 = X0($, R5 - 1);
+        if (R5 < z5) {
+          for (var H5 = R5; H5 < z5 && ($.charCodeAt(H5) === v2 || $.charCodeAt(H5) === b); ) H5++;
+          if (H5 < z5 && $.charCodeAt(H5) === G0) {
+            var o5 = w5($, H5);
+            o5 && !o5.isClosing && (h0 = true, Q5 = R5, j0 = R5, S0 = true);
+          }
+        }
+        if (!h0) {
+          var j5 = s($, z5);
+          if (j5 < P) {
+            for (var O5 = j5; O5 < P && ($.charCodeAt(O5) === v2 || $.charCodeAt(O5) === b); ) O5++;
+            if (O5 < P && $.charCodeAt(O5) === G0) {
+              var Z9 = w5($, O5);
+              Z9 && (h0 = true, Q5 = z5, j0 = j5, S0 = true);
+            }
+          }
+        }
+        if (!h0 && Z.inHTML) {
+          h0 = true, Q5 = z5, j0 = s($, z5);
+          var Q9 = $.slice(R5, z5).trim();
+          S0 = Q9.length === 0;
+        }
+      }
+      var B5 = [], n0 = "";
+      if (t !== -1) {
+        n0 = l.slice(f.end - G, t);
+        var i5 = n0.trim();
+        if (i5) {
+          var { inline: K4, inHTML: J4, c: X4 } = Z;
+          Z.inHTML = true, Z.c = v0 + 1;
+          var U4 = n === "p";
+          if (U4) Z.inline = true, B5 = $9(i5, false, Z, V);
+          else {
+            var Q$ = n0.indexOf(`
+
+`) !== -1, V$ = d9.test(i5), S9 = C$.test(i5), F4 = Q$ || V$ || Z.inHTML && S9, q4 = n0.length >= 2 && n0.charCodeAt(0) === E && n0.charCodeAt(n0.length - 1) === E && !Q$;
+            q4 && !V$ && !S9 ? B5 = [{ type: _.text, text: i5 }] : F4 || S9 ? (Z.inline = false, B5 = f5(n0, Z, V)) : (Z.inline = true, B5 = $9(i5, false, Z, V));
+          }
+          Z.inline = K4, Z.inHTML = J4, Z.c = X4;
+        }
+      }
+      var Y$ = false;
+      if (X === 6 && t !== -1 && !Z.inHTML && !D0) {
+        var W4 = /<[a-zA-Z][^>]*>/.test(n0), z4 = n0.indexOf(`
+
+`) !== -1 || d9.test(n0);
+        W4 && !z4 && (Y$ = true);
+      }
+      var H4 = !Z5 && (Z.inHTML || X === 7 || D0 || !S0 || Y$);
+      if (H4) {
+        var V5, G$ = false;
+        if (t !== -1 && h0) {
+          var K$ = false;
+          if (Z.inHTML && b0 < l.length) {
+            for (var O9 = b0; O9 < l.length && l.charCodeAt(O9) !== E; ) O9++;
+            var L9 = l.slice(b0, O9).trim();
+            K$ = L9.length > 1 && L9.charCodeAt(0) === G0 && L9.charCodeAt(1) !== M0;
+          }
+          V5 = K$ ? l.slice(f.end - G) : n0, G$ = true;
+        } else (X === 7 || Z.inHTML) && t !== -1 ? (V5 = l.slice(f.end - G), V5.charCodeAt(0) === E && (V5 = V5.slice(1))) : h0 ? V5 = $.slice(G, Q5) : D0 ? V5 = C : (V5 = l.slice(f.end - G), V5.charCodeAt(0) === E && (V5 = V5.slice(1)));
+        var J$ = { type: _.htmlBlock, tag: U0, attrs: b5(f.attrs, U0, V), i: f.whitespaceBeforeAttrs + f.rawAttrs, children: B5, a: V5, text: V5, d: true, b: false };
+        return G$ && (J$.n = true), { node: J$, end: j0 };
+      }
+      return { node: { type: _.htmlBlock, tag: U0, attrs: b5(f.attrs, U0, V), i: f.whitespaceBeforeAttrs + f.rawAttrs, children: B5, a: Z5 ? "" : n0, text: n0, d: false, b: false }, end: j0 };
+    }
+    var B9 = C.match(/^<(\/?)([a-zA-Z][a-zA-Z0-9-]*)/), O4 = B9 ? B9[2] : "div", X$ = B9 ? B9[1] === "/" : false, E9 = C;
+    if (X$) {
+      var U$ = C.indexOf(">");
+      U$ !== -1 && (E9 = C.slice(U$ + 1));
+    }
+    return { node: { type: _.htmlBlock, tag: O4, attrs: {}, children: [], a: E9, text: E9, d: true, b: X$ }, end: d };
+  }
+  var u0 = w5($, G);
+  if (!u0) return null;
+  var y5 = u0.tag, g9 = y5.toLowerCase(), F$ = y5.charCodeAt(0), D9 = F$ >= h && F$ <= c;
+  if (!D9 && !y9.has(g9) && !z9.has(g9) && !g9.includes("-")) return null;
+  if (u0.isClosing) return { node: { type: _.htmlSelfClosing, tag: y5, attrs: {}, a: $.slice(G, u0.end), b: true }, end: u0.end };
+  var m5 = o9($, u0.end, y5), V9 = [];
+  if (m5 !== -1) {
+    var B4 = k9, A9 = $.slice(u0.end, B4), M9 = A9.trim();
+    if (M9) {
+      var D4 = A9.indexOf(`
+
+`) !== -1, A4 = d9.test(M9), M4 = C$.test(M9), j4 = Z.inline, _4 = Z.inHTML, I4 = Z.c;
+      Z.inHTML = true, Z.c = (Z.c || 0) + 1, D4 || A4 || M4 ? (Z.inline = false, V9 = f5(A9, Z, V)) : (Z.inline = true, V9 = $9(M9, false, Z, V)), Z.inline = j4, Z.inHTML = _4, Z.c = I4;
+    }
+    var v4 = X0($, m5), N4 = $.slice(m5, v4).trim(), T9 = N4 ? m5 : s($, m5), q$ = D9 ? $.slice(G, m5) : $.slice(G, T9), A6 = D9 ? m5 : T9;
+    return { node: { type: _.htmlBlock, tag: y5, attrs: b5(u0.attrs, y5, V), i: u0.whitespaceBeforeAttrs + u0.rawAttrs, children: V9, a: q$, text: D9 ? A9 : q$, d: true, b: false }, end: T9 };
+  }
+  var Y9 = u$($, u0.end), P4 = Y9 < $.length ? s($, Y9) : Y9, x9 = $.slice(u0.end, Y9);
+  if (x9.trim()) {
+    var { inline: b4, inHTML: w4, c: R4 } = Z;
+    Z.inline = false, Z.inHTML = true, Z.c = (Z.c || 0) + 1, V9 = f5(x9, Z, V), Z.inline = b4, Z.inHTML = w4, Z.c = R4;
+  }
+  var y4 = $.slice(u0.end, Y9);
+  return { node: { type: _.htmlBlock, tag: y5, attrs: b5(u0.attrs, y5, V), i: u0.whitespaceBeforeAttrs + u0.rawAttrs, children: V9, a: y4, text: x9, d: true, b: false }, end: P4 };
+}
+function i4($, Q) {
+  if ($.charCodeAt(Q) !== G0) return 0;
+  var Z = Q + 1, V = $.length;
+  if ($.charCodeAt(Z) === p0 && $.charCodeAt(Z + 1) === p && $.charCodeAt(Z + 2) === p) return 2;
+  if ($.charCodeAt(Z) === a5) return 3;
+  if ($.charCodeAt(Z) === p0) {
+    var Y = $.charCodeAt(Z + 1);
+    if (Y >= h && Y <= c) return 4;
+    if ($.slice(Z + 1, Z + 8) === "[CDATA[") return 5;
+  }
+  for (var G = $.charCodeAt(Z) === M0, K = G ? Z + 1 : Z, J = K; J < V; ) {
+    var X = $.charCodeAt(J);
+    if (X >= h && X <= c || X >= K0 && X <= W0 || X >= i && X <= a || X === p) J++;
+    else break;
+  }
+  if (J === K) return 0;
+  var U = $.slice(K, J);
+  if (z9.has(U.toLowerCase())) {
+    if (G) return 0;
+    var q2 = $.charCodeAt(J);
+    return q2 === v2 || q2 === b || q2 === o || q2 === E || J >= V ? 1 : 0;
+  }
+  if (y9.has(U.toLowerCase())) {
+    if (G) {
+      for (var W = J; W < V && ($.charCodeAt(W) === v2 || $.charCodeAt(W) === b); ) W++;
+      return W < V && $.charCodeAt(W) === o ? 6 : 0;
+    }
+    var z = J < V ? $.charCodeAt(J) : -1;
+    return z === v2 || z === b || z === o || z === E || z === M0 || z === -1 ? 6 : 0;
+  }
+  if (G) {
+    for (var H = J; H < V && ($.charCodeAt(H) === v2 || $.charCodeAt(H) === b); ) H++;
+    if (H < V && $.charCodeAt(H) === o) {
+      var B = X0($, Q), M = $.slice(H + 1, B).trim();
+      if (M === "") return 7;
+    }
+  } else {
+    var F = X0($, Q), D = w5($, Q);
+    if (D && D.end <= F) {
+      var O = $.slice(D.end, F).trim();
+      if (O === "") return 7;
+    }
+  }
+  return 0;
+}
+function d$($, Q, Z) {
+  for (var V = 0, Y = $.length; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+  for (; Y > V && ($.charCodeAt(Y - 1) === v2 || $.charCodeAt(Y - 1) === b); ) Y--;
+  V < Y && $.charCodeAt(V) === k0 && V++, Y > V && $.charCodeAt(Y - 1) === k0 && (Y - 2 < V || $.charCodeAt(Y - 2) !== y0) && Y--;
+  for (var G = [], K = V, J = false, X = [], U = V; U < Y; ) {
+    var q2 = $.charCodeAt(U);
+    if (q2 === y0 && U + 1 < Y) {
+      $.charCodeAt(U + 1) === k0 ? (J || (J = true, X = []), X.push($.slice(K, U)), X.push("|"), U += 2, K = U) : U += 2;
+      continue;
+    }
+    if (q2 === $0) {
+      for (var W = 0; U < Y && $.charCodeAt(U) === $0; ) W++, U++;
+      for (var z = false; U < Y && !z; ) {
+        for (var F = 0; U < Y && $.charCodeAt(U) === $0; ) F++, U++;
+        F === W ? z = true : F === 0 && U++;
+      }
+      continue;
+    }
+    if (q2 === k0) {
+      var D = J ? (X.push($.slice(K, U)), X.join("")) : $.slice(K, U);
+      G.push(D.trim()), U++, K = U, J = false, X = [];
+      continue;
+    }
+    U++;
+  }
+  var O = J ? (X.push($.slice(K, Y)), X.join("")) : $.slice(K, Y);
+  return G.push(O.trim()), G.map(function(H) {
+    var B = H.indexOf("\\|") !== -1 ? H.replace(/\\\|/g, "|") : H;
+    return B ? $9(B, false, Q, Z) : [];
+  });
+}
+function c$($, Q, Z, V) {
+  let Y = X0($, Q);
+  var G = $.indexOf("|", Q);
+  if (G < 0 || G >= Y) return null;
+  let K = s($, Y);
+  if (K >= $.length) return null;
+  let J = X0($, K);
+  if (!e$($, K, J)) return null;
+  let X = $.slice(Q, Y), U = $.slice(K, J);
+  for (var q2 = [], W = 0, z = U.length; W < z && (U.charCodeAt(W) === v2 || U.charCodeAt(W) === b); ) W++;
+  for (W < z && U.charCodeAt(W) === k0 && W++; W < z; ) {
+    for (; W < z && (U.charCodeAt(W) === v2 || U.charCodeAt(W) === b); ) W++;
+    if (W >= z || U.charCodeAt(W) === k0) break;
+    var F = U.charCodeAt(W) === f0;
+    for (F && W++; W < z && U.charCodeAt(W) === p; ) W++;
+    var D = W < z && U.charCodeAt(W) === f0;
+    for (D && W++, q2.push(F && D ? "center" : D ? "right" : F ? "left" : null); W < z && (U.charCodeAt(W) === v2 || U.charCodeAt(W) === b); ) W++;
+    W < z && U.charCodeAt(W) === k0 && W++;
+  }
+  let O = d$(X, Z, V);
+  if (q2.length !== O.length) return null;
+  let H = [], B = s($, J);
+  for (; B < $.length; ) {
+    let k = X0($, B), S = $.slice(B, k);
+    if (e0($, B, k)) break;
+    if (P0($, B, k), J0 < 4) {
+      var M = $.charCodeAt(B + Z0);
+      if (M === o || M === Y5 || (M === p || M === _0 || M === H0) && x5($, B)) break;
+      if (M === $0 || M === N0) {
+        for (var j = B + Z0, w = 0; j < k && $.charCodeAt(j) === M; ) w++, j++;
+        if (w >= 3) break;
+      }
+    }
+    H.push(d$(S, Z, V)), B = s($, k);
+  }
+  if (V.optimizeForStreaming && H.length === 0) return null;
+  for (var I = O.length, A = 0; A < H.length; A++) if (H[A].length < I) for (; H[A].length < I; ) H[A].push([]);
+  else H[A].length > I && (H[A].length = I);
+  return { node: { type: _.table, header: O, cells: H, align: q2 }, end: B };
+}
+function a4($, Q, Z) {
+  var V = X0($, Q);
+  if (P0($, Q, V), J0 > 3) return null;
+  var Y = Q + Z0;
+  if ($.charCodeAt(Y) !== A0) return null;
+  if (Y + 1 < $.length && $.charCodeAt(Y + 1) === U5) {
+    var G = n4($, Y, Z);
+    return G || null;
+  }
+  Z.refs || (Z.refs = {});
+  var K = $4($, Y, Z.refs);
+  return K === null ? null : { node: { type: _.refCollection }, end: K };
+}
+function n4($, Q, Z) {
+  var V = $.length;
+  if ($.charCodeAt(Q) !== A0 || Q + 1 >= V || $.charCodeAt(Q + 1) !== U5) return null;
+  for (var Y = Q + 2, G = Y; Y < V && $.charCodeAt(Y) !== K5; ) {
+    if ($.charCodeAt(Y) === E) return null;
+    Y++;
+  }
+  if (Y >= V) return null;
+  var K = ("^" + $.slice(G, Y)).toLowerCase();
+  if (Y++, Y >= V || $.charCodeAt(Y) !== f0) return null;
+  for (Y++; Y < V && ($.charCodeAt(Y) === v2 || $.charCodeAt(Y) === b); ) Y++;
+  if (Y < V && $.charCodeAt(Y) === E) for (Y++; Y < V && ($.charCodeAt(Y) === v2 || $.charCodeAt(Y) === b); ) Y++;
+  var J = $.indexOf(`
+`, Y);
+  J < 0 && (J = V);
+  for (var X = $.slice(Y, J).trim(), U = J < V ? J + 1 : V; U < V; ) {
+    var q2 = X0($, U);
+    if (P0($, U, q2), J0 >= 2 && !e0($, U, q2)) X += `
+` + $.slice(U, q2), U = s($, q2);
+    else if (e0($, U, q2)) {
+      var W = s($, q2);
+      if (W < V) {
+        var z = X0($, W);
+        if (P0($, W, z), J0 >= 2) {
+          X += `
+`, U = s($, q2);
+          continue;
+        }
+      }
+      break;
+    } else break;
+  }
+  return Z.refs[K] || (Z.refs[K] = { target: X, title: void 0 }), { node: { type: _.footnote }, end: U };
+}
+function s4($, Q, Z, V) {
+  let Y = Q, G = 0, K = 0, J = -1;
+  for (; Y < $.length; ) {
+    let u = J >= 0 ? J : X0($, Y);
+    if (J = -1, e0($, Y, u)) break;
+    if (P0($, Y, u), J0 < 4 && K > 0 && !Z.f) {
+      let g = $.charCodeAt(Y + Z0);
+      if (g === G5 || g === p) {
+        let P = Y + Z0;
+        for (; P < u && $.charCodeAt(P) === g; ) P++;
+        for (; P < u && ($.charCodeAt(P) === v2 || $.charCodeAt(P) === b); ) P++;
+        if (P >= u) {
+          G = g === G5 ? 1 : 2, Y = s($, u);
+          break;
+        }
+      }
+    }
+    K = u;
+    let x = s($, u);
+    if (x < $.length) {
+      if ($.charCodeAt(x) === v9) {
+        var X = X0($, x);
+        Y = s($, X), K = X;
+        continue;
+      }
+      let g = X0($, x);
+      if (J = g, P0($, x, g), J0 < 4) {
+        let P = $.charCodeAt(x + Z0);
+        if (P === o) {
+          Y = x;
+          break;
+        }
+        if (P === Y5) {
+          for (var U = x + Z0, q2 = 0; U < g && $.charCodeAt(U) === Y5 && q2 <= 6; ) q2++, U++;
+          if (q2 >= 1 && q2 <= 6 && (U >= g || $.charCodeAt(U) === v2 || $.charCodeAt(U) === b)) {
+            Y = x;
+            break;
+          }
+        }
+        if (P === $0 || P === N0) {
+          for (var W = x + Z0, z = 0; W < g && $.charCodeAt(W) === P; ) z++, W++;
+          if (z >= 3) {
+            Y = x;
+            break;
+          }
+        }
+        if (P === G0) {
+          var F = x + Z0 + 1, D = F < g ? $.charCodeAt(F) : 0, O = D === p0 || D === a5;
+          if (!O && D === M0) {
+            for (var H = F + 1, B = H; B < g && ($.charCodeAt(B) >= h && $.charCodeAt(B) <= c || $.charCodeAt(B) >= K0 && $.charCodeAt(B) <= W0 || $.charCodeAt(B) >= i && $.charCodeAt(B) <= a || $.charCodeAt(B) === p); ) B++;
+            B > H && (O = y9.has($.slice(H, B).toLowerCase()));
+          } else if (!O) {
+            for (var M = F; M < g && ($.charCodeAt(M) >= h && $.charCodeAt(M) <= c || $.charCodeAt(M) >= K0 && $.charCodeAt(M) <= W0 || $.charCodeAt(M) >= i && $.charCodeAt(M) <= a || $.charCodeAt(M) === p); ) M++;
+            if (M > F) {
+              var j = $.slice(F, M).toLowerCase();
+              O = y9.has(j) || z9.has(j);
+            }
+          }
+          if (O && Q4($, x, Z, V)) {
+            Y = x;
+            break;
+          }
+        }
+        if (P === p || P === _0 || P === N5) {
+          let C = x + Z0 + 1;
+          if (C < g && ($.charCodeAt(C) === v2 || $.charCodeAt(C) === b)) {
+            var w = W9($, C, g);
+            if (w < g && !x5($, x)) {
+              Y = x;
+              break;
+            }
+          }
+        }
+        if (P >= i && P <= a) {
+          let C = x + Z0;
+          for (; C < g && $.charCodeAt(C) >= i && $.charCodeAt(C) <= a; ) C++;
+          if (C < g && ($.charCodeAt(C) === s0 || $.charCodeAt(C) === q5) && C - (x + Z0) === 1 && $.charCodeAt(x + Z0) === 49) {
+            var I = C + 1;
+            if (I < g && ($.charCodeAt(I) === v2 || $.charCodeAt(I) === b)) {
+              var A = W9($, I, g);
+              if (A < g) {
+                Y = x;
+                break;
+              }
+            }
+          }
+        }
+        if (P === k0) {
+          let C = s($, g);
+          if (C < $.length) {
+            let d = X0($, C);
+            if (e$($, C, d)) {
+              Y = x;
+              break;
+            }
+          }
+        }
+        if ((P === p || P === _0 || P === H0) && x5($, x)) {
+          if (P !== p) {
+            Y = x;
+            break;
+          }
+          let C = 0, d = x + Z0;
+          for (; d < g && $.charCodeAt(d) === p; ) C++, d++;
+          for (; d < g && ($.charCodeAt(d) === v2 || $.charCodeAt(d) === b); ) d++;
+          if (d < g) {
+            Y = x;
+            break;
+          }
+        }
+      }
+    }
+    Y = s($, u);
+  }
+  for (var k = G ? K : Y; k > Q && ($.charCodeAt(k - 1) === E || $.charCodeAt(k - 1) === _5 || $.charCodeAt(k - 1) === v2 || $.charCodeAt(k - 1) === b); ) k--;
+  for (var S = Q; S < k && ($.charCodeAt(S) === v2 || $.charCodeAt(S) === b); ) S++;
+  if (S >= k) return null;
+  for (var R = false, N = S; N < k; N++) if ($.charCodeAt(N) === v9) {
+    R = true;
+    break;
+  }
+  var T = R ? $.slice(S, k).replace(/\u001E/g, "") : $.slice(S, k);
+  if (!T) return null;
+  let L = $9(T, true, Z, V);
+  if (G) {
+    let x = (V?.slugify || C0)(T);
+    return { node: { type: _.heading, level: G, children: L, id: x }, end: Y };
+  }
+  return { node: { type: _.paragraph, children: L }, end: Y };
+}
+function $9($, Q, Z, V) {
+  var Y = Z.k;
+  if (!Y) {
+    var G = Z.e;
+    Z.e = Q;
+    var K = D5($, 0, $.length, Z, V);
+    return Z.e = G, K;
+  }
+  var J = [];
+  return Y.push({ dest: J, text: $, breaks: Q, inline: Z.inline, inAnchor: Z.inAnchor, inHTML: Z.inHTML, htmlDepth: Z.c, inList: Z.inList, inBlockQuote: Z.inBlockQuote, noSetext: Z.f, depth: Z.j }), J;
+}
+function t4($, Q, Z) {
+  if ($.charCodeAt(Q) !== $0) return null;
+  let V = C5($, Q, Z, 96), Y = Q + V;
+  for (; Y < Z; ) {
+    let G = $.indexOf("`", Y);
+    if (G < 0 || G >= Z) return null;
+    let K = C5($, G, Z, 96);
+    if (K === V) {
+      let J = $.slice(Q + V, G);
+      return J.indexOf(`
+`) !== -1 && (J = J.replace(/\n/g, " ")), J.length > 0 && J[0] === " " && J[J.length - 1] === " " && J.trim().length > 0 && (J = J.slice(1, -1)), { node: { type: _.codeInline, text: J }, end: G + K };
+    }
+    Y = G + K;
+  }
+  return null;
+}
+function s9($, Q, Z) {
+  if ($.charCodeAt(Q) !== $0) return Q;
+  let V = C5($, Q, Z, 96), Y = Q + V;
+  for (; Y < Z; ) {
+    let G = $.indexOf("`", Y);
+    if (G < 0 || G >= Z) return Q;
+    let K = C5($, G, Z, 96);
+    if (K === V) return G + K;
+    Y = G + K;
+  }
+  return Q;
+}
+function e4($, Q, Z) {
+  if ($.charCodeAt(Q) !== G0) return Q;
+  if (Q + 1 < Z && $.charCodeAt(Q + 1) === M0) {
+    let U = Q + 2;
+    for (; U < Z && $.charCodeAt(U) !== o; ) U++;
+    return U < Z ? U + 1 : Q;
+  }
+  if (Q + 3 < Z && $.charCodeAt(Q + 1) === p0 && $.charCodeAt(Q + 2) === p && $.charCodeAt(Q + 3) === p) {
+    let U = $.indexOf("-->", Q + 4);
+    return U >= 0 ? U + 3 : Q;
+  }
+  let V = Q + 1, Y = V;
+  for (; V < Z; ) {
+    let U = $.charCodeAt(V);
+    if (U >= h && U <= c || U >= K0 && U <= W0 || U >= i && U <= a || U === p) V++;
+    else break;
+  }
+  if (V === Y) return Q;
+  let G = $.slice(Y, V).toLowerCase(), K = false;
+  for (; V < Z; ) {
+    let U = $.charCodeAt(V);
+    if (U === o) {
+      V++;
+      break;
+    }
+    if (U === M0 && V + 1 < Z && $.charCodeAt(V + 1) === o) {
+      V += 2, K = true;
+      break;
+    }
+    if (U === v5 || U === S5) {
+      var J = U;
+      for (V++; V < Z && $.charCodeAt(V) !== J; ) V++;
+      V < Z && V++;
+      continue;
+    }
+    if (U === E) return Q;
+    V++;
+  }
+  if (K || l5(G)) return V;
+  let X = 1;
+  for (; V < Z && X > 0; ) if ($.charCodeAt(V) === G0) if (V + 1 < Z && $.charCodeAt(V + 1) === M0) {
+    let U = V + 2, q2 = U;
+    for (; q2 < Z && ($.charCodeAt(q2) >= h && $.charCodeAt(q2) <= c || $.charCodeAt(q2) >= K0 && $.charCodeAt(q2) <= W0); ) q2++;
+    if ($.slice(U, q2).toLowerCase() === G) {
+      for (; q2 < Z && $.charCodeAt(q2) !== o; ) q2++;
+      if (q2 < Z && q2++, X--, X === 0) return q2;
+    }
+    V = q2;
+  } else {
+    let U = V + 1, q2 = U;
+    for (; q2 < Z && ($.charCodeAt(q2) >= h && $.charCodeAt(q2) <= c || $.charCodeAt(q2) >= K0 && $.charCodeAt(q2) <= W0); ) q2++;
+    $.slice(U, q2).toLowerCase() === G && X++, V++;
+  }
+  else V++;
+  return V;
+}
+function $6($, Q, Z, V, Y) {
+  if ($.charCodeAt(Q) !== N0 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== N0) return null;
+  let G = Q + 2;
+  for (; G + 1 < Z; ) {
+    let K = $.charCodeAt(G);
+    if (K === $0) {
+      let J = s9($, G, Z);
+      if (J > G) {
+        G = J;
+        continue;
+      }
+    }
+    if (K === N0 && $.charCodeAt(G + 1) === N0) {
+      let J = $.slice(Q + 2, G), X = D5(J, 0, J.length, V, Y);
+      return { node: { type: _.textFormatted, tag: "del", children: X }, end: G + 2 };
+    }
+    K === y0 && G + 1 < Z && G++, G++;
+  }
+  return null;
+}
+function Z6($, Q, Z, V, Y) {
+  if ($.charCodeAt(Q) !== G5 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== G5) return null;
+  let G = Q + 2;
+  for (; G + 1 < Z; ) {
+    let K = $.charCodeAt(G);
+    if (K === $0) {
+      let J = s9($, G, Z);
+      if (J > G) {
+        G = J;
+        continue;
+      }
+    }
+    if (K === G5 && $.charCodeAt(G + 1) === G5 && G > Q + 2) {
+      let J = $.slice(Q + 2, G), X = D5(J, 0, J.length, V, Y);
+      return { node: { type: _.textFormatted, tag: "mark", children: X }, end: G + 2 };
+    }
+    K === y0 && G + 1 < Z && G++, G++;
+  }
+  return null;
+}
+function l$($, Q, Z) {
+  return $ < n5 ? !!(n9($) & p5) : P$.test(Q[Z]);
+}
+function r$($, Q, Z) {
+  return $ < n5 ? !!(n9($) & E5) : b$.test(Q[Z]);
+}
+function Q6($, Q, Z) {
+  var V = $.charCodeAt(Q);
+  if (V !== _0 && V !== H0) return null;
+  var Y = C5($, Q, Z, V);
+  if (Y === 0) return null;
+  var G = Q > 0 ? $.charCodeAt(Q - 1) : 32, K = Q + Y < Z ? $.charCodeAt(Q + Y) : 32, J = r$(G, $, Q - 1), X = r$(K, $, Q + Y), U = Q > 0 ? l$(G, $, Q - 1) : false, q2 = Q + Y < Z ? l$(K, $, Q + Y) : false, W = !X && (!q2 || J || U), z = !J && (!U || X || q2), F, D;
+  return V === _0 ? (F = W, D = z) : (F = W && (!z || U), D = z && (!W || q2)), { len: Y, canOpen: F, canClose: D };
+}
+function V6($, Q, Z, V) {
+  if (Q.length !== 0) {
+    for (var Y = $.length, G = Array(Y), K = null, J = null, X = 0; X < Y; X++) {
+      var U = { node: $[X], prev: J, next: null };
+      J ? J.next = U : K = U, G[X] = U, J = U;
+    }
+    for (var q2 = Array(Q.length), W = 0; W < Q.length; W++) q2[W] = G[Q[W].idx];
+    for (var z = [], F = 0; F < 12; F++) z[F] = -1;
+    for (var D = 0; D < Q.length; ) {
+      var O = Q[D];
+      if (!O.active || !O.canClose) {
+        D++;
+        continue;
+      }
+      for (var H = O.ch === _0 ? 0 : 1, B = H * 6 + O.len % 3 * 2 + (O.canOpen ? 1 : 0), M = z[B] !== void 0 ? z[B] : -1, j = -1, w = D - 1; w > M; w--) {
+        var I = Q[w];
+        if (!(!I.active || I.ch !== O.ch || !I.canOpen) && !((O.canOpen || I.canClose) && (I.len + O.len) % 3 === 0 && I.len % 3 !== 0)) {
+          j = w;
+          break;
+        }
+      }
+      if (j < 0) {
+        z[B] = D - 1, !O.canOpen && (O.active = false), D++;
+        continue;
+      }
+      var A = Q[j], k = A.len >= 2 && O.len >= 2, S = k ? 2 : 1;
+      A.len -= S, O.len -= S;
+      var R = q2[j], N = q2[D], T = R.node, L = N.node;
+      T.text = T.text.slice(0, T.text.length - S), L.text = L.text.slice(S);
+      for (var u = [], x = R.next; x && x !== N; ) u.push(x.node), x = x.next;
+      var g = { type: _.textFormatted, tag: k ? "strong" : "em", children: u }, P = { node: g, prev: R, next: N };
+      R.next = P, N.prev = P;
+      for (var C = j + 1; C < D; C++) Q[C].active = false;
+      if (A.len === 0 && (A.active = false, T.text === "")) {
+        var d = R.prev;
+        P.prev = d, d ? d.next = P : K = P;
+      }
+      if (O.len === 0) {
+        if (O.active = false, L.text === "") {
+          var f = N.next;
+          P.next = f, f && (f.prev = P);
+        }
+      } else continue;
+      D++;
+    }
+    for (var U0 = 0, n = K; n; ) {
+      var m0 = n.node;
+      if (m0.type === _.text) {
+        var x0 = m0;
+        if (x0.text === "") {
+          n = n.next;
+          continue;
+        }
+        if (U0 > 0 && $[U0 - 1].type === _.text) {
+          $[U0 - 1].text += x0.text, n = n.next;
+          continue;
+        }
+      }
+      $[U0++] = m0, n = n.next;
+    }
+    $.length = U0;
+  }
+}
+function o$($, Q, Z, V, Y) {
+  let G = $.charCodeAt(Q) === p0, K = G ? Q + 1 : Q;
+  if ($.charCodeAt(K) !== A0) return null;
+  var J = $.indexOf("]", K + 1);
+  if (J < 0 || J >= Z) return null;
+  for (var X = K + 1, U = -1, q2 = 1; X < Z && q2 > 0; ) {
+    var W = $.charCodeAt(X);
+    if (W === y0 && X + 1 < Z) {
+      X += 2;
+      continue;
+    }
+    if (W === $0) {
+      var z = s9($, X, Z);
+      if (z > X) {
+        X = z;
+        continue;
+      }
+    }
+    if (W === G0) {
+      var F = V4($, X, Z);
+      if (F) {
+        X = F.end;
+        continue;
+      }
+      var D = e4($, X, Z);
+      if (D > X) {
+        X = D;
+        continue;
+      }
+    }
+    W === A0 ? q2++ : W === K5 && q2--, X++;
+  }
+  if (q2 !== 0) return null;
+  var O = X - 1, H = $.slice(K + 1, O), B = X < Z ? $.charCodeAt(X) : 0, M = false;
+  if (B === F5) {
+    var j = true;
+    for (X++; X < Z && ($.charCodeAt(X) === v2 || $.charCodeAt(X) === E); ) X++;
+    var w = "", I = X;
+    if (X < Z && $.charCodeAt(X) === G0) {
+      for (X++, I = X; I < Z && $.charCodeAt(I) !== o; ) {
+        if ($.charCodeAt(I) === y0 && I + 1 < Z) {
+          I += 2;
+          continue;
+        }
+        if ($.charCodeAt(I) === E) {
+          j = false;
+          break;
+        }
+        I++;
+      }
+      j && (I >= Z || $.charCodeAt(I) !== o) && (j = false), j && (w = $.slice(X, I), I++);
+    } else if (j) if (V.g !== void 0 && X >= V.g) j = false;
+    else {
+      for (var A = 0, k = false; I < Z; ) {
+        var S = $.charCodeAt(I);
+        if (S === y0 && I + 1 < Z) {
+          I += 2;
+          continue;
+        }
+        if (S === F5) A++;
+        else if (S === q5) {
+          if (k = true, A === 0) break;
+          A--;
+        } else if (S === v2 || S === E) break;
+        I++;
+      }
+      I >= Z && !k && (V.g === void 0 || X < V.g) && (V.g = X), w = $.slice(X, I);
+    }
+    if (j) {
+      for (X = I; X < Z && ($.charCodeAt(X) === v2 || $.charCodeAt(X) === E); ) X++;
+      var R;
+      if (X < Z) {
+        var N = $.charCodeAt(X);
+        if (N === v5 || N === S5 || N === F5) {
+          var T = N === F5 ? 41 : N;
+          X++;
+          for (var L = X; X < Z && $.charCodeAt(X) !== T; ) $.charCodeAt(X) === y0 && X + 1 < Z && X++, X++;
+          X >= Z ? j = false : (R = $.slice(L, X), X++);
+        }
+      }
+      if (j) {
+        for (; X < Z && ($.charCodeAt(X) === v2 || $.charCodeAt(X) === E); ) X++;
+        (X >= Z || $.charCodeAt(X) !== q5) && (j = false);
+      }
+    }
+    if (j) {
+      X++, w = e5(w), R !== void 0 && (R = s5(e5(R)));
+      var u = Y?.sanitizer || c5, x = u(w, G ? "img" : "a", G ? "src" : "href"), g = x === null ? null : w;
+      if (G) {
+        var P = D5(H, 0, H.length, V, Y), C = a9(P);
+        return { node: { type: _.image, target: g, alt: C, title: R }, end: X };
+      } else {
+        var d = V.inAnchor;
+        V.inAnchor = true;
+        var f = d ? [{ type: _.text, text: H }] : D5(H, 0, H.length, V, Y);
+        return V.inAnchor = d, !V.inAnchor && i9(f) ? null : { node: { type: _.link, target: g, title: R, children: f }, end: X };
+      }
+    } else X = O + 1, M = true;
+  }
+  var U0 = "", n = X;
+  if (!M && B === A0) {
+    var m0 = X + 1;
+    n = m0;
+    for (var x0 = false; n < Z && $.charCodeAt(n) !== K5; ) {
+      if ($.charCodeAt(n) === y0 && n + 1 < Z) {
+        n += 2;
+        continue;
+      }
+      if ($.charCodeAt(n) === A0) {
+        x0 = true;
+        break;
+      }
+      n++;
+    }
+    if (x0 || n >= Z) return null;
+    var v0 = $.slice(m0, n);
+    if (v0.trim()) U0 = b9(v0);
+    else {
+      if (h$(H)) return null;
+      U0 = b9(H);
+    }
+    n = n + 1;
+  } else {
+    if (h$(H)) return null;
+    U0 = b9(H);
+  }
+  var l = V.refs[U0];
+  if (!l) return null;
+  if (G) return { node: { type: _.image, target: l.target, alt: a9(D5(H, 0, H.length, V, Y)), title: l.title }, end: n };
+  var t = V.inAnchor;
+  V.inAnchor = true;
+  var f = t ? [{ type: _.text, text: H }] : D5(H, 0, H.length, V, Y);
+  return V.inAnchor = t, !V.inAnchor && i9(f) ? null : { node: { type: _.link, target: l.target, title: l.title, children: f }, end: n };
+}
+function V4($, Q, Z) {
+  if ($.charCodeAt(Q) !== G0) return null;
+  for (var V = Q + 1; V < Z; ) {
+    var Y = $.charCodeAt(V);
+    if (Y === o) break;
+    if (Y === v2 || Y === E || Y === _5 || Y === G0) return null;
+    V++;
+  }
+  if (V >= Z || $.charCodeAt(V) !== o) return null;
+  var G = $.slice(Q + 1, V), K = G.match(/^([a-zA-Z][a-zA-Z0-9+.-]{1,31}):([^\x00-\x20]*)$/);
+  return K ? { node: { type: _.link, target: G, title: void 0, children: [{ type: _.text, text: G }] }, end: V + 1 } : G.indexOf("@") !== -1 && /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(G) ? { node: { type: _.link, target: "mailto:" + G, title: void 0, children: [{ type: _.text, text: G }] }, end: V + 1 } : null;
+}
+function Y6($, Q, Z, V) {
+  if ($.charCodeAt(Q) !== A0 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== U5) return null;
+  let Y = Q + 2;
+  for (; Y < Z && $.charCodeAt(Y) !== K5 && $.charCodeAt(Y) !== E; ) Y++;
+  if (Y >= Z || $.charCodeAt(Y) !== K5) return null;
+  let G = $.slice(Q + 2, Y);
+  return G ? { node: { type: _.footnoteReference, target: "#" + C0(G), text: G }, end: Y + 1 } : null;
+}
+function G6($, Q, Z, V) {
+  if (V.disableBareUrls) return null;
+  var Y = "", G = false, K = $.charCodeAt(Q);
+  if (K === X9 || K === 72 ? Q + 8 <= Z && $.charCodeAt(Q + 1) === h5 && $.charCodeAt(Q + 2) === h5 && $.charCodeAt(Q + 3) === _9 && ($.charCodeAt(Q + 4) === f9 && $.charCodeAt(Q + 5) === f0 && $.charCodeAt(Q + 6) === M0 && $.charCodeAt(Q + 7) === M0 ? Y = "https://" : $.charCodeAt(Q + 4) === f0 && $.charCodeAt(Q + 5) === M0 && $.charCodeAt(Q + 6) === M0 && (Y = "http://")) : K === I5 || K === 70 ? Q + 6 <= Z && $.charCodeAt(Q + 1) === h5 && $.charCodeAt(Q + 2) === _9 && $.charCodeAt(Q + 3) === f0 && $.charCodeAt(Q + 4) === M0 && $.charCodeAt(Q + 5) === M0 && (Y = "ftp://") : (K === k5 || K === 87) && Q + 4 <= Z && $.charCodeAt(Q + 1) === k5 && $.charCodeAt(Q + 2) === k5 && $.charCodeAt(Q + 3) === s0 && (Y = "www.", G = true), !Y) return null;
+  let J = Q + Y.length;
+  for (; J < Z; ) {
+    let A = $.charCodeAt(J);
+    if (A === v2 || A === E || A === b || A === _5 || A === G0 || A === o) break;
+    J++;
+  }
+  for (var X = 0, U = 0, q2 = Q; q2 < J; q2++) {
+    var W = $.charCodeAt(q2);
+    W === F5 ? X++ : W === q5 && U++;
+  }
+  let z = J;
+  for (; z > Q + Y.length; ) {
+    let A = $.charCodeAt(z - 1);
+    if (A === s0 || A === H$ || A === f0 || A === p0 || A === a5 || A === q5 || A === _0 || A === H0 || A === N0) {
+      if (A === q5) {
+        if (X >= U) break;
+        U--;
+      }
+      z--;
+    } else if (A === U9) {
+      for (var F = z - 2; F > Q && ($.charCodeAt(F) >= h && $.charCodeAt(F) <= c || $.charCodeAt(F) >= K0 && $.charCodeAt(F) <= W0 || $.charCodeAt(F) >= i && $.charCodeAt(F) <= a); ) F--;
+      F >= Q && $.charCodeAt(F) === K9 ? z = F : z--;
+    } else break;
+  }
+  if (z <= Q + Y.length) return null;
+  var D = Q + (G ? 4 : Y.length), O = $.indexOf("/", D);
+  if ((O < 0 || O > z) && (O = z), G && $.indexOf(".", D) === -1) return null;
+  for (var H = -1, B = -1, M = O - 1; M >= D; M--) if ($.charCodeAt(M) === s0) if (H < 0) H = M;
+  else {
+    B = M;
+    break;
+  }
+  for (var j = B >= 0 ? B + 1 : D, M = j; M < O; M++) if ($.charCodeAt(M) === H0) return null;
+  var w = $.slice(Q, z), I = G ? "http://" + w : w;
+  return { node: { type: _.link, target: I, title: void 0, children: [{ type: _.text, text: w }] }, end: z };
+}
+function K6($, Q, Z, V) {
+  if (V.disableBareUrls) return null;
+  for (var Y = Q, G = Y; Y < Z; ) {
+    var K = $.charCodeAt(Y);
+    if (K >= h && K <= c || K >= K0 && K <= W0 || K >= i && K <= a || K === s0 || K === p0 || K === Y5 || K === 36 || K === G9 || K === K9 || K === S5 || K === _0 || K === N5 || K === M0 || K === G5 || K === a5 || K === U5 || K === H0 || K === $0 || K === L5 || K === k0 || K === I9 || K === N0 || K === p) Y++;
+    else break;
+  }
+  if (Y === G || Y >= Z || $.charCodeAt(Y) !== j9) return null;
+  Y++;
+  for (var J = Y, X = -1, U = Y; Y < Z; ) {
+    var K = $.charCodeAt(Y);
+    if (K >= h && K <= c || K >= K0 && K <= W0 || K >= i && K <= a) Y++;
+    else if ((K === p || K === H0) && Y > J) Y++;
+    else if (K === s0) {
+      if (Y === J) break;
+      var q2 = $.charCodeAt(Y - 1);
+      if (q2 === p || q2 === H0 || Y - U > 63) break;
+      if (Y + 1 < Z) {
+        var W = $.charCodeAt(Y + 1);
+        if (W >= h && W <= c || W >= K0 && W <= W0 || W >= i && W <= a) X = Y, U = Y + 1, Y++;
+        else break;
+      } else break;
+    } else break;
+  }
+  if (Y - U > 63 || X < 0) return null;
+  var z = $.charCodeAt(Y - 1);
+  if (!(z >= h && z <= c || z >= K0 && z <= W0 || z >= i && z <= a) || Y <= X + 1) return null;
+  for (var F = -1, D = X - 1; D >= J; D--) if ($.charCodeAt(D) === s0) {
+    F = D;
+    break;
+  }
+  for (var O = F >= 0 ? F + 1 : J, D = O; D < Y; D++) if ($.charCodeAt(D) === H0) return null;
+  var H = $.slice(Q, Y);
+  return { node: { type: _.link, target: "mailto:" + H, title: void 0, children: [{ type: _.text, text: H }] }, end: Y };
+}
+function i9($) {
+  for (var Q = 0; Q < $.length; Q++) if ($[Q].type === _.link || "children" in $[Q] && Array.isArray($[Q].children) && i9($[Q].children)) return true;
+  return false;
+}
+function a9($) {
+  for (var Q = "", Z = 0; Z < $.length; Z++) {
+    var V = $[Z];
+    V.type === _.text ? Q += V.text : V.type === _.breakLine ? Q += " " : V.type === _.codeInline ? Q += V.text : "children" in V && Array.isArray(V.children) ? Q += a9(V.children) : V.type === _.image && (Q += V.alt || "");
+  }
+  return Q;
+}
+function r5($) {
+  return { type: _.text, text: $ };
+}
+function J6($, Q, Z) {
+  var V = Q + 1;
+  if (V >= Z) return -1;
+  if ($.charCodeAt(V) === Y5) {
+    V++;
+    var Y = V < Z && ($.charCodeAt(V) === O$ || $.charCodeAt(V) === B$);
+    Y && V++;
+    for (var G = V, K = Y ? 6 : 7; V < Z && V - G <= K; ) {
+      var J = $.charCodeAt(V), X = J >= i && J <= a || Y && (J >= h && J <= J9 || J >= K0 && J <= I5);
+      if (!X) break;
+      V++;
+    }
+    return V === G || V - G > K ? -1 : V < Z && $.charCodeAt(V) === U9 ? V + 1 : -1;
+  }
+  for (var U = V; V < Z && V - U < 48; ) {
+    var q2 = $.charCodeAt(V);
+    if (q2 >= h && q2 <= c || q2 >= K0 && q2 <= W0 || q2 >= i && q2 <= a) {
+      V++;
+      continue;
+    }
+    break;
+  }
+  return V === U ? -1 : V < Z && $.charCodeAt(V) === U9 ? V + 1 : -1;
+}
+function X6($, Q, Z, V, Y) {
+  if ($.charCodeAt(Q) !== G0) return null;
+  var G = Q + 1;
+  if (G >= Z) return null;
+  var K = $.charCodeAt(G);
+  if (K === p0 && G + 1 < Z && $.charCodeAt(G + 1) === p && G + 2 < Z && $.charCodeAt(G + 2) === p) {
+    var J = G + 3;
+    if (J < Z && $.charCodeAt(J) === o) return { node: { type: _.htmlComment, text: "", l: true }, end: J + 1 };
+    if (J + 1 < Z && $.charCodeAt(J) === p && $.charCodeAt(J + 1) === o) return { node: { type: _.htmlComment, text: "-", l: true }, end: J + 2 };
+    var X = $.indexOf("-->", J);
+    return X !== -1 && X <= Z - 3 ? { node: { type: _.htmlComment, text: $.slice(Q + 4, X), l: false }, end: X + 3 } : null;
+  }
+  if (K === a5) {
+    var U = $.indexOf("?>", G + 1);
+    return U !== -1 && U < Z ? { node: { type: _.htmlSelfClosing, tag: "?", attrs: {}, a: $.slice(Q, U + 2), b: false }, end: U + 2 } : null;
+  }
+  if (K === p0 && G + 1 < Z) {
+    var q2 = $.charCodeAt(G + 1);
+    if (q2 === A0 && $.slice(G + 1, G + 8) === "[CDATA[") {
+      var W = $.indexOf("]]>", G + 8);
+      return W !== -1 && W < Z ? { node: { type: _.htmlSelfClosing, tag: "![CDATA[", attrs: {}, a: $.slice(Q, W + 3), b: false }, end: W + 3 } : null;
+    }
+    if (q2 >= h && q2 <= c) {
+      var z = $.indexOf(">", G + 2);
+      return z !== -1 && z < Z ? { node: { type: _.htmlSelfClosing, tag: "!" + $.slice(G + 1, z), attrs: {}, a: $.slice(Q, z + 1), b: false }, end: z + 1 } : null;
+    }
+  }
+  if (K === M0) {
+    var F = G + 1;
+    if (F >= Z) return null;
+    var D = $.charCodeAt(F);
+    if (!(D >= h && D <= c || D >= K0 && D <= W0)) return null;
+    for (F++; F < Z; ) {
+      var O = $.charCodeAt(F);
+      if (O >= h && O <= c || O >= K0 && O <= W0 || O >= i && O <= a || O === p) F++;
+      else break;
+    }
+    for (; F < Z && ($.charCodeAt(F) === v2 || $.charCodeAt(F) === b || $.charCodeAt(F) === E); ) F++;
+    if (F < Z && $.charCodeAt(F) === o) {
+      var H = $.slice(G + 1, F).trim();
+      return { node: { type: _.htmlSelfClosing, tag: H, attrs: {}, a: $.slice(Q, F + 1), b: true }, end: F + 1 };
+    }
+    return null;
+  }
+  if (!(K >= h && K <= c || K >= K0 && K <= W0)) return null;
+  var B = w5($, Q);
+  if (!B) return null;
+  var M = B.tag, j = M.toLowerCase(), w = B.selfClosing;
+  if (w || l5(M)) return { node: { type: _.htmlSelfClosing, tag: M, attrs: b5(B.attrs, M, Y), a: $.slice(Q, B.end), b: false }, end: B.end };
+  var I = z9.has(j), A = o9($.slice(0, Z), B.end, M);
+  if (A === -1) return { node: { type: _.htmlSelfClosing, tag: M, attrs: b5(B.attrs, M, Y), a: $.slice(Q, B.end), b: false }, end: B.end };
+  var k = o4($, "</" + j, A), S = $.slice(B.end, k), R = [];
+  if (I) S.trim() && (R = [{ type: _.text, text: S }]);
+  else {
+    var N = S.trim();
+    if (N) {
+      var { inAnchor: T, inline: L, e: u } = V;
+      j === "a" && (V.inAnchor = true), V.e = false;
+      var x = N.indexOf(`
+
+`) !== -1 || /^#{1,6}\s/.test(N);
+      x ? (V.inline = false, R = f5(N, V, Y)) : R = D5(N, 0, N.length, V, Y), V.inAnchor = T, V.inline = L, V.e = u;
+    }
+  }
+  return { node: { type: _.htmlBlock, tag: M, attrs: b5(B.attrs, M, Y), i: B.rawAttrs, children: R, a: void 0, text: S, d: false, b: false }, end: A };
+}
+var U6 = 200;
+var q9 = 0;
+function D5($, Q, Z, V, Y) {
+  if (q9++, q9 > U6) return q9--, [{ type: _.text, text: $.slice(Q, Z) }];
+  var G = V.g;
+  V.g = void 0;
+  let K = V;
+  if (Y.optimizeForStreaming) {
+    let M5 = function(D0, S0) {
+      for (var L0 = 1, h0 = S0 + 1; h0 < D0.length; h0++) {
+        var Q5 = D0.charCodeAt(h0);
+        if (Q5 === A0) L0++;
+        else if (Q5 === K5 && (L0--, L0 === 0)) return h0;
+      }
+      return -1;
+    }, y = $.slice(Q, Z), F0 = y;
+    for (var J = 0, X = 0, U = 0, q2 = 0, W = 0, z = -1, F = -1, D = -1, O = -1, H = -1, B = 0; B < y.length; B++) {
+      var M = y.charCodeAt(B);
+      M === _0 ? B + 1 < y.length && y.charCodeAt(B + 1) === _0 ? (J++, z = B, B++) : (X++, F = B) : M === H0 ? B + 1 < y.length && y.charCodeAt(B + 1) === H0 ? (U++, D = B, B++) : (q2++, O = B) : M === N0 && B + 1 < y.length && y.charCodeAt(B + 1) === N0 && (W++, H = B, B++);
+    }
+    var j = [];
+    W % 2 === 1 && H >= 0 && j.push([H, 2]), U % 2 === 1 && D >= 0 && j.push([D, 2]), q2 % 2 === 1 && O >= 0 && j.push([O, 1]), J % 2 === 1 && z >= 0 && j.push([z, 2]), X % 2 === 1 && F >= 0 && j.push([F, 1]), j.sort(function(D0, S0) {
+      return S0[0] - D0[0];
+    });
+    for (var w = 0; w < j.length; w++) {
+      var I = j[w][0], A = j[w][1];
+      y = y.slice(0, I) + y.slice(I + A);
+    }
+    let l0 = 0, X5 = -1;
+    for (let D0 = 0; D0 < y.length; D0++) y.charCodeAt(D0) === $0 && (l0++, X5 = D0);
+    if (l0 % 2 === 1 && X5 !== -1) {
+      let D0 = false, S0 = -1, L0 = 0;
+      for (; L0 < y.length; ) y.charCodeAt(L0) === $0 && (D0 ? (D0 = false, S0 = -1) : (S0 = L0, D0 = true)), L0++;
+      D0 && S0 !== -1 && (y = y.slice(0, S0));
+    }
+    for (var k = true; k; ) {
+      k = false;
+      for (var S = -1, R = -1, N = -1, T = false, L = 0; L < y.length; L++) {
+        var u = y.charCodeAt(L);
+        if (u === A0 && (L === 0 || y.charCodeAt(L - 1) !== y0)) {
+          var x = L > 0 && y.charCodeAt(L - 1) === p0, g = x ? L - 1 : L, P = M5(y, L);
+          if (P === -1) S = g, T = x, R = L + 1, N = y.length;
+          else {
+            var C = P + 1;
+            if (C >= y.length) S = g, T = x, R = L + 1, N = P;
+            else if (y.charCodeAt(C) === F5) {
+              var d = y.indexOf(")", C + 1);
+              d === -1 ? (S = g, T = x, R = L + 1, N = P, L = y.length) : L = d;
+            } else if (y.charCodeAt(C) === A0) {
+              var f = y.indexOf("]", C + 1);
+              f === -1 ? (S = g, T = x, R = L + 1, N = P, L = y.length) : L = f;
+            } else L = P;
+          }
+        }
+      }
+      if (S >= 0) {
+        var U0 = T ? "" : y.slice(R, N);
+        y = y.slice(0, S) + U0, k = true;
+      }
+    }
+    let r0 = y.match(/<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>([^<]*)$/);
+    if (r0 && r0.index !== void 0) {
+      var n = r0[0].length - r0[2].length, m0 = n >= 2 && r0[0].charCodeAt(n - 2) === M0;
+      if (!m0) {
+        for (var x0 = false, v0 = 0, l = 0; l < r0.index; l++) y.charCodeAt(l) === $0 && v0++;
+        if (x0 = v0 % 2 === 1, !x0) {
+          let D0 = r0[1];
+          T5(y, "</" + D0, 0) === -1 && (y = y.slice(0, r0.index) + r0[2]);
+        }
+      }
+    }
+    y !== F0 && ($ = $.slice(0, Q) + y, Z = Q + y.length);
+  }
+  let t = [];
+  var b0 = [];
+  let r = Q;
+  var z0 = "", Q0 = Y.disableAutoLink || Y.disableBareUrls || K.inAnchor ? -1 : $.indexOf("@", Q);
+  for (Q0 >= Z && (Q0 = -1); Q < Z; ) {
+    let y = $.charCodeAt(Q), F0 = null;
+    if (y === $0) {
+      if (F0 = t4($, Q, Z), !F0) {
+        var I0 = C5($, Q, Z, $0);
+        Q += I0 - 1;
+      }
+    } else if (y === _0 || y === H0) {
+      var q0 = Q6($, Q, Z);
+      if (q0) {
+        if (q0.canOpen || q0.canClose) {
+          (z0 || Q > r) && (t.push(r5(z0 + $.slice(r, Q))), z0 = "");
+          var V0 = $.slice(Q, Q + q0.len), O0 = r5(V0);
+          b0.push({ idx: t.length, ch: y, len: q0.len, canOpen: q0.canOpen, canClose: q0.canClose, active: true }), t.push(O0), Q += q0.len, r = Q;
+          continue;
+        }
+        Q += q0.len - 1;
+      }
+    } else if (y === N0) F0 = $6($, Q, Z, K, Y);
+    else if (y === G5) F0 = Z6($, Q, Z, K, Y);
+    else if (y === A0) Q + 1 < Z && $.charCodeAt(Q + 1) === U5 && (F0 = Y6($, Q, Z, K)), F0 || (F0 = o$($, Q, Z, K, Y));
+    else if (y === p0 && Q + 1 < Z && $.charCodeAt(Q + 1) === A0) F0 = o$($, Q, Z, K, Y);
+    else if (y === G0) F0 = V4($, Q, Z), !F0 && !Y.disableParsingRawHTML && !Y.ignoreHTMLBlocks && (F0 = X6($, Q, Z, K, Y));
+    else if (y === K9) {
+      var m = J6($, Q, Z);
+      if (m !== -1) {
+        var w0 = $.slice(Q, m), g0 = s5(w0);
+        if (g0 !== w0) {
+          z0 = z0 + $.slice(r, Q) + g0, Q = m, r = m;
+          continue;
+        }
+      }
+    } else if ((y === X9 || y === k5 || y === I5) && !K.inAnchor && !Y.disableAutoLink && (Q === 0 || $.charCodeAt(Q - 1) !== G0)) {
+      var R0 = Q + 1 < Z ? $.charCodeAt(Q + 1) : 0;
+      (y === X9 && R0 === h5 || y === I5 && R0 === h5 || y === k5 && R0 === k5) && (F0 = G6($, Q, Z, Y));
+    }
+    if (!F0 && Q0 >= 0 && Q0 - Q <= 64 && !K.inAnchor && !Y.disableAutoLink && !Y.disableBareUrls && (y >= h && y <= c || y >= K0 && y <= W0 || y >= i && y <= a) && (F0 = K6($, Q, Z, Y), !F0 && Q >= Q0 && (Q0 = $.indexOf("@", Q + 1), Q0 >= Z && (Q0 = -1))), y === E && K.e) {
+      var Z5 = false, i0 = 0;
+      if (Q > r && $.charCodeAt(Q - 1) === y0) Z5 = true, i0 = 1;
+      else {
+        for (var T0 = 0, e = Q - 1; e >= r && $.charCodeAt(e) === v2; ) T0++, e--;
+        T0 >= 2 && (Z5 = true, i0 = T0);
+      }
+      if (Z5) {
+        for ((z0 || Q - i0 > r) && (t.push(r5(z0 + $.slice(r, Q - i0))), z0 = ""), t.push({ type: _.breakLine }), Q++; Q < Z && $.charCodeAt(Q) === v2; ) Q++;
+        r = Q;
+        continue;
+      }
+      var Y0 = Q > r && $.charCodeAt(Q - 1) === v2, a0 = Q + 1 < Z && $.charCodeAt(Q + 1) === v2;
+      if (Y0 || a0) {
+        for (var B0 = Q; B0 > r && $.charCodeAt(B0 - 1) === v2; ) B0--;
+        for (z0 += $.slice(r, B0) + `
+`, Q++; Q < Z && $.charCodeAt(Q) === v2; ) Q++;
+        r = Q;
+        continue;
+      }
+    }
+    if (F0) (z0 || Q > r) && (t.push(r5(z0 + $.slice(r, Q))), z0 = ""), t.push(F0.node), Q = F0.end, r = Q;
+    else {
+      if (y === y0 && Q + 1 < Z) {
+        let l0 = $.charCodeAt(Q + 1);
+        if (n9(l0) & p5) {
+          (z0 || Q > r) && (t.push(r5(z0 + $.slice(r, Q))), z0 = ""), t.push(r5($[Q + 1])), Q += 2, r = Q;
+          continue;
+        }
+      }
+      if (Q++, Q0 < 0 || Q0 - Q > 64) for (; Q < Z && !(Q0 >= 0 && Q0 - Q <= 64); ) {
+        var A5 = $.charCodeAt(Q);
+        if (A5 < n5 && !n$[A5]) Q++;
+        else break;
+      }
+    }
+  }
+  return (z0 || Z > r) && (t.push(r5(z0 + $.slice(r, Z))), z0 = ""), b0.length > 0 && V6(t, b0, V, Y), V.g = G, q9--, t;
+}
+var F6 = 500;
+function f5($, Q, Z) {
+  var V = Q.j || 0;
+  if (V > F6) return [{ type: _.text, text: $ }];
+  Q.j = V + 1;
+  let Y = Q;
+  if (Z.optimizeForStreaming && !Q.m) {
+    var G = $.length;
+    G > 0 && $.charCodeAt(G - 1) === E && G--;
+    for (var K = G; K > 0 && $.charCodeAt(K - 1) !== E; ) K--;
+    if (K > 0 && $.charCodeAt(K) === k0) {
+      for (var J = true, X = K; X < G; X++) {
+        var U = $.charCodeAt(X);
+        if (U !== v2 && U !== b && U !== p && U !== f0 && U !== k0) {
+          J = false;
+          break;
+        }
+      }
+      if (J) {
+        for (var q2 = K - 1; q2 > 0 && $.charCodeAt(q2 - 1) !== E; ) q2--;
+        $.charCodeAt(q2) === k0 && ($ = $.slice(0, q2).trimEnd());
+      }
+    }
+    var W = $.trim(), z = W.lastIndexOf(`
+`), F = z === -1 ? W : W.slice(z + 1);
+    if (F.length > 0 && F.charCodeAt(0) === k0) {
+      for (var D = false, O = false, H = 1; H < F.length; H++) {
+        var B = F.charCodeAt(H);
+        B === k0 && (D = true), B === p && (O = true);
+      }
+      D && O && ($ = z === -1 ? "" : $.slice(0, $.lastIndexOf(F)).trimEnd());
+    }
+    for (var M = -1, j = -1, w = -1, I = $.length - 1; I >= 0; I--) if ($.charCodeAt(I) === G0) {
+      var A = I + 1 < $.length ? $.charCodeAt(I + 1) : 0;
+      if (A >= h && A <= c || A >= K0 && A <= W0) {
+        for (var k = I + 2; k < $.length; ) {
+          var S = $.charCodeAt(k);
+          if (S >= h && S <= c || S >= K0 && S <= W0 || S >= i && S <= a) k++;
+          else break;
+        }
+        for (var R = k; R < $.length && $.charCodeAt(R) !== o; ) R++;
+        if (R < $.length && $.charCodeAt(R - 1) !== M0) {
+          for (var N = false, T = R + 1; T < $.length; T++) if ($.charCodeAt(T) === G0) {
+            N = true;
+            break;
+          }
+          N || (M = I, j = k, w = R + 1);
+        }
+      }
+      break;
+    }
+    if (M >= 0) {
+      for (var L = 0, u = 0; u < M; u++) $.charCodeAt(u) === $0 && L++;
+      if (L % 2 === 0) {
+        var x = $.slice(M + 1, j);
+        T5($, "</" + x, 0) === -1 && ($ = $.slice(0, M) + $.slice(w));
+      }
+    }
+    for (var g = $.length; g > 0 && $.charCodeAt(g - 1) === E; ) g--;
+    if (g > 0) {
+      for (var P = g; P > 0 && $.charCodeAt(P - 1) !== E; ) P--;
+      for (var C = P, d = 0; C < g && $.charCodeAt(C) === v2 && d < 3; ) C++, d++;
+      if (P > 0 && C < g && p4($, C, g)) {
+        for (var f = P - 1, U0 = f; U0 > 0 && $.charCodeAt(U0 - 1) !== E; ) U0--;
+        e0($, U0, f) || ($ = $.slice(0, P).trimEnd());
+      }
+    }
+    var n = $.length;
+    if (n > 0) {
+      for (var m0 = $.lastIndexOf(`
+`), x0 = m0 === -1 ? 0 : m0 + 1, v0 = n, l = x0, t = 0; l < v0 && $.charCodeAt(l) === v2 && t < 3; ) l++, t++;
+      if (l < v0) {
+        var b0 = $.charCodeAt(l), r = false;
+        if (b0 === _0 || b0 === p || b0 === N5) {
+          var z0 = l + 1;
+          if (z0 >= v0 || $.charCodeAt(z0) === v2 || $.charCodeAt(z0) === b) {
+            for (var Q0 = z0; Q0 < v0 && ($.charCodeAt(Q0) === v2 || $.charCodeAt(Q0) === b); ) Q0++;
+            Q0 >= v0 && (r = true);
+          }
+        } else if (b0 >= i && b0 <= a) {
+          for (var I0 = l; I0 < v0 && $.charCodeAt(I0) >= i && $.charCodeAt(I0) <= a; ) I0++;
+          if (I0 < v0 && ($.charCodeAt(I0) === s0 || $.charCodeAt(I0) === q5)) {
+            var q0 = I0 + 1;
+            if (q0 >= v0 || $.charCodeAt(q0) === v2 || $.charCodeAt(q0) === b) {
+              for (var V0 = q0; V0 < v0 && ($.charCodeAt(V0) === v2 || $.charCodeAt(V0) === b); ) V0++;
+              V0 >= v0 && (r = true);
+            }
+          }
+        }
+        r && ($ = $.slice(0, x0).trimEnd());
+      }
+    }
+  }
+  if (Q.inline) return D5($, 0, $.length, Q, Z);
+  let O0 = [], m = 0, w0 = $.length;
+  if (m === 0 && !Z.disableFrontmatter && $.startsWith("---")) {
+    let Y0 = I$($);
+    if (Y0 && Y0.hasValidYaml) {
+      if (Z.preserveFrontmatter !== false) {
+        let a0 = $.slice(0, Y0.endPos).trimEnd();
+        O0.push({ type: _.frontmatter, text: a0 });
+      }
+      m = Y0.endPos;
+    }
+  }
+  for (; m < w0; ) {
+    for (var g0 = $.indexOf(`
+`, m), R0 = g0 < 0 ? w0 : g0; m < w0 && e0($, m, R0); ) m = R0 < w0 ? R0 + 1 : R0, m < w0 && (g0 = $.indexOf(`
+`, m), R0 = g0 < 0 ? w0 : g0);
+    if (m >= w0) break;
+    var Z5 = $.charCodeAt(m) === v9;
+    P0($, m, R0);
+    let Y0 = null;
+    if (l9 = $, r9 = m, w9 = R0, !Z5 && J0 >= 4 && !Q.inHTML) Y0 = c4($, m);
+    else if (!Z5) {
+      let a0 = m + Z0, B0 = $.charCodeAt(a0);
+      B0 === Y5 ? Y0 = u4($, m, Q, Z) : B0 === o ? Y0 = l4($, m, Q, Z) : B0 === $0 || B0 === N0 ? Y0 = d4($, m, Q) : B0 === p || B0 === _0 || B0 === H0 ? (Y0 = x5($, m), !Y0 && (Y0 = p$($, m, Q, Z))) : B0 === N5 || B0 >= i && B0 <= a ? Y0 = p$($, m, Q, Z) : B0 === G0 ? Y0 = Q4($, m, Q, Z) : B0 === k0 ? Y0 = c$($, m, Q, Z) : B0 === A0 && (Y0 = a4($, m, Q));
+    }
+    if (!Y0) {
+      for (var i0 = false, T0 = m; T0 < R0; T0++) if ($.charCodeAt(T0) === k0) {
+        i0 = true;
+        break;
+      }
+      i0 && (Y0 = c$($, m, Q, Z));
+    }
+    if (Y0 || (Y0 = s4($, m, Q, Z)), Y0) Y0.node.type !== _.refCollection && O0.push(Y0.node), m = Y0.end;
+    else {
+      var e = $.indexOf(`
+`, m);
+      m = e < 0 ? w0 : e + 1;
+    }
+  }
+  return Q.j = V, O0;
+}
+function Y4($, Q, Z, V) {
+  var Y = w5($, Q);
+  return Y ? { tagName: Y.tag, tagLower: Y.tag.toLowerCase(), attrs: Y.rawAttrs, whitespaceBeforeAttrs: Y.whitespaceBeforeAttrs, isSelfClosing: Y.selfClosing, hasSpaceBeforeSlash: Y.hasSpaceBeforeSlash, isClosing: Y.isClosing, hasNewline: Y.whitespaceBeforeAttrs.includes(`
+`) || Y.rawAttrs.includes(`
+`), endPos: Y.end } : null;
+}
+function H9($, Q, Z) {
+  q9 = 0, $ = w$($), !Q.refs && (Q.refs = {}), (Z.optimizeForStreaming || Q.inline) && (Q.m = h4($, Q.refs, Z));
+  var V = !Q.k;
+  V && (Q.k = [], Q.h = []);
+  let Y = f5($, Q, Z);
+  if (V) {
+    for (var G = Q.k, K = { inline: Q.inline, inAnchor: Q.inAnchor, inHTML: Q.inHTML, htmlDepth: Q.c, inList: Q.inList, inBlockQuote: Q.inBlockQuote, noSetext: Q.f, depth: Q.j }, J = 0; J < G.length; J++) {
+      var X = G[J];
+      Q.inline = X.inline, Q.inAnchor = X.inAnchor, Q.inHTML = X.inHTML, Q.c = X.htmlDepth, Q.inList = X.inList, Q.inBlockQuote = X.inBlockQuote, Q.f = X.noSetext, Q.j = X.depth, Q.e = X.breaks;
+      var U = D5(X.text, 0, X.text.length, Q, Z);
+      Q.e = false;
+      for (var q2 = 0; q2 < U.length; q2++) X.dest.push(U[q2]);
+    }
+    Q.inline = K.inline, Q.inAnchor = K.inAnchor, Q.inHTML = K.inHTML, Q.c = K.htmlDepth, Q.inList = K.inList, Q.inBlockQuote = K.inBlockQuote, Q.f = K.noSetext, Q.j = K.depth;
+    for (var W = Q.h, z = 0; z < W.length; z++) for (var F = W[z], D = 0; D < F.src.length; D++) {
+      var O = F.src[D];
+      if (F.unwrap && O.type === _.paragraph) for (var H = O.children, B = 0; B < H.length; B++) F.dest.push(H[B]);
+      else F.dest.push(O);
+    }
+    Q.k = void 0, Q.h = void 0;
+  }
+  return P9(Q.refs) ? [{ type: _.refCollection, refs: Q.refs }, ...Y] : Y;
+}
+var t9;
+try {
+  t9 = c0.createElement("div").$$typeof;
+} catch {
+  t9 = /* @__PURE__ */ Symbol.for("react.transitional.element");
+}
+function e9($, Q, Z) {
+  return { $$typeof: t9, type: $, key: Z != null ? "" + Z : null, ref: null, props: Q, _owner: null, _store: {}, _debugStack: null, _debugTask: null };
+}
+var $$ = typeof c0.createContext < "u" ? c0.createContext(void 0) : void 0;
+function G4($, Q, Z, V, Y, G, K, J, X) {
+  switch ($.type) {
+    case _.blockQuote: {
+      let F = { key: Z.key };
+      return $.alert && (F.className = "markdown-alert-" + G($.alert.toLowerCase(), C0), $.children.unshift(R$($.alert))), V("blockquote", F, Q($.children, Z));
+    }
+    case _.breakLine:
+      return V("br", { key: Z.key });
+    case _.breakThematic:
+      return V("hr", { key: Z.key });
+    case _.frontmatter:
+      return J.preserveFrontmatter ? V("pre", { key: Z.key }, $.text) : null;
+    case _.codeBlock:
+      let z = $.lang ? s5($.lang) : "";
+      return V("pre", { key: Z.key }, V("code", { ...t0($.attrs), className: z ? `language-${z} lang-${z}` : "" }, $.text));
+    case _.codeInline:
+      return V("code", { key: Z.key }, $.text);
+    case _.footnoteReference:
+      return V("a", { key: Z.key, href: Y($.target, "a", "href") || void 0 }, V("sup", null, $.text));
+    case _.gfmTask:
+      return V("input", { checked: $.completed, key: Z.key, readOnly: true, type: "checkbox" });
+    case _.heading:
+      return V(`h${$.level}`, { id: $.id, key: Z.key }, Q($.children, Z));
+    case _.htmlBlock: {
+      let F = $;
+      if (J.tagfilter && u9(F.tag)) return V("span", { key: Z.key }, "<" + F.tag + h9(F.attrs) + ">");
+      if (F.a && F.d) {
+        let D = F.tag.toLowerCase(), O = s$(D), H = F.children && F.children.length > 0;
+        if (O) {
+          let L = S$(F.a, D, J.tagfilter);
+          return /<[a-z][^>]{0,100}>/i.test(F.a) ? X($.tag, { key: Z.key, ...t0($.attrs), dangerouslySetInnerHTML: { __html: L } }) : X($.tag, { key: Z.key, ...t0($.attrs) }, L);
+        }
+        let B = new RegExp(`^<${F.tag}(\\s|>)`, "i");
+        if (H && !B.test(F.a) && J.tagfilter && T$(F.a)) return X($.tag, { key: Z.key, ...t0($.attrs) }, Q(F.children, Z));
+        if (t$(F.a)) {
+          let L = J.tagfilter ? p9(F.a) : F.a;
+          return X($.tag, { key: Z.key, ...t0($.attrs), dangerouslySetInnerHTML: { __html: L } });
+        }
+        let j = { slugify: (L) => G(L, C0), sanitizer: Y, tagfilter: true }, w = F.a.replace(/>\s+</g, "><").replace(/\n+/g, " ").trim();
+        if (new RegExp(`^<${F.tag}(\\s[^>]*)?>(\\s*</${F.tag}>)?$`, "i").test(w)) return F.children && F.children.length > 0 ? X($.tag, { key: Z.key, ...t0($.attrs) }, Q(F.children, Z)) : X($.tag, { key: Z.key, ...t0($.attrs) });
+        let A = H9(w, { inline: false, refs: K, inHTML: false }, j);
+        m9(A);
+        let k = F.tag.toLowerCase(), S = "</" + k + ">", R = B.test(w), N = w.toLowerCase().trimEnd().endsWith(S), T = R && N;
+        if (T && H) return X($.tag, { key: Z.key, ...t0($.attrs) }, Q(F.children, Z));
+        if (T) return Q(A.flatMap(d5), Z);
+        var U = k$(A, k);
+        if (U.found && U.afterClose.length > 0) {
+          var q2 = U.beforeClose.flatMap(d5), W = U.afterClose.flatMap(d5);
+          return e9(c0.Fragment, { children: [X($.tag, { key: Z.key, ...t0($.attrs) }, Q(q2, Z)), Q(W, Z)] }, Z.key);
+        }
+        return X($.tag, { key: Z.key, ...t0($.attrs) }, Q(A.flatMap(d5), Z));
+      }
+      return l5($.tag) ? X($.tag, { key: Z.key, ...t0($.attrs) }) : X($.tag, { key: Z.key, ...t0($.attrs) }, $.children ? Q($.children, Z) : "");
+    }
+    case _.htmlSelfClosing: {
+      let F = $;
+      return J.tagfilter && u9(F.tag) ? V("span", { key: Z.key }, "<" + F.tag + h9(F.attrs) + " />") : X($.tag, { key: Z.key, ...t0($.attrs) });
+    }
+    case _.image: {
+      let F = $.target != null ? Y($.target, "img", "src") : null;
+      return V("img", { key: Z.key, alt: $.alt && $.alt.length > 0 ? $.alt : void 0, title: $.title || void 0, src: F || void 0 });
+    }
+    case _.link: {
+      let F = { key: Z.key };
+      return $.target != null && (F.href = E$($.target)), $.title && (F.title = $.title), V("a", F, Q($.children, Z));
+    }
+    case _.table: {
+      let F = $;
+      return V("table", { key: Z.key }, V("thead", { key: "thead" }, V("tr", null, F.header.map(function(O, H) {
+        return V("th", { key: H, style: F.align[H] == null ? {} : { textAlign: F.align[H] } }, Q(O, Z));
+      }))), F.cells.length > 0 && V("tbody", { key: "tbody" }, F.cells.map(function(O, H) {
+        return V("tr", { key: H }, O.map(function(M, j) {
+          return V("td", { key: j, style: F.align[j] == null ? {} : { textAlign: F.align[j] } }, Q(M, Z));
+        }));
+      })));
+    }
+    case _.text:
+      return $.text;
+    case _.textFormatted:
+      return V($.tag, { key: Z.key }, Q($.children, Z));
+    case _.orderedList:
+    case _.unorderedList: {
+      let F = $.type === _.orderedList ? "ol" : "ul";
+      return V(F, { key: Z.key, start: $.type === _.orderedList ? $.start : void 0 }, $.items.map(function(O, H) {
+        return V("li", { key: H }, Q(O, Z));
+      }));
+    }
+    case _.paragraph:
+      return V("p", { key: Z.key }, Q($.children, Z));
+    case _.ref:
+      return null;
+    default:
+      return null;
+  }
+}
+var z6 = ($, Q, Z, V, Y, G, K) => {
+  var J = (U) => U.map(function(q2) {
+    return "text" in q2 ? q2.text : "";
+  }), X = (U, q2 = {}) => {
+    var W = (q2.renderDepth || 0) + 1;
+    if (W > 2500) return J(U);
+    q2.renderDepth = W;
+    for (var z = q2.key, F = [], D = false, O = 0; O < U.length; O++) {
+      q2.key = O;
+      var H;
+      if ($) {
+        var B = G4.bind(null, U[O], X, q2, Q, Z, V, Y, G, K);
+        H = $(B, U[O], X, q2);
+      } else H = G4(U[O], X, q2, Q, Z, V, Y, G, K);
+      var M = typeof H == "string";
+      if (M && D) F[F.length - 1] += H;
+      else if (H !== null) if (Array.isArray(H)) for (var j = 0; j < H.length; j++) F.push(H[j]);
+      else F.push(H);
+      D = M;
+    }
+    return q2.key = z, q2.renderDepth = W - 1, F;
+  };
+  return X;
+};
+var H6 = ($, Q) => {
+  let Z = t5(Q, $, void 0);
+  return Z ? typeof Z == "function" || typeof Z == "object" && "render" in Z ? Z : t5(Q, `${$}.component`, $) : $;
+};
+function O6($, Q) {
+  let Z = { ...Q || {} };
+  Z.overrides = Z.overrides || {};
+  let V = Z.slugify || C0, Y = Z.sanitizer || c5, G = Z.createElement, K = P9(Z.overrides), J = (j) => Z$(j, { ...Z, wrapper: null });
+  function X(j) {
+    for (var w in j) {
+      var I = j[w];
+      if (typeof I == "string" && I.length > 0 && I.charCodeAt(0) === G0 && (i$.test(I) || a$.test(I) || Y4(I, 0))) {
+        var A = J(I.trim());
+        j[w] = w === "innerHTML" && Array.isArray(A) ? A[0] : A;
+      }
+    }
+  }
+  function U(j, w, ...I) {
+    var A = w || {}, k = j;
+    if (K) {
+      var S = t5(Z.overrides, j + ".props", {});
+      k = H6(j, Z.overrides), A = { ...A, ...S, className: g$(A.className, S.className) || void 0 };
+    }
+    if (!G) {
+      var R = A.key;
+      return R != null && delete A.key, I.length === 1 ? A.children = I[0] : I.length > 1 && (A.children = I), e9(k, A, R);
+    }
+    return G(k, A, ...I);
+  }
+  function q2(j, w, ...I) {
+    return w && X(w), U(j, w, ...I);
+  }
+  let W = { ...Z, slugify: Z.slugify ? (j) => Z.slugify(j, C0) : C0, sanitizer: Y, tagfilter: Z.tagfilter !== false }, z = $[0] && $[0].type === _.refCollection ? $[0].refs : {}, F = z6(Z.renderRule, U, Y, V, z, Z, q2), D = F($, { inline: Z.forceInline, refs: z }), O = L$(z);
+  if (O.length && D.push(U("footer", { key: "footer" }, O.map(function(w) {
+    let I = w.identifier.charCodeAt(0) === U5 ? w.identifier.slice(1) : w.identifier, A = H9(w.footnote, { inline: true, refs: z }, W);
+    return U("div", { id: V(I, C0), key: w.identifier }, I + ": ", F(A, { inline: true, refs: z }));
+  }))), Z.wrapper === null) return D;
+  let H = Z.wrapper || (Z.forceInline ? "span" : "div"), B;
+  if (D.length > 1 || Z.forceWrapper) B = D;
+  else return D.length === 1 ? D[0] : null;
+  var M = Z.wrapperProps ? { ...Z.wrapperProps } : {};
+  return M.children = B, e9(H, M, "outer");
+}
+function Z$($ = "", Q = {}) {
+  let Z = { ...Q || {} };
+  Z.overrides = Z.overrides || {};
+  let V = Z.slugify || C0, Y = Z.sanitizer || c5;
+  function G(J) {
+    let X = Z.forceInline || !Z.forceBlock && !v$.test(J), U = { ...Z, slugify: Z.slugify ? (F) => Z.slugify(F, C0) : C0, sanitizer: Y, tagfilter: Z.tagfilter !== false }, q2 = X ? J : y$(J);
+    if (Z.optimizeForStreaming) {
+      var W = q2.lastIndexOf("<");
+      W !== -1 && q2.indexOf(">", W) === -1 && (q2 = q2.slice(0, W));
+    }
+    let z = H9(q2, { inline: X, refs: K }, U);
+    return O6(z, { ...U, forceInline: X });
+  }
+  let K = {};
+  return G($);
+}
+function B6($) {
+  let Q = c0.useRef($), Z = Q.current;
+  if (Z !== $) {
+    var V = true, Y = 0;
+    for (var G in $) if (Y++, !Object.is(Z[G], $[G])) {
+      V = false;
+      break;
+    }
+    if (V) {
+      var K = 0;
+      for (var J in Z) K++;
+      V = K === Y;
+    }
+    V || (Q.current = $);
+  }
+  return Q.current;
+}
+var D6 = ({ children: $, options: Q, ...Z }) => {
+  if (!(typeof c0.useContext < "u")) {
+    let U = { ...Q, overrides: { ...Q?.overrides }, wrapperProps: { ...Q?.wrapperProps, ...Z } };
+    return Z$($ ?? "", U);
+  }
+  let Y = c0.useContext($$), G = B6(Z), K = c0.useMemo(() => ({ ...Y, ...Q, overrides: { ...Y?.overrides, ...Q?.overrides }, wrapperProps: { ...Y?.wrapperProps, ...Q?.wrapperProps, ...G } }), [Y, Q, G]), J = $ ?? "";
+  return c0.useMemo(() => Z$(J, K), [J, K]);
+};
+
+// node_modules/@rjsf/core/lib/components/constants.js
+var ADDITIONAL_PROPERTY_KEY_REMOVE = /* @__PURE__ */ Symbol("remove-this-key");
+var IS_RESET = /* @__PURE__ */ Symbol("reset");
+
+// node_modules/@rjsf/core/lib/components/fields/ObjectField.js
+function isRequired(schema, name) {
+  return Array.isArray(schema.required) && schema.required.includes(name);
+}
+function getDefaultValue(translateString, type) {
+  switch (type) {
+    case "array":
+      return [];
+    case "boolean":
+      return false;
+    case "null":
+      return null;
+    case "number":
+      return 0;
+    case "object":
+      return {};
+    case "string":
+    default:
+      return translateString(TranslatableString.NewStringDefault);
+  }
+}
+function ObjectFieldPropertyFn(props) {
+  const { fieldPathId, schema, registry, uiSchema, errorSchema, formData, onChange, onBlur, onFocus, disabled, readonly, required, hideError, propertyName, handleKeyRename, handleRemoveProperty, addedByAdditionalProperties } = props;
+  const [wasPropertyKeyModified, setWasPropertyKeyModified] = useState20(false);
+  const { globalFormOptions, fields: fields2 } = registry;
+  const { SchemaField: SchemaField2 } = fields2;
+  const innerFieldIdPathId = useDeepCompareMemo(toFieldPathId(propertyName, globalFormOptions, fieldPathId.path));
+  const onPropertyChange = useCallback6((value, path, newErrorSchema, id) => {
+    let normalizedValue = value;
+    if (value === void 0 && addedByAdditionalProperties) {
+      normalizedValue = "";
+    }
+    onChange(normalizedValue, path, newErrorSchema, id);
+  }, [onChange, addedByAdditionalProperties]);
+  const onKeyRename = useCallback6((value) => {
+    if (propertyName !== value) {
+      setWasPropertyKeyModified(true);
+    }
+    handleKeyRename(propertyName, value);
+  }, [propertyName, handleKeyRename]);
+  const onKeyRenameBlur = useCallback6((event) => {
+    const { target: { value } } = event;
+    onKeyRename(value);
+  }, [onKeyRename]);
+  const onRemoveProperty = useCallback6(() => {
+    handleRemoveProperty(propertyName);
+  }, [propertyName, handleRemoveProperty]);
+  return _jsx11(SchemaField2, { name: propertyName, required, schema, uiSchema, errorSchema, fieldPathId: innerFieldIdPathId, formData, wasPropertyKeyModified, onKeyRename, onKeyRenameBlur, onRemoveProperty, onChange: onPropertyChange, onBlur, onFocus, registry, disabled, readonly, hideError });
+}
+var ObjectFieldProperty = memo2(ObjectFieldPropertyFn);
+function ObjectField(props) {
+  const { schema: rawSchema, uiSchema = {}, formData, errorSchema, fieldPathId, name, required = false, disabled, readonly, hideError, onBlur, onFocus, onChange, registry, title } = props;
+  const { fields: fields2, schemaUtils, translateString, globalUiOptions } = registry;
+  const { OptionalDataControlsField: OptionalDataControlsField2 } = fields2;
+  const formDataRef = useRef5(formData);
+  formDataRef.current = formData;
+  const schema = useMemo6(() => schemaUtils.retrieveSchema(rawSchema, formData, true), [schemaUtils, rawSchema, formData]);
+  const uiOptions = useMemo6(() => getUiOptions(uiSchema, globalUiOptions), [uiSchema, globalUiOptions]);
+  const { properties: schemaProperties = {} } = schema;
+  const childFieldPathId = props.childFieldPathId ?? fieldPathId;
+  const lastRenamedProperty = useRef5({ previousKey: "", currentKey: void 0 });
+  const templateTitle = uiOptions.title ?? schema.title ?? title ?? name;
+  const description = uiOptions.description ?? schema.description;
+  const renderOptionalField = shouldRenderOptionalField(registry, schema, required, uiSchema);
+  const hasFormData = isFormDataAvailable(formData);
+  let orderedProperties = [];
+  const getAvailableKey = useCallback6((preferredKey, existingFormData) => {
+    const { duplicateKeySuffixSeparator = "-" } = getUiOptions(uiSchema, globalUiOptions);
+    let index = 0;
+    let newKey = preferredKey;
+    while (has_default(existingFormData, newKey)) {
+      index += 1;
+      newKey = `${preferredKey}${duplicateKeySuffixSeparator}${index}`;
+    }
+    return newKey;
+  }, [uiSchema, globalUiOptions]);
+  const onAddProperty = useCallback6(() => {
+    if (!(schema.additionalProperties || schema.patternProperties)) {
+      return;
+    }
+    const newFormData = { ...formData };
+    const newKey = getAvailableKey("newKey", newFormData);
+    if (schema.patternProperties) {
+      set_default(newFormData, newKey, null);
+    } else {
+      let type = void 0;
+      let constValue = void 0;
+      let defaultValue = void 0;
+      if (isObject_default(schema.additionalProperties)) {
+        type = schema.additionalProperties.type;
+        constValue = schema.additionalProperties.const;
+        defaultValue = schema.additionalProperties.default;
+        let apSchema = schema.additionalProperties;
+        if (REF_KEY in apSchema) {
+          apSchema = schemaUtils.retrieveSchema({ [REF_KEY]: apSchema[REF_KEY] }, formData);
+          type = apSchema.type;
+          constValue = apSchema.const;
+          defaultValue = apSchema.default;
+        }
+        if (!type && (ANY_OF_KEY in apSchema || ONE_OF_KEY in apSchema)) {
+          type = "object";
+        }
+      }
+      const newValue = constValue ?? defaultValue ?? getDefaultValue(translateString, type);
+      set_default(newFormData, newKey, newValue);
+    }
+    if (lastRenamedProperty.current.previousKey === newKey) {
+      lastRenamedProperty.current.currentKey = newKey;
+      lastRenamedProperty.current.previousKey = getAvailableKey(newKey, newFormData);
+    }
+    onChange(newFormData, childFieldPathId.path);
+  }, [formData, onChange, translateString, schemaUtils, childFieldPathId, getAvailableKey, schema]);
+  const handleKeyRename = useCallback6((oldKey, newKey) => {
+    if (oldKey !== newKey) {
+      const currentFormData = formDataRef.current;
+      const actualNewKey = getAvailableKey(newKey, currentFormData);
+      const newFormData = {
+        ...currentFormData
+      };
+      const newKeys = { [oldKey]: actualNewKey };
+      const keyValues = Object.keys(newFormData).map((key) => {
+        const mappedKey = Object.hasOwn(newKeys, key) ? newKeys[key] : key;
+        return { [mappedKey]: newFormData[key] };
+      });
+      const renamedObj = Object.assign({}, ...keyValues);
+      formDataRef.current = renamedObj;
+      if (oldKey !== lastRenamedProperty.current.currentKey) {
+        lastRenamedProperty.current.previousKey = oldKey;
+      }
+      lastRenamedProperty.current.currentKey = actualNewKey;
+      onChange(renamedObj, childFieldPathId.path);
+    }
+  }, [onChange, childFieldPathId, getAvailableKey]);
+  const handleRemoveProperty = useCallback6((key) => {
+    onChange(ADDITIONAL_PROPERTY_KEY_REMOVE, [...childFieldPathId.path, key]);
+  }, [onChange, childFieldPathId]);
+  const getStableKey = useCallback6((property2) => {
+    if (lastRenamedProperty.current.currentKey === property2) {
+      return lastRenamedProperty.current.previousKey;
+    }
+    return property2;
+  }, []);
+  if (!renderOptionalField || hasFormData) {
+    try {
+      const properties = Object.keys(schemaProperties);
+      orderedProperties = orderProperties(properties, uiOptions.order);
+    } catch (err) {
+      return _jsxs("div", { children: [_jsx11("p", { className: "rjsf-config-error", style: { color: "red" }, children: _jsx11(D6, { options: { disableParsingRawHTML: true }, children: translateString(TranslatableString.InvalidObjectField, [name || "root", err.message]) }) }), _jsx11("pre", { children: JSON.stringify(schema) })] });
+    }
+  }
+  const Template = getTemplate("ObjectFieldTemplate", registry, uiOptions);
+  const optionalDataControl = renderOptionalField ? _jsx11(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId, schema }) : void 0;
+  const templateProps = {
+    // getDisplayLabel() always returns false for object types, so just check the `uiOptions.label`
+    title: uiOptions.label === false ? "" : templateTitle,
+    description: uiOptions.label === false ? void 0 : description,
+    properties: orderedProperties.map((propertyName) => {
+      const addedByAdditionalProperties = has_default(schema, [PROPERTIES_KEY, propertyName, ADDITIONAL_PROPERTY_FLAG]);
+      const fieldUiSchema = addedByAdditionalProperties ? uiSchema.additionalProperties : uiSchema[propertyName];
+      const hidden = getUiOptions(fieldUiSchema).widget === "hidden";
+      const content = _jsx11(ObjectFieldProperty, { propertyName, required: isRequired(schema, propertyName), schema: get_default(schema, [PROPERTIES_KEY, propertyName], {}), uiSchema: fieldUiSchema, errorSchema: get_default(errorSchema, [propertyName]), fieldPathId: childFieldPathId, formData: get_default(formData, [propertyName]), handleKeyRename, handleRemoveProperty, addedByAdditionalProperties, onChange, onBlur, onFocus, registry, disabled, readonly, hideError }, getStableKey(propertyName));
+      return {
+        content,
+        name: propertyName,
+        readonly,
+        disabled,
+        required,
+        hidden
+      };
+    }),
+    readonly,
+    disabled,
+    required,
+    fieldPathId,
+    uiSchema,
+    errorSchema,
+    schema,
+    formData,
+    registry,
+    optionalDataControl,
+    className: renderOptionalField ? "rjsf-optional-object-field" : void 0
+  };
+  return _jsx11(Template, { ...templateProps, onAddProperty });
+}
+
+// node_modules/@rjsf/core/lib/components/fields/OptionalDataControlsField.js
+import { jsx as _jsx12 } from "react/jsx-runtime";
+function OptionalDataControlsField(props) {
+  const { schema, uiSchema = {}, formData, disabled = false, readonly = false, onChange, errorSchema, fieldPathId, registry } = props;
+  const { globalUiOptions = {}, schemaUtils, translateString } = registry;
+  const uiOptions = getUiOptions(uiSchema, globalUiOptions);
+  const OptionalDataControlsTemplate2 = getTemplate("OptionalDataControlsTemplate", registry, uiOptions);
+  const hasFormData = isFormDataAvailable(formData);
+  let id;
+  let label;
+  let onAddClick;
+  let onRemoveClick;
+  if (disabled || readonly) {
+    id = optionalControlsId(fieldPathId, "Msg");
+    label = hasFormData ? void 0 : translateString(TranslatableString.OptionalObjectEmptyMsg);
+  } else {
+    const labelEnum = hasFormData ? TranslatableString.OptionalObjectRemove : TranslatableString.OptionalObjectAdd;
+    label = translateString(labelEnum);
+    if (hasFormData) {
+      id = optionalControlsId(fieldPathId, "Remove");
+      onRemoveClick = () => onChange(void 0, fieldPathId.path, errorSchema);
+    } else {
+      id = optionalControlsId(fieldPathId, "Add");
+      onAddClick = () => {
+        let newFormData = schemaUtils.getDefaultFormState(schema, formData, "excludeObjectChildren");
+        if (newFormData === void 0) {
+          newFormData = getSchemaType(schema) === "array" ? [] : {};
+        }
+        onChange(newFormData, fieldPathId.path, errorSchema);
+      };
+    }
+  }
+  return label && _jsx12(OptionalDataControlsTemplate2, { id, registry, schema, uiSchema, label, onAddClick, onRemoveClick });
+}
+
+// node_modules/@rjsf/core/lib/components/fields/SchemaField.js
+import { jsx as _jsx13, Fragment as _Fragment, jsxs as _jsxs2 } from "react/jsx-runtime";
+import { useCallback as useCallback7, Component as Component2 } from "react";
+var COMPONENT_TYPES = {
+  array: "ArrayField",
+  boolean: "BooleanField",
+  integer: "NumberField",
+  number: "NumberField",
+  object: "ObjectField",
+  string: "StringField",
+  null: "NullField"
+};
+function getFieldComponent(schema, uiOptions, registry) {
+  const { field } = uiOptions;
+  const { fields: fields2 } = registry;
+  if (typeof field === "function") {
+    return field;
+  }
+  if (typeof field === "string" && field in fields2) {
+    return fields2[field];
+  }
+  const schemaType = getSchemaType(schema);
+  const type = Array.isArray(schemaType) ? schemaType[0] : schemaType || "";
+  const schemaId = schema.$id;
+  let componentName = COMPONENT_TYPES[type];
+  if (schemaId && schemaId in fields2) {
+    componentName = schemaId;
+  }
+  if (!componentName && (schema.anyOf || schema.oneOf)) {
+    return () => null;
+  }
+  return componentName in fields2 ? fields2[componentName] : fields2.FallbackField;
+}
+function SchemaFieldRender(props) {
+  const { schema: _schema, fieldPathId, uiSchema: _uiSchema, formData, errorSchema, name, onChange, onKeyRename, onKeyRenameBlur, onRemoveProperty, required = false, registry, wasPropertyKeyModified = false } = props;
+  const { schemaUtils, globalFormOptions, globalUiOptions, fields: fields2 } = registry;
+  const { AnyOfField: _AnyOfField, OneOfField: _OneOfField } = fields2;
+  const uiSchema = resolveUiSchema(_schema, _uiSchema, registry);
+  const uiOptions = getUiOptions(uiSchema, globalUiOptions);
+  const FieldTemplate2 = getTemplate("FieldTemplate", registry, uiOptions);
+  const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, uiOptions);
+  const FieldHelpTemplate2 = getTemplate("FieldHelpTemplate", registry, uiOptions);
+  const FieldErrorTemplate2 = getTemplate("FieldErrorTemplate", registry, uiOptions);
+  const schema = schemaUtils.retrieveSchema(_schema, formData);
+  const fieldId = fieldPathId[ID_KEY];
+  const handleFieldComponentChange = useCallback7((newFormData, path, newErrorSchema, id2) => {
+    const theId = id2 || fieldId;
+    return onChange(newFormData, path, newErrorSchema, theId);
+  }, [fieldId, onChange]);
+  const FieldComponent = getFieldComponent(schema, uiOptions, registry);
+  const isDeprecated = Boolean(schema.deprecated);
+  const deprecatedHandling = isDeprecated ? uiOptions.deprecatedHandling ?? "label" : void 0;
+  const disabled = Boolean(uiOptions.disabled ?? props.disabled) || deprecatedHandling === "disable";
+  const readonly = Boolean(uiOptions.readonly ?? (props.readonly || props.schema.readOnly || schema.readOnly));
+  const uiSchemaHideError = uiOptions.hideError;
+  const hideError = uiSchemaHideError === void 0 ? props.hideError : Boolean(uiSchemaHideError);
+  const autofocus = Boolean(uiOptions.autofocus ?? props.autofocus);
+  if (Object.keys(schema).length === 0) {
+    return null;
+  }
+  let displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+  const isReplacingAnyOrOneOf = uiOptions.field && uiOptions.fieldReplacesAnyOrOneOf === true;
+  let XxxOfField;
+  let XxxOfOptions;
+  let fieldPathIdProps = { fieldPathId };
+  if ((ANY_OF_KEY in schema || ONE_OF_KEY in schema) && !isReplacingAnyOrOneOf && !schemaUtils.isSelect(schema)) {
+    if (schema[ANY_OF_KEY]) {
+      XxxOfField = _AnyOfField;
+      XxxOfOptions = schema[ANY_OF_KEY].map((xxxOfSchema) => schemaUtils.retrieveSchema(isObject_default(xxxOfSchema) ? xxxOfSchema : {}, formData));
+    } else if (schema[ONE_OF_KEY]) {
+      XxxOfField = _OneOfField;
+      XxxOfOptions = schema[ONE_OF_KEY].map((xxxOfSchema) => schemaUtils.retrieveSchema(isObject_default(xxxOfSchema) ? xxxOfSchema : {}, formData));
+    }
+    const isOptionalRender = shouldRenderOptionalField(registry, schema, required, uiSchema);
+    const hasFormData = isFormDataAvailable(formData);
+    displayLabel = displayLabel && (!isOptionalRender || hasFormData);
+    fieldPathIdProps = {
+      childFieldPathId: fieldPathId,
+      // The main FieldComponent will add `XxxOf` onto the fieldPathId to avoid duplication with the rendering of the
+      // same FieldComponent by the `XxxOfField`
+      fieldPathId: toFieldPathId("XxxOf", globalFormOptions, fieldPathId)
+    };
+  }
+  const { __errors, ...fieldErrorSchema } = errorSchema || {};
+  const fieldUiSchema = omit_default(uiSchema, ["ui:classNames", "classNames", "ui:style"]);
+  if (UI_OPTIONS_KEY in fieldUiSchema) {
+    fieldUiSchema[UI_OPTIONS_KEY] = omit_default(fieldUiSchema[UI_OPTIONS_KEY], ["classNames", "style"]);
+  }
+  const field = _jsx13(FieldComponent, { ...props, onChange: handleFieldComponentChange, ...fieldPathIdProps, schema, uiSchema: fieldUiSchema, disabled, readonly, hideError, autofocus, errorSchema: fieldErrorSchema, rawErrors: __errors });
+  const id = fieldPathId[ID_KEY];
+  let label;
+  if (wasPropertyKeyModified) {
+    label = name;
+  } else {
+    label = ADDITIONAL_PROPERTY_FLAG in schema ? name : uiOptions.title || props.schema.title || schema.title || props.title || name;
+  }
+  if (deprecatedHandling === "label") {
+    label = registry.translateString(TranslatableString.DeprecatedLabel, [label]);
+  }
+  const description = uiOptions.description || props.schema.description || schema.description || "";
+  const { help } = uiOptions;
+  const hidden = uiOptions.widget === "hidden" || deprecatedHandling === "hide";
+  const classNames2 = ["rjsf-field", `rjsf-field-${getSchemaType(schema)}`];
+  if (!hideError && __errors && __errors.length > 0) {
+    classNames2.push("rjsf-field-error");
+  }
+  if (uiOptions.classNames) {
+    classNames2.push(uiOptions.classNames);
+  }
+  const helpComponent = _jsx13(FieldHelpTemplate2, { help, fieldPathId, schema, uiSchema, hasErrors: !hideError && __errors && __errors.length > 0, registry });
+  const errorsComponent = hideError || XxxOfField && !schemaUtils.isSelect(schema) ? void 0 : _jsx13(FieldErrorTemplate2, { errors: __errors, errorSchema, fieldPathId, schema, uiSchema, registry });
+  const fieldProps = {
+    description: _jsx13(DescriptionFieldTemplate, { id: descriptionId(id), description, schema, uiSchema, registry }),
+    rawDescription: description,
+    help: helpComponent,
+    rawHelp: typeof help === "string" ? help : void 0,
+    errors: errorsComponent,
+    rawErrors: hideError ? void 0 : __errors,
+    fieldPathId,
+    id,
+    label,
+    hidden,
+    onChange,
+    onKeyRename,
+    onKeyRenameBlur,
+    onRemoveProperty,
+    required,
+    disabled,
+    readonly,
+    hideError,
+    displayLabel,
+    classNames: classNames2.join(" ").trim(),
+    style: uiOptions.style,
+    formData,
+    schema,
+    uiSchema,
+    registry
+  };
+  return _jsx13(FieldTemplate2, { ...fieldProps, children: _jsxs2(_Fragment, { children: [field, XxxOfField && _jsx13(XxxOfField, { name, disabled, readonly, hideError, errorSchema, formData, fieldPathId, onBlur: props.onBlur, onChange: props.onChange, onFocus: props.onFocus, options: XxxOfOptions, registry, required, schema, uiSchema })] }) });
+}
+var SchemaField = class extends Component2 {
+  shouldComponentUpdate(nextProps) {
+    const { registry: { globalFormOptions } } = this.props;
+    const { experimental_componentUpdateStrategy = "customDeep" } = globalFormOptions;
+    return shouldRender(this, nextProps, this.state, experimental_componentUpdateStrategy);
+  }
+  render() {
+    return _jsx13(SchemaFieldRender, { ...this.props });
+  }
+};
+var SchemaField_default = SchemaField;
+
+// node_modules/@rjsf/core/lib/components/fields/StringField.js
+import { jsx as _jsx14 } from "react/jsx-runtime";
+import { useCallback as useCallback8 } from "react";
+function StringField(props) {
+  const { schema, name, uiSchema, fieldPathId, formData, required, disabled = false, readonly = false, autofocus = false, onChange, onBlur, onFocus, registry, rawErrors, hideError, title } = props;
+  const { title: schemaTitle, format } = schema;
+  const { widgets: widgets2, schemaUtils, globalUiOptions } = registry;
+  const enumOptions = schemaUtils.isSelect(schema) ? optionsList(schema, uiSchema) : void 0;
+  let defaultWidget = enumOptions ? "select" : "text";
+  if (format && hasWidget(schema, format, widgets2)) {
+    defaultWidget = format;
+  }
+  const { widget = defaultWidget, placeholder = "", title: uiTitle, ...options } = getUiOptions(uiSchema);
+  const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+  const label = uiTitle ?? title ?? schemaTitle ?? name;
+  const Widget = getWidget(schema, widget, widgets2);
+  const onWidgetChange = useCallback8((value, errorSchema, id) => onChange(value, fieldPathId.path, errorSchema, id), [onChange, fieldPathId]);
+  return _jsx14(Widget, { options: { ...options, enumOptions }, schema, uiSchema, id: fieldPathId.$id, name, label, hideLabel: !displayLabel, hideError, value: formData, onChange: onWidgetChange, onBlur, onFocus, required, disabled, readonly, autofocus, registry, placeholder, rawErrors, htmlName: fieldPathId.name });
+}
+var StringField_default = StringField;
+
+// node_modules/@rjsf/core/lib/components/fields/index.js
+function fields() {
+  return {
+    AnyOfField: MultiSchemaField_default,
+    ArrayField,
+    // ArrayField falls back to SchemaField if ArraySchemaField is not defined, which it isn't by default
+    BooleanField: BooleanField_default,
+    FallbackField,
+    LayoutGridField,
+    LayoutHeaderField,
+    LayoutMultiSchemaField,
+    NumberField: NumberField_default,
+    ObjectField,
+    OneOfField: MultiSchemaField_default,
+    OptionalDataControlsField,
+    SchemaField: SchemaField_default,
+    StringField: StringField_default,
+    NullField: NullField_default
+  };
+}
+var fields_default = fields;
+
+// node_modules/@rjsf/core/lib/components/templates/ArrayFieldDescriptionTemplate.js
+import { jsx as _jsx15 } from "react/jsx-runtime";
+function ArrayFieldDescriptionTemplate(props) {
+  const { fieldPathId, description, registry, schema, uiSchema } = props;
+  const options = getUiOptions(uiSchema, registry.globalUiOptions);
+  const { label: displayLabel = true } = options;
+  if (!description || !displayLabel) {
+    return null;
+  }
+  const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
+  return _jsx15(DescriptionFieldTemplate, { id: descriptionId(fieldPathId), description, schema, uiSchema, registry });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ArrayFieldItemButtonsTemplate.js
+import { jsx as _jsx16, Fragment as _Fragment2, jsxs as _jsxs3 } from "react/jsx-runtime";
+function ArrayFieldItemButtonsTemplate(props) {
+  const { disabled, hasCopy, hasMoveDown, hasMoveUp, hasRemove, fieldPathId, onCopyItem, onRemoveItem, onMoveDownItem, onMoveUpItem, readonly, registry, uiSchema } = props;
+  const { CopyButton: CopyButton2, MoveDownButton: MoveDownButton2, MoveUpButton: MoveUpButton2, RemoveButton: RemoveButton2 } = registry.templates.ButtonTemplates;
+  return _jsxs3(_Fragment2, { children: [(hasMoveUp || hasMoveDown) && _jsx16(MoveUpButton2, { id: buttonId(fieldPathId, "moveUp"), className: "rjsf-array-item-move-up", disabled: disabled || readonly || !hasMoveUp, onClick: onMoveUpItem, uiSchema, registry }), (hasMoveUp || hasMoveDown) && _jsx16(MoveDownButton2, { id: buttonId(fieldPathId, "moveDown"), className: "rjsf-array-item-move-down", disabled: disabled || readonly || !hasMoveDown, onClick: onMoveDownItem, uiSchema, registry }), hasCopy && _jsx16(CopyButton2, { id: buttonId(fieldPathId, "copy"), className: "rjsf-array-item-copy", disabled: disabled || readonly, onClick: onCopyItem, uiSchema, registry }), hasRemove && _jsx16(RemoveButton2, { id: buttonId(fieldPathId, "remove"), className: "rjsf-array-item-remove", disabled: disabled || readonly, onClick: onRemoveItem, uiSchema, registry })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ArrayFieldItemTemplate.js
+import { jsx as _jsx17, jsxs as _jsxs4 } from "react/jsx-runtime";
+function ArrayFieldItemTemplate(props) {
+  const { children, className, buttonsProps, displayLabel, hasDescription, hasToolbar, registry, uiSchema } = props;
+  const uiOptions = getUiOptions(uiSchema);
+  const ArrayFieldItemButtonsTemplate2 = getTemplate("ArrayFieldItemButtonsTemplate", registry, uiOptions);
+  const btnStyle = {
+    flex: 1,
+    paddingLeft: 6,
+    paddingRight: 6,
+    fontWeight: "bold"
+  };
+  const margin = hasDescription ? 31 : 9;
+  const containerStyle = { display: "flex", alignItems: displayLabel ? "center" : "baseline" };
+  const toolbarStyle = { display: "flex", justifyContent: "flex-end", marginTop: displayLabel ? `${margin}px` : 0 };
+  return _jsxs4("div", { className, style: containerStyle, children: [_jsx17("div", { className: hasToolbar ? "col-xs-9 col-md-10 col-xl-11" : "col-xs-12", children }), hasToolbar && _jsx17("div", { className: "col-xs-3 col-md-2 col-xl-1 array-item-toolbox", children: _jsx17("div", { className: "btn-group", style: toolbarStyle, children: _jsx17(ArrayFieldItemButtonsTemplate2, { ...buttonsProps, style: btnStyle }) }) })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ArrayFieldTemplate.js
+import { jsx as _jsx18, jsxs as _jsxs5 } from "react/jsx-runtime";
+function ArrayFieldTemplate(props) {
+  const { canAdd, className, disabled, fieldPathId, uiSchema, items, optionalDataControl, onAddClick, readonly, registry, required, schema, title } = props;
+  const uiOptions = getUiOptions(uiSchema);
+  const ArrayFieldDescriptionTemplate2 = getTemplate("ArrayFieldDescriptionTemplate", registry, uiOptions);
+  const ArrayFieldTitleTemplate2 = getTemplate("ArrayFieldTitleTemplate", registry, uiOptions);
+  const showOptionalDataControlInTitle = !readonly && !disabled;
+  const { ButtonTemplates: { AddButton: AddButton2 } } = registry.templates;
+  return _jsxs5("fieldset", { className, id: fieldPathId.$id, children: [_jsx18(ArrayFieldTitleTemplate2, { fieldPathId, title: uiOptions.title || title, required, schema, uiSchema, registry, optionalDataControl: showOptionalDataControlInTitle ? optionalDataControl : void 0 }), _jsx18(ArrayFieldDescriptionTemplate2, { fieldPathId, description: uiOptions.description || schema.description, schema, uiSchema, registry }), !showOptionalDataControlInTitle ? optionalDataControl : void 0, _jsx18("div", { className: "row array-item-list", children: items }), canAdd && _jsx18(AddButton2, { id: buttonId(fieldPathId, "add"), className: "rjsf-array-item-add", onClick: onAddClick, disabled: disabled || readonly, uiSchema, registry })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ArrayFieldTitleTemplate.js
+import { jsx as _jsx19 } from "react/jsx-runtime";
+function ArrayFieldTitleTemplate(props) {
+  const { fieldPathId, title, schema, uiSchema, required, registry, optionalDataControl } = props;
+  const options = getUiOptions(uiSchema, registry.globalUiOptions);
+  const { label: displayLabel = true } = options;
+  if (!title || !displayLabel) {
+    return null;
+  }
+  const TitleFieldTemplate = getTemplate("TitleFieldTemplate", registry, options);
+  return _jsx19(TitleFieldTemplate, { id: titleId(fieldPathId), title, required, schema, uiSchema, registry, optionalDataControl });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/BaseInputTemplate.js
+import { jsx as _jsx21, Fragment as _Fragment3, jsxs as _jsxs6 } from "react/jsx-runtime";
+import { useCallback as useCallback9 } from "react";
+
+// node_modules/@rjsf/core/lib/components/SchemaExamples.js
+import { jsx as _jsx20 } from "react/jsx-runtime";
+function SchemaExamples(props) {
+  const { id, schema } = props;
+  const { examples, default: schemaDefault } = schema;
+  if (!Array.isArray(examples)) {
+    return null;
+  }
+  return _jsx20("datalist", { id: examplesId(id), children: examples.concat(schemaDefault !== void 0 && !examples.map(String).includes(String(schemaDefault)) ? [schemaDefault] : []).map((example) => _jsx20("option", { value: example }, String(example))) }, `datalist_${id}`);
+}
+
+// node_modules/@rjsf/core/lib/components/templates/BaseInputTemplate.js
+function BaseInputTemplate(props) {
+  const {
+    id,
+    name,
+    // remove this from ...rest
+    htmlName,
+    value,
+    readonly,
+    disabled,
+    autofocus,
+    onBlur,
+    onFocus,
+    onChange,
+    onChangeOverride,
+    options,
+    schema,
+    uiSchema,
+    registry,
+    rawErrors,
+    type,
+    hideLabel,
+    // remove this from ...rest
+    hideError,
+    // remove this from ...rest
+    ...rest
+  } = props;
+  const { ClearButton: ClearButton2 } = registry.templates.ButtonTemplates;
+  if (!id) {
+    console.log("No id for", props);
+    throw new Error(`no id for props ${JSON.stringify(props)}`);
+  }
+  const inputProps = {
+    ...rest,
+    ...getInputProps(schema, type, options)
+  };
+  let inputValue;
+  if (inputProps.type === "number" || inputProps.type === "integer") {
+    inputValue = value || value === 0 ? value : "";
+  } else {
+    inputValue = value == null ? "" : value;
+  }
+  const handleChange = useCallback9(({ target: { value: newValue } }) => onChange(newValue === "" ? options.emptyValue : newValue), [onChange, options]);
+  const handleBlur = useCallback9(({ target }) => onBlur(id, target && target.value), [onBlur, id]);
+  const handleFocus = useCallback9(({ target }) => onFocus(id, target && target.value), [onFocus, id]);
+  const handleClear = useCallback9((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onChange(options.emptyValue ?? "");
+  }, [onChange, options.emptyValue]);
+  return _jsxs6(_Fragment3, { children: [_jsx21("input", { id, name: htmlName || id, className: "form-control", readOnly: readonly, disabled, autoFocus: autofocus, value: inputValue, ...inputProps, list: schema.examples ? examplesId(id) : void 0, onChange: onChangeOverride || handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id, !!schema.examples) }), options.allowClearTextInputs && !readonly && !disabled && inputValue && _jsx21(ClearButton2, { registry, onClick: handleClear }), _jsx21(SchemaExamples, { id, schema })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/AddButton.js
+import { jsx as _jsx23 } from "react/jsx-runtime";
+
+// node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/IconButton.js
+import { jsx as _jsx22 } from "react/jsx-runtime";
+import { memo as memo3 } from "react";
+function IconButtonFn(props) {
+  const { iconType = "default", icon, className, uiSchema, registry, ...otherProps } = props;
+  return _jsx22("button", { type: "button", className: `btn btn-${iconType} ${className}`, ...otherProps, children: _jsx22("i", { className: `glyphicon glyphicon-${icon}` }) });
+}
+var IconButton = memo3(IconButtonFn);
+var IconButton_default = IconButton;
+function CopyButtonFn(props) {
+  const { registry: { translateString } } = props;
+  return _jsx22(IconButton, { title: translateString(TranslatableString.CopyButton), ...props, icon: "copy" });
+}
+var CopyButton = memo3(CopyButtonFn);
+function MoveDownButtonFn(props) {
+  const { registry: { translateString } } = props;
+  return _jsx22(IconButton, { title: translateString(TranslatableString.MoveDownButton), ...props, icon: "arrow-down" });
+}
+var MoveDownButton = memo3(MoveDownButtonFn);
+function MoveUpButtonFn(props) {
+  const { registry: { translateString } } = props;
+  return _jsx22(IconButton, { title: translateString(TranslatableString.MoveUpButton), ...props, icon: "arrow-up" });
+}
+var MoveUpButton = memo3(MoveUpButtonFn);
+function RemoveButtonFn(props) {
+  const { registry: { translateString } } = props;
+  return _jsx22(IconButton, { title: translateString(TranslatableString.RemoveButton), ...props, iconType: "danger", icon: "remove" });
+}
+var RemoveButton = memo3(RemoveButtonFn);
+function ClearButtonFn({ id, className, onClick, disabled, registry, ...props }) {
+  const { translateString } = registry;
+  return _jsx22(IconButton, { id, iconType: "default", icon: "remove", className: "btn-clear col-xs-12", title: translateString(TranslatableString.ClearButton), onClick, disabled, registry, ...props });
+}
+var ClearButton = memo3(ClearButtonFn);
+
+// node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/AddButton.js
+function AddButton({ id, className, onClick, disabled, registry }) {
+  const { translateString } = registry;
+  return _jsx23("div", { className: "row", children: _jsx23("p", { className: `col-xs-4 col-sm-2 col-lg-1 col-xs-offset-8 col-sm-offset-10 col-lg-offset-11 text-right ${className}`, children: _jsx23(IconButton_default, { id, iconType: "info", icon: "plus", className: "btn-add col-xs-12", title: translateString(TranslatableString.AddButton), onClick, disabled, registry }) }) });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/SubmitButton.js
+import { jsx as _jsx24 } from "react/jsx-runtime";
+function SubmitButton({ uiSchema }) {
+  const { submitText, norender, props: submitButtonProps = {} } = getSubmitButtonOptions(uiSchema);
+  if (norender) {
+    return null;
+  }
+  return _jsx24("div", { children: _jsx24("button", { type: "submit", ...submitButtonProps, className: `btn btn-info ${submitButtonProps.className || ""}`, children: submitText }) });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/index.js
+function buttonTemplates() {
+  return {
+    SubmitButton,
+    AddButton,
+    CopyButton,
+    MoveDownButton,
+    MoveUpButton,
+    RemoveButton,
+    ClearButton
+  };
+}
+var ButtonTemplates_default = buttonTemplates;
+
+// node_modules/@rjsf/core/lib/components/templates/DescriptionField.js
+import { jsx as _jsx26 } from "react/jsx-runtime";
+
+// node_modules/@rjsf/core/lib/components/RichDescription.js
+import { jsx as _jsx25 } from "react/jsx-runtime";
+var TEST_IDS = getTestIds();
+function RichDescription({ description, registry, uiSchema = {} }) {
+  const { globalUiOptions } = registry;
+  const uiOptions = getUiOptions(uiSchema, globalUiOptions);
+  if (uiOptions.enableMarkdownInDescription && typeof description === "string") {
+    return _jsx25(D6, { options: { disableParsingRawHTML: true }, "data-testid": TEST_IDS.markdown, children: description });
+  }
+  return description;
+}
+RichDescription.TEST_IDS = TEST_IDS;
+
+// node_modules/@rjsf/core/lib/components/templates/DescriptionField.js
+function DescriptionField(props) {
+  const { id, description, registry, uiSchema } = props;
+  if (!description) {
+    return null;
+  }
+  return _jsx26("div", { id, className: "field-description", children: _jsx26(RichDescription, { description, registry, uiSchema }) });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ErrorList.js
+import { jsx as _jsx27, jsxs as _jsxs7 } from "react/jsx-runtime";
+function ErrorList({ errors, registry }) {
+  const { translateString } = registry;
+  return _jsxs7("div", { className: "panel panel-danger errors", children: [_jsx27("div", { className: "panel-heading", children: _jsx27("h3", { className: "panel-title", children: translateString(TranslatableString.ErrorsLabel) }) }), _jsx27("ul", { className: "list-group", children: errors.map((error, i2) => _jsx27("li", { className: "list-group-item text-danger", children: error.stack }, i2)) })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/FallbackFieldTemplate.js
+import { jsx as _jsx28 } from "react/jsx-runtime";
+function FallbackFieldTemplate(props) {
+  const { schema, registry, typeSelector, schemaField } = props;
+  const MultiSchemaFieldTemplate2 = getTemplate("MultiSchemaFieldTemplate", registry);
+  return _jsx28(MultiSchemaFieldTemplate2, { selector: typeSelector, optionSchemaField: schemaField, schema, registry });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/FieldErrorTemplate.js
+import { jsx as _jsx29 } from "react/jsx-runtime";
+function FieldErrorTemplate(props) {
+  const { errors = [], fieldPathId } = props;
+  if (errors.length === 0) {
+    return null;
+  }
+  const id = errorId(fieldPathId);
+  return _jsx29("div", { children: _jsx29("ul", { id, className: "error-detail bs-callout bs-callout-info", children: errors.filter((elem) => !!elem).map((error, index) => _jsx29("li", { className: "text-danger", children: error }, index)) }) });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/FieldHelpTemplate.js
+import { jsx as _jsx31 } from "react/jsx-runtime";
+
+// node_modules/@rjsf/core/lib/components/RichHelp.js
+import { jsx as _jsx30 } from "react/jsx-runtime";
+var TEST_IDS2 = getTestIds();
+function RichHelp({ help, registry, uiSchema = {} }) {
+  const { globalUiOptions } = registry;
+  const uiOptions = getUiOptions(uiSchema, globalUiOptions);
+  if (uiOptions.enableMarkdownInHelp && typeof help === "string") {
+    return _jsx30(D6, { options: { disableParsingRawHTML: true }, "data-testid": TEST_IDS2.markdown, children: help });
+  }
+  return help;
+}
+RichHelp.TEST_IDS = TEST_IDS2;
+
+// node_modules/@rjsf/core/lib/components/templates/FieldHelpTemplate.js
+function FieldHelpTemplate(props) {
+  const { fieldPathId, help, uiSchema, registry } = props;
+  if (!help) {
+    return null;
+  }
+  return _jsx31("div", { id: helpId(fieldPathId), className: "help-block", children: _jsx31(RichHelp, { help, registry, uiSchema }) });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/FieldTemplate/FieldTemplate.js
+import { jsx as _jsx33, jsxs as _jsxs9 } from "react/jsx-runtime";
+
+// node_modules/@rjsf/core/lib/components/templates/FieldTemplate/Label.js
+import { jsx as _jsx32, jsxs as _jsxs8 } from "react/jsx-runtime";
+var REQUIRED_FIELD_SYMBOL = "*";
+function Label(props) {
+  const { label, required, id } = props;
+  if (!label) {
+    return null;
+  }
+  return _jsxs8("label", { className: "control-label", htmlFor: id, children: [label, required && _jsx32("span", { className: "required", children: REQUIRED_FIELD_SYMBOL })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/FieldTemplate/FieldTemplate.js
+function FieldTemplate(props) {
+  const { id, label, children, errors, help, description, hidden, required, displayLabel, registry, uiSchema } = props;
+  const uiOptions = getUiOptions(uiSchema);
+  const WrapIfAdditionalTemplate2 = getTemplate("WrapIfAdditionalTemplate", registry, uiOptions);
+  if (hidden) {
+    return _jsx33("div", { className: "hidden", children });
+  }
+  const isCheckbox = uiOptions.widget === "checkbox";
+  return _jsxs9(WrapIfAdditionalTemplate2, { ...props, children: [displayLabel && !isCheckbox && _jsx33(Label, { label, required, id }), displayLabel && description ? description : null, children, errors, help] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/FieldTemplate/index.js
+var FieldTemplate_default = FieldTemplate;
+
+// node_modules/@rjsf/core/lib/components/templates/GridTemplate.js
+import { jsx as _jsx34 } from "react/jsx-runtime";
+function GridTemplate(props) {
+  const { children, column, className, ...rest } = props;
+  return _jsx34("div", { className, ...rest, children });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/MultiSchemaFieldTemplate.js
+import { jsx as _jsx35, jsxs as _jsxs10 } from "react/jsx-runtime";
+function MultiSchemaFieldTemplate(props) {
+  const { selector, optionSchemaField } = props;
+  return _jsxs10("div", { className: "panel panel-default panel-body", children: [_jsx35("div", { className: "form-group", children: selector }), optionSchemaField] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/ObjectFieldTemplate.js
+import { jsx as _jsx36, jsxs as _jsxs11 } from "react/jsx-runtime";
+function ObjectFieldTemplate(props) {
+  const { className, description, disabled, formData, fieldPathId, onAddProperty, optionalDataControl, properties, readonly, registry, required, schema, title, uiSchema } = props;
+  const options = getUiOptions(uiSchema);
+  const TitleFieldTemplate = getTemplate("TitleFieldTemplate", registry, options);
+  const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
+  const isPureUnionSchema = (schema.oneOf || schema.anyOf) && !schema.properties && properties.length === 0;
+  if (isPureUnionSchema) {
+    return null;
+  }
+  const showOptionalDataControlInTitle = !readonly && !disabled;
+  const { ButtonTemplates: { AddButton: AddButton2 } } = registry.templates;
+  return _jsxs11("fieldset", { className, id: fieldPathId.$id, children: [title && _jsx36(TitleFieldTemplate, { id: titleId(fieldPathId), title, required, schema, uiSchema, registry, optionalDataControl: showOptionalDataControlInTitle ? optionalDataControl : void 0 }), description && _jsx36(DescriptionFieldTemplate, { id: descriptionId(fieldPathId), description, schema, uiSchema, registry }), !showOptionalDataControlInTitle ? optionalDataControl : void 0, properties.map((prop) => prop.content), canExpand(schema, uiSchema, formData) && _jsx36(AddButton2, { id: buttonId(fieldPathId, "add"), className: "rjsf-object-property-expand", onClick: onAddProperty, disabled: disabled || readonly, uiSchema, registry })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/OptionalDataControlsTemplate.js
+import { jsx as _jsx37 } from "react/jsx-runtime";
+function OptionalDataControlsTemplate(props) {
+  const { id, registry, label, onAddClick, onRemoveClick } = props;
+  if (onAddClick) {
+    return _jsx37(IconButton_default, { id, registry, icon: "plus", className: "rjsf-add-optional-data btn-sm", onClick: onAddClick, title: label });
+  }
+  if (onRemoveClick) {
+    return _jsx37(IconButton_default, { id, registry, icon: "remove", className: "rjsf-remove-optional-data btn-sm", onClick: onRemoveClick, title: label });
+  }
+  return _jsx37("em", { id, children: label });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/TitleField.js
+import { jsx as _jsx38, jsxs as _jsxs12 } from "react/jsx-runtime";
+var REQUIRED_FIELD_SYMBOL2 = "*";
+function TitleField(props) {
+  const { id, title, required, optionalDataControl } = props;
+  return _jsxs12("legend", { id, children: [title, required && _jsx38("span", { className: "required", children: REQUIRED_FIELD_SYMBOL2 }), optionalDataControl && _jsx38("span", { className: "pull-right", style: { marginBottom: "2px" }, children: optionalDataControl })] });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/UnsupportedField.js
+import { jsx as _jsx39, jsxs as _jsxs13 } from "react/jsx-runtime";
+function UnsupportedField(props) {
+  const { schema, fieldPathId, reason, registry } = props;
+  const { translateString } = registry;
+  let translateEnum = TranslatableString.UnsupportedField;
+  const translateParams = [];
+  if (fieldPathId && fieldPathId.$id) {
+    translateEnum = TranslatableString.UnsupportedFieldWithId;
+    translateParams.push(fieldPathId.$id);
+  }
+  if (reason) {
+    translateEnum = translateEnum === TranslatableString.UnsupportedField ? TranslatableString.UnsupportedFieldWithReason : TranslatableString.UnsupportedFieldWithIdAndReason;
+    translateParams.push(reason);
+  }
+  return _jsxs13("div", { className: "unsupported-field", children: [_jsx39("p", { children: _jsx39(D6, { options: { disableParsingRawHTML: true }, children: translateString(translateEnum, translateParams) }) }), schema && _jsx39("pre", { children: JSON.stringify(schema, null, 2) })] });
+}
+var UnsupportedField_default = UnsupportedField;
+
+// node_modules/@rjsf/core/lib/components/templates/WrapIfAdditionalTemplate.js
+import { jsx as _jsx40, jsxs as _jsxs14 } from "react/jsx-runtime";
+function WrapIfAdditionalTemplate(props) {
+  const { id, classNames: classNames2, style, disabled, displayLabel, label, onKeyRenameBlur, onRemoveProperty, rawDescription, readonly, required, schema, hideError, rawErrors, children, uiSchema, registry } = props;
+  const { templates: templates2, translateString } = registry;
+  const { RemoveButton: RemoveButton2 } = templates2.ButtonTemplates;
+  const keyLabel = translateString(TranslatableString.KeyLabel, [label]);
+  const additional = ADDITIONAL_PROPERTY_FLAG in schema;
+  const hasDescription = !!rawDescription;
+  const classNamesList = ["form-group", classNames2];
+  if (!hideError && rawErrors && rawErrors.length > 0) {
+    classNamesList.push("has-error has-danger");
+  }
+  const uiClassNames = classNamesList.join(" ").trim();
+  if (!additional) {
+    return _jsx40("div", { className: uiClassNames, style, children });
+  }
+  const margin = hasDescription ? 46 : 26;
+  return _jsx40("div", { className: uiClassNames, style, children: _jsxs14("div", { className: "row", children: [_jsx40("div", { className: "col-xs-5 form-additional", children: _jsxs14("div", { className: "form-group", children: [displayLabel && _jsx40(Label, { label: keyLabel, required, id: `${id}-key` }), displayLabel && rawDescription && _jsx40("div", { children: "\xA0" }), _jsx40("input", { className: "form-control", type: "text", id: `${id}-key`, onBlur: onKeyRenameBlur, defaultValue: label }, label)] }) }), _jsx40("div", { className: "form-additional form-group col-xs-5", children }), _jsx40("div", { className: "col-xs-2", style: { marginTop: displayLabel ? `${margin}px` : void 0 }, children: _jsx40(RemoveButton2, { id: buttonId(id, "remove"), className: "rjsf-object-property-remove btn-block", style: { border: "0" }, disabled: disabled || readonly, onClick: onRemoveProperty, uiSchema, registry }) })] }) });
+}
+
+// node_modules/@rjsf/core/lib/components/templates/index.js
+function templates() {
+  return {
+    ArrayFieldDescriptionTemplate,
+    ArrayFieldItemTemplate,
+    ArrayFieldItemButtonsTemplate,
+    ArrayFieldTemplate,
+    ArrayFieldTitleTemplate,
+    ButtonTemplates: ButtonTemplates_default(),
+    BaseInputTemplate,
+    DescriptionFieldTemplate: DescriptionField,
+    ErrorListTemplate: ErrorList,
+    FallbackFieldTemplate,
+    FieldTemplate: FieldTemplate_default,
+    FieldErrorTemplate,
+    FieldHelpTemplate,
+    GridTemplate,
+    MultiSchemaFieldTemplate,
+    ObjectFieldTemplate,
+    OptionalDataControlsTemplate,
+    TitleFieldTemplate: TitleField,
+    UnsupportedFieldTemplate: UnsupportedField_default,
+    WrapIfAdditionalTemplate
+  };
+}
+var templates_default = templates;
+
+// node_modules/@rjsf/core/lib/components/widgets/AltDateTimeWidget.js
+import { jsx as _jsx41 } from "react/jsx-runtime";
+function AltDateTimeWidget({ time = true, ...props }) {
+  const { AltDateWidget: AltDateWidget2 } = props.registry.widgets;
+  return _jsx41(AltDateWidget2, { time, ...props });
+}
+var AltDateTimeWidget_default = AltDateTimeWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/AltDateWidget.js
+import { jsx as _jsx42, jsxs as _jsxs15 } from "react/jsx-runtime";
+function AltDateWidget(props) {
+  const { disabled = false, readonly = false, autofocus = false, options, id, name, registry, onBlur, onFocus } = props;
+  const { translateString } = registry;
+  const { elements, handleChange, handleClear, handleSetNow } = useAltDateWidgetProps(props);
+  return _jsxs15("ul", { className: "list-inline", children: [elements.map((elemProps, i2) => _jsx42("li", { className: "list-inline-item", children: _jsx42(DateElement, { rootId: id, name, select: handleChange, ...elemProps, disabled, readonly, registry, onBlur, onFocus, autofocus: autofocus && i2 === 0 }) }, i2)), (options.hideNowButton !== "undefined" ? !options.hideNowButton : true) && _jsx42("li", { className: "list-inline-item", children: _jsx42("button", { type: "button", className: "btn btn-info btn-now", onClick: handleSetNow, children: translateString(TranslatableString.NowLabel) }) }), (options.hideClearButton !== "undefined" ? !options.hideClearButton : true) && _jsx42("li", { className: "list-inline-item", children: _jsx42("button", { type: "button", className: "btn btn-warning btn-clear", onClick: handleClear, children: translateString(TranslatableString.ClearLabel) }) })] });
+}
+var AltDateWidget_default = AltDateWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/CheckboxesWidget.js
+import { jsx as _jsx43, jsxs as _jsxs16 } from "react/jsx-runtime";
+import { useCallback as useCallback10 } from "react";
+function CheckboxesWidget({ id, disabled, options, value, autofocus = false, readonly, onChange, onBlur, onFocus, htmlName }) {
+  const { inline = false, enumOptions, enumDisabled, emptyValue } = options;
+  const optionValueFormat = getOptionValueFormat(options);
+  const checkboxesValues = Array.isArray(value) ? value : [value];
+  const handleBlur = useCallback10(({ target }) => onBlur(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onBlur, id, enumOptions, emptyValue, optionValueFormat]);
+  const handleFocus = useCallback10(({ target }) => onFocus(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onFocus, id, enumOptions, emptyValue, optionValueFormat]);
+  return _jsx43("div", { className: "checkboxes", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+    const checked = enumOptionsIsSelected(option.value, checkboxesValues);
+    const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
+    const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
+    const handleChange = (event) => {
+      if (event.target.checked) {
+        onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
+      } else {
+        onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
+      }
+    };
+    const checkbox = _jsxs16("span", { children: [_jsx43("input", { type: "checkbox", id: optionId(id, index), name: htmlName || id, checked, value: enumOptionValueEncoder(option.value, index, optionValueFormat), disabled: disabled || itemDisabled || readonly, autoFocus: autofocus && index === 0, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), _jsx43("span", { children: option.label })] });
+    return inline ? _jsx43("label", { className: `checkbox-inline ${disabledCls}`, children: checkbox }, String(option.value)) : _jsx43("div", { className: `checkbox ${disabledCls}`, children: _jsx43("label", { children: checkbox }) }, String(option.value));
+  }) });
+}
+var CheckboxesWidget_default = CheckboxesWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/CheckboxWidget.js
+import { jsx as _jsx44, jsxs as _jsxs17 } from "react/jsx-runtime";
+import { useCallback as useCallback11 } from "react";
+function CheckboxWidget({ schema, uiSchema, options, id, value, disabled, readonly, label, hideLabel, autofocus = false, onBlur, onFocus, onChange, registry, htmlName }) {
+  const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
+  const required = schemaRequiresTrueValue(schema);
+  const handleChange = useCallback11((event) => onChange(event.target.checked), [onChange]);
+  const handleBlur = useCallback11((event) => onBlur(id, event.target.checked), [onBlur, id]);
+  const handleFocus = useCallback11((event) => onFocus(id, event.target.checked), [onFocus, id]);
+  const uiOptions = getUiOptions(uiSchema);
+  const isCheckboxWidget = uiOptions.widget === "checkbox";
+  const description = isCheckboxWidget ? void 0 : options.description ?? schema.description;
+  return _jsxs17("div", { className: `checkbox ${disabled || readonly ? "disabled" : ""}`, children: [!hideLabel && description && _jsx44(DescriptionFieldTemplate, { id: descriptionId(id), description, schema, uiSchema, registry }), _jsxs17("label", { children: [_jsx44("input", { type: "checkbox", id, name: htmlName || id, checked: typeof value === "undefined" ? false : value, required, disabled: disabled || readonly, autoFocus: autofocus, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), labelValue(_jsx44("span", { children: label }), hideLabel)] })] });
+}
+var CheckboxWidget_default = CheckboxWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/ColorWidget.js
+import { jsx as _jsx45 } from "react/jsx-runtime";
+function ColorWidget(props) {
+  const { disabled, readonly, options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx45(BaseInputTemplate2, { type: "color", ...props, disabled: disabled || readonly });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/DateTimeWidget.js
+import { jsx as _jsx46 } from "react/jsx-runtime";
+function DateTimeWidget(props) {
+  const { onChange, value, options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx46(BaseInputTemplate2, { type: "datetime-local", ...props, value: utcToLocal(value), onChange: (newValue) => onChange(localToUTC(newValue)) });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/DateWidget.js
+import { jsx as _jsx47 } from "react/jsx-runtime";
+import { useCallback as useCallback12 } from "react";
+function DateWidget(props) {
+  const { onChange, options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  const handleChange = useCallback12((value) => onChange(value || void 0), [onChange]);
+  return _jsx47(BaseInputTemplate2, { type: "date", ...props, onChange: handleChange });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/EmailWidget.js
+import { jsx as _jsx48 } from "react/jsx-runtime";
+function EmailWidget(props) {
+  const { options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx48(BaseInputTemplate2, { type: "email", ...props });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/FileWidget.js
+import { jsx as _jsx49, Fragment as _Fragment4, jsxs as _jsxs18 } from "react/jsx-runtime";
+function FileInfoPreview({ fileInfo, registry }) {
+  const { translateString } = registry;
+  const { dataURL, type, name } = fileInfo;
+  if (!dataURL) {
+    return null;
+  }
+  const previewLabel = translateString(TranslatableString.PreviewLabel);
+  if (["image/jpeg", "image/png"].includes(type)) {
+    return _jsx49("img", { src: dataURL, alt: previewLabel, style: { maxWidth: "100%" }, className: "file-preview" });
+  }
+  return _jsxs18(_Fragment4, { children: [" ", _jsx49("a", { download: `preview-${name}`, href: dataURL, className: "file-download", children: previewLabel })] });
+}
+function FilesInfo({ filesInfo, registry, preview, onRemove, options }) {
+  if (filesInfo.length === 0) {
+    return null;
+  }
+  const { translateString } = registry;
+  const { RemoveButton: RemoveButton2 } = getTemplate("ButtonTemplates", registry, options);
+  return _jsx49("ul", { className: "file-info", children: filesInfo.map((fileInfo, key) => {
+    const { name, size, type } = fileInfo;
+    const handleRemove = () => onRemove(key);
+    return _jsxs18("li", { children: [_jsx49(D6, { children: translateString(TranslatableString.FilesInfo, [name, type, String(size)]) }), preview && _jsx49(FileInfoPreview, { fileInfo, registry }), _jsx49(RemoveButton2, { onClick: handleRemove, registry })] }, key);
+  }) });
+}
+function FileWidget(props) {
+  const { disabled, readonly, required, multiple, onChange, value, options, registry } = props;
+  const { filesInfo, handleChange, handleRemove } = useFileWidgetProps(value, onChange, multiple);
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  const handleOnChangeEvent = (event) => {
+    if (event.target.files) {
+      void handleChange(event.target.files);
+    }
+  };
+  return _jsxs18("div", { children: [_jsx49(BaseInputTemplate2, { ...props, disabled: disabled || readonly, type: "file", required: value ? false : required, onChangeOverride: handleOnChangeEvent, value: "", accept: options.accept ? String(options.accept) : void 0 }), _jsx49(FilesInfo, { filesInfo, onRemove: handleRemove, registry, preview: options.filePreview, options })] });
+}
+var FileWidget_default = FileWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/HiddenWidget.js
+import { jsx as _jsx50 } from "react/jsx-runtime";
+function HiddenWidget({ id, value, htmlName }) {
+  return _jsx50("input", { type: "hidden", id, name: htmlName || id, value: typeof value === "undefined" ? "" : value });
+}
+var HiddenWidget_default = HiddenWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/PasswordWidget.js
+import { jsx as _jsx51 } from "react/jsx-runtime";
+function PasswordWidget(props) {
+  const { options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx51(BaseInputTemplate2, { type: "password", ...props });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/RadioWidget.js
+import { jsx as _jsx52, jsxs as _jsxs19 } from "react/jsx-runtime";
+import { useCallback as useCallback13 } from "react";
+function RadioWidget({ options, value, required, disabled, readonly, autofocus = false, onBlur, onFocus, onChange, id, htmlName }) {
+  const { enumOptions, enumDisabled, inline, emptyValue } = options;
+  const optionValueFormat = getOptionValueFormat(options);
+  const handleBlur = useCallback13(({ target }) => onBlur(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onBlur, enumOptions, emptyValue, id, optionValueFormat]);
+  const handleFocus = useCallback13(({ target }) => onFocus(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onFocus, enumOptions, emptyValue, id, optionValueFormat]);
+  return _jsx52("div", { className: "field-radio-group", id, role: "radiogroup", children: Array.isArray(enumOptions) && enumOptions.map((option, i2) => {
+    const checked = enumOptionsIsSelected(option.value, value);
+    const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
+    const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
+    const handleChange = () => onChange(option.value);
+    const radio = _jsxs19("span", { children: [_jsx52("input", { type: "radio", id: optionId(id, i2), checked, name: htmlName || id, required, value: enumOptionValueEncoder(option.value, i2, optionValueFormat), disabled: disabled || itemDisabled || readonly, autoFocus: autofocus && i2 === 0, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), _jsx52("span", { children: option.label })] });
+    return inline ? _jsx52("label", { className: `radio-inline ${disabledCls}`, children: radio }, String(option.value)) : _jsx52("div", { className: `radio ${disabledCls}`, children: _jsx52("label", { children: radio }) }, String(option.value));
+  }) });
+}
+var RadioWidget_default = RadioWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/RangeWidget.js
+import { jsx as _jsx53, jsxs as _jsxs20 } from "react/jsx-runtime";
+function RangeWidget(props) {
+  const { value, registry: { templates: { BaseInputTemplate: BaseInputTemplate2 } } } = props;
+  return _jsxs20("div", { className: "field-range-wrapper", children: [_jsx53(BaseInputTemplate2, { type: "range", ...props }), _jsx53("span", { className: "range-view", children: value })] });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/RatingWidget.js
+import { jsx as _jsx54, jsxs as _jsxs21 } from "react/jsx-runtime";
+import { useCallback as useCallback14 } from "react";
+function RatingWidget({ id, value, required, disabled, readonly, autofocus, onChange, onFocus, onBlur, schema, options, htmlName }) {
+  const { stars = 5, shape = "star" } = options;
+  const numStars = schema.maximum ? Math.min(schema.maximum, 5) : Math.min(Math.max(stars, 1), 5);
+  const min = schema.minimum || 0;
+  const handleStarClick = useCallback14((starValue) => {
+    if (!disabled && !readonly) {
+      onChange(starValue);
+    }
+  }, [onChange, disabled, readonly]);
+  const handleFocus = useCallback14((event) => {
+    if (onFocus) {
+      const starValue = Number(event.target.dataset.value);
+      onFocus(id, starValue);
+    }
+  }, [onFocus, id]);
+  const handleBlur = useCallback14((event) => {
+    if (onBlur) {
+      const starValue = Number(event.target.dataset.value);
+      onBlur(id, starValue);
+    }
+  }, [onBlur, id]);
+  const getSymbol = (isFilled) => {
+    if (shape === "heart") {
+      return isFilled ? "\u2665" : "\u2661";
+    }
+    return isFilled ? "\u2605" : "\u2606";
+  };
+  return _jsxs21("div", { className: "rating-widget", style: {
+    display: "inline-flex",
+    fontSize: "1.5rem",
+    cursor: disabled || readonly ? "default" : "pointer"
+  }, children: [[...Array(numStars)].map((_2, index) => {
+    const starValue = min + index;
+    const isFilled = starValue <= value;
+    return _jsx54("span", { onClick: () => handleStarClick(starValue), onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && handleStarClick(starValue), onFocus: handleFocus, onBlur: handleBlur, "data-value": starValue, tabIndex: disabled || readonly ? -1 : 0, role: "radio", "aria-checked": starValue === value, "aria-label": `${starValue} ${shape === "heart" ? "heart" : "star"}${starValue === 1 ? "" : "s"}`, style: {
+      color: isFilled ? "#FFD700" : "#ccc",
+      padding: "0 0.2rem",
+      transition: "color 0.2s",
+      userSelect: "none"
+    }, children: getSymbol(isFilled) }, index);
+  }), _jsx54("input", { type: "hidden", id, name: htmlName || id, value: value || "", required, disabled: disabled || readonly, "aria-hidden": "true" })] });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/SelectWidget.js
+import { jsx as _jsx55, jsxs as _jsxs22 } from "react/jsx-runtime";
+import { useCallback as useCallback15 } from "react";
+function getValue2(event, multiple) {
+  if (multiple) {
+    return Array.from(event.target.options).slice().filter((o2) => o2.selected).map((o2) => o2.value);
+  }
+  return event.target.value;
+}
+function SelectWidget({ schema, id, options, value, required, disabled, readonly, multiple = false, autofocus = false, onChange, onBlur, onFocus, placeholder, htmlName }) {
+  const { enumOptions, enumDisabled, emptyValue: optEmptyVal } = options;
+  const emptyValue = multiple ? [] : "";
+  const optionValueFormat = getOptionValueFormat(options);
+  const handleFocus = useCallback15((event) => {
+    const newValue = getValue2(event, multiple);
+    return onFocus(id, enumOptionValueDecoder(newValue, enumOptions, optionValueFormat, optEmptyVal));
+  }, [onFocus, id, multiple, enumOptions, optEmptyVal, optionValueFormat]);
+  const handleBlur = useCallback15((event) => {
+    const newValue = getValue2(event, multiple);
+    return onBlur(id, enumOptionValueDecoder(newValue, enumOptions, optionValueFormat, optEmptyVal));
+  }, [onBlur, id, multiple, enumOptions, optEmptyVal, optionValueFormat]);
+  const handleChange = useCallback15((event) => {
+    const newValue = getValue2(event, multiple);
+    return onChange(enumOptionValueDecoder(newValue, enumOptions, optionValueFormat, optEmptyVal));
+  }, [onChange, multiple, enumOptions, optEmptyVal, optionValueFormat]);
+  const selectValue = enumOptionSelectedValue(value, enumOptions, multiple, optionValueFormat, emptyValue);
+  const showPlaceholderOption = !multiple && schema.default === void 0;
+  return _jsxs22("select", { id, name: htmlName || id, multiple, className: "form-control", value: selectValue, required, disabled: disabled || readonly, autoFocus: autofocus, onBlur: handleBlur, onFocus: handleFocus, onChange: handleChange, "aria-describedby": ariaDescribedByIds(id), children: [showPlaceholderOption && _jsx55("option", { value: "", children: placeholder }), Array.isArray(enumOptions) && enumOptions.map(({ value: enumValue, label: enumLabel }, i2) => {
+    const isDisabled = enumDisabled && enumDisabled.includes(enumValue);
+    return _jsx55("option", { value: enumOptionValueEncoder(enumValue, i2, optionValueFormat), disabled: isDisabled, children: enumLabel }, String(enumValue));
+  })] });
+}
+var SelectWidget_default = SelectWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/TextareaWidget.js
+import { jsx as _jsx56 } from "react/jsx-runtime";
+import { useCallback as useCallback16 } from "react";
+function TextareaWidget({ id, options = {}, placeholder, value, required, disabled, readonly, autofocus = false, onChange, onBlur, onFocus, htmlName }) {
+  const handleChange = useCallback16(({ target: { value: newValue } }) => onChange(newValue === "" ? options.emptyValue : newValue), [onChange, options.emptyValue]);
+  const handleBlur = useCallback16(({ target }) => onBlur(id, target && target.value), [onBlur, id]);
+  const handleFocus = useCallback16(({ target }) => onFocus(id, target && target.value), [id, onFocus]);
+  return _jsx56("textarea", { id, name: htmlName || id, className: "form-control", value: value || "", placeholder, required, disabled, readOnly: readonly, autoFocus: autofocus, rows: options.rows, onBlur: handleBlur, onFocus: handleFocus, onChange: handleChange, "aria-describedby": ariaDescribedByIds(id) });
+}
+var TextareaWidget_default = TextareaWidget;
+
+// node_modules/@rjsf/core/lib/components/widgets/TextWidget.js
+import { jsx as _jsx57 } from "react/jsx-runtime";
+function TextWidget(props) {
+  const { options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx57(BaseInputTemplate2, { ...props });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/TimeWidget.js
+import { jsx as _jsx58 } from "react/jsx-runtime";
+import { useCallback as useCallback17 } from "react";
+function TimeWidget(props) {
+  const { onChange, options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  const handleChange = useCallback17((value) => onChange(value ? `${value}:00` : void 0), [onChange]);
+  return _jsx58(BaseInputTemplate2, { type: "time", ...props, onChange: handleChange });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/UpDownWidget.js
+import { jsx as _jsx59 } from "react/jsx-runtime";
+function UpDownWidget(props) {
+  const { options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx59(BaseInputTemplate2, { type: "number", ...props });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/URLWidget.js
+import { jsx as _jsx60 } from "react/jsx-runtime";
+function URLWidget(props) {
+  const { options, registry } = props;
+  const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
+  return _jsx60(BaseInputTemplate2, { type: "url", ...props });
+}
+
+// node_modules/@rjsf/core/lib/components/widgets/index.js
+function widgets() {
+  return {
+    AltDateWidget: AltDateWidget_default,
+    AltDateTimeWidget: AltDateTimeWidget_default,
+    CheckboxWidget: CheckboxWidget_default,
+    CheckboxesWidget: CheckboxesWidget_default,
+    ColorWidget,
+    DateWidget,
+    DateTimeWidget,
+    EmailWidget,
+    FileWidget: FileWidget_default,
+    HiddenWidget: HiddenWidget_default,
+    PasswordWidget,
+    RadioWidget: RadioWidget_default,
+    RangeWidget,
+    RatingWidget,
+    SelectWidget: SelectWidget_default,
+    TextWidget,
+    TextareaWidget: TextareaWidget_default,
+    TimeWidget,
+    UpDownWidget,
+    URLWidget
+  };
+}
+var widgets_default = widgets;
+
+// node_modules/@rjsf/core/lib/getDefaultRegistry.js
+function getDefaultRegistry() {
+  return {
+    fields: fields_default(),
+    templates: templates_default(),
+    widgets: widgets_default(),
+    rootSchema: {},
+    formContext: {},
+    translateString: englishStringTranslator,
+    globalFormOptions: {
+      idPrefix: DEFAULT_ID_PREFIX,
+      idSeparator: DEFAULT_ID_SEPARATOR,
+      useFallbackUiForUnsupportedType: false
+    }
+  };
+}
+
+// node_modules/@rjsf/core/lib/components/Form.js
+function toIChangeEvent(state, status) {
+  return {
+    ...pick_default(state, ["schema", "uiSchema", "fieldPathId", "schemaUtils", "formData", "edit", "errors", "errorSchema"]),
+    ...status !== void 0 && { status }
+  };
+}
+var Form = class _Form extends Component3 {
+  /** Constructs the `Form` from the `props`. Will setup the initial state from the props. It will also call the
+   * `onChange` handler if the initially provided `formData` is modified to add missing default values as part of the
+   * state construction.
+   *
+   * @param props - The initial props for the `Form`
+   */
+  constructor(props) {
+    super(props);
+    /** The ref used to hold the `form` element, this needs to be `any` because `tagName` or `_internalFormWrapper` can
+     * provide any possible type here
+     */
+    __publicField(this, "formElement");
+    /** The list of pending changes
+     */
+    __publicField(this, "pendingChanges", []);
+    /** Flag to track when we're processing a user-initiated field change.
+     * This prevents componentDidUpdate from reverting oneOf/anyOf option switches.
+     */
+    __publicField(this, "isProcessingUserChange", false);
+    /** Returns the `formData` with only the elements specified in the `fields` list
+     *
+     * @param formData - The data for the `Form`
+     * @param fields - The fields to keep while filtering
+     * @deprecated - To be removed as an exported `Form` function in a future release; there isn't a planned replacement
+     */
+    // oxlint-disable-next-line class-methods-use-this, typescript/no-deprecated
+    __publicField(this, "getUsedFormData", (formData, fields2) => getUsedFormData(formData, fields2));
+    /** Returns the list of field names from inspecting the `pathSchema` as well as using the `formData`
+     *
+     * @param pathSchema - The `PathSchema` object for the form
+     * @param [formData] - The form data to use while checking for empty objects/arrays
+     * @deprecated - To be removed as an exported `Form` function in a future release; there isn't a planned replacement
+     */
+    // oxlint-disable-next-line class-methods-use-this, typescript/no-deprecated
+    __publicField(this, "getFieldNames", (pathSchema, formData) => getFieldNames(pathSchema, formData));
+    /** Returns the `formData` after filtering to remove any extra data not in a form field
+     *
+     * @param formData - The data for the `Form`
+     * @returns The `formData` after omitting extra data
+     * @deprecated - To be removed as an exported `Form` function in a future release, use `SchemaUtils.omitExtraData`
+     *               instead.
+     */
+    __publicField(this, "omitExtraData", (formData) => {
+      const { schema, schemaUtils } = this.state;
+      return schemaUtils.omitExtraData(schema, formData);
+    });
+    /** Allows a user to set a value for the provided `fieldPath`, which must be either a dotted path to the field OR a
+     * `FieldPathList`. To set the root element, used either `''` or `[]` for the path. Passing undefined will clear the
+     * value in the field.
+     *
+     * @param fieldPath - Either a dotted path to the field or the `FieldPathList` to the field
+     * @param [newValue] - The new value for the field
+     */
+    __publicField(this, "setFieldValue", (fieldPath, newValue) => {
+      const { registry } = this.state;
+      const path = Array.isArray(fieldPath) ? fieldPath : fieldPath.split(".");
+      const fieldPathId = toFieldPathId("", registry.globalFormOptions, path);
+      this.onChange(newValue, path, void 0, fieldPathId[ID_KEY]);
+    });
+    /** Pushes the given change information into the `pendingChanges` array and then calls `processPendingChanges()` if
+     * the array only contains a single pending change.
+     *
+     * @param newValue - The new form data from a change to a field
+     * @param path - The path to the change into which to set the formData
+     * @param [newErrorSchema] - The new `ErrorSchema` based on the field change
+     * @param [id] - The id of the field that caused the change
+     */
+    __publicField(this, "onChange", (newValue, path, newErrorSchema, id) => {
+      this.pendingChanges.push({ newValue, path, newErrorSchema, id });
+      if (this.pendingChanges.length === 1) {
+        this.processPendingChange();
+      }
+    });
+    /**
+     * Callback function to handle reset form data.
+     * - Reset all fields with default values.
+     * - Reset validations and errors
+     *
+     */
+    __publicField(this, "reset", () => {
+      const { formData: propsFormData, initialFormData = IS_RESET, onChange } = this.props;
+      const newState = this.getStateFromProps(this.props, propsFormData ?? initialFormData, void 0, void 0, void 0, true);
+      const newFormData = newState.formData;
+      const state = {
+        formData: newFormData,
+        errorSchema: {},
+        errors: [],
+        schemaValidationErrors: [],
+        schemaValidationErrorSchema: {},
+        initialDefaultsGenerated: false,
+        customErrors: void 0
+      };
+      this.setState(state, () => onChange && onChange(toIChangeEvent({ ...this.state, ...state })));
+    });
+    /** Callback function to handle when a field on the form is blurred. Calls the `onBlur` callback for the `Form` if it
+     * was provided. Also runs any live validation and/or live omit operations if the flags indicate they should happen
+     * during `onBlur`.
+     *
+     * @param id - The unique `id` of the field that was blurred
+     * @param data - The data associated with the field that was blurred
+     */
+    __publicField(this, "onBlur", (id, data) => {
+      const { onBlur, omitExtraData: omitExtraData2, liveOmit, liveValidate } = this.props;
+      if (onBlur) {
+        onBlur(id, data);
+      }
+      if (omitExtraData2 === true && liveOmit === "onBlur" || liveValidate === "onBlur") {
+        const { onChange, extraErrors } = this.props;
+        const { formData } = this.state;
+        let newFormData = formData;
+        let state = { formData: newFormData };
+        if (omitExtraData2 === true && liveOmit === "onBlur") {
+          newFormData = this.omitExtraData(formData);
+          state = { formData: newFormData };
+        }
+        if (liveValidate === "onBlur") {
+          const { schema, schemaUtils, errorSchema, customErrors, retrievedSchema } = this.state;
+          const liveValidation = this.liveValidate(schema, schemaUtils, errorSchema, newFormData, extraErrors, customErrors, retrievedSchema);
+          state = { formData: newFormData, ...liveValidation, customErrors };
+        }
+        const hasChanges = Object.keys(state).filter((key) => !key.startsWith("schemaValidation")).some((key) => {
+          const oldData = get_default(this.state, key);
+          const newData = get_default(state, key);
+          return !deepEquals_default(oldData, newData);
+        });
+        this.setState(state, () => {
+          if (onChange && hasChanges) {
+            onChange(toIChangeEvent({ ...this.state, ...state }), id);
+          }
+        });
+      }
+    });
+    /** Callback function to handle when a field on the form is focused. Calls the `onFocus` callback for the `Form` if it
+     * was provided.
+     *
+     * @param id - The unique `id` of the field that was focused
+     * @param data - The data associated with the field that was focused
+     */
+    __publicField(this, "onFocus", (id, data) => {
+      const { onFocus } = this.props;
+      if (onFocus) {
+        onFocus(id, data);
+      }
+    });
+    /** Callback function to handle when the form is submitted. First, it prevents the default event behavior. Nothing
+     * happens if the target and currentTarget of the event are not the same. It will omit any extra data in the
+     * `formData` in the state if `omitExtraData` is true. It will validate the resulting `formData`, reporting errors
+     * via the `onError()` callback unless validation is disabled. Finally, it will add in any `extraErrors` and then call
+     * back the `onSubmit` callback if it was provided.
+     *
+     * @param event - The submit HTML form event
+     */
+    __publicField(this, "onSubmit", (event) => {
+      event.preventDefault();
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+      event.persist();
+      const { omitExtraData: omitExtraData2, extraErrors, noValidate, onSubmit } = this.props;
+      let { formData: newFormData } = this.state;
+      if (omitExtraData2 === true) {
+        newFormData = this.omitExtraData(newFormData);
+      }
+      if (noValidate || this.validateFormWithFormData(newFormData)) {
+        const errorSchema = extraErrors || {};
+        const errors = extraErrors ? toErrorList(extraErrors) : [];
+        this.setState({
+          formData: newFormData,
+          errors,
+          errorSchema,
+          schemaValidationErrors: [],
+          schemaValidationErrorSchema: {}
+        }, () => {
+          if (onSubmit) {
+            onSubmit(toIChangeEvent({ ...this.state, formData: newFormData }, "submitted"), event);
+          }
+        });
+      }
+    });
+    /** Provides a function that can be used to programmatically submit the `Form` */
+    __publicField(this, "submit", () => {
+      if (this.formElement.current) {
+        const submitCustomEvent = new CustomEvent("submit", {
+          cancelable: true
+        });
+        submitCustomEvent.preventDefault();
+        this.formElement.current.dispatchEvent(submitCustomEvent);
+        this.formElement.current.requestSubmit();
+      }
+    });
+    /** Validates the form using the given `formData`. For use on form submission or on programmatic validation.
+     * If `onError` is provided, then it will be called with the list of errors.
+     *
+     * @param formData - The form data to validate
+     * @returns - True if the form is valid, false otherwise.
+     */
+    __publicField(this, "validateFormWithFormData", (formData) => {
+      const { extraErrors, extraErrorsBlockSubmit, focusOnFirstError, onError } = this.props;
+      const { errors: prevErrors } = this.state;
+      const schemaValidation = this.validate(formData);
+      const { errors, errorSchema } = extraErrors ? _Form.mergeErrors(schemaValidation, extraErrors) : schemaValidation;
+      const hasError = schemaValidation.errors.length > 0 || extraErrors && extraErrorsBlockSubmit;
+      if (hasError) {
+        if (focusOnFirstError) {
+          if (typeof focusOnFirstError === "function") {
+            focusOnFirstError(errors[0]);
+          } else {
+            this.focusOnError(errors[0]);
+          }
+        }
+        this.setState({
+          errors,
+          errorSchema,
+          schemaValidationErrors: schemaValidation.errors,
+          schemaValidationErrorSchema: schemaValidation.errorSchema
+        }, () => {
+          if (onError) {
+            onError(errors);
+          } else {
+            console.error("Form validation failed", errors);
+          }
+        });
+      } else if (errors.length > 0) {
+        this.setState({
+          errors,
+          errorSchema,
+          schemaValidationErrors: [],
+          schemaValidationErrorSchema: {}
+        });
+      } else if (prevErrors.length > 0) {
+        this.setState({
+          errors: [],
+          errorSchema: {},
+          schemaValidationErrors: [],
+          schemaValidationErrorSchema: {}
+        });
+      }
+      return !hasError;
+    });
+    if (!props.validator) {
+      throw new Error("A validator is required for Form functionality to work");
+    }
+    const { formData: propsFormData, initialFormData, onChange } = props;
+    const formData = propsFormData ?? initialFormData;
+    this.state = {
+      ...this.getStateFromProps(props, formData, void 0, void 0, void 0, true),
+      prevExtraErrors: props.extraErrors
+    };
+    if (onChange && !deepEquals_default(this.state.formData, formData)) {
+      onChange(toIChangeEvent(this.state));
+    }
+    this.formElement = createRef();
+  }
+  /** When the `extraErrors` prop changes, re-merges `schemaValidationErrors` + `extraErrors` + `customErrors` into
+   * state before render, ensuring the updated errors are visible immediately in a single render cycle.
+   *
+   * @param props - The current props
+   * @param state - The current state
+   * @returns Partial state with re-merged errors if `extraErrors` changed, or `null` if no update is needed
+   */
+  static getDerivedStateFromProps(props, state) {
+    if (props.extraErrors !== state.prevExtraErrors) {
+      const baseErrors = {
+        errors: state.schemaValidationErrors || [],
+        errorSchema: state.schemaValidationErrorSchema || {}
+      };
+      let { errors, errorSchema } = baseErrors;
+      if (props.extraErrors) {
+        ({ errors, errorSchema } = validationDataMerge(baseErrors, props.extraErrors));
+      }
+      if (state.customErrors) {
+        ({ errors, errorSchema } = validationDataMerge({ errors, errorSchema }, state.customErrors.ErrorSchema, true));
+      }
+      return { prevExtraErrors: props.extraErrors, errors, errorSchema };
+    }
+    return null;
+  }
+  /**
+   * `getSnapshotBeforeUpdate` is a React lifecycle method that is invoked right before the most recently rendered
+   * output is committed to the DOM. It enables your component to capture current values (e.g., scroll position) before
+   * they are potentially changed.
+   *
+   * In this case, it checks if the props have changed since the last render. If they have, it computes the next state
+   * of the component using `getStateFromProps` method and returns it along with a `shouldUpdate` flag set to `true` IF
+   * the `nextState` and `prevState` are different, otherwise `false`. This ensures that we have the most up-to-date
+   * state ready to be applied in `componentDidUpdate`.
+   *
+   * If `formData` hasn't changed, it simply returns an object with `shouldUpdate` set to `false`, indicating that a
+   * state update is not necessary.
+   *
+   * @param prevProps - The previous set of props before the update.
+   * @param prevState - The previous state before the update.
+   * @returns Either an object containing the next state and a flag indicating that an update should occur, or an object
+   *        with a flag indicating that an update is not necessary.
+   */
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    if (!deepEquals_default(this.props, prevProps)) {
+      const formDataChangedFields = getChangedFields(this.props.formData, prevProps.formData);
+      const stateDataChangedFields = getChangedFields(this.props.formData, this.state.formData);
+      const isSchemaChanged = !deepEquals_default(prevProps.schema, this.props.schema);
+      const isFormDataChanged = formDataChangedFields.length > 0 || !deepEquals_default(prevProps.formData, this.props.formData);
+      const isStateDataChanged = stateDataChangedFields.length > 0 || !deepEquals_default(this.state.formData, this.props.formData);
+      const nextState = this.getStateFromProps(
+        this.props,
+        this.props.formData,
+        // If the `schema` has changed, we need to update the retrieved schema.
+        // Or if the `formData` changes, for example in the case of a schema with dependencies that need to
+        //  match one of the subSchemas, the retrieved schema must be updated.
+        isSchemaChanged || isFormDataChanged ? void 0 : this.state.retrievedSchema,
+        isSchemaChanged,
+        formDataChangedFields,
+        // Skip live validation for this request if no form data has changed from the last state
+        !isStateDataChanged
+      );
+      const shouldUpdate = !deepEquals_default(nextState, prevState);
+      return { nextState, shouldUpdate };
+    }
+    return { shouldUpdate: false };
+  }
+  /**
+   * `componentDidUpdate` is a React lifecycle method that is invoked immediately after updating occurs. This method is
+   * not called for the initial render.
+   *
+   * Here, it checks if an update is necessary based on the `shouldUpdate` flag received from `getSnapshotBeforeUpdate`.
+   * If an update is required, it applies the next state and, if needed, triggers the `onChange` handler to inform about
+   * changes.
+   *
+   * @param _ - The previous set of props.
+   * @param prevState - The previous state of the component before the update.
+   * @param snapshot - The value returned from `getSnapshotBeforeUpdate`.
+   */
+  componentDidUpdate(_2, prevState, snapshot) {
+    if (snapshot.shouldUpdate) {
+      const { nextState } = snapshot;
+      const nextStateDiffersFromProps = !deepEquals_default(nextState.formData, this.props.formData);
+      const wasProcessingUserChange = this.isProcessingUserChange;
+      this.isProcessingUserChange = false;
+      if (wasProcessingUserChange && nextStateDiffersFromProps) {
+        return;
+      }
+      if (nextStateDiffersFromProps && !deepEquals_default(nextState.formData, prevState.formData) && this.props.onChange) {
+        this.props.onChange(toIChangeEvent(nextState));
+      }
+      this.setState(nextState);
+    }
+  }
+  /** Extracts the updated state from the given `props` and `inputFormData`. As part of this process, the
+   * `inputFormData` is first processed to add any missing required defaults. After that, the data is run through the
+   * validation process IF required by the `props`.
+   *
+   * @param props - The props passed to the `Form`
+   * @param inputFormData - The new or current data for the `Form`
+   * @param retrievedSchema - An expanded schema, if not provided, it will be retrieved from the `schema` and `formData`.
+   * @param [isSchemaChanged=false] - A flag indicating whether the schema has changed.
+   * @param [formDataChangedFields=[]] - The changed fields of `formData`
+   * @param [skipLiveValidate=false] - Optional flag, if true, means that we are not running live validation
+   * @param [shouldSanitize=false] - Optional flag, if true, means that we should attempt to sanitize formData
+   * @returns - The new state for the `Form`
+   */
+  getStateFromProps(props, inputFormData, retrievedSchema, isSchemaChanged = false, formDataChangedFields = [], skipLiveValidate = false, shouldSanitize = false) {
+    const state = this.state || {};
+    const schema = "schema" in props ? props.schema : this.props.schema;
+    const validator = "validator" in props ? props.validator : this.props.validator;
+    const uiSchema = ("uiSchema" in props ? props.uiSchema : this.props.uiSchema) || {};
+    const isUncontrolled = props.formData === void 0 && this.props.formData === void 0;
+    const edit = typeof inputFormData !== "undefined";
+    const liveValidate = "liveValidate" in props ? props.liveValidate : this.props.liveValidate;
+    const mustValidate = edit && !props.noValidate && liveValidate;
+    const experimental_defaultFormStateBehavior = "experimental_defaultFormStateBehavior" in props ? props.experimental_defaultFormStateBehavior : this.props.experimental_defaultFormStateBehavior;
+    const experimental_customMergeAllOf = "experimental_customMergeAllOf" in props ? props.experimental_customMergeAllOf : this.props.experimental_customMergeAllOf;
+    let { schemaUtils } = state;
+    if (!schemaUtils || schemaUtils.doesSchemaUtilsDiffer(validator, schema, experimental_defaultFormStateBehavior, experimental_customMergeAllOf)) {
+      schemaUtils = createSchemaUtils(validator, schema, experimental_defaultFormStateBehavior, experimental_customMergeAllOf);
+    }
+    const rootSchema = schemaUtils.getRootSchema();
+    let defaultsFormData = inputFormData;
+    if (inputFormData === IS_RESET) {
+      defaultsFormData = void 0;
+    } else if (inputFormData === void 0 && isUncontrolled) {
+      defaultsFormData = state.formData;
+    }
+    let formData;
+    let computedRetrievedSchema;
+    let wasSanitized = false;
+    const preventInfiniteSanitize = [];
+    do {
+      formData = schemaUtils.getDefaultFormState(rootSchema, defaultsFormData, false, state.initialDefaultsGenerated);
+      const formHash = shouldSanitize ? hashObject({ formData }) : "";
+      computedRetrievedSchema = this.updateRetrievedSchema(retrievedSchema ?? schemaUtils.retrieveSchema(rootSchema, formData));
+      if (shouldSanitize && !preventInfiniteSanitize.includes(formHash) && !deepEquals_default(computedRetrievedSchema, state.retrievedSchema)) {
+        const sanitizedFormData = schemaUtils.sanitizeDataForNewSchema(computedRetrievedSchema, state.retrievedSchema, formData);
+        wasSanitized = !deepEquals_default(sanitizedFormData, formData);
+        if (wasSanitized) {
+          formData = sanitizedFormData;
+          defaultsFormData = sanitizedFormData;
+          const sanitizedFormHash = hashObject({ formData: sanitizedFormData });
+          wasSanitized = !preventInfiniteSanitize.includes(sanitizedFormHash);
+          preventInfiniteSanitize.push(sanitizedFormHash);
+        }
+        preventInfiniteSanitize.push(formHash);
+      } else {
+        wasSanitized = false;
+      }
+    } while (wasSanitized);
+    const getCurrentErrors = () => {
+      if (props.noValidate || isSchemaChanged) {
+        return { errors: [], errorSchema: {} };
+      }
+      if (!props.liveValidate) {
+        return {
+          errors: state.schemaValidationErrors || [],
+          errorSchema: state.schemaValidationErrorSchema || {}
+        };
+      }
+      return {
+        errors: state.errors || [],
+        errorSchema: state.errorSchema || {}
+      };
+    };
+    let errors;
+    let errorSchema;
+    let { schemaValidationErrors, schemaValidationErrorSchema } = state;
+    if (mustValidate && !skipLiveValidate) {
+      const liveValidation = this.liveValidate(
+        rootSchema,
+        schemaUtils,
+        state.errorSchema,
+        formData,
+        void 0,
+        state.customErrors,
+        retrievedSchema,
+        // If retrievedSchema is undefined which means the schema or formData has changed, we do not merge state.
+        // Else in the case where it hasn't changed,
+        retrievedSchema !== void 0
+      );
+      errors = liveValidation.errors;
+      errorSchema = liveValidation.errorSchema;
+      schemaValidationErrors = liveValidation.schemaValidationErrors;
+      schemaValidationErrorSchema = liveValidation.schemaValidationErrorSchema;
+    } else {
+      const currentErrors = getCurrentErrors();
+      errors = currentErrors.errors;
+      errorSchema = currentErrors.errorSchema;
+      if (formDataChangedFields.length > 0 && !mustValidate) {
+        const newErrorSchema = formDataChangedFields.reduce((acc, key) => {
+          acc[key] = void 0;
+          return acc;
+        }, {});
+        schemaValidationErrorSchema = mergeObjects(currentErrors.errorSchema, newErrorSchema, "preventDuplicates");
+        errorSchema = schemaValidationErrorSchema;
+      }
+      const mergedErrors = _Form.mergeErrors({ errorSchema, errors }, props.extraErrors, state.customErrors);
+      errors = mergedErrors.errors;
+      errorSchema = mergedErrors.errorSchema;
+    }
+    const newRegistry = _Form.getRegistry(props, rootSchema, schemaUtils);
+    const registry = deepEquals_default(state.registry, newRegistry) ? state.registry : newRegistry;
+    const fieldPathId = state.fieldPathId && state.fieldPathId?.[ID_KEY] === registry.globalFormOptions.idPrefix ? state.fieldPathId : toFieldPathId("", registry.globalFormOptions);
+    const nextState = {
+      schemaUtils,
+      schema: rootSchema,
+      uiSchema,
+      fieldPathId,
+      formData,
+      edit,
+      errors,
+      errorSchema,
+      schemaValidationErrors,
+      schemaValidationErrorSchema,
+      retrievedSchema: computedRetrievedSchema,
+      initialDefaultsGenerated: true,
+      registry
+    };
+    return nextState;
+  }
+  /** React lifecycle method that is used to determine whether component should be updated.
+   *
+   * @param nextProps - The next version of the props
+   * @param nextState - The next version of the state
+   * @returns - True if the component should be updated, false otherwise
+   */
+  shouldComponentUpdate(nextProps, nextState) {
+    const { experimental_componentUpdateStrategy = "customDeep" } = this.props;
+    return shouldRender(this, nextProps, nextState, experimental_componentUpdateStrategy);
+  }
+  /** Validates the `formData` against the `schema` using the `altSchemaUtils` (if provided otherwise it uses the
+   * `schemaUtils` in the state), returning the results.
+   *
+   * @param formData - The new form data to validate
+   * @param schema - The schema used to validate against
+   * @param [altSchemaUtils] - The alternate schemaUtils to use for validation
+   * @param [retrievedSchema] - An optionally retrieved schema for per
+   */
+  validate(formData, schema = this.state.schema, altSchemaUtils, retrievedSchema) {
+    const schemaUtils = altSchemaUtils || this.state.schemaUtils;
+    const { customValidate, transformErrors, uiSchema } = this.props;
+    const validationSchema = retrievedSchema ?? schema;
+    return schemaUtils.getValidator().validateFormData(formData, validationSchema, customValidate, transformErrors, uiSchema);
+  }
+  /** Renders any errors contained in the `state` in using the `ErrorList`, if not disabled by `showErrorList`. */
+  renderErrors(registry) {
+    const { errors, errorSchema, schema, uiSchema } = this.state;
+    const options = getUiOptions(uiSchema);
+    const ErrorListTemplate = getTemplate("ErrorListTemplate", registry, options);
+    if (errors && errors.length) {
+      return _jsx61(ErrorListTemplate, { errors, errorSchema: errorSchema || {}, schema, uiSchema, registry });
+    }
+    return null;
+  }
+  /** Merges any `extraErrors` or `customErrors` into the given `schemaValidation` object, returning the result
+   *
+   * @param schemaValidation - The `ValidationData` object into which additional errors are merged
+   * @param [extraErrors] - The extra errors from the props
+   * @param [customErrors] - The customErrors from custom components
+   * @return - The `extraErrors` and `customErrors` merged into the `schemaValidation`
+   * @private
+   */
+  static mergeErrors(schemaValidation, extraErrors, customErrors) {
+    let { errorSchema, errors } = schemaValidation;
+    if (extraErrors) {
+      const merged = validationDataMerge(schemaValidation, extraErrors);
+      errorSchema = merged.errorSchema;
+      errors = merged.errors;
+    }
+    if (customErrors) {
+      const merged = validationDataMerge({ errors, errorSchema }, customErrors.ErrorSchema, true);
+      errorSchema = merged.errorSchema;
+      errors = merged.errors;
+    }
+    return { errors, errorSchema };
+  }
+  /** Performs live validation and then updates and returns the errors and error schemas by potentially merging in
+   * `extraErrors` and `customErrors`.
+   *
+   * @param rootSchema - The `rootSchema` from the state
+   * @param schemaUtils - The `SchemaUtilsType` from the state
+   * @param originalErrorSchema - The original `ErrorSchema` from the state
+   * @param [formData] - The new form data to validate
+   * @param [extraErrors] - The extra errors from the props
+   * @param [customErrors] - The customErrors from custom components
+   * @param [retrievedSchema] - An expanded schema, if not provided, it will be retrieved from the `schema` and `formData`
+   * @param [mergeIntoOriginalErrorSchema=false] - Optional flag indicating whether we merge into original schema
+   * @returns - An object containing `errorSchema`, `errors`, `schemaValidationErrors` and `schemaValidationErrorSchema`
+   * @private
+   */
+  liveValidate(rootSchema, schemaUtils, originalErrorSchema, formData, extraErrors, customErrors, retrievedSchema, mergeIntoOriginalErrorSchema = false) {
+    const schemaValidation = this.validate(formData, rootSchema, schemaUtils, retrievedSchema);
+    const { errors } = schemaValidation;
+    let { errorSchema } = schemaValidation;
+    if (mergeIntoOriginalErrorSchema) {
+      errorSchema = mergeObjects(originalErrorSchema, schemaValidation.errorSchema, "preventDuplicates");
+    }
+    const schemaValidationErrors = errors;
+    const schemaValidationErrorSchema = errorSchema;
+    const mergedErrors = _Form.mergeErrors({ errorSchema, errors }, extraErrors, customErrors);
+    return { ...mergedErrors, schemaValidationErrors, schemaValidationErrorSchema };
+  }
+  /** Function to handle changes made to a field in the `Form`. This handler gets the first change from the
+   * `pendingChanges` list, containing the `newValue` for the `formData` and the `path` at which the `newValue` is to be
+   * updated, along with a new, optional `ErrorSchema` for that same `path` and potentially the `id` of the field being
+   * changed. It will first update the `formData` with any missing default fields and then, if `omitExtraData` and
+   * `liveOmit` are turned on, the `formData` will be filtered to remove any extra data not in a form field. Then, the
+   * resulting `formData` will be validated if required. The state will be updated with the new updated (potentially
+   * filtered) `formData`, any errors that resulted from validation. Finally the `onChange` callback will be called, if
+   * specified, with the updated state and the `processPendingChange()` function is called again.
+   */
+  processPendingChange() {
+    if (this.pendingChanges.length === 0) {
+      return;
+    }
+    this.isProcessingUserChange = true;
+    const { newValue, path, id } = this.pendingChanges[0];
+    const { newErrorSchema } = this.pendingChanges[0];
+    const { extraErrors, omitExtraData: omitExtraData2, liveOmit, noValidate, liveValidate, onChange, disabled, readonly } = this.props;
+    const { formData: oldFormData, schemaUtils, schema, fieldPathId, schemaValidationErrorSchema, errors } = this.state;
+    let { customErrors, retrievedSchema } = this.state;
+    let mergeBaseErrorSchema = schemaValidationErrorSchema;
+    const rootPathId = fieldPathId.path[0] || "";
+    const isRootPath = !path || path.length === 0 || path.length === 1 && path[0] === rootPathId;
+    let formData = isRootPath ? newValue : cloneDeep_default(oldFormData);
+    const hasOnlyUndefinedValues = isObject(formData) && Object.keys(formData).length > 0 && Object.values(formData).every((v3) => v3 === void 0);
+    const wasPreviouslyNull = oldFormData === null || oldFormData === void 0;
+    const inputForDefaults = hasOnlyUndefinedValues && wasPreviouslyNull ? void 0 : formData;
+    if (isObject(formData) || Array.isArray(formData)) {
+      if (newValue === ADDITIONAL_PROPERTY_KEY_REMOVE) {
+        unset_default(formData, path);
+      } else if (!isRootPath) {
+        let unsetPath = false;
+        let valueForPath = newValue;
+        if (newValue === void 0) {
+          const lastSegment = path[path.length - 1];
+          if (typeof lastSegment === "number") {
+            valueForPath = null;
+          } else {
+            const { field } = schemaUtils.findFieldInSchema(schema, path, oldFormData);
+            const leaf = field;
+            const isOneOfOrAnyOfLeaf = leaf && (ONE_OF_KEY in leaf || ANY_OF_KEY in leaf);
+            if (!isOneOfOrAnyOfLeaf && leaf !== void 0) {
+              unsetPath = true;
+            }
+          }
+        }
+        if (unsetPath) {
+          unset_default(formData, path);
+        } else {
+          set_default(formData, path, valueForPath);
+        }
+      }
+      const shouldSanitize = retrievedSchema && !isRootPath && !isObject(newValue) && !Array.isArray(newValue) && !disabled && !readonly;
+      const newState = this.getStateFromProps(this.props, inputForDefaults, void 0, void 0, void 0, true, shouldSanitize);
+      formData = newState.formData;
+      retrievedSchema = newState.retrievedSchema;
+    }
+    const mustValidate = !noValidate && (liveValidate === true || liveValidate === "onChange");
+    let state = { formData, retrievedSchema };
+    let newFormData = formData;
+    if (omitExtraData2 === true && (liveOmit === true || liveOmit === "onChange")) {
+      newFormData = this.omitExtraData(formData);
+      state = { ...state, formData: newFormData };
+    }
+    if (newErrorSchema) {
+      const oldValidationError = !isRootPath ? get_default(schemaValidationErrorSchema, path) : schemaValidationErrorSchema;
+      if (!isEmpty_default(oldValidationError)) {
+        if (!isRootPath) {
+          mergeBaseErrorSchema = cloneDeep_default(schemaValidationErrorSchema);
+          set_default(mergeBaseErrorSchema, path, newErrorSchema);
+        } else {
+          mergeBaseErrorSchema = newErrorSchema;
+        }
+      } else {
+        if (!customErrors) {
+          customErrors = new ErrorSchemaBuilder();
+        }
+        if (isRootPath) {
+          const pathErrors = get_default(newErrorSchema, ERRORS_KEY);
+          if (pathErrors) {
+            customErrors.setErrors(pathErrors);
+          }
+        } else {
+          set_default(customErrors.ErrorSchema, path, newErrorSchema);
+        }
+      }
+    } else if (customErrors && get_default(customErrors.ErrorSchema, [...path, ERRORS_KEY])) {
+      customErrors.clearErrors(path);
+    }
+    if (mustValidate && this.pendingChanges.length === 1) {
+      const liveValidation = this.liveValidate(schema, schemaUtils, mergeBaseErrorSchema, newFormData, extraErrors, customErrors, retrievedSchema);
+      state = { ...state, formData: newFormData, ...liveValidation, customErrors };
+    } else if (!noValidate && newErrorSchema) {
+      const mergedErrors = _Form.mergeErrors({ errorSchema: mergeBaseErrorSchema, errors }, extraErrors, customErrors);
+      state = { ...state, formData: newFormData, ...mergedErrors, customErrors };
+    }
+    this.setState(state, () => {
+      if (onChange) {
+        onChange(toIChangeEvent({ ...this.state, ...state }), id);
+      }
+      this.pendingChanges.shift();
+      this.processPendingChange();
+    });
+  }
+  /**
+   * If the retrievedSchema has changed the new retrievedSchema is returned.
+   * Otherwise, the old retrievedSchema is returned to persist reference.
+   * -  This ensures that AJV retrieves the schema from the cache when it has not changed,
+   *    avoiding the performance cost of recompiling the schema.
+   *
+   * @param retrievedSchema The new retrieved schema.
+   * @returns The new retrieved schema if it has changed, else the old retrieved schema.
+   */
+  updateRetrievedSchema(retrievedSchema) {
+    const isTheSame = deepEquals_default(retrievedSchema, this.state?.retrievedSchema);
+    return isTheSame ? this.state.retrievedSchema : retrievedSchema;
+  }
+  /** Extracts the `GlobalFormOptions` from the given Form `props`
+   *
+   * @param props - The form props to extract the global form options from
+   * @returns - The `GlobalFormOptions` from the props
+   * @private
+   */
+  static getGlobalFormOptions(props) {
+    const { uiSchema = {}, experimental_componentUpdateStrategy, idSeparator = DEFAULT_ID_SEPARATOR, idPrefix = DEFAULT_ID_PREFIX, nameGenerator, useFallbackUiForUnsupportedType = false } = props;
+    const rootFieldId = uiSchema["ui:rootFieldId"];
+    return {
+      idPrefix: rootFieldId || idPrefix,
+      idSeparator,
+      useFallbackUiForUnsupportedType,
+      ...experimental_componentUpdateStrategy !== void 0 && { experimental_componentUpdateStrategy },
+      ...nameGenerator !== void 0 && { nameGenerator }
+    };
+  }
+  /** Computed the registry for the form using the given `props`, `schema` and `schemaUtils` */
+  static getRegistry(props, schema, schemaUtils) {
+    const { translateString: customTranslateString, uiSchema = {} } = props;
+    const { fields: fields2, templates: templates2, widgets: widgets2, formContext, translateString } = getDefaultRegistry();
+    return {
+      fields: { ...fields2, ...props.fields },
+      templates: {
+        ...templates2,
+        ...props.templates,
+        ButtonTemplates: {
+          ...templates2.ButtonTemplates,
+          ...props.templates?.ButtonTemplates
+        }
+      },
+      widgets: { ...widgets2, ...props.widgets },
+      rootSchema: schema,
+      formContext: props.formContext || formContext,
+      schemaUtils,
+      translateString: customTranslateString || translateString,
+      globalUiOptions: uiSchema[UI_GLOBAL_OPTIONS_KEY],
+      globalFormOptions: _Form.getGlobalFormOptions(props),
+      uiSchemaDefinitions: uiSchema[UI_DEFINITIONS_KEY] ?? {}
+    };
+  }
+  /** Attempts to focus on the field associated with the `error`. Uses the `property` field to compute path of the error
+   * field, then, using the `idPrefix` and `idSeparator` converts that path into an id. Then the input element with that
+   * id is attempted to be found using the `formElement` ref. If it is located, then it is focused.
+   *
+   * @param error - The error on which to focus
+   */
+  focusOnError(error) {
+    const { idPrefix = "root", idSeparator = "_" } = this.props;
+    const { property: property2 } = error;
+    const path = toPath_default(property2);
+    if (path[0] === "") {
+      path[0] = idPrefix;
+    } else {
+      path.unshift(idPrefix);
+    }
+    const elementId = path.join(idSeparator);
+    let field = this.formElement.current.elements[elementId];
+    if (!field) {
+      field = this.formElement.current.querySelector(`input[id^="${elementId}"], button[id^="${elementId}"]`);
+    }
+    if (field && field.length) {
+      field = field[0];
+    }
+    if (field) {
+      field.focus();
+    }
+  }
+  /** Programmatically validate the form.  If `omitExtraData` is true, the `formData` will first be filtered to remove
+   * any extra data not in a form field. If `onError` is provided, then it will be called with the list of errors the
+   * same way as would happen on form submission.
+   *
+   * @returns - True if the form is valid, false otherwise.
+   */
+  validateForm() {
+    const { omitExtraData: omitExtraData2 } = this.props;
+    let { formData: newFormData } = this.state;
+    if (omitExtraData2 === true) {
+      newFormData = this.omitExtraData(newFormData);
+    }
+    return this.validateFormWithFormData(newFormData);
+  }
+  /** Renders the `Form` fields inside the <form> | `tagName` or `_internalFormWrapper`, rendering any errors if
+   * needed along with the submit button or any children of the form.
+   */
+  render() {
+    const { children, id, className = "", tagName, name, method, target, action, autoComplete, enctype, acceptCharset, noHtml5Validate = false, disabled, readonly, showErrorList = "top", _internalFormWrapper } = this.props;
+    const { schema, uiSchema, formData, errorSchema, fieldPathId, registry } = this.state;
+    const { SchemaField: SchemaFieldComponent } = registry.fields;
+    const { SubmitButton: SubmitButton2 } = registry.templates.ButtonTemplates;
+    const as = _internalFormWrapper ? tagName : void 0;
+    const FormTag = _internalFormWrapper || tagName || "form";
+    let { [SUBMIT_BTN_OPTIONS_KEY]: submitOptions = {} } = getUiOptions(uiSchema);
+    if (disabled) {
+      submitOptions = { ...submitOptions, props: { ...submitOptions.props, disabled: true } };
+    }
+    const submitUiSchema = { [UI_OPTIONS_KEY]: { [SUBMIT_BTN_OPTIONS_KEY]: submitOptions } };
+    return _jsxs23(FormTag, { className: className || "rjsf", id, name, method, target, action, autoComplete, encType: enctype, acceptCharset, noValidate: noHtml5Validate, onSubmit: this.onSubmit, as, ref: this.formElement, children: [showErrorList === "top" && this.renderErrors(registry), _jsx61(SchemaFieldComponent, { name: "", schema, uiSchema, errorSchema, fieldPathId, formData, onChange: this.onChange, onBlur: this.onBlur, onFocus: this.onFocus, registry, disabled, readonly }), children || _jsx61(SubmitButton2, { uiSchema: submitUiSchema, registry }), showErrorList === "bottom" && this.renderErrors(registry)] });
+  }
+};
+
+// node_modules/@rjsf/validator-ajv8/lib/processRawValidationErrors.js
+function filterDuplicateErrors(errorList, suppressDuplicateFiltering = "none") {
+  if (suppressDuplicateFiltering === "all") {
+    return errorList;
+  }
+  return errorList.reduce((acc, err) => {
+    const { message, schemaPath } = err;
+    const anyOfIndex = suppressDuplicateFiltering !== "anyOf" ? schemaPath === null || schemaPath === void 0 ? void 0 : schemaPath.indexOf(`/${ANY_OF_KEY}/`) : void 0;
+    const oneOfIndex = suppressDuplicateFiltering !== "oneOf" ? schemaPath === null || schemaPath === void 0 ? void 0 : schemaPath.indexOf(`/${ONE_OF_KEY}/`) : void 0;
+    let schemaPrefix;
+    if (anyOfIndex && anyOfIndex >= 0) {
+      schemaPrefix = schemaPath === null || schemaPath === void 0 ? void 0 : schemaPath.substring(0, anyOfIndex);
+    } else if (oneOfIndex && oneOfIndex >= 0) {
+      schemaPrefix = schemaPath === null || schemaPath === void 0 ? void 0 : schemaPath.substring(0, oneOfIndex);
+    }
+    const dup = schemaPrefix ? acc.find((e) => {
+      var _a;
+      return e.message === message && ((_a = e.schemaPath) === null || _a === void 0 ? void 0 : _a.startsWith(schemaPrefix));
+    }) : void 0;
+    if (!dup) {
+      acc.push(err);
+    }
+    return acc;
+  }, []);
+}
+function transformRJSFValidationErrors(errors = [], uiSchema, suppressDuplicateFiltering) {
+  const errorList = errors.map((e) => {
+    var _a;
+    const { instancePath, keyword, params, schemaPath, parentSchema, ...rest } = e;
+    let { message = "" } = rest;
+    let property2 = instancePath.replace(/\//g, ".");
+    let stack = `${property2} ${message}`.trim();
+    let uiTitle = "";
+    const rawPropertyNames = [
+      ...((_a = params.deps) === null || _a === void 0 ? void 0 : _a.split(", ")) || [],
+      params.missingProperty,
+      params.property
+    ].filter((item) => item);
+    if (rawPropertyNames.length > 0) {
+      rawPropertyNames.forEach((currentProperty) => {
+        const path = property2 ? `${property2}.${currentProperty}` : currentProperty;
+        let uiSchemaTitle = getUiOptions(get_default(uiSchema, path.replace(/^\./, ""))).title;
+        if (uiSchemaTitle === void 0) {
+          const uiSchemaPath = schemaPath.replace(/\/properties\//g, "/").split("/").slice(1, -1).concat([currentProperty]);
+          uiSchemaTitle = getUiOptions(get_default(uiSchema, uiSchemaPath)).title;
+        }
+        if (uiSchemaTitle) {
+          message = message.replace(`'${currentProperty}'`, `'${uiSchemaTitle}'`);
+          uiTitle = uiSchemaTitle;
+        } else {
+          const parentSchemaTitle = get_default(parentSchema, [PROPERTIES_KEY, currentProperty, "title"]);
+          if (parentSchemaTitle) {
+            message = message.replace(`'${currentProperty}'`, `'${parentSchemaTitle}'`);
+            uiTitle = parentSchemaTitle;
+          }
+        }
+      });
+      stack = message;
+    } else {
+      const uiSchemaTitle = getUiOptions(get_default(uiSchema, property2.replace(/^\./, ""))).title;
+      if (uiSchemaTitle) {
+        stack = `'${uiSchemaTitle}' ${message}`.trim();
+        uiTitle = uiSchemaTitle;
+      } else {
+        const parentSchemaTitle = parentSchema === null || parentSchema === void 0 ? void 0 : parentSchema.title;
+        if (parentSchemaTitle) {
+          stack = `'${parentSchemaTitle}' ${message}`.trim();
+          uiTitle = parentSchemaTitle;
+        }
+      }
+    }
+    if ("missingProperty" in params) {
+      property2 = property2 ? `${property2}.${params.missingProperty}` : params.missingProperty;
+    }
+    return {
+      name: keyword,
+      property: property2,
+      message,
+      params,
+      // specific to ajv
+      stack,
+      schemaPath,
+      title: uiTitle
+    };
+  });
+  return filterDuplicateErrors(errorList, suppressDuplicateFiltering);
+}
+function processRawValidationErrors(validator, rawErrors, formData, schema, customValidate, transformErrors, uiSchema, suppressDuplicateFiltering) {
+  const { validationError: invalidSchemaError } = rawErrors;
+  let errors = transformRJSFValidationErrors(rawErrors.errors, uiSchema, suppressDuplicateFiltering);
+  if (invalidSchemaError) {
+    errors = [...errors, { stack: invalidSchemaError.message }];
+  }
+  if (typeof transformErrors === "function") {
+    errors = transformErrors(errors, uiSchema);
+  }
+  let errorSchema = toErrorSchema(errors);
+  if (invalidSchemaError) {
+    errorSchema = {
+      ...errorSchema,
+      $schema: {
+        __errors: [invalidSchemaError.message]
+      }
+    };
+  }
+  if (typeof customValidate !== "function") {
+    return { errors, errorSchema };
+  }
+  const newFormData = getDefaultFormState(validator, schema, formData, schema, true);
+  const errorHandler = customValidate(newFormData, createErrorHandler(newFormData), uiSchema, errorSchema);
+  const userErrorSchema = unwrapErrorHandler(errorHandler);
+  return validationDataMerge({ errors, errorSchema }, userErrorSchema);
+}
+
+// node_modules/@rjsf/validator-ajv8/lib/createAjvInstance.js
+var import_ajv = __toESM(require_ajv(), 1);
+var import_ajv_formats = __toESM(require_dist(), 1);
+var AJV_CONFIG = {
+  allErrors: true,
+  multipleOfPrecision: 8,
+  strict: false,
+  verbose: true,
+  discriminator: false
+  // TODO enable this in V6
+};
+var COLOR_FORMAT_REGEX = /^(#?([0-9A-Fa-f]{3}){1,2}\b|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow|(rgb\(\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*,\s*\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\b\s*\))|(rgb\(\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*,\s*(\d?\d%|100%)+\s*\)))$/;
+var DATA_URL_FORMAT_REGEX = /^data:([a-z]+\/[a-z0-9-+.]+)?;(?:name=(.*);)?base64,(.*)$/;
+function createAjvInstance(additionalMetaSchemas, customFormats, ajvOptionsOverrides = {}, ajvFormatOptions, AjvClass = import_ajv.default, extenderFn) {
+  let ajv = new AjvClass({ ...AJV_CONFIG, ...ajvOptionsOverrides });
+  if (ajvFormatOptions) {
+    (0, import_ajv_formats.default)(ajv, ajvFormatOptions);
+  } else if (ajvFormatOptions !== false) {
+    (0, import_ajv_formats.default)(ajv);
+  }
+  ajv.addFormat("data-url", DATA_URL_FORMAT_REGEX);
+  ajv.addFormat("color", COLOR_FORMAT_REGEX);
+  ajv.addKeyword(ADDITIONAL_PROPERTY_FLAG);
+  ajv.addKeyword(RJSF_ADDITIONAL_PROPERTIES_FLAG);
+  if (Array.isArray(additionalMetaSchemas)) {
+    ajv.addMetaSchema(additionalMetaSchemas);
+  }
+  if (isObject_default(customFormats)) {
+    Object.keys(customFormats).forEach((formatName) => {
+      ajv.addFormat(formatName, customFormats[formatName]);
+    });
+  }
+  if (extenderFn) {
+    ajv = extenderFn(ajv);
+  }
+  return ajv;
+}
+
+// node_modules/@rjsf/validator-ajv8/lib/validator.js
+var AJV8Validator = class {
+  /** Constructs an `AJV8Validator` instance using the `options`
+   *
+   * @param options - The `CustomValidatorOptionsType` options that are used to create the AJV instance
+   * @param [localizer] - If provided, is used to localize a list of Ajv `ErrorObject`s
+   */
+  constructor(options, localizer) {
+    this.hasRegisteredRootSchema = false;
+    const { additionalMetaSchemas, customFormats, ajvOptionsOverrides, ajvFormatOptions, AjvClass, extenderFn, suppressDuplicateFiltering } = options;
+    this.ajv = createAjvInstance(additionalMetaSchemas, customFormats, ajvOptionsOverrides, ajvFormatOptions, AjvClass, extenderFn);
+    this.localizer = localizer;
+    this.suppressDuplicateFiltering = suppressDuplicateFiltering;
+  }
+  /** Resets the internal AJV validator to clear schemas from it. Can be helpful for resetting the validator for tests.
+   */
+  reset() {
+    this.ajv.removeSchema();
+    this.lastSeenRootSchema = void 0;
+    this.hasRegisteredRootSchema = false;
+  }
+  /** Runs the pure validation of the `schema` and `formData` without any of the RJSF functionality. Provided for use
+   * by the playground. Returns the `errors` from the validation
+   *
+   * @param schema - The schema against which to validate the form data   * @param schema
+   * @param formData - The form data to validate
+   */
+  rawValidation(schema, formData) {
+    var _a, _b;
+    let compilationError = void 0;
+    let compiledValidator;
+    try {
+      if (schema[ID_KEY]) {
+        compiledValidator = this.ajv.getSchema(schema[ID_KEY]);
+      }
+      if (compiledValidator === void 0) {
+        compiledValidator = this.ajv.compile(schema);
+      }
+      compiledValidator(formData);
+    } catch (err) {
+      compilationError = err;
+    }
+    let errors;
+    if (compiledValidator) {
+      if (typeof this.localizer === "function") {
+        ((_a = compiledValidator.errors) !== null && _a !== void 0 ? _a : []).forEach((error) => {
+          var _a2;
+          ["missingProperty", "property"].forEach((key) => {
+            var _a3;
+            if ((_a3 = error.params) === null || _a3 === void 0 ? void 0 : _a3[key]) {
+              error.params[key] = `'${error.params[key]}'`;
+            }
+          });
+          if ((_a2 = error.params) === null || _a2 === void 0 ? void 0 : _a2.deps) {
+            error.params.deps = error.params.deps.split(", ").map((v3) => `'${v3}'`).join(", ");
+          }
+        });
+        this.localizer(compiledValidator.errors);
+        ((_b = compiledValidator.errors) !== null && _b !== void 0 ? _b : []).forEach((error) => {
+          var _a2;
+          ["missingProperty", "property"].forEach((key) => {
+            var _a3;
+            if ((_a3 = error.params) === null || _a3 === void 0 ? void 0 : _a3[key]) {
+              error.params[key] = error.params[key].slice(1, -1);
+            }
+          });
+          if ((_a2 = error.params) === null || _a2 === void 0 ? void 0 : _a2.deps) {
+            error.params.deps = error.params.deps.split(", ").map((v3) => v3.slice(1, -1)).join(", ");
+          }
+        });
+      }
+      errors = compiledValidator.errors || void 0;
+      compiledValidator.errors = null;
+    }
+    return {
+      errors,
+      validationError: compilationError
+    };
+  }
+  /** This function processes the `formData` with an optional user contributed `customValidate` function, which receives
+   * the form data and a `errorHandler` function that will be used to add custom validation errors for each field. Also
+   * supports a `transformErrors` function that will take the raw AJV validation errors, prior to custom validation and
+   * transform them in what ever way it chooses.
+   *
+   * @param formData - The form data to validate
+   * @param schema - The schema against which to validate the form data
+   * @param [customValidate] - An optional function that is used to perform custom validation
+   * @param [transformErrors] - An optional function that is used to transform errors after AJV validation
+   * @param [uiSchema] - An optional uiSchema that is passed to `transformErrors` and `customValidate`
+   */
+  validateFormData(formData, schema, customValidate, transformErrors, uiSchema) {
+    const rawErrors = this.rawValidation(schema, formData);
+    return processRawValidationErrors(this, rawErrors, formData, schema, customValidate, transformErrors, uiSchema, this.suppressDuplicateFiltering);
+  }
+  /**
+   * This function checks if a schema needs to be added and if the root schemas don't match it removes the old root schema from the ajv instance and adds the new one.
+   * When called repeatedly with the same `rootSchema` reference the deep-equality check is skipped.
+   *
+   * @param rootSchema - The root schema used to provide $ref resolutions
+   */
+  handleSchemaUpdate(rootSchema) {
+    var _a, _b;
+    if (this.lastSeenRootSchema === rootSchema && this.hasRegisteredRootSchema) {
+      return;
+    }
+    const rootSchemaId = (_a = rootSchema[ID_KEY]) !== null && _a !== void 0 ? _a : ROOT_SCHEMA_PREFIX;
+    if (this.ajv.getSchema(rootSchemaId) === void 0) {
+      this.ajv.addSchema(rootSchema, rootSchemaId);
+    } else if (!deepEquals_default(rootSchema, (_b = this.ajv.getSchema(rootSchemaId)) === null || _b === void 0 ? void 0 : _b.schema)) {
+      this.ajv.removeSchema(rootSchemaId);
+      this.ajv.addSchema(rootSchema, rootSchemaId);
+    }
+    this.lastSeenRootSchema = rootSchema;
+    this.hasRegisteredRootSchema = true;
+  }
+  /** Validates data against a schema, returning true if the data is valid, or
+   * false otherwise. If the schema is invalid, then this function will return
+   * false.
+   *
+   * @param schema - The schema against which to validate the form data
+   * @param formData - The form data to validate
+   * @param rootSchema - The root schema used to provide $ref resolutions
+   */
+  isValid(schema, formData, rootSchema) {
+    var _a;
+    try {
+      this.handleSchemaUpdate(rootSchema);
+      const schemaWithIdRefPrefix = withIdRefPrefix(schema);
+      const schemaId = (_a = schemaWithIdRefPrefix[ID_KEY]) !== null && _a !== void 0 ? _a : hashForSchema(schemaWithIdRefPrefix);
+      let compiledValidator;
+      compiledValidator = this.ajv.getSchema(schemaId);
+      if (compiledValidator === void 0) {
+        compiledValidator = this.ajv.addSchema(schemaWithIdRefPrefix, schemaId).getSchema(schemaId) || this.ajv.compile(schemaWithIdRefPrefix);
+      }
+      const result = compiledValidator(formData);
+      return result;
+    } catch (e) {
+      console.warn("Error encountered compiling schema:", e);
+      return false;
+    }
+  }
+};
+
+// node_modules/@rjsf/validator-ajv8/lib/customizeValidator.js
+function customizeValidator(options = {}, localizer) {
+  return new AJV8Validator(options, localizer);
+}
+
+// node_modules/@rjsf/validator-ajv8/lib/index.js
+var lib_default = customizeValidator();
+
+// node_modules/@rjsf/core/lib/withTheme.js
+import { jsx as _jsx62 } from "react/jsx-runtime";
+import { forwardRef } from "react";
+function withTheme(themeProps) {
+  return forwardRef(({ fields: propFields, widgets: propWidgets, templates: propTemplates, ...directProps }, ref) => {
+    const fields2 = { ...themeProps?.fields, ...propFields };
+    const widgets2 = { ...themeProps?.widgets, ...propWidgets };
+    const templates2 = {
+      ...themeProps?.templates,
+      ...propTemplates,
+      ButtonTemplates: {
+        ...themeProps?.templates?.ButtonTemplates,
+        ...propTemplates?.ButtonTemplates
+      }
+    };
+    return _jsx62(Form, { ...themeProps, ...directProps, fields: fields2, widgets: widgets2, templates: templates2, ref });
+  });
+}
 
 // src/DaisyTheme.tsx
-import {
-  getTemplate,
-  getUiOptions,
-  getSubmitButtonOptions,
-  schemaRequiresTrueValue,
-  descriptionId,
-  ariaDescribedByIds,
-  enumOptionsIsSelected,
-  enumOptionsSelectValue,
-  enumOptionsDeselectValue,
-  enumOptionsValueForIndex,
-  optionId
-} from "@rjsf/utils";
 import ReactMarkdown2 from "react-markdown";
 import remarkGfm2 from "remark-gfm";
 import remarkBreaks2 from "remark-breaks";
 import { jsx as jsx28, jsxs as jsxs22 } from "react/jsx-runtime";
-var REQUIRED_FIELD_SYMBOL = " *";
-function Label(props) {
+var REQUIRED_FIELD_SYMBOL3 = " *";
+function Label2(props) {
   const { label, required, id } = props;
   if (!label) {
     return null;
   }
   return /* @__PURE__ */ jsxs22("label", { className: "text-lg font-bold", htmlFor: id, children: [
     label,
-    required && /* @__PURE__ */ jsx28("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL })
+    required && /* @__PURE__ */ jsx28("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyTitleField(props) {
   const { id, title, required } = props;
   return /* @__PURE__ */ jsxs22("legend", { id, className: "text-xl font-bold", children: [
     title,
-    required && /* @__PURE__ */ jsx28("span", { className: "required", children: REQUIRED_FIELD_SYMBOL })
+    required && /* @__PURE__ */ jsx28("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyDescriptionField(props) {
@@ -4320,7 +25346,7 @@ function MyFieldTemplate(props) {
     uiSchema
   } = props;
   const uiOptions = getUiOptions(uiSchema);
-  const WrapIfAdditionalTemplate = getTemplate(
+  const WrapIfAdditionalTemplate2 = getTemplate(
     "WrapIfAdditionalTemplate",
     registry,
     uiOptions
@@ -4328,8 +25354,8 @@ function MyFieldTemplate(props) {
   if (hidden) {
     return /* @__PURE__ */ jsx28("div", { className: "hidden", children });
   }
-  return /* @__PURE__ */ jsxs22(WrapIfAdditionalTemplate, { ...props, children: [
-    displayLabel && /* @__PURE__ */ jsx28(Label, { label, required, id }),
+  return /* @__PURE__ */ jsxs22(WrapIfAdditionalTemplate2, { ...props, children: [
+    displayLabel && /* @__PURE__ */ jsx28(Label2, { label, required, id }),
     displayLabel && description ? description : null,
     children,
     errors,
@@ -4403,7 +25429,7 @@ var MyCheckboxWidget = (props) => {
   return /* @__PURE__ */ jsxs22("div", { className: "field-checkbox", children: [
     !hideLabel && label && /* @__PURE__ */ jsxs22("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
       label,
-      required && /* @__PURE__ */ jsx28("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL })
+      required && /* @__PURE__ */ jsx28("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
     ] }),
     !hideLabel && !!description && /* @__PURE__ */ jsx28(
       DescriptionFieldTemplate,
@@ -4468,8 +25494,8 @@ var MyCheckboxesWidget = (props) => {
               onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
             }
           },
-          onBlur: ({ target: { value: v } }) => onBlur(id, enumOptionsValueForIndex(v, enumOptions, emptyValue)),
-          onFocus: ({ target: { value: v } }) => onFocus(id, enumOptionsValueForIndex(v, enumOptions, emptyValue)),
+          onBlur: ({ target: { value: v3 } }) => onBlur(id, enumOptionsValueForIndex(v3, enumOptions, emptyValue)),
+          onFocus: ({ target: { value: v3 } }) => onFocus(id, enumOptionsValueForIndex(v3, enumOptions, emptyValue)),
           "aria-describedby": ariaDescribedByIds(id)
         }
       ),
@@ -4541,7 +25567,7 @@ function FormPreview() {
       uiSchema,
       formData: state.formData,
       onChange: handleChange,
-      validator
+      validator: lib_default
     }
   ) });
 }
@@ -4562,14 +25588,14 @@ function FormStudioUI({
   saveStatus
 }) {
   const { state, setSchema, setUiSchema } = useFormStudio();
-  const [activeTab, setActiveTab] = useState16("builder");
-  const [hasVisitedJson, setHasVisitedJson] = useState16(false);
+  const [activeTab, setActiveTab] = useState22("builder");
+  const [hasVisitedJson, setHasVisitedJson] = useState22(false);
   if (activeTab === "json" && !hasVisitedJson) {
     setHasVisitedJson(true);
   }
-  const isInitialMount = useRef2(true);
-  const lastBufferedStateRef = useRef2("");
-  useEffect3(() => {
+  const isInitialMount = useRef6(true);
+  const lastBufferedStateRef = useRef6("");
+  useEffect6(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       lastBufferedStateRef.current = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema });
@@ -4693,4 +25719,28 @@ export {
   JsonEditor,
   useFormStudio
 };
+/*! Bundled license information:
+
+react-is/cjs/react-is.production.min.js:
+  (**
+   * @license React
+   * react-is.production.min.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+
+react-is/cjs/react-is.development.js:
+  (**
+   * @license React
+   * react-is.development.js
+   *
+   * Copyright (c) Facebook, Inc. and its affiliates.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   *)
+*/
 //# sourceMappingURL=index.js.map

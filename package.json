@@ -32,9 +32,6 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {
-    "@rjsf/core": "^5.0.0 || ^6.0.0",
-    "@rjsf/utils": "^5.0.0 || ^6.0.0",
-    "@rjsf/validator-ajv8": "^5.0.0 || ^6.0.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
