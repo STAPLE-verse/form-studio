@@ -7494,7 +7494,7 @@ var FBCheckbox_default = FBCheckbox;
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var Collapse = (props) => {
-  const classes = classNames(`border border-base-300 rounded-xl bg-base-100 shadow-sm p-4 ${props.className || ""}`, {
+  const classes = classNames(`border border-base-300 rounded-xl bg-base-200 shadow-sm p-4 ${props.className || ""}`, {
     "opacity-50 pointer-events-none": props.disableToggle
   });
   return /* @__PURE__ */ jsxs2("div", { className: classes, children: [
@@ -11357,131 +11357,144 @@ function FormBuilder({
       isFirstRender.current = false;
     }
   }, [onMount, categoryHash]);
-  return /* @__PURE__ */ jsxs21("div", { className: `formBuilder ${className || ""}`, children: [
-    /* @__PURE__ */ jsxs21(
-      "div",
-      {
-        className: "alert alert-warning mb-4 flex-col items-start",
-        style: {
-          display: unsupportedFeatures.length === 0 ? "none" : "flex"
-        },
-        children: [
-          /* @__PURE__ */ jsx26("h5", { className: "font-bold", children: "Unsupported Features:" }),
-          /* @__PURE__ */ jsx26("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx26("li", { children: message }, index)) })
-        ]
-      }
-    ),
-    (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs21("div", { className: "formHead", "data-test": "form-head", children: [
-      /* @__PURE__ */ jsxs21("div", { children: [
-        /* @__PURE__ */ jsx26("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
-        /* @__PURE__ */ jsx26(
-          "input",
-          {
-            value: schemaData.title || "",
-            placeholder: "Title",
-            type: "text",
-            onChange: (ev) => {
-              onChange(
-                stringify({
-                  ...schemaData,
-                  title: ev.target.value
-                }),
-                uiSchema
-              );
-            },
-            className: "input input-primary input-bordered w-full form-title mb-4"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxs21("div", { children: [
-        /* @__PURE__ */ jsx26("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
-        /* @__PURE__ */ jsx26(
-          MarkdownDescriptionInput,
-          {
-            value: schemaData.description || "",
-            onChange: (val) => onChange(
-              stringify({
-                ...schemaData,
-                description: val
-              }),
-              uiSchema
-            )
-          }
-        )
-      ] })
-    ] }),
-    /* @__PURE__ */ jsx26("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx26(
-      DragDropContext2,
-      {
-        onDragEnd: (result) => onDragEnd(result, {
-          schema: schemaData,
-          uischema: uiSchemaData,
-          onChange: (newSchema, newUiSchema) => onChange(stringify(newSchema), stringify(newUiSchema)),
-          definitionData: schemaData.definitions,
-          definitionUi: uiSchemaData.definitions,
-          categoryHash
-        }),
-        children: /* @__PURE__ */ jsx26(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs21(
+  return /* @__PURE__ */ jsxs21(
+    "div",
+    {
+      className: `formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`,
+      children: [
+        /* @__PURE__ */ jsxs21(
           "div",
           {
-            ref: providedDroppable.innerRef,
-            ...providedDroppable.droppableProps,
-            className: "mb-4",
+            className: "alert alert-warning mb-4 flex-col items-start",
+            style: {
+              display: unsupportedFeatures.length === 0 ? "none" : "flex"
+            },
             children: [
-              generateElementComponentsFromSchemas({
-                schemaData,
-                uiSchemaData,
-                onChange: (newSchema, newUiSchema) => onChange(stringify(newSchema), stringify(newUiSchema)),
-                definitionData: schemaData.definitions,
-                definitionUi: uiSchemaData.definitions,
-                path: "root",
-                cardOpenState,
-                setCardOpenState,
-                allFormInputs,
-                mods,
-                categoryHash,
-                Card,
-                Section
-              }).map((element, index) => (
-                // @ts-ignore: suppress key error, can't change key assignment
-                /* @__PURE__ */ jsx26(Draggable2, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx26(
-                  "div",
-                  {
-                    ref: providedDraggable.innerRef,
-                    ...providedDraggable.draggableProps,
-                    style: providedDraggable.draggableProps.style,
-                    className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
-                    children: React18.cloneElement(element, {
-                      dragHandleProps: providedDraggable.dragHandleProps
-                    })
-                  }
-                ) }, element.key)
-              )),
-              providedDroppable.placeholder
+              /* @__PURE__ */ jsx26("h5", { className: "font-bold", children: "Unsupported Features:" }),
+              /* @__PURE__ */ jsx26("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx26("li", { children: message }, index)) })
             ]
           }
-        ) })
-      }
-    ) }),
-    /* @__PURE__ */ jsxs21("div", { className: "form-footer formFooter", children: [
-      !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
-      !mods?.components?.add && /* @__PURE__ */ jsx26(
-        Add,
-        {
-          tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
-          labels: mods?.labels ?? {},
-          addElem: (choice) => {
-            if (choice === "card") {
-              addCardObj(addProperties);
-            } else if (choice === "section") {
-              addSectionObj(addProperties);
+        ),
+        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs21(
+          "div",
+          {
+            className: "formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4",
+            "data-test": "form-head",
+            children: [
+              /* @__PURE__ */ jsxs21("div", { children: [
+                /* @__PURE__ */ jsx26("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
+                /* @__PURE__ */ jsx26(
+                  "input",
+                  {
+                    value: schemaData.title || "",
+                    placeholder: "Title",
+                    type: "text",
+                    onChange: (ev) => {
+                      onChange(
+                        stringify({
+                          ...schemaData,
+                          title: ev.target.value
+                        }),
+                        uiSchema
+                      );
+                    },
+                    className: "input input-primary input-bordered w-full form-title mb-4"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs21("div", { children: [
+                /* @__PURE__ */ jsx26("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
+                /* @__PURE__ */ jsx26(
+                  MarkdownDescriptionInput,
+                  {
+                    value: schemaData.description || "",
+                    onChange: (val) => onChange(
+                      stringify({
+                        ...schemaData,
+                        description: val
+                      }),
+                      uiSchema
+                    )
+                  }
+                )
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsx26("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx26(
+          DragDropContext2,
+          {
+            onDragEnd: (result) => onDragEnd(result, {
+              schema: schemaData,
+              uischema: uiSchemaData,
+              onChange: (newSchema, newUiSchema) => onChange(stringify(newSchema), stringify(newUiSchema)),
+              definitionData: schemaData.definitions,
+              definitionUi: uiSchemaData.definitions,
+              categoryHash
+            }),
+            children: /* @__PURE__ */ jsx26(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs21(
+              "div",
+              {
+                ref: providedDroppable.innerRef,
+                ...providedDroppable.droppableProps,
+                className: "mb-4",
+                children: [
+                  generateElementComponentsFromSchemas({
+                    schemaData,
+                    uiSchemaData,
+                    onChange: (newSchema, newUiSchema) => onChange(stringify(newSchema), stringify(newUiSchema)),
+                    definitionData: schemaData.definitions,
+                    definitionUi: uiSchemaData.definitions,
+                    path: "root",
+                    cardOpenState,
+                    setCardOpenState,
+                    allFormInputs,
+                    mods,
+                    categoryHash,
+                    Card,
+                    Section
+                  }).map((element, index) => (
+                    // @ts-ignore: suppress key error, can't change key assignment
+                    /* @__PURE__ */ jsx26(Draggable2, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx26(
+                      "div",
+                      {
+                        ref: providedDraggable.innerRef,
+                        ...providedDraggable.draggableProps,
+                        style: providedDraggable.draggableProps.style,
+                        className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
+                        children: React18.cloneElement(element, {
+                          dragHandleProps: providedDraggable.dragHandleProps
+                        })
+                      }
+                    ) }, element.key)
+                  )),
+                  providedDroppable.placeholder
+                ]
+              }
+            ) })
+          }
+        ) }),
+        /* @__PURE__ */ jsxs21("div", { className: "form-footer formFooter", children: [
+          !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
+          !mods?.components?.add && /* @__PURE__ */ jsx26(
+            Add,
+            {
+              tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
+              labels: mods?.labels ?? {},
+              addElem: (choice) => {
+                if (choice === "card") {
+                  addCardObj(addProperties);
+                } else if (choice === "section") {
+                  addSectionObj(addProperties);
+                }
+              },
+              hidden: hideAddButton
             }
-          },
-          hidden: hideAddButton
-        }
-      )
-    ] })
-  ] });
+          )
+        ] })
+      ]
+    }
+  );
 }
 
 // src/FormStudio.tsx

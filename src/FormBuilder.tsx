@@ -87,7 +87,9 @@ export default function FormBuilder({
   }, [onMount, categoryHash])
 
   return (
-    <div className={`formBuilder ${className || ""}`}>
+    <div
+      className={`formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`}
+    >
       <div
         className="alert alert-warning mb-4 flex-col items-start"
         style={{
@@ -102,7 +104,10 @@ export default function FormBuilder({
         </ul>
       </div>
       {(!mods || mods.showFormHead !== false) && (
-        <div className="formHead" data-test="form-head">
+        <div
+          className="formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4"
+          data-test="form-head"
+        >
           <div>
             <h5 data-test="form-name-label" className="font-semibold mb-2">
               {mods && mods.labels && typeof mods.labels.formNameLabel === "string"
