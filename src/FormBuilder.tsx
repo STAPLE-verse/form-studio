@@ -10,6 +10,7 @@ import {
   parse,
   stringify,
   checkForUnsupportedFeatures,
+  generateElementPropsFromSchemas,
   generateElementComponentsFromSchemas,
   addCardObj,
   addSectionObj,
@@ -44,22 +45,34 @@ export default function FormBuilder({
     Object.assign({}, DEFAULT_FORM_INPUTS, (mods && mods.customFormInputs) || {}),
     mods && mods.deactivatedFormInputs
   )
+  const categoryHash = generateCategoryHash(allFormInputs)
 
-  const unsupportedFeatures = checkForUnsupportedFeatures(
-    schemaData,
-    uiSchemaData,
-    allFormInputs
-  ).filter(
-    (msg) =>
-      !msg.includes("Object Property: _stapleSchema") &&
-      !msg.includes("Property Parameter: readOnly in _stapleSchema") &&
-      !msg.includes("UI Widget: hidden for _stapleSchema") &&
-      !msg.includes("UI schema property: _stapleSchema") &&
-      !msg.includes("allOf")
+  const compatibilityDiagnostics = generateElementPropsFromSchemas({
+    schema: schemaData,
+    uischema: uiSchemaData,
+    definitionData: schemaData.definitions,
+    definitionUi: uiSchemaData.definitions,
+    categoryHash,
+  }).flatMap((element) => {
+    if (!element.compatibility || element.compatibility.kind === "editable") return []
+    const pointer = `/properties/${element.name.replace(/~/g, "~0").replace(/\//g, "~1")}`
+    return [`[${element.compatibility.code}] ${pointer}: ${element.compatibility.message}`]
+  })
+
+  const unsupportedFeatures = Array.from(
+    new Set([
+      ...checkForUnsupportedFeatures(schemaData, uiSchemaData, allFormInputs).filter(
+        (msg) =>
+          !msg.includes("Object Property: _stapleSchema") &&
+          !msg.includes("Property Parameter: readOnly in _stapleSchema") &&
+          !msg.includes("UI Widget: hidden for _stapleSchema") &&
+          !msg.includes("UI schema property: _stapleSchema")
+      ),
+      ...compatibilityDiagnostics,
+    ])
   )
 
   const [cardOpenState, setCardOpenState] = React.useState<Record<string, boolean>>({})
-  const categoryHash = generateCategoryHash(allFormInputs)
 
   const isFirstRender = React.useRef(true)
 
@@ -96,7 +109,7 @@ export default function FormBuilder({
           display: unsupportedFeatures.length === 0 ? "none" : "flex",
         }}
       >
-        <h5 className="font-bold">Unsupported Features:</h5>
+        <h5 className="font-bold">Compatibility diagnostics:</h5>
         <ul className="list-disc pl-5">
           {unsupportedFeatures.map((message, index) => (
             <li key={index}>{message}</li>

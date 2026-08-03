@@ -36,7 +36,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
 
 // src/FormStudioContext.tsx
 import { createContext, useContext, useState as useState14 } from "react";
-import { jsx as jsx27 } from "react/jsx-runtime";
+import { jsx as jsx28 } from "react/jsx-runtime";
 function FormStudioProvider({
   initialSchema = {},
   initialUiSchema = {},
@@ -70,7 +70,7 @@ function FormStudioProvider({
   const updateState = (newState) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
-  return /* @__PURE__ */ jsx27(
+  return /* @__PURE__ */ jsx28(
     FormStudioContext.Provider,
     {
       value: {
@@ -7324,7 +7324,7 @@ __export(JsonEditor_exports, {
 });
 import { useState as useState21 } from "react";
 import Editor from "@monaco-editor/react";
-import { jsx as jsx30, jsxs as jsxs23 } from "react/jsx-runtime";
+import { jsx as jsx31, jsxs as jsxs24 } from "react/jsx-runtime";
 function JsonEditor() {
   const { state, setSchema, setUiSchema } = useFormStudio();
   const [localSchema, setLocalSchema] = useState21(() => JSON.stringify(state.schema, null, 2));
@@ -7375,10 +7375,10 @@ function JsonEditor() {
     } catch {
     }
   };
-  return /* @__PURE__ */ jsx30("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs23("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
-    /* @__PURE__ */ jsxs23("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx30("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
-      /* @__PURE__ */ jsx30("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx30(
+  return /* @__PURE__ */ jsx31("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs24("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
+    /* @__PURE__ */ jsxs24("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
+      /* @__PURE__ */ jsx31("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
+      /* @__PURE__ */ jsx31("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx31(
         Editor,
         {
           height: "100%",
@@ -7397,9 +7397,9 @@ function JsonEditor() {
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsxs23("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx30("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
-      /* @__PURE__ */ jsx30("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx30(
+    /* @__PURE__ */ jsxs24("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
+      /* @__PURE__ */ jsx31("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
+      /* @__PURE__ */ jsx31("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx31(
         Editor,
         {
           height: "100%",
@@ -7612,8 +7612,36 @@ function Tooltip({
 // src/dependencies/DependencyWarning.tsx
 import React3, { useState as useState2 } from "react";
 
+// src/CompatibilityCard.tsx
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
+function CompatibilityCard({
+  name,
+  title,
+  compatibility
+}) {
+  const isMigration = compatibility.kind === "migration";
+  const pointer = `/properties/${name.replace(/~/g, "~0").replace(/\//g, "~1")}`;
+  return /* @__PURE__ */ jsxs4(
+    "div",
+    {
+      className: `card-container border rounded-xl shadow-sm p-4 ${isMigration ? "border-warning/50 bg-warning/10" : "border-base-300 bg-base-200"}`,
+      "data-compatibility-kind": compatibility.kind,
+      "data-compatibility-code": compatibility.code,
+      children: [
+        /* @__PURE__ */ jsxs4("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
+          /* @__PURE__ */ jsx6("h4", { className: "text-lg font-bold", children: title || name }),
+          /* @__PURE__ */ jsx6("span", { className: `badge ${isMigration ? "badge-warning" : "badge-ghost"}`, children: isMigration ? "Migration required" : "Read-only" })
+        ] }),
+        /* @__PURE__ */ jsx6("p", { className: "mt-3 text-sm", children: compatibility.message }),
+        /* @__PURE__ */ jsx6("p", { className: "mt-2 font-mono text-xs text-base-content/60", children: pointer }),
+        /* @__PURE__ */ jsx6("p", { className: "mt-3 text-sm text-base-content/70", children: "Visual controls are disabled to avoid reinterpreting this field. Use the JSON Editor to inspect or change it." })
+      ]
+    }
+  );
+}
+
 // src/utils.tsx
-import { jsx as jsx6 } from "react/jsx-runtime";
+import { jsx as jsx7 } from "react/jsx-runtime";
 function parse(text) {
   if (!text) return {};
   return JSON.parse(text);
@@ -7665,15 +7693,67 @@ function generateCategoryHash(allFormInputs) {
   });
   return categoryHash;
 }
-function getCardCategory(cardProps, categoryHash) {
-  const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${cardProps.uiOptions["ui:widget"] || ""};field:${cardProps.uiOptions["ui:field"] || ""};format:${cardProps.dataOptions.format || ""};$ref:${cardProps.$ref !== void 0 ? "true" : "false"};enum:${cardProps.dataOptions.enum ? "true" : "false"}`;
-  const category = categoryHash[currentHash];
-  if (!category) {
-    if (cardProps.$ref) return "ref";
-    console.error(`No match for card': ${currentHash} among set`);
-    return "shortAnswer";
+function classifyCard(cardProps, categoryHash) {
+  const { dataOptions, uiOptions } = cardProps;
+  const widget = uiOptions["ui:widget"];
+  if (dataOptions.oneOf !== void 0) {
+    return {
+      kind: "readOnly",
+      code: "FS_ONE_OF_READ_ONLY",
+      message: "Standalone oneOf fields are preserved but cannot be edited visually."
+    };
   }
-  return category;
+  if (dataOptions.anyOf !== void 0 || dataOptions.allOf !== void 0 || dataOptions.not !== void 0) {
+    return {
+      kind: "readOnly",
+      code: "FS_COMPOSITION_READ_ONLY",
+      message: "Composed field schemas are preserved but cannot be edited visually."
+    };
+  }
+  if (dataOptions.readOnly === true || widget === "hidden") {
+    return {
+      kind: "readOnly",
+      code: "FS_HIDDEN_READ_ONLY",
+      message: "Hidden or read-only fields cannot be edited in the visual builder."
+    };
+  }
+  if (dataOptions.format === "textarea") {
+    return {
+      kind: "migration",
+      code: "FS_TEXTAREA_MIGRATION",
+      message: 'The legacy format "textarea" must be normalized to ui:widget "textarea" before visual editing.'
+    };
+  }
+  const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${widget || ""};field:${cardProps.uiOptions["ui:field"] || ""};format:${cardProps.dataOptions.format || ""};$ref:${cardProps.$ref !== void 0 ? "true" : "false"};enum:${cardProps.dataOptions.enum ? "true" : "false"}`;
+  const category = categoryHash[currentHash];
+  if (category) return { kind: "editable", category };
+  if (cardProps.$ref !== void 0) return { kind: "editable", category: "ref" };
+  if (dataOptions.type === "array" && dataOptions.items?.type === "object") {
+    return {
+      kind: "readOnly",
+      code: "FS_OBJECT_ARRAY_READ_ONLY",
+      message: "Arrays of objects are preserved but cannot be edited visually."
+    };
+  }
+  if (dataOptions.type === "array") {
+    if (["string", "number", "integer", "boolean"].includes(dataOptions.items?.type)) {
+      return {
+        kind: "readOnly",
+        code: "FS_SCALAR_ARRAY_READ_ONLY",
+        message: "Scalar array authoring is not available yet; this field is read-only."
+      };
+    }
+    return {
+      kind: "readOnly",
+      code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+      message: "This array shape cannot be edited visually."
+    };
+  }
+  return {
+    kind: "readOnly",
+    code: "FS_UNKNOWN_FIELD_READ_ONLY",
+    message: "This field uses a schema or UI construct Form Studio does not recognize."
+  };
 }
 var supportedPropertyParameters = /* @__PURE__ */ new Set([
   "title",
@@ -7721,7 +7801,9 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
   if (schema && typeof schema === "object") {
     Object.keys(schema).forEach((property2) => {
       if (!supportedPropertyParameters.has(property2) && property2 !== "properties") {
-        unsupportedFeatures.push(`Unrecognized Object Property: ${property2}`);
+        unsupportedFeatures.push(
+          property2 === "allOf" ? "Conditional rules at /allOf are not visually editable." : `Unrecognized Object Property: ${property2}`
+        );
       }
     });
   }
@@ -7871,7 +7953,10 @@ function generateDependencyElement(name, dataProps, uiProperties, requiredNames,
         newElement.uiOptions[`ui:*${uiKey}`] = newElement.uiOptions[uiKey];
       }
     });
-    newElement.dataOptions.category = getCardCategory(newElement, categoryHash);
+    newElement.compatibility = classifyCard(newElement, categoryHash);
+    if (newElement.compatibility.kind === "editable") {
+      newElement.dataOptions.category = newElement.compatibility.category;
+    }
     newElement.propType = "card";
   }
   return newElement;
@@ -7917,7 +8002,10 @@ function generateElementPropsFromSchemas(parameters) {
           newElement.uiOptions[`ui:*${uiKey}`] = newElement.uiOptions[uiKey];
         }
       });
-      newElement.dataOptions.category = getCardCategory(newElement, categoryHash);
+      newElement.compatibility = classifyCard(newElement, categoryHash);
+      if (newElement.compatibility.kind === "editable") {
+        newElement.dataOptions.category = newElement.compatibility.category;
+      }
       newElement.propType = "card";
     }
     elementDict[newElement.name] = newElement;
@@ -8306,11 +8394,23 @@ function generateElementComponentsFromSchemas(parameters) {
     };
     const expanded = cardOpenState[elementKey] || false;
     if (elementProp.propType === "card") {
+      const compatibility = elementProp.compatibility;
+      if (compatibility && compatibility.kind !== "editable") {
+        return /* @__PURE__ */ jsx7(
+          CompatibilityCard,
+          {
+            name: elementProp.name,
+            title: elementProp.dataOptions.title,
+            compatibility
+          },
+          elementKey
+        );
+      }
       const TypeSpecificParameters = getCardParameterInputComponentForType(
-        elementProp.dataOptions.category || "string",
+        compatibility?.category || elementProp.dataOptions.category,
         allFormInputs
       );
-      return /* @__PURE__ */ jsx6(
+      return /* @__PURE__ */ jsx7(
         Card2,
         {
           componentProps: Object.assign(
@@ -8484,7 +8584,7 @@ function generateElementComponentsFromSchemas(parameters) {
         index,
         categoryHash
       };
-      return /* @__PURE__ */ jsx6(
+      return /* @__PURE__ */ jsx7(
         Section2,
         {
           schema: elementProp.schema,
@@ -8674,7 +8774,7 @@ function generateElementComponentsFromSchemas(parameters) {
         elementKey
       );
     } else {
-      return /* @__PURE__ */ jsx6("div", { children: /* @__PURE__ */ jsx6("h2", { children: " Error parsing element " }) }, elementKey);
+      return /* @__PURE__ */ jsx7("div", { children: /* @__PURE__ */ jsx7("h2", { children: " Error parsing element " }) }, elementKey);
     }
   });
   return elementList;
@@ -8777,7 +8877,7 @@ function getRandomId() {
 var DROPPABLE_TYPE = "rjsfb";
 
 // src/dependencies/DependencyWarning.tsx
-import { jsx as jsx7, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
 function DependencyWarning({
   parameters
 }) {
@@ -8794,11 +8894,11 @@ function DependencyWarning({
         if (!definedVals.has(val)) undefinedVals.push(val);
       });
     if (undefinedVals.length === 0) return null;
-    return /* @__PURE__ */ jsxs4(React3.Fragment, { children: [
-      /* @__PURE__ */ jsxs4("p", { children: [
+    return /* @__PURE__ */ jsxs5(React3.Fragment, { children: [
+      /* @__PURE__ */ jsxs5("p", { children: [
         "Warning! The following values do not have associated dependency values:",
         " ",
-        /* @__PURE__ */ jsx7(
+        /* @__PURE__ */ jsx8(
           Tooltip,
           {
             id: `${elementId}_valuewarning`,
@@ -8807,7 +8907,7 @@ function DependencyWarning({
           }
         )
       ] }),
-      /* @__PURE__ */ jsx7("ul", { children: undefinedVals.map((val, index) => /* @__PURE__ */ jsx7("li", { children: val }, index)) })
+      /* @__PURE__ */ jsx8("ul", { children: undefinedVals.map((val, index) => /* @__PURE__ */ jsx8("li", { children: val }, index)) })
     ] });
   }
   return null;
@@ -8828,7 +8928,7 @@ var fieldLabelClass = "text-[18px] font-bold leading-6";
 var fieldControlClass = "w-full";
 
 // src/dependencies/CardSelector.tsx
-import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
 function CardSelector({
   possibleChoices,
   chosenChoices,
@@ -8836,10 +8936,10 @@ function CardSelector({
   placeholder
 }) {
   const [elementId] = useState3(getRandomId());
-  return /* @__PURE__ */ jsxs5(React4.Fragment, { children: [
-    /* @__PURE__ */ jsx8("ul", { className: "flex flex-col gap-1", children: chosenChoices.map((chosenChoice, index) => /* @__PURE__ */ jsxs5("li", { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsx8("span", { className: "min-w-0 break-words", children: chosenChoice }),
-      /* @__PURE__ */ jsx8(
+  return /* @__PURE__ */ jsxs6(React4.Fragment, { children: [
+    /* @__PURE__ */ jsx9("ul", { className: "flex flex-col gap-1", children: chosenChoices.map((chosenChoice, index) => /* @__PURE__ */ jsxs6("li", { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsx9("span", { className: "min-w-0 break-words", children: chosenChoice }),
+      /* @__PURE__ */ jsx9(
         XMarkIcon,
         {
           className: "h-5 w-5 shrink-0 cursor-pointer stroke-warning hover:stroke-error transition-colors",
@@ -8847,7 +8947,7 @@ function CardSelector({
         }
       )
     ] }, `${elementId}_neighbor_${index}`)) }),
-    /* @__PURE__ */ jsxs5(
+    /* @__PURE__ */ jsxs6(
       "select",
       {
         value: "",
@@ -8858,8 +8958,8 @@ function CardSelector({
         },
         className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
         children: [
-          /* @__PURE__ */ jsx8("option", { value: "", disabled: true, children: placeholder }),
-          possibleChoices.filter((choice) => !chosenChoices.includes(choice)).map((choice) => /* @__PURE__ */ jsx8("option", { value: choice, children: choice }, choice))
+          /* @__PURE__ */ jsx9("option", { value: "", disabled: true, children: placeholder }),
+          possibleChoices.filter((choice) => !chosenChoices.includes(choice)).map((choice) => /* @__PURE__ */ jsx9("option", { value: choice, children: choice }, choice))
         ]
       }
     )
@@ -8872,7 +8972,7 @@ import { useState as useState4 } from "react";
 // src/CardEnumOptions.tsx
 import React5 from "react";
 import { XMarkIcon as XMarkIcon2, PlusIcon } from "@heroicons/react/24/outline";
-import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 function CardEnumOptions({
   initialValues,
   names,
@@ -8885,8 +8985,8 @@ function CardEnumOptions({
     if (names && index < names.length) name = names[index] ?? "";
     return (
       //@ts-ignore
-      /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-2 mb-2", children: [
-        /* @__PURE__ */ jsx9(
+      /* @__PURE__ */ jsxs7("div", { className: "flex items-center gap-2 mb-2", children: [
+        /* @__PURE__ */ jsx10(
           "input",
           {
             value: value === void 0 || value === null ? "" : value,
@@ -8916,7 +9016,7 @@ function CardEnumOptions({
           },
           `val-${index}`
         ),
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           "input",
           {
             value: name || "",
@@ -8935,7 +9035,7 @@ function CardEnumOptions({
           },
           `name-${index}`
         ),
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           "span",
           {
             className: "cursor-pointer",
@@ -8945,15 +9045,15 @@ function CardEnumOptions({
                 names ? [...names.slice(0, index), ...names.slice(index + 1)] : void 0
               );
             },
-            children: /* @__PURE__ */ jsx9(XMarkIcon2, { className: "h-5 w-5 stroke-warning hover:stroke-error transition-colors" })
+            children: /* @__PURE__ */ jsx10(XMarkIcon2, { className: "h-5 w-5 stroke-warning hover:stroke-error transition-colors" })
           }
         )
       ] }, index)
     );
   });
-  return /* @__PURE__ */ jsxs6(React5.Fragment, { children: [
+  return /* @__PURE__ */ jsxs7(React5.Fragment, { children: [
     possibleValues,
-    /* @__PURE__ */ jsx9(
+    /* @__PURE__ */ jsx10(
       "span",
       {
         className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs mt-2 inline-flex cursor-pointer",
@@ -8964,7 +9064,7 @@ function CardEnumOptions({
             names ? [...names, ""] : void 0
           );
         },
-        children: /* @__PURE__ */ jsx9(
+        children: /* @__PURE__ */ jsx10(
           PlusIcon,
           {
             className: "h-6 w-6 stroke-secondary transition-colors hover:stroke-primary",
@@ -8978,7 +9078,7 @@ function CardEnumOptions({
 
 // src/dependencies/ValueSelector.tsx
 import { XMarkIcon as XMarkIcon3, PlusIcon as PlusIcon2 } from "@heroicons/react/24/outline";
-import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
 function ValueSelector({
   possibility,
   onChange,
@@ -8992,7 +9092,7 @@ function ValueSelector({
     if (parentEnums) {
       const enumType = typeof parentEnums[0] === "number" ? "number" : "string";
       if (enumType === "string")
-        return /* @__PURE__ */ jsx10(
+        return /* @__PURE__ */ jsx11(
           CardSelector,
           {
             possibleChoices: parentEnums.map((val) => `${val}`),
@@ -9002,7 +9102,7 @@ function ValueSelector({
           }
         );
       if (enumType === "number")
-        return /* @__PURE__ */ jsx10(
+        return /* @__PURE__ */ jsx11(
           CardSelector,
           {
             possibleChoices: parentEnums.map((val) => `${val}`),
@@ -9018,7 +9118,7 @@ function ValueSelector({
         );
     }
     if (parentType === "boolean") {
-      return /* @__PURE__ */ jsx10(
+      return /* @__PURE__ */ jsx11(
         FBCheckbox_default,
         {
           onChangeValue: () => {
@@ -9044,7 +9144,7 @@ function ValueSelector({
       const getInput = (val, index, key) => {
         switch (typeof val) {
           case "string":
-            return /* @__PURE__ */ jsx10(
+            return /* @__PURE__ */ jsx11(
               "input",
               {
                 value: val || "",
@@ -9069,7 +9169,7 @@ function ValueSelector({
             );
             break;
           case "number":
-            return /* @__PURE__ */ jsx10(
+            return /* @__PURE__ */ jsx11(
               "input",
               {
                 value: val || "",
@@ -9094,7 +9194,7 @@ function ValueSelector({
             );
             break;
           case "object":
-            return /* @__PURE__ */ jsx10(
+            return /* @__PURE__ */ jsx11(
               "textarea",
               {
                 value: JSON.stringify(val) || "",
@@ -9124,19 +9224,19 @@ function ValueSelector({
             break;
         }
       };
-      return /* @__PURE__ */ jsxs7("div", { children: [
-        enumArr.map((combination, index) => /* @__PURE__ */ jsxs7("li", { children: [
+      return /* @__PURE__ */ jsxs8("div", { children: [
+        enumArr.map((combination, index) => /* @__PURE__ */ jsxs8("li", { children: [
           Object.keys(combination).map((key) => {
             const val = combination[key] ?? "";
-            return /* @__PURE__ */ jsxs7("div", { children: [
-              /* @__PURE__ */ jsxs7("h5", { children: [
+            return /* @__PURE__ */ jsxs8("div", { children: [
+              /* @__PURE__ */ jsxs8("h5", { children: [
                 key,
                 ":"
               ] }),
               getInput(val, index, key)
             ] }, key);
           }),
-          /* @__PURE__ */ jsx10(
+          /* @__PURE__ */ jsx11(
             XMarkIcon3,
             {
               className: "h-5 w-5 stroke-warning hover:stroke-error cursor-pointer mt-2",
@@ -9149,7 +9249,7 @@ function ValueSelector({
             }
           )
         ] }, `${elementId}_possibleValue${index}`)),
-        /* @__PURE__ */ jsx10("div", { className: "flex justify-start", children: /* @__PURE__ */ jsx10(
+        /* @__PURE__ */ jsx11("div", { className: "flex justify-start", children: /* @__PURE__ */ jsx11(
           PlusIcon2,
           {
             className: "h-6 w-6 stroke-2 stroke-secondary hover:stroke-primary transition-colors cursor-pointer mt-4",
@@ -9176,7 +9276,7 @@ function ValueSelector({
         ) })
       ] });
     }
-    return /* @__PURE__ */ jsx10(
+    return /* @__PURE__ */ jsx11(
       CardEnumOptions,
       {
         initialValues: possibility.value.enum,
@@ -9186,12 +9286,12 @@ function ValueSelector({
       }
     );
   } else {
-    return /* @__PURE__ */ jsx10("h5", { children: " Appear if defined " });
+    return /* @__PURE__ */ jsx11("h5", { children: " Appear if defined " });
   }
 }
 
 // src/dependencies/DependencyPossibility.tsx
-import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 function DependencyPossibility({
   possibility,
   neighborNames,
@@ -9203,11 +9303,11 @@ function DependencyPossibility({
   parentSchema
 }) {
   const [elementId] = useState5(getRandomId());
-  return /* @__PURE__ */ jsxs8("div", { className: `form-dependency-condition relative rounded-box border border-primary p-4 ${fieldStackClass}`, children: [
-    /* @__PURE__ */ jsxs8("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs8("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+  return /* @__PURE__ */ jsxs9("div", { className: `form-dependency-condition relative rounded-box border border-primary p-4 ${fieldStackClass}`, children: [
+    /* @__PURE__ */ jsxs9("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs9("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
         "Display the following:",
-        /* @__PURE__ */ jsx11(
+        /* @__PURE__ */ jsx12(
           Tooltip,
           {
             id: `${elementId}_bulk`,
@@ -9216,7 +9316,7 @@ function DependencyPossibility({
           }
         )
       ] }),
-      /* @__PURE__ */ jsx11(
+      /* @__PURE__ */ jsx12(
         CardSelector,
         {
           possibleChoices: neighborNames.filter((name) => name !== parentName) || [],
@@ -9226,14 +9326,14 @@ function DependencyPossibility({
         }
       )
     ] }),
-    /* @__PURE__ */ jsxs8("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs8("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs9("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs9("div", { className: fieldLabelClass, children: [
         'If "',
         parentName,
         '" has ',
         possibility.value ? "the value:" : "a value."
       ] }),
-      /* @__PURE__ */ jsx11("div", { style: { display: possibility.value ? "block" : "none" }, children: /* @__PURE__ */ jsx11(
+      /* @__PURE__ */ jsx12("div", { style: { display: possibility.value ? "block" : "none" }, children: /* @__PURE__ */ jsx12(
         ValueSelector,
         {
           possibility,
@@ -9245,12 +9345,12 @@ function DependencyPossibility({
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsx11("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsx11("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer", "data-tip": "Delete this dependency", children: /* @__PURE__ */ jsx11(XMarkIcon4, { className: "h-6 w-6 stroke-warning hover:stroke-error transition-colors", strokeWidth: 2, onClick: () => onDelete() }) }) })
+    /* @__PURE__ */ jsx12("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsx12("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer", "data-tip": "Delete this dependency", children: /* @__PURE__ */ jsx12(XMarkIcon4, { className: "h-6 w-6 stroke-warning hover:stroke-error transition-colors", strokeWidth: 2, onClick: () => onDelete() }) }) })
   ] });
 }
 
 // src/dependencies/DependencyField.tsx
-import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
 function checkIfValueBasedDependency(dependents) {
   let valueBased = true;
   if (dependents && Array.isArray(dependents) && dependents.length > 0) {
@@ -9270,10 +9370,10 @@ function DependencyField({
 }) {
   const [elementId] = useState6(getRandomId());
   const valueBased = checkIfValueBasedDependency(parameters.dependents || []);
-  return /* @__PURE__ */ jsxs9("div", { className: `form-dependency dependencyField ${fieldClass}`, children: [
-    /* @__PURE__ */ jsxs9("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+  return /* @__PURE__ */ jsxs10("div", { className: `form-dependency dependencyField ${fieldClass}`, children: [
+    /* @__PURE__ */ jsxs10("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
       "Dependencies",
-      /* @__PURE__ */ jsx12(
+      /* @__PURE__ */ jsx13(
         Tooltip,
         {
           id: `${elementId}_dependent`,
@@ -9282,7 +9382,7 @@ function DependencyField({
         }
       )
     ] }),
-    !!parameters.dependents && parameters.dependents.length > 0 && /* @__PURE__ */ jsx12(React8.Fragment, { children: /* @__PURE__ */ jsx12(
+    !!parameters.dependents && parameters.dependents.length > 0 && /* @__PURE__ */ jsx13(React8.Fragment, { children: /* @__PURE__ */ jsx13(
       FBRadioGroup,
       {
         defaultValue: valueBased ? "value" : "definition",
@@ -9294,9 +9394,9 @@ function DependencyField({
           },
           {
             value: "value",
-            label: /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-2", children: [
+            label: /* @__PURE__ */ jsxs10("div", { className: "flex items-center gap-2", children: [
               "Specific value",
-              /* @__PURE__ */ jsx12(
+              /* @__PURE__ */ jsx13(
                 Tooltip,
                 {
                   id: `${elementId}_valuebased`,
@@ -9333,9 +9433,9 @@ function DependencyField({
         }
       }
     ) }),
-    /* @__PURE__ */ jsx12(DependencyWarning, { parameters }),
-    /* @__PURE__ */ jsxs9("div", { className: "form-dependency-conditions flex flex-col gap-4", children: [
-      parameters.dependents ? parameters.dependents.map((possibility, index) => /* @__PURE__ */ jsx12(
+    /* @__PURE__ */ jsx13(DependencyWarning, { parameters }),
+    /* @__PURE__ */ jsxs10("div", { className: "form-dependency-conditions flex flex-col gap-4", children: [
+      parameters.dependents ? parameters.dependents.map((possibility, index) => /* @__PURE__ */ jsx13(
         DependencyPossibility,
         {
           possibility,
@@ -9365,13 +9465,13 @@ function DependencyField({
         },
         `${elementId}_possibility${index}`
       )) : "",
-      /* @__PURE__ */ jsx12(
+      /* @__PURE__ */ jsx13(
         "span",
         {
           className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs inline-flex self-start cursor-pointer",
           "data-tip": "Add another dependency relation linking this element and other form elements",
           id: `${elementId}_adddependency`,
-          children: /* @__PURE__ */ jsx12(
+          children: /* @__PURE__ */ jsx13(
             PlusCircleIcon,
             {
               className: "h-8 w-8 stroke-secondary stroke-2 fill-base-100 hover:stroke-primary transition-colors mt-2",
@@ -9395,7 +9495,7 @@ function DependencyField({
 }
 
 // src/CardModal.tsx
-import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx14, jsxs as jsxs11 } from "react/jsx-runtime";
 var CardModal = ({
   componentProps,
   onChange,
@@ -9410,7 +9510,7 @@ var CardModal = ({
     setComponentProps(componentProps);
   }
   if (!isOpen) return null;
-  return /* @__PURE__ */ jsxs10(
+  return /* @__PURE__ */ jsxs11(
     "dialog",
     {
       className: `modal ${isOpen ? "modal-open" : ""}`,
@@ -9420,14 +9520,14 @@ var CardModal = ({
       onMouseDown: (event) => event.stopPropagation(),
       onTouchStart: (event) => event.stopPropagation(),
       children: [
-        /* @__PURE__ */ jsxs10("div", { className: "modal-box flex max-h-[calc(100vh-4rem)] w-11/12 max-w-3xl flex-col overflow-hidden", children: [
-          /* @__PURE__ */ jsx13("div", { style: { display: componentProps.hideKey ? "none" : "initial" }, className: "mb-4 shrink-0 border-b border-base-200 pb-2", children: /* @__PURE__ */ jsx13("h3", { className: "text-xl font-bold", children: "Additional Settings" }) }),
-          /* @__PURE__ */ jsxs10(
+        /* @__PURE__ */ jsxs11("div", { className: "modal-box flex max-h-[calc(100vh-4rem)] w-11/12 max-w-3xl flex-col overflow-hidden", children: [
+          /* @__PURE__ */ jsx14("div", { style: { display: componentProps.hideKey ? "none" : "initial" }, className: "mb-4 shrink-0 border-b border-base-200 pb-2", children: /* @__PURE__ */ jsx14("h3", { className: "text-xl font-bold", children: "Additional Settings" }) }),
+          /* @__PURE__ */ jsxs11(
             "div",
             {
               className: `min-h-0 flex-1 overflow-y-auto px-1.5 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${fieldStackClass}`,
               children: [
-                /* @__PURE__ */ jsx13(
+                /* @__PURE__ */ jsx14(
                   TypeSpecificParameters,
                   {
                     parameters: componentPropsState,
@@ -9439,16 +9539,16 @@ var CardModal = ({
                     }
                   }
                 ),
-                /* @__PURE__ */ jsxs10("div", { className: fieldClass, children: [
-                  /* @__PURE__ */ jsxs10("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+                /* @__PURE__ */ jsxs11("div", { className: fieldClass, children: [
+                  /* @__PURE__ */ jsxs11("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
                     "Column Size",
-                    /* @__PURE__ */ jsx13(
+                    /* @__PURE__ */ jsx14(
                       "a",
                       {
                         href: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Basic_Concepts_of_Grid_Layout",
                         target: "_blank",
                         rel: "noopener noreferrer",
-                        children: /* @__PURE__ */ jsx13(
+                        children: /* @__PURE__ */ jsx14(
                           Tooltip,
                           {
                             id: "column_size_tooltip",
@@ -9459,7 +9559,7 @@ var CardModal = ({
                       }
                     )
                   ] }),
-                  /* @__PURE__ */ jsx13(
+                  /* @__PURE__ */ jsx14(
                     "input",
                     {
                       value: componentPropsState["ui:column"] ? componentPropsState["ui:column"] : "",
@@ -9477,7 +9577,7 @@ var CardModal = ({
                     "ui:column"
                   )
                 ] }),
-                /* @__PURE__ */ jsx13(
+                /* @__PURE__ */ jsx14(
                   DependencyField,
                   {
                     parameters: componentPropsState,
@@ -9492,8 +9592,8 @@ var CardModal = ({
               ]
             }
           ),
-          /* @__PURE__ */ jsxs10("div", { className: "modal-action shrink-0", children: [
-            /* @__PURE__ */ jsx13(
+          /* @__PURE__ */ jsxs11("div", { className: "modal-action shrink-0", children: [
+            /* @__PURE__ */ jsx14(
               "button",
               {
                 onClick: () => {
@@ -9504,7 +9604,7 @@ var CardModal = ({
                 children: "Cancel"
               }
             ),
-            /* @__PURE__ */ jsx13(
+            /* @__PURE__ */ jsx14(
               "button",
               {
                 onClick: () => {
@@ -9517,7 +9617,7 @@ var CardModal = ({
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsx13("form", { method: "dialog", className: "modal-backdrop", children: /* @__PURE__ */ jsx13("button", { onClick: () => onClose(), children: "close" }) })
+        /* @__PURE__ */ jsx14("form", { method: "dialog", className: "modal-backdrop", children: /* @__PURE__ */ jsx14("button", { onClick: () => onClose(), children: "close" }) })
       ]
     }
   );
@@ -9528,7 +9628,7 @@ var CardModal_default = CardModal;
 import React9 from "react";
 
 // src/GeneralParameterInputs.tsx
-import { jsx as jsx14 } from "react/jsx-runtime";
+import { jsx as jsx15 } from "react/jsx-runtime";
 var GeneralParameterInputs = ({
   category,
   parameters,
@@ -9537,7 +9637,7 @@ var GeneralParameterInputs = ({
   allFormInputs
 }) => {
   const CardBody = getCardBody(category, allFormInputs);
-  return /* @__PURE__ */ jsx14("div", { className: "flex flex-col gap-2 pb-2 [&>h5]:text-[18px] [&>h5]:font-bold [&>h5]:leading-6 [&>input]:mt-0 [&>select]:mt-0 [&>textarea]:mt-0", children: /* @__PURE__ */ jsx14(CardBody, { parameters, onChange, mods: mods || {} }) });
+  return /* @__PURE__ */ jsx15("div", { className: "flex flex-col gap-2 pb-2 [&>h5]:text-[18px] [&>h5]:font-bold [&>h5]:leading-6 [&>input]:mt-0 [&>select]:mt-0 [&>textarea]:mt-0", children: /* @__PURE__ */ jsx15(CardBody, { parameters, onChange, mods: mods || {} }) });
 };
 var GeneralParameterInputs_default = GeneralParameterInputs;
 
@@ -9546,16 +9646,16 @@ import { useState as useState8 } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-import { jsx as jsx15, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx16, jsxs as jsxs12 } from "react/jsx-runtime";
 function MarkdownDescriptionInput({
   value,
   onChange
 }) {
   const [mode, setMode] = useState8("edit");
-  return /* @__PURE__ */ jsxs11("div", { className: "form-description-wrapper", children: [
-    /* @__PURE__ */ jsxs11("div", { className: "form-desc-toolbar flex items-center gap-2 mb-3", children: [
-      /* @__PURE__ */ jsxs11("div", { className: "join", children: [
-        /* @__PURE__ */ jsx15(
+  return /* @__PURE__ */ jsxs12("div", { className: "form-description-wrapper", children: [
+    /* @__PURE__ */ jsxs12("div", { className: "form-desc-toolbar flex items-center gap-2 mb-3", children: [
+      /* @__PURE__ */ jsxs12("div", { className: "join", children: [
+        /* @__PURE__ */ jsx16(
           "button",
           {
             type: "button",
@@ -9564,7 +9664,7 @@ function MarkdownDescriptionInput({
             children: "Edit"
           }
         ),
-        /* @__PURE__ */ jsx15(
+        /* @__PURE__ */ jsx16(
           "button",
           {
             type: "button",
@@ -9574,9 +9674,9 @@ function MarkdownDescriptionInput({
           }
         )
       ] }),
-      /* @__PURE__ */ jsx15("span", { className: "text-sm opacity-60 italic", children: "Supports Markdown" })
+      /* @__PURE__ */ jsx16("span", { className: "text-sm opacity-60 italic", children: "Supports Markdown" })
     ] }),
-    mode === "edit" ? /* @__PURE__ */ jsx15(
+    mode === "edit" ? /* @__PURE__ */ jsx16(
       "textarea",
       {
         value,
@@ -9585,12 +9685,12 @@ function MarkdownDescriptionInput({
         className: "textarea textarea-primary textarea-bordered w-full form-description",
         onChange: (ev) => onChange(ev.target.value)
       }
-    ) : /* @__PURE__ */ jsx15("div", { className: "markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered w-full h-auto min-h-[6rem]", children: value ? /* @__PURE__ */ jsx15(ReactMarkdown, { remarkPlugins: [remarkGfm, remarkBreaks], children: value }) : /* @__PURE__ */ jsx15("span", { className: "text-base-content/40 italic", children: "Nothing to preview yet\u2026" }) })
+    ) : /* @__PURE__ */ jsx16("div", { className: "markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered w-full h-auto min-h-[6rem]", children: value ? /* @__PURE__ */ jsx16(ReactMarkdown, { remarkPlugins: [remarkGfm, remarkBreaks], children: value }) : /* @__PURE__ */ jsx16("span", { className: "text-base-content/40 italic", children: "Nothing to preview yet\u2026" }) })
   ] });
 }
 
 // src/CardGeneralParameterInputs.tsx
-import { jsx as jsx16, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
 var entryRowClass = `card-entry-row ${fieldStackClass}`;
 var entryClass = `card-entry ${fieldClass}`;
 var entryLabelClass = fieldLabelClass;
@@ -9636,12 +9736,12 @@ function CardGeneralParameterInputs({
     ];
     return groupOrder.filter((key) => inputKeys.includes(key)).map((key) => ({ value: key, label: categoryMap[key] }));
   };
-  return /* @__PURE__ */ jsxs12(React9.Fragment, { children: [
-    /* @__PURE__ */ jsxs12("div", { className: entryRowClass, children: [
-      showObjectNameInput && /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-        /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+  return /* @__PURE__ */ jsxs13(React9.Fragment, { children: [
+    /* @__PURE__ */ jsxs13("div", { className: entryRowClass, children: [
+      showObjectNameInput && /* @__PURE__ */ jsxs13("div", { className: entryClass, children: [
+        /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
           `${objectNameLabel} `,
-          /* @__PURE__ */ jsx16(
+          /* @__PURE__ */ jsx17(
             Tooltip,
             {
               text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardObjectName === "string" ? mods.tooltipDescriptions.cardObjectName : "The name of the item when you download the data",
@@ -9650,8 +9750,8 @@ function CardGeneralParameterInputs({
             }
           )
         ] }),
-        /* @__PURE__ */ jsxs12("div", { className: "form-control w-full", children: [
-          /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsxs13("div", { className: "form-control w-full", children: [
+          /* @__PURE__ */ jsx17(
             "input",
             {
               value: keyState || "",
@@ -9675,13 +9775,13 @@ function CardGeneralParameterInputs({
               className: `input input-primary input-bordered ${entryControlClass} card-text ${keyError !== null ? "input-error" : ""}`
             }
           ),
-          keyError && /* @__PURE__ */ jsx16("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx16("span", { className: "label-text-alt text-error", children: keyError }) })
+          keyError && /* @__PURE__ */ jsx17("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx17("span", { className: "label-text-alt text-error", children: keyError }) })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-        /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+      /* @__PURE__ */ jsxs13("div", { className: entryClass, children: [
+        /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
           `${displayNameLabel} `,
-          /* @__PURE__ */ jsx16(
+          /* @__PURE__ */ jsx17(
             Tooltip,
             {
               text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardDisplayName === "string" ? mods.tooltipDescriptions.cardDisplayName : "The item name shown on the form",
@@ -9690,7 +9790,7 @@ function CardGeneralParameterInputs({
             }
           )
         ] }),
-        /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsx17(
           "input",
           {
             value: titleState || "",
@@ -9705,11 +9805,11 @@ function CardGeneralParameterInputs({
         )
       ] })
     ] }),
-    /* @__PURE__ */ jsxs12("div", { className: `${entryRowClass} mt-4`, children: [
-      /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-        /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+    /* @__PURE__ */ jsxs13("div", { className: `${entryRowClass} mt-4`, children: [
+      /* @__PURE__ */ jsxs13("div", { className: entryClass, children: [
+        /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
           `${descriptionLabel} `,
-          /* @__PURE__ */ jsx16(
+          /* @__PURE__ */ jsx17(
             Tooltip,
             {
               text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardDescription === "string" ? mods.tooltipDescriptions.cardDescription : "This will appear as help text on the form",
@@ -9718,7 +9818,7 @@ function CardGeneralParameterInputs({
             }
           )
         ] }),
-        /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsx17(
           MarkdownDescriptionInput,
           {
             value: parameters.description || "",
@@ -9726,16 +9826,16 @@ function CardGeneralParameterInputs({
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs12(
+      /* @__PURE__ */ jsxs13(
         "div",
         {
           className: classNames(entryClass, {
             "wide-card-entry": !showObjectNameInput
           }),
           children: [
-            /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+            /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
               `${inputTypeLabel} `,
-              /* @__PURE__ */ jsx16(
+              /* @__PURE__ */ jsx17(
                 Tooltip,
                 {
                   text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardInputType === "string" ? mods.tooltipDescriptions.cardInputType : "The type of item displayed on the form",
@@ -9744,7 +9844,7 @@ function CardGeneralParameterInputs({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx16(
+            /* @__PURE__ */ jsx17(
               "select",
               {
                 className: `select select-primary select-bordered ${entryControlClass}`,
@@ -9770,14 +9870,14 @@ function CardGeneralParameterInputs({
                     category: newProps.category || newCategory
                   });
                 },
-                children: availableInputTypes().map((option) => /* @__PURE__ */ jsx16("option", { value: option.value, children: option.label }, option.value))
+                children: availableInputTypes().map((option) => /* @__PURE__ */ jsx17("option", { value: option.value, children: option.label }, option.value))
               }
             )
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ jsx16("div", { className: "card-category-options mt-4 pb-1", children: /* @__PURE__ */ jsx16(
+    /* @__PURE__ */ jsx17("div", { className: "card-category-options mt-4 pb-1", children: /* @__PURE__ */ jsx17(
       GeneralParameterInputs_default,
       {
         category: parameters.category,
@@ -9793,7 +9893,7 @@ function CardGeneralParameterInputs({
 // src/Add.tsx
 import { useState as useState9, useEffect, useRef } from "react";
 import { PlusIcon as PlusIcon3 } from "@heroicons/react/24/outline";
-import { Fragment, jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx18, jsxs as jsxs14 } from "react/jsx-runtime";
 function Add({
   addElem,
   hidden,
@@ -9816,20 +9916,20 @@ function Add({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popoverOpen]);
-  if (hidden) return /* @__PURE__ */ jsx17(Fragment, {});
-  return /* @__PURE__ */ jsxs13("div", { ref: containerRef, className: "relative flex flex-col items-center mt-4 w-full", children: [
-    /* @__PURE__ */ jsx17(
+  if (hidden) return /* @__PURE__ */ jsx18(Fragment, {});
+  return /* @__PURE__ */ jsxs14("div", { ref: containerRef, className: "relative flex flex-col items-center mt-4 w-full", children: [
+    /* @__PURE__ */ jsx18(
       "div",
       {
         className: "group w-full py-2 flex justify-center cursor-pointer border-2 border-dashed border-base-300 hover:border-primary hover:bg-primary/5 rounded-lg transition-all",
         onClick: () => setPopoverOpen(!popoverOpen),
         title: tooltipDescription || "Add a new item or section",
-        children: /* @__PURE__ */ jsx17(PlusIcon3, { className: "h-6 w-6 text-base-content/50 group-hover:text-primary transition-colors" })
+        children: /* @__PURE__ */ jsx18(PlusIcon3, { className: "h-6 w-6 text-base-content/50 group-hover:text-primary transition-colors" })
       }
     ),
-    popoverOpen && /* @__PURE__ */ jsxs13("div", { className: "absolute top-12 z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300", children: [
-      /* @__PURE__ */ jsx17("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
-      /* @__PURE__ */ jsx17(
+    popoverOpen && /* @__PURE__ */ jsxs14("div", { className: "absolute top-12 z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300", children: [
+      /* @__PURE__ */ jsx18("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
+      /* @__PURE__ */ jsx18(
         FBRadioGroup,
         {
           className: "choose-create text-sm",
@@ -9850,9 +9950,9 @@ function Add({
           }
         }
       ),
-      /* @__PURE__ */ jsxs13("div", { className: "flex justify-between mt-4", children: [
-        /* @__PURE__ */ jsx17("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-outline btn-secondary", children: "Cancel" }),
-        /* @__PURE__ */ jsx17(
+      /* @__PURE__ */ jsxs14("div", { className: "flex justify-between mt-4", children: [
+        /* @__PURE__ */ jsx18("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-outline btn-secondary", children: "Cancel" }),
+        /* @__PURE__ */ jsx18(
           "button",
           {
             onClick: () => {
@@ -9870,7 +9970,7 @@ function Add({
 
 // src/Card.tsx
 import { ArrowsPointingOutIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { jsx as jsx18, jsxs as jsxs14 } from "react/jsx-runtime";
+import { jsx as jsx19, jsxs as jsxs15 } from "react/jsx-runtime";
 function Card({
   componentProps,
   onChange,
@@ -9887,17 +9987,17 @@ function Card({
 }) {
   const [modalOpen, setModalOpen] = React11.useState(false);
   const [elementId] = React11.useState(getRandomId());
-  return /* @__PURE__ */ jsxs14(React11.Fragment, { children: [
-    /* @__PURE__ */ jsxs14(
+  return /* @__PURE__ */ jsxs15(React11.Fragment, { children: [
+    /* @__PURE__ */ jsxs15(
       Collapse_default,
       {
         isOpen: cardOpen,
         toggleCollapse: () => setCardOpen(!cardOpen),
-        title: /* @__PURE__ */ jsxs14("div", { className: "flex justify-between items-center w-full", children: [
-          /* @__PURE__ */ jsxs14("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
+        title: /* @__PURE__ */ jsxs15("div", { className: "flex justify-between items-center w-full", children: [
+          /* @__PURE__ */ jsxs15("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
             componentProps.title || componentProps.name,
             " ",
-            componentProps.parent ? /* @__PURE__ */ jsx18(
+            componentProps.parent ? /* @__PURE__ */ jsx19(
               Tooltip,
               {
                 text: `Depends on ${componentProps.parent}`,
@@ -9905,7 +10005,7 @@ function Card({
                 type: "alert"
               }
             ) : "",
-            componentProps.$ref !== void 0 ? /* @__PURE__ */ jsx18(
+            componentProps.$ref !== void 0 ? /* @__PURE__ */ jsx19(
               Tooltip,
               {
                 text: `Is an instance of pre-configured component ${componentProps.$ref}`,
@@ -9914,14 +10014,14 @@ function Card({
               }
             ) : ""
           ] }),
-          /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsx19(
             "span",
             {
               ...dragHandleProps ?? {},
               className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
               "data-tip": "Drag to move form item",
               id: `${elementId}_moveformcard`,
-              children: /* @__PURE__ */ jsx18(
+              children: /* @__PURE__ */ jsx19(
                 ArrowsPointingOutIcon,
                 {
                   className: "w-6 h-6 stroke-2 text-base-content/50 hover:text-base-content transition-colors",
@@ -9934,7 +10034,7 @@ function Card({
         ] }),
         className: `card-container ${componentProps.dependent ? "card-dependent" : ""} ${componentProps.$ref === void 0 ? "" : "card-reference"}`,
         children: [
-          /* @__PURE__ */ jsx18("div", { className: "cardEntries", children: /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsx19("div", { className: "cardEntries", children: /* @__PURE__ */ jsx19(
             CardGeneralParameterInputs,
             {
               parameters: componentProps,
@@ -9944,8 +10044,8 @@ function Card({
               showObjectNameInput
             }
           ) }),
-          /* @__PURE__ */ jsxs14("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
-            /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsxs15("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
+            /* @__PURE__ */ jsx19(
               FBCheckbox_default,
               {
                 onChangeValue: () => onChange({
@@ -9957,10 +10057,10 @@ function Card({
                 id: `${elementId}_required`
               }
             ),
-            /* @__PURE__ */ jsx18("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this item", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx18(PencilIcon, { className: "w-5 h-5 text-secondary hover:text-primary transition-colors", onClick: () => setModalOpen(true) }) }),
-            /* @__PURE__ */ jsx18("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete item", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx18(TrashIcon, { className: "w-5 h-5 text-warning hover:text-error transition-colors", onClick: () => onDelete && onDelete() }) })
+            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this item", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx19(PencilIcon, { className: "w-5 h-5 text-secondary hover:text-primary transition-colors", onClick: () => setModalOpen(true) }) }),
+            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete item", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx19(TrashIcon, { className: "w-5 h-5 text-warning hover:text-error transition-colors", onClick: () => onDelete && onDelete() }) })
           ] }),
-          /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsx19(
             CardModal_default,
             {
               componentProps,
@@ -9976,7 +10076,7 @@ function Card({
       }
     ),
     mods?.components?.add && mods?.components?.add(addProperties),
-    !mods?.components?.add && addElem && /* @__PURE__ */ jsx18(
+    !mods?.components?.add && addElem && /* @__PURE__ */ jsx19(
       Add,
       {
         tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -9992,15 +10092,15 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 // src/defaults/defaultInputs.tsx
 import React12 from "react";
-import { jsx as jsx19, jsxs as jsxs15 } from "react/jsx-runtime";
-var CardDefaultParameterInputs = () => /* @__PURE__ */ jsx19("div", {});
+import { jsx as jsx20, jsxs as jsxs16 } from "react/jsx-runtime";
+var CardDefaultParameterInputs = () => /* @__PURE__ */ jsx20("div", {});
 var getInputCardBodyComponent = ({ type }) => function InputCardBodyComponent({
   parameters,
   onChange
 }) {
-  return /* @__PURE__ */ jsxs15(React12.Fragment, { children: [
-    /* @__PURE__ */ jsx19("h5", { children: "Default Value" }),
-    /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsxs16(React12.Fragment, { children: [
+    /* @__PURE__ */ jsx20("h5", { children: "Default Value" }),
+    /* @__PURE__ */ jsx20(
       "input",
       {
         value: parameters.default || "",
@@ -10013,7 +10113,7 @@ var getInputCardBodyComponent = ({ type }) => function InputCardBodyComponent({
   ] });
 };
 var Checkbox = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsx19("div", { className: "card-boolean", children: /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsx20("div", { className: "card-boolean", children: /* @__PURE__ */ jsx20(
     FBCheckbox_default,
     {
       onChangeValue: () => {
@@ -10038,9 +10138,9 @@ function MultipleChoice({
   const containsString = containsUnparsableString || enumArray.some((val) => typeof val === "string");
   const [isNumber2, setIsNumber] = React12.useState(!!enumArray.length && !containsString);
   const [elementId] = React12.useState(getRandomId());
-  return /* @__PURE__ */ jsxs15("div", { className: "card-enum", children: [
-    /* @__PURE__ */ jsx19("h5", { children: "Possible Values" }),
-    /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsxs16("div", { className: "card-enum", children: [
+    /* @__PURE__ */ jsx20("h5", { children: "Possible Values" }),
+    /* @__PURE__ */ jsx20(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -10061,7 +10161,7 @@ function MultipleChoice({
         id: `${elementId}_different`
       }
     ),
-    /* @__PURE__ */ jsx19("div", { className: containsUnparsableString || !enumArray.length ? "hidden" : "", children: /* @__PURE__ */ jsx19(
+    /* @__PURE__ */ jsx20("div", { className: containsUnparsableString || !enumArray.length ? "hidden" : "", children: /* @__PURE__ */ jsx20(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -10096,7 +10196,7 @@ function MultipleChoice({
         id: `${elementId}_forceNumber`
       }
     ) }),
-    /* @__PURE__ */ jsx19(
+    /* @__PURE__ */ jsx20(
       CardEnumOptions,
       {
         initialValues: enumArray,
@@ -10119,9 +10219,9 @@ function MultipleChoiceArray({
   const items = parameters.items || {};
   const enumArray = Array.isArray(items.enum) ? items.enum : [];
   const [elementId] = React12.useState(getRandomId());
-  return /* @__PURE__ */ jsxs15("div", { className: "card-enum", children: [
-    /* @__PURE__ */ jsx19("h5", { children: "Options" }),
-    /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsxs16("div", { className: "card-enum", children: [
+    /* @__PURE__ */ jsx20("h5", { children: "Options" }),
+    /* @__PURE__ */ jsx20(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -10139,7 +10239,7 @@ function MultipleChoiceArray({
         id: `${elementId}_different`
       }
     ),
-    /* @__PURE__ */ jsx19(
+    /* @__PURE__ */ jsx20(
       CardEnumOptions,
       {
         initialValues: enumArray,
@@ -10271,7 +10371,7 @@ var defaultInputs_default = defaultInputs;
 
 // src/Section.tsx
 import { ArrowsPointingOutIcon as ArrowsPointingOutIcon2, PencilIcon as PencilIcon2, TrashIcon as TrashIcon2 } from "@heroicons/react/24/outline";
-import { jsx as jsx20, jsxs as jsxs16 } from "react/jsx-runtime";
+import { jsx as jsx21, jsxs as jsxs17 } from "react/jsx-runtime";
 var sectionHeadClass = `section-head ${fieldStackClass}`;
 var sectionEntryClass = `section-entry ${fieldClass}`;
 var sectionLabelClass = fieldLabelClass;
@@ -10324,17 +10424,17 @@ function Section({
     categoryHash
   };
   const hideAddButton = schemaData.properties && Object.keys(schemaData.properties).length !== 0;
-  return /* @__PURE__ */ jsxs16(React13.Fragment, { children: [
-    /* @__PURE__ */ jsxs16(
+  return /* @__PURE__ */ jsxs17(React13.Fragment, { children: [
+    /* @__PURE__ */ jsxs17(
       Collapse_default,
       {
         isOpen: cardOpen,
         toggleCollapse: () => setCardOpen(!cardOpen),
-        title: /* @__PURE__ */ jsxs16("div", { className: "flex justify-between items-center w-full", children: [
-          /* @__PURE__ */ jsxs16("span", { onClick: () => setCardOpen(!cardOpen), className: "text-xl font-bold cursor-pointer select-none", children: [
+        title: /* @__PURE__ */ jsxs17("div", { className: "flex justify-between items-center w-full", children: [
+          /* @__PURE__ */ jsxs17("span", { onClick: () => setCardOpen(!cardOpen), className: "text-xl font-bold cursor-pointer select-none", children: [
             schemaData.title || keyName,
             " ",
-            parent2 ? /* @__PURE__ */ jsx20(
+            parent2 ? /* @__PURE__ */ jsx21(
               Tooltip,
               {
                 text: `Depends on ${parent2}`,
@@ -10343,14 +10443,14 @@ function Section({
               }
             ) : ""
           ] }),
-          /* @__PURE__ */ jsx20(
+          /* @__PURE__ */ jsx21(
             "span",
             {
               ...dragHandleProps ?? {},
               className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
               "data-tip": "Drag to move section",
               id: `${elementId}_moveinfosection`,
-              children: /* @__PURE__ */ jsx20(
+              children: /* @__PURE__ */ jsx21(
                 ArrowsPointingOutIcon2,
                 {
                   className: "w-6 h-6 stroke-2 text-base-content/50 hover:text-base-content transition-colors",
@@ -10363,11 +10463,11 @@ function Section({
         ] }),
         className: `section-container sectionContainer ${dependent ? "section-dependent" : ""} ${reference ? "section-reference" : ""}`,
         children: [
-          /* @__PURE__ */ jsxs16("div", { className: `section-entries ${reference ? "section-reference" : ""}`, children: [
-            /* @__PURE__ */ jsxs16("div", { className: sectionHeadClass, children: [
-              reference ? /* @__PURE__ */ jsxs16("div", { className: `${sectionEntryClass} section-reference`, children: [
-                /* @__PURE__ */ jsx20("h5", { className: sectionLabelClass, children: "Reference Section" }),
-                /* @__PURE__ */ jsx20(
+          /* @__PURE__ */ jsxs17("div", { className: `section-entries ${reference ? "section-reference" : ""}`, children: [
+            /* @__PURE__ */ jsxs17("div", { className: sectionHeadClass, children: [
+              reference ? /* @__PURE__ */ jsxs17("div", { className: `${sectionEntryClass} section-reference`, children: [
+                /* @__PURE__ */ jsx21("h5", { className: sectionLabelClass, children: "Reference Section" }),
+                /* @__PURE__ */ jsx21(
                   "select",
                   {
                     className: `select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content`,
@@ -10375,15 +10475,15 @@ function Section({
                     onChange: (e) => {
                       onChange(schema, uischema, e.target.value);
                     },
-                    children: Object.keys(definitionData).map((key) => /* @__PURE__ */ jsx20("option", { value: `#/definitions/${key}`, children: `#/definitions/${key}` }, `#/definitions/${key}`))
+                    children: Object.keys(definitionData).map((key) => /* @__PURE__ */ jsx21("option", { value: `#/definitions/${key}`, children: `#/definitions/${key}` }, `#/definitions/${key}`))
                   }
                 )
               ] }) : "",
-              /* @__PURE__ */ jsxs16("div", { className: sectionEntryClass, "data-test": "section-object-name", children: [
-                /* @__PURE__ */ jsxs16("h5", { className: sectionLabelClass, children: [
+              /* @__PURE__ */ jsxs17("div", { className: sectionEntryClass, "data-test": "section-object-name", children: [
+                /* @__PURE__ */ jsxs17("h5", { className: sectionLabelClass, children: [
                   "Section Variable Name",
                   " ",
-                  /* @__PURE__ */ jsx20(
+                  /* @__PURE__ */ jsx21(
                     Tooltip,
                     {
                       text: mods && mods.tooltipDescriptions && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardSectionObjectName === "string" ? mods.tooltipDescriptions.cardSectionObjectName : "The name in the downloaded data for this section.",
@@ -10392,8 +10492,8 @@ function Section({
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsxs16("div", { className: "form-control w-full", children: [
-                  /* @__PURE__ */ jsx20(
+                /* @__PURE__ */ jsxs17("div", { className: "form-control w-full", children: [
+                  /* @__PURE__ */ jsx21(
                     "input",
                     {
                       value: keyName || "",
@@ -10415,14 +10515,14 @@ function Section({
                       readOnly: hideKey
                     }
                   ),
-                  keyError && /* @__PURE__ */ jsx20("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx20("span", { className: "label-text-alt text-error", children: keyError }) })
+                  keyError && /* @__PURE__ */ jsx21("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx21("span", { className: "label-text-alt text-error", children: keyError }) })
                 ] })
               ] }),
-              /* @__PURE__ */ jsxs16("div", { className: sectionEntryClass, "data-test": "section-display-name", children: [
-                /* @__PURE__ */ jsxs16("h5", { className: sectionLabelClass, children: [
+              /* @__PURE__ */ jsxs17("div", { className: sectionEntryClass, "data-test": "section-display-name", children: [
+                /* @__PURE__ */ jsxs17("h5", { className: sectionLabelClass, children: [
                   "Section Display Name",
                   " ",
-                  /* @__PURE__ */ jsx20(
+                  /* @__PURE__ */ jsx21(
                     Tooltip,
                     {
                       text: mods && mods.tooltipDescriptions && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardSectionDisplayName === "string" ? mods.tooltipDescriptions.cardSectionDisplayName : "The name of the section that will be shown to contributors completing the form.",
@@ -10431,7 +10531,7 @@ function Section({
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsx20(
+                /* @__PURE__ */ jsx21(
                   "input",
                   {
                     value: schemaData.title || "",
@@ -10448,11 +10548,11 @@ function Section({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs16("div", { className: sectionEntryClass, "data-test": "section-description", children: [
-                /* @__PURE__ */ jsxs16("h5", { className: sectionLabelClass, children: [
+              /* @__PURE__ */ jsxs17("div", { className: sectionEntryClass, "data-test": "section-description", children: [
+                /* @__PURE__ */ jsxs17("h5", { className: sectionLabelClass, children: [
                   "Section Description",
                   " ",
-                  /* @__PURE__ */ jsx20(
+                  /* @__PURE__ */ jsx21(
                     Tooltip,
                     {
                       text: mods && mods.tooltipDescriptions && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardSectionDescription === "string" ? mods.tooltipDescriptions.cardSectionDescription : "A description of the section which will be visible on the form.",
@@ -10461,7 +10561,7 @@ function Section({
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsx20(
+                /* @__PURE__ */ jsx21(
                   MarkdownDescriptionInput,
                   {
                     value: schemaData.description || "",
@@ -10469,7 +10569,7 @@ function Section({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs16(
+              /* @__PURE__ */ jsxs17(
                 "div",
                 {
                   className: "alert alert-warning mb-4 mt-4 flex-col items-start",
@@ -10477,13 +10577,13 @@ function Section({
                     display: unsupportedFeatures.length === 0 ? "none" : "flex"
                   },
                   children: [
-                    /* @__PURE__ */ jsx20("h5", { className: "font-bold", children: "Unsupported Features:" }),
-                    /* @__PURE__ */ jsx20("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message) => /* @__PURE__ */ jsx20("li", { children: message }, `${elementId}_${message}`)) })
+                    /* @__PURE__ */ jsx21("h5", { className: "font-bold", children: "Compatibility diagnostics:" }),
+                    /* @__PURE__ */ jsx21("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message) => /* @__PURE__ */ jsx21("li", { children: message }, `${elementId}_${message}`)) })
                   ]
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx20("div", { className: "section-body", children: /* @__PURE__ */ jsx20(
+            /* @__PURE__ */ jsx21("div", { className: "section-body", children: /* @__PURE__ */ jsx21(
               DragDropContext,
               {
                 onDragEnd: (result) => onDragEnd(result, {
@@ -10494,7 +10594,7 @@ function Section({
                   definitionUi,
                   categoryHash
                 }),
-                children: /* @__PURE__ */ jsx20(Droppable, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs16(
+                children: /* @__PURE__ */ jsx21(Droppable, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs17(
                   "div",
                   {
                     ref: providedDroppable.innerRef,
@@ -10517,7 +10617,7 @@ function Section({
                         Section
                       }).map((element, index) => (
                         // @ts-ignore: suppress key error, can't change key assignment
-                        /* @__PURE__ */ jsx20(Draggable, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx20(
+                        /* @__PURE__ */ jsx21(Draggable, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx21(
                           "div",
                           {
                             ref: providedDraggable.innerRef,
@@ -10536,9 +10636,9 @@ function Section({
                 ) })
               }
             ) }),
-            /* @__PURE__ */ jsxs16("div", { className: "section-footer", children: [
+            /* @__PURE__ */ jsxs17("div", { className: "section-footer", children: [
               !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
-              !mods?.components?.add && /* @__PURE__ */ jsx20(
+              !mods?.components?.add && /* @__PURE__ */ jsx21(
                 Add,
                 {
                   tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -10553,8 +10653,8 @@ function Section({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx20("div", { className: "section-interactions", children: /* @__PURE__ */ jsxs16("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
-              /* @__PURE__ */ jsx20(
+            /* @__PURE__ */ jsx21("div", { className: "section-interactions", children: /* @__PURE__ */ jsxs17("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
+              /* @__PURE__ */ jsx21(
                 FBCheckbox_default,
                 {
                   onChangeValue: () => onRequireToggle(),
@@ -10563,14 +10663,14 @@ function Section({
                   id: `${elementId}_required`
                 }
               ),
-              /* @__PURE__ */ jsx20("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this section", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx20(
+              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this section", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx21(
                 PencilIcon2,
                 {
                   className: "w-5 h-5 text-secondary hover:text-primary transition-colors",
                   onClick: () => setModalOpen(true)
                 }
               ) }),
-              /* @__PURE__ */ jsx20("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete section", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx20(
+              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete section", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx21(
                 TrashIcon2,
                 {
                   className: "w-5 h-5 text-warning hover:text-error transition-colors",
@@ -10579,7 +10679,7 @@ function Section({
               ) })
             ] }) })
           ] }),
-          /* @__PURE__ */ jsx20(
+          /* @__PURE__ */ jsx21(
             CardModal_default,
             {
               componentProps: {
@@ -10607,7 +10707,7 @@ function Section({
       }
     ),
     mods?.components?.add && mods.components.add(parentProperties),
-    !mods?.components?.add && /* @__PURE__ */ jsx20(
+    !mods?.components?.add && /* @__PURE__ */ jsx21(
       Add,
       {
         tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -10629,20 +10729,20 @@ import React15, { useState as useState11 } from "react";
 
 // src/inputs/PlaceholderInput.tsx
 import { useState as useState10 } from "react";
-import { jsx as jsx21, jsxs as jsxs17 } from "react/jsx-runtime";
+import { jsx as jsx22, jsxs as jsxs18 } from "react/jsx-runtime";
 var PlaceholderInput = ({ parameters, onChange }) => {
   const [elementId] = useState10(getRandomId());
-  return /* @__PURE__ */ jsxs17("div", { className: fieldClass, children: [
-    /* @__PURE__ */ jsxs17("div", { className: fieldLabelClass, children: [
+  return /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
+    /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
       "Placeholder",
       " ",
-      /* @__PURE__ */ jsx21(
+      /* @__PURE__ */ jsx22(
         "a",
         {
           href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-placeholder",
           target: "_blank",
           rel: "noopener noreferrer",
-          children: /* @__PURE__ */ jsx21(
+          children: /* @__PURE__ */ jsx22(
             Tooltip,
             {
               id: `${elementId}_placeholder`,
@@ -10653,7 +10753,7 @@ var PlaceholderInput = ({ parameters, onChange }) => {
         }
       )
     ] }),
-    /* @__PURE__ */ jsx21(
+    /* @__PURE__ */ jsx22(
       "input",
       {
         value: parameters["ui:placeholder"] ? parameters["ui:placeholder"] : "",
@@ -10673,7 +10773,7 @@ var PlaceholderInput = ({ parameters, onChange }) => {
 };
 
 // src/defaults/shortAnswerInputs.tsx
-import { jsx as jsx22, jsxs as jsxs18 } from "react/jsx-runtime";
+import { jsx as jsx23, jsxs as jsxs19 } from "react/jsx-runtime";
 var formatDictionary = {
   "": "None",
   email: "Email",
@@ -10695,10 +10795,10 @@ var autoDictionary = {
 };
 var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
   const [elementId] = useState11(getRandomId());
-  return /* @__PURE__ */ jsxs18("div", { className: fieldStackClass, children: [
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx22("div", { className: fieldLabelClass, children: "Minimum Length" }),
-      /* @__PURE__ */ jsx22(
+  return /* @__PURE__ */ jsxs19("div", { className: fieldStackClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Minimum Length" }),
+      /* @__PURE__ */ jsx23(
         "input",
         {
           value: parameters.minLength ? parameters.minLength : "",
@@ -10715,9 +10815,9 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
         "minLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx22("div", { className: fieldLabelClass, children: "Maximum Length" }),
-      /* @__PURE__ */ jsx22(
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Maximum Length" }),
+      /* @__PURE__ */ jsx23(
         "input",
         {
           value: parameters.maxLength ? parameters.maxLength : "",
@@ -10734,17 +10834,17 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
         "maxLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
         "Regular Expression Pattern",
         " ",
-        /* @__PURE__ */ jsx22(
+        /* @__PURE__ */ jsx23(
           "a",
           {
             href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions",
             target: "_blank",
             rel: "noopener noreferrer",
-            children: /* @__PURE__ */ jsx22(
+            children: /* @__PURE__ */ jsx23(
               Tooltip,
               {
                 id: `${elementId}_regex`,
@@ -10755,7 +10855,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx22(
+      /* @__PURE__ */ jsx23(
         "input",
         {
           value: parameters.pattern ? parameters.pattern : "",
@@ -10772,11 +10872,11 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
         "pattern"
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
         "Format",
         " ",
-        /* @__PURE__ */ jsx22(
+        /* @__PURE__ */ jsx23(
           Tooltip,
           {
             id: `${elementId}_format`,
@@ -10785,7 +10885,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx22(
+      /* @__PURE__ */ jsx23(
         "select",
         {
           className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
@@ -10794,21 +10894,21 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
             ...parameters,
             format: e.target.value
           }),
-          children: Object.keys(formatDictionary).map((key) => /* @__PURE__ */ jsx22("option", { value: key, children: formatDictionary[key] }, key))
+          children: Object.keys(formatDictionary).map((key) => /* @__PURE__ */ jsx23("option", { value: key, children: formatDictionary[key] }, key))
         }
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
         "Auto Complete Category",
         " ",
-        /* @__PURE__ */ jsx22(
+        /* @__PURE__ */ jsx23(
           "a",
           {
             href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete",
             target: "_blank",
             rel: "noopener noreferrer",
-            children: /* @__PURE__ */ jsx22(
+            children: /* @__PURE__ */ jsx23(
               Tooltip,
               {
                 id: `${elementId}_autocomplete`,
@@ -10819,7 +10919,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx22(
+      /* @__PURE__ */ jsx23(
         "select",
         {
           className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
@@ -10828,12 +10928,12 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
             ...parameters,
             "ui:autocomplete": e.target.value
           }),
-          children: Object.keys(autoDictionary).map((key) => /* @__PURE__ */ jsx22("option", { value: key, children: autoDictionary[key] }, key))
+          children: Object.keys(autoDictionary).map((key) => /* @__PURE__ */ jsx23("option", { value: key, children: autoDictionary[key] }, key))
         }
       )
     ] }),
-    /* @__PURE__ */ jsx22(PlaceholderInput, { parameters, onChange }),
-    /* @__PURE__ */ jsx22("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx22(
+    /* @__PURE__ */ jsx23(PlaceholderInput, { parameters, onChange }),
+    /* @__PURE__ */ jsx23("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx23(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -10849,9 +10949,9 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
   ] });
 };
 var ShortAnswerField = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs18(React15.Fragment, { children: [
-    /* @__PURE__ */ jsx22("h5", { children: "Default Value" }),
-    /* @__PURE__ */ jsx22(
+  return /* @__PURE__ */ jsxs19(React15.Fragment, { children: [
+    /* @__PURE__ */ jsx23("h5", { children: "Default Value" }),
+    /* @__PURE__ */ jsx23(
       "input",
       {
         value: parameters.default ?? "",
@@ -10864,9 +10964,9 @@ var ShortAnswerField = ({ parameters, onChange }) => {
   ] });
 };
 var Password = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs18(React15.Fragment, { children: [
-    /* @__PURE__ */ jsx22("h5", { children: "Default Password" }),
-    /* @__PURE__ */ jsx22(
+  return /* @__PURE__ */ jsxs19(React15.Fragment, { children: [
+    /* @__PURE__ */ jsx23("h5", { children: "Default Password" }),
+    /* @__PURE__ */ jsx23(
       "input",
       {
         value: parameters.default ?? "",
@@ -10917,13 +11017,13 @@ var shortAnswerInputs_default = shortAnswerInput;
 
 // src/defaults/longAnswerInputs.tsx
 import React16, { useState as useState12 } from "react";
-import { jsx as jsx23, jsxs as jsxs19 } from "react/jsx-runtime";
+import { jsx as jsx24, jsxs as jsxs20 } from "react/jsx-runtime";
 var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
   const [elementId] = useState12(getRandomId());
-  return /* @__PURE__ */ jsxs19("div", { className: fieldStackClass, children: [
-    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Minimum Length" }),
-      /* @__PURE__ */ jsx23(
+  return /* @__PURE__ */ jsxs20("div", { className: fieldStackClass, children: [
+    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Minimum Length" }),
+      /* @__PURE__ */ jsx24(
         "input",
         {
           value: parameters.minLength ? parameters.minLength : "",
@@ -10940,9 +11040,9 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
         "minLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Maximum Length" }),
-      /* @__PURE__ */ jsx23(
+    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Maximum Length" }),
+      /* @__PURE__ */ jsx24(
         "input",
         {
           value: parameters.maxLength ? parameters.maxLength : "",
@@ -10959,11 +11059,11 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
         "maxLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs20("div", { className: fieldLabelClass, children: [
         "Regular Expression Pattern",
         " ",
-        /* @__PURE__ */ jsx23("a", { href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions", children: /* @__PURE__ */ jsx23(
+        /* @__PURE__ */ jsx24("a", { href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions", children: /* @__PURE__ */ jsx24(
           Tooltip,
           {
             id: `${elementId}_regex`,
@@ -10972,7 +11072,7 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         ) })
       ] }),
-      /* @__PURE__ */ jsx23(
+      /* @__PURE__ */ jsx24(
         "input",
         {
           value: parameters.pattern ? parameters.pattern : "",
@@ -10989,8 +11089,8 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
         "pattern"
       )
     ] }),
-    /* @__PURE__ */ jsx23(PlaceholderInput, { parameters, onChange }),
-    /* @__PURE__ */ jsx23("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx23(
+    /* @__PURE__ */ jsx24(PlaceholderInput, { parameters, onChange }),
+    /* @__PURE__ */ jsx24("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx24(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11006,9 +11106,9 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
   ] });
 };
 var LongAnswer = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs19(React16.Fragment, { children: [
-    /* @__PURE__ */ jsx23("h5", { children: "Default Value" }),
-    /* @__PURE__ */ jsx23(
+  return /* @__PURE__ */ jsxs20(React16.Fragment, { children: [
+    /* @__PURE__ */ jsx24("h5", { children: "Default Value" }),
+    /* @__PURE__ */ jsx24(
       "textarea",
       {
         value: parameters.default ?? "",
@@ -11041,7 +11141,7 @@ var longAnswerInputs_default = longAnswerInput;
 
 // src/defaults/numberInputs.tsx
 import React17, { useState as useState13 } from "react";
-import { jsx as jsx24, jsxs as jsxs20 } from "react/jsx-runtime";
+import { jsx as jsx25, jsxs as jsxs21 } from "react/jsx-runtime";
 var hasNumberValue = (value) => typeof value === "number";
 var updateNumberParameter = (parameters, key, value, inactiveKey) => {
   const nextParameters = { ...parameters };
@@ -11055,12 +11155,12 @@ var updateNumberParameter = (parameters, key, value, inactiveKey) => {
 };
 var CardNumberParameterInputs = ({ parameters, onChange }) => {
   const [elementId] = useState13(getRandomId());
-  return /* @__PURE__ */ jsxs20("div", { className: fieldStackClass, children: [
-    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs20("div", { className: fieldLabelClass, children: [
+  return /* @__PURE__ */ jsxs21("div", { className: fieldStackClass, children: [
+    /* @__PURE__ */ jsxs21("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs21("div", { className: fieldLabelClass, children: [
         "Multiple of",
         " ",
-        /* @__PURE__ */ jsx24(
+        /* @__PURE__ */ jsx25(
           Tooltip,
           {
             id: `${elementId}_multiple`,
@@ -11069,7 +11169,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx24(
+      /* @__PURE__ */ jsx25(
         "input",
         {
           value: parameters.multipleOf ? parameters.multipleOf : "",
@@ -11085,9 +11185,9 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
         "multipleOf"
       )
     ] }),
-    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Minimum" }),
-      /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsxs21("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx25("div", { className: fieldLabelClass, children: "Minimum" }),
+      /* @__PURE__ */ jsx25(
         "input",
         {
           value: parameters.minimum ?? parameters.exclusiveMinimum ?? "",
@@ -11111,7 +11211,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
         "minimum"
       )
     ] }),
-    /* @__PURE__ */ jsx24("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsx25("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx25(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11133,9 +11233,9 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
       },
       "exclusiveMinimum"
     ) }),
-    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Maximum" }),
-      /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsxs21("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx25("div", { className: fieldLabelClass, children: "Maximum" }),
+      /* @__PURE__ */ jsx25(
         "input",
         {
           value: parameters.maximum ?? parameters.exclusiveMaximum ?? "",
@@ -11159,7 +11259,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
         "maximum"
       )
     ] }),
-    /* @__PURE__ */ jsx24("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsx25("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx25(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11184,9 +11284,9 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
   ] });
 };
 var NumberField = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs20(React17.Fragment, { children: [
-    /* @__PURE__ */ jsx24("h5", { children: "Default Number" }),
-    /* @__PURE__ */ jsx24(
+  return /* @__PURE__ */ jsxs21(React17.Fragment, { children: [
+    /* @__PURE__ */ jsx25("h5", { children: "Default Number" }),
+    /* @__PURE__ */ jsx25(
       "input",
       {
         value: parameters.default ?? "",
@@ -11236,20 +11336,20 @@ var numberInputs = {
 var numberInputs_default = numberInputs;
 
 // src/defaults/referenceInputs.tsx
-import { jsx as jsx25 } from "react/jsx-runtime";
+import { jsx as jsx26 } from "react/jsx-runtime";
 var CardReferenceParameterInputs = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsx25("div", { children: /* @__PURE__ */ jsx25(PlaceholderInput, { parameters, onChange }) });
+  return /* @__PURE__ */ jsx26("div", { children: /* @__PURE__ */ jsx26(PlaceholderInput, { parameters, onChange }) });
 };
 var RefChoice = ({ parameters, onChange }) => {
   const pathArr = (parameters.$ref || "").split("/");
   const currentValueLabel = pathArr.length === 3 && pathArr[0] === "#" && pathArr[1] === "definitions" && pathArr[2] && (parameters.definitionData || {})[pathArr[2]] ? parameters.definitionData[pathArr[2]].title || parameters.$ref : parameters.$ref;
-  return /* @__PURE__ */ jsx25("div", { className: "card-select", children: /* @__PURE__ */ jsx25(
+  return /* @__PURE__ */ jsx26("div", { className: "card-select", children: /* @__PURE__ */ jsx26(
     "select",
     {
       className: "select select-bordered w-full text-primary border-primary border-2 bg-primary-content",
       value: parameters.$ref || "",
       onChange: (e) => onChange({ ...parameters, $ref: e.target.value }),
-      children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx25("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
+      children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx26("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
     }
   ) });
 };
@@ -11287,7 +11387,7 @@ var DEFAULT_FORM_INPUTS = {
 var defaultFormInputs_default = DEFAULT_FORM_INPUTS;
 
 // src/FormBuilder.tsx
-import { jsx as jsx26, jsxs as jsxs21 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs22 } from "react/jsx-runtime";
 function FormBuilder({
   schema,
   uiSchema,
@@ -11303,15 +11403,27 @@ function FormBuilder({
     Object.assign({}, defaultFormInputs_default, mods && mods.customFormInputs || {}),
     mods && mods.deactivatedFormInputs
   );
-  const unsupportedFeatures = checkForUnsupportedFeatures(
-    schemaData,
-    uiSchemaData,
-    allFormInputs
-  ).filter(
-    (msg) => !msg.includes("Object Property: _stapleSchema") && !msg.includes("Property Parameter: readOnly in _stapleSchema") && !msg.includes("UI Widget: hidden for _stapleSchema") && !msg.includes("UI schema property: _stapleSchema") && !msg.includes("allOf")
+  const categoryHash = generateCategoryHash(allFormInputs);
+  const compatibilityDiagnostics = generateElementPropsFromSchemas({
+    schema: schemaData,
+    uischema: uiSchemaData,
+    definitionData: schemaData.definitions,
+    definitionUi: uiSchemaData.definitions,
+    categoryHash
+  }).flatMap((element) => {
+    if (!element.compatibility || element.compatibility.kind === "editable") return [];
+    const pointer = `/properties/${element.name.replace(/~/g, "~0").replace(/\//g, "~1")}`;
+    return [`[${element.compatibility.code}] ${pointer}: ${element.compatibility.message}`];
+  });
+  const unsupportedFeatures = Array.from(
+    /* @__PURE__ */ new Set([
+      ...checkForUnsupportedFeatures(schemaData, uiSchemaData, allFormInputs).filter(
+        (msg) => !msg.includes("Object Property: _stapleSchema") && !msg.includes("Property Parameter: readOnly in _stapleSchema") && !msg.includes("UI Widget: hidden for _stapleSchema") && !msg.includes("UI schema property: _stapleSchema")
+      ),
+      ...compatibilityDiagnostics
+    ])
   );
   const [cardOpenState, setCardOpenState] = React18.useState({});
-  const categoryHash = generateCategoryHash(allFormInputs);
   const isFirstRender = React18.useRef(true);
   const addProperties = {
     schema: schemaData,
@@ -11332,12 +11444,12 @@ function FormBuilder({
       isFirstRender.current = false;
     }
   }, [onMount, categoryHash]);
-  return /* @__PURE__ */ jsxs21(
+  return /* @__PURE__ */ jsxs22(
     "div",
     {
       className: `formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`,
       children: [
-        /* @__PURE__ */ jsxs21(
+        /* @__PURE__ */ jsxs22(
           "div",
           {
             className: "alert alert-warning mb-4 flex-col items-start",
@@ -11345,20 +11457,20 @@ function FormBuilder({
               display: unsupportedFeatures.length === 0 ? "none" : "flex"
             },
             children: [
-              /* @__PURE__ */ jsx26("h5", { className: "font-bold", children: "Unsupported Features:" }),
-              /* @__PURE__ */ jsx26("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx26("li", { children: message }, index)) })
+              /* @__PURE__ */ jsx27("h5", { className: "font-bold", children: "Compatibility diagnostics:" }),
+              /* @__PURE__ */ jsx27("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx27("li", { children: message }, index)) })
             ]
           }
         ),
-        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs21(
+        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs22(
           "div",
           {
             className: "formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4",
             "data-test": "form-head",
             children: [
-              /* @__PURE__ */ jsxs21("div", { children: [
-                /* @__PURE__ */ jsx26("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
-                /* @__PURE__ */ jsx26(
+              /* @__PURE__ */ jsxs22("div", { children: [
+                /* @__PURE__ */ jsx27("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
+                /* @__PURE__ */ jsx27(
                   "input",
                   {
                     value: schemaData.title || "",
@@ -11377,9 +11489,9 @@ function FormBuilder({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs21("div", { children: [
-                /* @__PURE__ */ jsx26("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
-                /* @__PURE__ */ jsx26(
+              /* @__PURE__ */ jsxs22("div", { children: [
+                /* @__PURE__ */ jsx27("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
+                /* @__PURE__ */ jsx27(
                   MarkdownDescriptionInput,
                   {
                     value: schemaData.description || "",
@@ -11396,7 +11508,7 @@ function FormBuilder({
             ]
           }
         ),
-        /* @__PURE__ */ jsx26("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx26(
+        /* @__PURE__ */ jsx27("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx27(
           DragDropContext2,
           {
             onDragEnd: (result) => onDragEnd(result, {
@@ -11407,7 +11519,7 @@ function FormBuilder({
               definitionUi: uiSchemaData.definitions,
               categoryHash
             }),
-            children: /* @__PURE__ */ jsx26(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs21(
+            children: /* @__PURE__ */ jsx27(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs22(
               "div",
               {
                 ref: providedDroppable.innerRef,
@@ -11430,7 +11542,7 @@ function FormBuilder({
                     Section
                   }).map((element, index) => (
                     // @ts-ignore: suppress key error, can't change key assignment
-                    /* @__PURE__ */ jsx26(Draggable2, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx26(
+                    /* @__PURE__ */ jsx27(Draggable2, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx27(
                       "div",
                       {
                         ref: providedDraggable.innerRef,
@@ -11449,9 +11561,9 @@ function FormBuilder({
             ) })
           }
         ) }),
-        /* @__PURE__ */ jsxs21("div", { className: "form-footer formFooter", children: [
+        /* @__PURE__ */ jsxs22("div", { className: "form-footer formFooter", children: [
           !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
-          !mods?.components?.add && /* @__PURE__ */ jsx26(
+          !mods?.components?.add && /* @__PURE__ */ jsx27(
             Add,
             {
               tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -25282,23 +25394,23 @@ function withTheme(themeProps) {
 import ReactMarkdown2 from "react-markdown";
 import remarkGfm2 from "remark-gfm";
 import remarkBreaks2 from "remark-breaks";
-import { jsx as jsx28, jsxs as jsxs22 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs23 } from "react/jsx-runtime";
 var REQUIRED_FIELD_SYMBOL3 = " *";
 function Label2(props) {
   const { label, required, id } = props;
   if (!label) {
     return null;
   }
-  return /* @__PURE__ */ jsxs22("label", { className: "text-lg font-bold", htmlFor: id, children: [
+  return /* @__PURE__ */ jsxs23("label", { className: "text-lg font-bold", htmlFor: id, children: [
     label,
-    required && /* @__PURE__ */ jsx28("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx29("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyTitleField(props) {
   const { id, title, required } = props;
-  return /* @__PURE__ */ jsxs22("legend", { id, className: "text-xl font-bold", children: [
+  return /* @__PURE__ */ jsxs23("legend", { id, className: "text-xl font-bold", children: [
     title,
-    required && /* @__PURE__ */ jsx28("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx29("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyDescriptionField(props) {
@@ -25307,16 +25419,16 @@ function MyDescriptionField(props) {
     return null;
   }
   if (typeof description === "string") {
-    return /* @__PURE__ */ jsx28(
+    return /* @__PURE__ */ jsx29(
       "div",
       {
         id,
         className: "markdown-display prose max-w-none dark:prose-invert text-md italic mb-2",
-        children: /* @__PURE__ */ jsx28(ReactMarkdown2, { remarkPlugins: [remarkGfm2, remarkBreaks2], children: description })
+        children: /* @__PURE__ */ jsx29(ReactMarkdown2, { remarkPlugins: [remarkGfm2, remarkBreaks2], children: description })
       }
     );
   } else {
-    return /* @__PURE__ */ jsx28("div", { id, className: "text-md italic", children: description });
+    return /* @__PURE__ */ jsx29("div", { id, className: "text-md italic", children: description });
   }
 }
 function MyFieldTemplate(props) {
@@ -25340,10 +25452,10 @@ function MyFieldTemplate(props) {
     uiOptions
   );
   if (hidden) {
-    return /* @__PURE__ */ jsx28("div", { className: "hidden", children });
+    return /* @__PURE__ */ jsx29("div", { className: "hidden", children });
   }
-  return /* @__PURE__ */ jsxs22(WrapIfAdditionalTemplate2, { ...props, children: [
-    displayLabel && /* @__PURE__ */ jsx28(Label2, { label, required, id }),
+  return /* @__PURE__ */ jsxs23(WrapIfAdditionalTemplate2, { ...props, children: [
+    displayLabel && /* @__PURE__ */ jsx29(Label2, { label, required, id }),
     displayLabel && description ? description : null,
     children,
     errors,
@@ -25359,7 +25471,7 @@ function MySubmitButton({ uiSchema }) {
   if (norender) {
     return null;
   }
-  return /* @__PURE__ */ jsx28("div", { children: /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsx29("div", { children: /* @__PURE__ */ jsx29(
     "button",
     {
       type: "submit",
@@ -25370,7 +25482,7 @@ function MySubmitButton({ uiSchema }) {
   ) });
 }
 var MyTextWidget = (props) => {
-  return /* @__PURE__ */ jsx28("div", { className: "flex", children: /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsx29("div", { className: "flex", children: /* @__PURE__ */ jsx29(
     "input",
     {
       type: "text",
@@ -25383,7 +25495,7 @@ var MyTextWidget = (props) => {
   ) });
 };
 var MyEmailWidget = (props) => {
-  return /* @__PURE__ */ jsx28("div", { className: "flex", children: /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsx29("div", { className: "flex", children: /* @__PURE__ */ jsx29(
     "input",
     {
       type: "email",
@@ -25414,12 +25526,12 @@ var MyCheckboxWidget = (props) => {
   const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
   const description = options.description ?? schema.description;
   const required = schemaRequiresTrueValue(schema);
-  return /* @__PURE__ */ jsxs22("div", { className: "field-checkbox", children: [
-    !hideLabel && label && /* @__PURE__ */ jsxs22("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
+  return /* @__PURE__ */ jsxs23("div", { className: "field-checkbox", children: [
+    !hideLabel && label && /* @__PURE__ */ jsxs23("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
       label,
-      required && /* @__PURE__ */ jsx28("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
+      required && /* @__PURE__ */ jsx29("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
     ] }),
-    !hideLabel && !!description && /* @__PURE__ */ jsx28(
+    !hideLabel && !!description && /* @__PURE__ */ jsx29(
       DescriptionFieldTemplate,
       {
         id: descriptionId(id),
@@ -25429,7 +25541,7 @@ var MyCheckboxWidget = (props) => {
         registry
       }
     ),
-    /* @__PURE__ */ jsx28("label", { className: "flex items-center gap-2 mt-1 cursor-pointer", children: /* @__PURE__ */ jsx28(
+    /* @__PURE__ */ jsx29("label", { className: "flex items-center gap-2 mt-1 cursor-pointer", children: /* @__PURE__ */ jsx29(
       "input",
       {
         type: "checkbox",
@@ -25460,12 +25572,12 @@ var MyCheckboxesWidget = (props) => {
   } = props;
   const { enumOptions, enumDisabled, emptyValue } = options;
   const checkboxesValues = Array.isArray(value) ? value : [value];
-  return /* @__PURE__ */ jsx28("div", { className: "checkboxes-group", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+  return /* @__PURE__ */ jsx29("div", { className: "checkboxes-group", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
     const checked = enumOptionsIsSelected(option.value, checkboxesValues);
     const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
     const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
-    return /* @__PURE__ */ jsxs22("label", { className: `checkboxes-option ${disabledCls}`, children: [
-      /* @__PURE__ */ jsx28(
+    return /* @__PURE__ */ jsxs23("label", { className: `checkboxes-option ${disabledCls}`, children: [
+      /* @__PURE__ */ jsx29(
         "input",
         {
           type: "checkbox",
@@ -25487,7 +25599,7 @@ var MyCheckboxesWidget = (props) => {
           "aria-describedby": ariaDescribedByIds(id)
         }
       ),
-      /* @__PURE__ */ jsx28("span", { children: option.label })
+      /* @__PURE__ */ jsx29("span", { children: option.label })
     ] }, index);
   }) });
 };
@@ -25529,7 +25641,7 @@ var DaisyTheme_default = DaisyTheme;
 
 // src/FormPreview.tsx
 init_FormStudioContext();
-import { jsx as jsx29 } from "react/jsx-runtime";
+import { jsx as jsx30 } from "react/jsx-runtime";
 var ThemedForm = withTheme(DaisyTheme_default);
 var hideSubmitButton = (uiSchema) => {
   return {
@@ -25543,12 +25655,12 @@ function FormPreview() {
   const { state, setFormData } = useFormStudio();
   const uiSchema = React20.useMemo(() => hideSubmitButton(state.uiSchema), [state.uiSchema]);
   if (!state.schema || Object.keys(state.schema).length === 0) {
-    return /* @__PURE__ */ jsx29("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx29("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
+    return /* @__PURE__ */ jsx30("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx30("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
   }
   const handleChange = ({ formData }) => {
     setFormData(formData);
   };
-  return /* @__PURE__ */ jsx29("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx29(
+  return /* @__PURE__ */ jsx30("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx30(
     ThemedForm,
     {
       schema: state.schema,
@@ -25562,10 +25674,10 @@ function FormPreview() {
 
 // src/FormStudio.tsx
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
-import { jsx as jsx31, jsxs as jsxs24 } from "react/jsx-runtime";
+import { jsx as jsx32, jsxs as jsxs25 } from "react/jsx-runtime";
 var JsonEditor2 = lazy(() => Promise.resolve().then(() => (init_JsonEditor(), JsonEditor_exports)));
 function JsonEditorFallback() {
-  return /* @__PURE__ */ jsx31("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx31("span", { className: "loading loading-spinner text-primary loading-lg" }) });
+  return /* @__PURE__ */ jsx32("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx32("span", { className: "loading loading-spinner text-primary loading-lg" }) });
 }
 function FormStudioUI({
   onAutoSave,
@@ -25604,10 +25716,10 @@ function FormStudioUI({
     }, 1500);
     return () => clearTimeout(handler);
   }, [state.schema, state.uiSchema, onAutoSave, state]);
-  return /* @__PURE__ */ jsxs24("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
-    /* @__PURE__ */ jsxs24("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
-      /* @__PURE__ */ jsxs24("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
-        /* @__PURE__ */ jsx31(
+  return /* @__PURE__ */ jsxs25("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
+    /* @__PURE__ */ jsxs25("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
+      /* @__PURE__ */ jsxs25("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
+        /* @__PURE__ */ jsx32(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "builder" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -25615,7 +25727,7 @@ function FormStudioUI({
             children: "Visual Builder"
           }
         ),
-        /* @__PURE__ */ jsx31(
+        /* @__PURE__ */ jsx32(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "json" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -25623,7 +25735,7 @@ function FormStudioUI({
             children: "JSON Editor"
           }
         ),
-        /* @__PURE__ */ jsx31(
+        /* @__PURE__ */ jsx32(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "preview" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -25632,35 +25744,35 @@ function FormStudioUI({
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs24("div", { className: "flex items-center gap-3 pb-3", children: [
-        saveStatus !== void 0 && /* @__PURE__ */ jsxs24(
+      /* @__PURE__ */ jsxs25("div", { className: "flex items-center gap-3 pb-3", children: [
+        saveStatus !== void 0 && /* @__PURE__ */ jsxs25(
           "div",
           {
             className: "flex items-center mr-1 bg-base-100 px-3 py-1.5 rounded-full border border-base-300 shadow-sm min-w-[160px] justify-center transition-all",
             title: saveStatus === "unsaved" ? "Backed up in browser \xB7 not yet saved to your collection" : void 0,
             children: [
-              saveStatus === "synced" && /* @__PURE__ */ jsxs24("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx31(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
+              saveStatus === "synced" && /* @__PURE__ */ jsxs25("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx32(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
                 "All changes saved"
               ] }),
-              saveStatus === "saving" && /* @__PURE__ */ jsxs24("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx31("span", { className: "loading loading-spinner loading-xs text-primary" }),
+              saveStatus === "saving" && /* @__PURE__ */ jsxs25("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx32("span", { className: "loading loading-spinner loading-xs text-primary" }),
                 "Saving\u2026"
               ] }),
-              saveStatus === "unsaved" && /* @__PURE__ */ jsxs24("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx31(ExclamationCircleIcon, { className: "w-4 h-4" }),
+              saveStatus === "unsaved" && /* @__PURE__ */ jsxs25("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx32(ExclamationCircleIcon, { className: "w-4 h-4" }),
                 "Unsaved changes"
               ] })
             ]
           }
         ),
-        onCancel && /* @__PURE__ */ jsx31("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
-        onSave && /* @__PURE__ */ jsx31("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx31("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
-        onSaveNewVersion && /* @__PURE__ */ jsx31("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx31("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
+        onCancel && /* @__PURE__ */ jsx32("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
+        onSave && /* @__PURE__ */ jsx32("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx32("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
+        onSaveNewVersion && /* @__PURE__ */ jsx32("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx32("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
       ] })
     ] }),
-    /* @__PURE__ */ jsxs24("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
-      /* @__PURE__ */ jsx31("div", { className: activeTab === "builder" ? "block" : "hidden", children: /* @__PURE__ */ jsx31(
+    /* @__PURE__ */ jsxs25("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
+      /* @__PURE__ */ jsx32("div", { className: activeTab === "builder" ? "block" : "hidden", children: /* @__PURE__ */ jsx32(
         FormBuilder,
         {
           schema: typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema),
@@ -25676,13 +25788,13 @@ function FormStudioUI({
           mods
         }
       ) }),
-      /* @__PURE__ */ jsx31("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx31(Suspense, { fallback: /* @__PURE__ */ jsx31(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx31(JsonEditor2, {}) }) }),
-      /* @__PURE__ */ jsx31("div", { className: activeTab === "preview" ? "block" : "hidden", children: /* @__PURE__ */ jsx31(FormPreview, {}) })
+      /* @__PURE__ */ jsx32("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx32(Suspense, { fallback: /* @__PURE__ */ jsx32(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx32(JsonEditor2, {}) }) }),
+      /* @__PURE__ */ jsx32("div", { className: activeTab === "preview" ? "block" : "hidden", children: /* @__PURE__ */ jsx32(FormPreview, {}) })
     ] })
   ] });
 }
 function FormStudio(props) {
-  return /* @__PURE__ */ jsx31(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx31(
+  return /* @__PURE__ */ jsx32(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx32(
     FormStudioUI,
     {
       onAutoSave: props.onAutoSave,

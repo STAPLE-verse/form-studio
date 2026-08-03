@@ -14,7 +14,9 @@ import {
   AddFormObjectParametersType,
   DefinitionData,
   InputSelectDataType,
+  FieldCompatibility,
 } from "./types"
+import CompatibilityCard from "./CompatibilityCard"
 
 // parse in either YAML or JSON
 export function parse(text: string): any {
@@ -91,27 +93,91 @@ export function generateCategoryHash(allFormInputs: { [key: string]: FormInput }
   return categoryHash
 }
 
-// determines a card's category based on it's properties
-// mostly useful for reading a schema for the first time
-export function getCardCategory(
+// Determine whether a field is safe to edit visually before choosing a card category.
+export function classifyCard(
   cardProps: CardProps,
   categoryHash: { [key: string]: string }
-): string {
+): FieldCompatibility {
+  const { dataOptions, uiOptions } = cardProps
+  const widget = uiOptions["ui:widget"]
+
+  if (dataOptions.oneOf !== undefined) {
+    return {
+      kind: "readOnly",
+      code: "FS_ONE_OF_READ_ONLY",
+      message: "Standalone oneOf fields are preserved but cannot be edited visually.",
+    }
+  }
+
+  if (
+    dataOptions.anyOf !== undefined ||
+    dataOptions.allOf !== undefined ||
+    dataOptions.not !== undefined
+  ) {
+    return {
+      kind: "readOnly",
+      code: "FS_COMPOSITION_READ_ONLY",
+      message: "Composed field schemas are preserved but cannot be edited visually.",
+    }
+  }
+
+  if (dataOptions.readOnly === true || widget === "hidden") {
+    return {
+      kind: "readOnly",
+      code: "FS_HIDDEN_READ_ONLY",
+      message: "Hidden or read-only fields cannot be edited in the visual builder.",
+    }
+  }
+
+  if (dataOptions.format === "textarea") {
+    return {
+      kind: "migration",
+      code: "FS_TEXTAREA_MIGRATION",
+      message:
+        'The legacy format "textarea" must be normalized to ui:widget "textarea" before visual editing.',
+    }
+  }
+
   const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${
-    cardProps.uiOptions["ui:widget"] || ""
+    widget || ""
   };field:${cardProps.uiOptions["ui:field"] || ""};format:${
     cardProps.dataOptions.format || ""
   };$ref:${cardProps.$ref !== undefined ? "true" : "false"};enum:${
     cardProps.dataOptions.enum ? "true" : "false"
   }`
   const category = categoryHash[currentHash]
-  if (!category) {
-    if (cardProps.$ref) return "ref"
+  if (category) return { kind: "editable", category }
+  if (cardProps.$ref !== undefined) return { kind: "editable", category: "ref" }
 
-    console.error(`No match for card': ${currentHash} among set`)
-    return "shortAnswer"
+  if (dataOptions.type === "array" && dataOptions.items?.type === "object") {
+    return {
+      kind: "readOnly",
+      code: "FS_OBJECT_ARRAY_READ_ONLY",
+      message: "Arrays of objects are preserved but cannot be edited visually.",
+    }
   }
-  return category
+
+  if (dataOptions.type === "array") {
+    if (["string", "number", "integer", "boolean"].includes(dataOptions.items?.type)) {
+      return {
+        kind: "readOnly",
+        code: "FS_SCALAR_ARRAY_READ_ONLY",
+        message: "Scalar array authoring is not available yet; this field is read-only.",
+      }
+    }
+
+    return {
+      kind: "readOnly",
+      code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+      message: "This array shape cannot be edited visually.",
+    }
+  }
+
+  return {
+    kind: "readOnly",
+    code: "FS_UNKNOWN_FIELD_READ_ONLY",
+    message: "This field uses a schema or UI construct Form Studio does not recognize.",
+  }
 }
 
 // check for unsupported feature in schema and uischema
@@ -173,7 +239,11 @@ function checkObjectForUnsupportedFeatures(
   if (schema && typeof schema === "object") {
     Object.keys(schema).forEach((property) => {
       if (!supportedPropertyParameters.has(property) && property !== "properties") {
-        unsupportedFeatures.push(`Unrecognized Object Property: ${property}`)
+        unsupportedFeatures.push(
+          property === "allOf"
+            ? "Conditional rules at /allOf are not visually editable."
+            : `Unrecognized Object Property: ${property}`
+        )
       }
     })
   }
@@ -386,7 +456,10 @@ function generateDependencyElement(
       }
     })
 
-    newElement.dataOptions!.category = getCardCategory(newElement as CardProps, categoryHash)
+    newElement.compatibility = classifyCard(newElement as CardProps, categoryHash)
+    if (newElement.compatibility.kind === "editable") {
+      newElement.dataOptions!.category = newElement.compatibility.category
+    }
     newElement.propType = "card"
   }
   return newElement
@@ -453,7 +526,10 @@ export function generateElementPropsFromSchemas(parameters: {
         }
       })
 
-      newElement.dataOptions.category = getCardCategory(newElement as CardProps, categoryHash)
+      newElement.compatibility = classifyCard(newElement as CardProps, categoryHash)
+      if (newElement.compatibility.kind === "editable") {
+        newElement.dataOptions.category = newElement.compatibility.category
+      }
       newElement.propType = "card"
     }
     elementDict[newElement.name!] = newElement
@@ -1026,9 +1102,21 @@ export function generateElementComponentsFromSchemas(parameters: {
 
     const expanded = cardOpenState[elementKey] || false
     if (elementProp.propType === "card") {
+      const compatibility = elementProp.compatibility
+      if (compatibility && compatibility.kind !== "editable") {
+        return (
+          <CompatibilityCard
+            key={elementKey}
+            name={elementProp.name}
+            title={elementProp.dataOptions.title}
+            compatibility={compatibility}
+          />
+        )
+      }
+
       // choose the appropriate type specific parameters
       const TypeSpecificParameters = getCardParameterInputComponentForType(
-        elementProp.dataOptions.category || "string",
+        compatibility?.category || elementProp.dataOptions.category,
         allFormInputs
       )
 

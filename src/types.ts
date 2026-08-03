@@ -21,6 +21,29 @@ export interface InputSelectDataType {
   category: string
 }
 
+export type FieldCompatibility =
+  | {
+      kind: "editable"
+      category: string
+    }
+  | {
+      kind: "readOnly"
+      code:
+        | "FS_OBJECT_ARRAY_READ_ONLY"
+        | "FS_SCALAR_ARRAY_READ_ONLY"
+        | "FS_UNSUPPORTED_ARRAY_READ_ONLY"
+        | "FS_ONE_OF_READ_ONLY"
+        | "FS_COMPOSITION_READ_ONLY"
+        | "FS_HIDDEN_READ_ONLY"
+        | "FS_UNKNOWN_FIELD_READ_ONLY"
+      message: string
+    }
+  | {
+      kind: "migration"
+      code: "FS_TEXTAREA_MIGRATION"
+      message: string
+    }
+
 export interface CardComponentPropsType {
   name: string
   required?: boolean
@@ -141,6 +164,7 @@ export type CardProps = {
   required: boolean
   dataOptions: { [key: string]: any }
   uiOptions: { [key: string]: any }
+  compatibility?: FieldCompatibility
   // only defined if a reference
   $ref?: string
   // only defined if a dependency parent
@@ -278,6 +302,7 @@ export interface FormElement {
   propType?: string
   dataOptions?: { [key: string]: any }
   uiOptions?: { [key: string]: any }
+  compatibility?: FieldCompatibility
   type?: string
   dependents?: { [key: string]: any }
   dependent?: boolean

@@ -5,10 +5,15 @@ import path from "node:path"
 import { renderToStaticMarkup } from "react-dom/server"
 import { withTheme } from "@rjsf/core"
 import validator from "@rjsf/validator-ajv8"
+import Card from "../src/Card"
 import DaisyTheme from "../src/DaisyTheme"
+import CompatibilityCard from "../src/CompatibilityCard"
+import Section from "../src/Section"
 import DEFAULT_FORM_INPUTS from "../src/defaults/defaultFormInputs"
 import {
+  classifyCard,
   generateCategoryHash,
+  generateElementComponentsFromSchemas,
   generateElementPropsFromSchemas,
   updateSchemas,
 } from "../src/utils"
@@ -36,6 +41,21 @@ const fixtureRoot = path.join(
 )
 const ThemedForm = withTheme(DaisyTheme)
 const categoryHash = generateCategoryHash(DEFAULT_FORM_INPUTS)
+
+function classifyField(dataOptions: Record<string, any>, uiOptions: Record<string, any> = {}) {
+  return classifyCard(
+    {
+      name: "field",
+      required: false,
+      dataOptions,
+      uiOptions,
+      $ref: dataOptions.$ref,
+      propType: "card",
+      neighborNames: [],
+    },
+    categoryHash
+  )
+}
 
 async function loadFixtures(): Promise<CapabilityFixture[]> {
   const files = (await readdir(fixtureRoot)).filter((file) => file.endsWith(".json")).sort()
@@ -141,27 +161,16 @@ function roundTrip(schemaInput: Record<string, any>, uiSchemaInput: Record<strin
     equivalent && opaqueRootKeywordsPreserved ? "pass" : "lossy"
 
   const unsupportedVisualFields = elements
-    .filter(
-      (element) =>
-        element.propType === "card" &&
-        element.dataOptions?.category === "shortAnswer" &&
-        (element.dataOptions?.type !== "string" ||
-          (element.dataOptions?.readOnly === true && element.uiOptions?.["ui:widget"] === "hidden"))
-    )
+    .filter((element) => element.propType === "card" && element.compatibility?.kind === "readOnly")
     .map((element) => element.name)
 
-  const misclassifiedTextareaFields = elements
-    .filter(
-      (element) =>
-        element.propType === "card" &&
-        element.dataOptions?.format === "textarea" &&
-        element.uiOptions?.["ui:widget"] !== "textarea"
-    )
+  const migrationFields = elements
+    .filter((element) => element.propType === "card" && element.compatibility?.kind === "migration")
     .map((element) => element.name)
 
   const status: Status = unsupportedVisualFields.length
     ? "unsupported"
-    : !equivalent || misclassifiedTextareaFields.length
+    : !equivalent || migrationFields.length
       ? "lossy"
       : "pass"
 
@@ -178,6 +187,69 @@ test("Form Studio compatibility coordinates match the recorded current stack", a
   assert.equal(await readVersion("node_modules/@rjsf/core/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/@rjsf/validator-ajv8/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/ajv/package.json"), "8.20.0")
+})
+
+test("Form Studio classifies editable, read-only, and migration fields explicitly", () => {
+  assert.deepEqual(classifyField({ type: "string" }), {
+    kind: "editable",
+    category: "shortAnswer",
+  })
+  assert.equal(classifyField({ type: "array", items: { type: "object" } }).kind, "readOnly")
+  assert.equal(classifyField({ type: "array", items: { type: "string" } }).kind, "readOnly")
+  assert.equal(classifyField({ oneOf: [{ const: "a" }, { const: "b" }] }).kind, "readOnly")
+  assert.equal(
+    classifyField({ type: "string", readOnly: true }, { "ui:widget": "hidden" }).kind,
+    "readOnly"
+  )
+  assert.equal(classifyField({ type: "string", format: "unknown-format" }).kind, "readOnly")
+  assert.equal(classifyField({ type: "string", format: "textarea" }).kind, "migration")
+})
+
+test("read-only compatibility cards expose diagnostics without destructive controls", () => {
+  const compatibility = classifyField({ type: "array", items: { type: "object" } })
+  assert.notEqual(compatibility.kind, "editable")
+  if (compatibility.kind === "editable") return
+
+  const markup = renderToStaticMarkup(
+    <CompatibilityCard
+      name="contributors"
+      title="Contributors"
+      compatibility={compatibility}
+    />
+  )
+
+  assert.match(markup, /data-compatibility-code="FS_OBJECT_ARRAY_READ_ONLY"/)
+  assert.match(markup, /Read-only/)
+  assert.match(markup, /\/properties\/contributors/)
+  assert.doesNotMatch(markup, /<(input|select|button)\b/)
+})
+
+test("generated object-array fields use the read-only compatibility presentation", () => {
+  const components = generateElementComponentsFromSchemas({
+    schemaData: {
+      type: "object",
+      properties: {
+        contributors: {
+          type: "array",
+          title: "Contributors",
+          items: { type: "object", properties: { name: { type: "string" } } },
+        },
+      },
+    },
+    uiSchemaData: {},
+    onChange: () => undefined,
+    path: "root",
+    cardOpenState: {},
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+  const markup = renderToStaticMarkup(<>{components}</>)
+
+  assert.match(markup, /data-compatibility-code="FS_OBJECT_ARRAY_READ_ONLY"/)
+  assert.doesNotMatch(markup, /Item Type/)
 })
 
 for (const fixture of fixtures) {

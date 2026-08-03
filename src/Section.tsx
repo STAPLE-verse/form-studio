@@ -237,7 +237,7 @@ export default function Section({
                 display: unsupportedFeatures.length === 0 ? "none" : "flex",
               }}
             >
-              <h5 className="font-bold">Unsupported Features:</h5>
+              <h5 className="font-bold">Compatibility diagnostics:</h5>
               <ul className="list-disc pl-5">
                 {unsupportedFeatures.map((message) => (
                   <li key={`${elementId}_${message}`}>{message}</li>

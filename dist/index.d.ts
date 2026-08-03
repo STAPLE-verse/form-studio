@@ -22,6 +22,18 @@ interface InputSelectDataType {
     type: string;
     category: string;
 }
+type FieldCompatibility = {
+    kind: "editable";
+    category: string;
+} | {
+    kind: "readOnly";
+    code: "FS_OBJECT_ARRAY_READ_ONLY" | "FS_SCALAR_ARRAY_READ_ONLY" | "FS_UNSUPPORTED_ARRAY_READ_ONLY" | "FS_ONE_OF_READ_ONLY" | "FS_COMPOSITION_READ_ONLY" | "FS_HIDDEN_READ_ONLY" | "FS_UNKNOWN_FIELD_READ_ONLY";
+    message: string;
+} | {
+    kind: "migration";
+    code: "FS_TEXTAREA_MIGRATION";
+    message: string;
+};
 interface CardComponentPropsType {
     name: string;
     required?: boolean;
@@ -171,6 +183,7 @@ type CardProps = {
     uiOptions: {
         [key: string]: any;
     };
+    compatibility?: FieldCompatibility;
     $ref?: string;
     dependents?: Array<{
         children: Array<string>;
@@ -297,6 +310,7 @@ interface FormElement {
     uiOptions?: {
         [key: string]: any;
     };
+    compatibility?: FieldCompatibility;
     type?: string;
     dependents?: {
         [key: string]: any;
@@ -388,4 +402,4 @@ declare function JsonEditor(): react.JSX.Element;
 
 declare function FormPreview(): react__default.JSX.Element;
 
-export { type AddFormObjectParametersType, type CardComponentPropsType, type CardComponentType, type CardModalProps, type CardModalType, type CardProps, type CardPropsType, type CardType, type ComponentProps, type DataOptions, type DataType, type DefinitionData, type ElementProps, FormBuilder, type FormElement, type FormInput, FormPreview, FormStudio, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type InitParameters, type InputSelectDataType, JsonEditor, type ModLabels, type Mods, type SectionProps, type SectionPropsType, type SectionType, useFormStudio };
+export { type AddFormObjectParametersType, type CardComponentPropsType, type CardComponentType, type CardModalProps, type CardModalType, type CardProps, type CardPropsType, type CardType, type ComponentProps, type DataOptions, type DataType, type DefinitionData, type ElementProps, type FieldCompatibility, FormBuilder, type FormElement, type FormInput, FormPreview, FormStudio, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type InitParameters, type InputSelectDataType, JsonEditor, type ModLabels, type Mods, type SectionProps, type SectionPropsType, type SectionType, useFormStudio };
