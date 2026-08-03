@@ -178,11 +178,12 @@ function roundTrip(schemaInput: Record<string, any>, uiSchemaInput: Record<strin
     Object.prototype.hasOwnProperty.call(schemaInput, keyword)
   )
 
-  const status: Status = unsupportedVisualFields.length || unsupportedRootComposition
-    ? "unsupported"
-    : !equivalent || migrationFields.length
-      ? "lossy"
-      : "pass"
+  const status: Status =
+    unsupportedVisualFields.length || migrationFields.length || unsupportedRootComposition
+      ? "unsupported"
+      : !equivalent
+        ? "lossy"
+        : "pass"
 
   return { status, preservationStatus, outputSchema, outputUiSchema }
 }
@@ -307,6 +308,38 @@ test("generated object-array fields use the read-only compatibility presentation
 
   assert.match(markup, /data-compatibility-code="FS_OBJECT_ARRAY_READ_ONLY"/)
   assert.doesNotMatch(markup, /Item Type/)
+})
+
+test("generated legacy textarea fields show actionable migration diagnostics without controls", () => {
+  const components = generateElementComponentsFromSchemas({
+    schemaData: {
+      type: "object",
+      properties: {
+        description: {
+          type: "string",
+          format: "textarea",
+          title: "Description",
+        },
+      },
+    },
+    uiSchemaData: {},
+    onChange: () => undefined,
+    path: "root",
+    cardOpenState: {},
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+  const markup = renderToStaticMarkup(<>{components}</>)
+
+  assert.match(markup, /data-compatibility-kind="migration"/)
+  assert.match(markup, /data-compatibility-code="FS_TEXTAREA_MIGRATION"/)
+  assert.match(markup, /Migration required/)
+  assert.match(markup, /remove &quot;format&quot;/)
+  assert.match(markup, /ui:widget &quot;textarea&quot;/)
+  assert.doesNotMatch(markup, /<(input|select|button|textarea)\b/)
 })
 
 test("generated string arrays use the constrained text-list editor without a fixed card body", () => {
@@ -544,6 +577,42 @@ test("supported dependency edits change only the represented dependency value", 
   assert.equal(alternatives[1].properties.details.title, "Extended details")
   assert.equal(alternatives[1].properties.details.minLength, 1)
   assert.deepEqual(alternatives[1].required, ["details"])
+})
+
+test("legacy textarea schema and UI intent survive an unrelated supported-field edit", () => {
+  const legacyTextarea = {
+    type: "string",
+    format: "textarea",
+    title: "Description",
+    minLength: 3,
+    default: "Existing text",
+  }
+  const legacyTextareaUi = {
+    "ui:placeholder": "Describe the resource",
+    "ui:options": { rows: 8 },
+  }
+  const result = roundTripWithElementEdit(
+    {
+      type: "object",
+      properties: {
+        name: { type: "string", title: "Name" },
+        description: legacyTextarea,
+      },
+    },
+    {
+      description: legacyTextareaUi,
+      "ui:order": ["name", "description"],
+    },
+    (elements) => {
+      const name = elements.find((element) => element.name === "name")
+      assert.ok(name?.dataOptions)
+      name.dataOptions.title = "Resource name"
+    }
+  )
+
+  assert.deepEqual(result.outputSchema.properties.description, legacyTextarea)
+  assert.deepEqual(result.outputUiSchema.description, legacyTextareaUi)
+  assert.deepEqual(result.outputUiSchema["ui:order"], ["name", "description"])
 })
 
 for (const fixture of fixtures) {

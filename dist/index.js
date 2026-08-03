@@ -7721,7 +7721,7 @@ function classifyCard(cardProps, categoryHash) {
     return {
       kind: "migration",
       code: "FS_TEXTAREA_MIGRATION",
-      message: 'The legacy format "textarea" must be normalized to ui:widget "textarea" before visual editing.'
+      message: 'The legacy format "textarea" is not standard JSON Schema. To migrate it, remove "format" from this field and set ui:widget "textarea" at the same path in the UI schema.'
     };
   }
   const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${widget || ""};field:${cardProps.uiOptions["ui:field"] || ""};format:${cardProps.dataOptions.format || ""};$ref:${cardProps.$ref !== void 0 ? "true" : "false"};enum:${cardProps.dataOptions.enum ? "true" : "false"}`;
