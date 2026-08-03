@@ -410,7 +410,8 @@ function generateDependencyElement(
     ...uiProperties,
   }
   const newElement: FormElement = {}
-  let elementDetails = dataProps && typeof dataProps === "object" ? dataProps : {}
+  let elementDetails =
+    dataProps && typeof dataProps === "object" ? { ...dataProps } : {}
 
   // populate newElement with reference if applicable
   if (elementDetails.$ref !== undefined && definitionData) {
@@ -483,7 +484,11 @@ export function generateElementPropsFromSchemas(parameters: {
   // read regular elements from properties
   Object.entries(schema.properties).forEach(([parameter, element]) => {
     const newElement: FormElement = {}
-    let elementDetails: FormElement = element && typeof element === "object" ? element : {}
+    let elementDetails: FormElement =
+      element && typeof element === "object" ? { ...element } : {}
+    let elementUiOptions = {
+      ...(uischema[parameter] || {}),
+    }
 
     // populate newElement with reference if applicable
     if (elementDetails?.$ref !== undefined && definitionData) {
@@ -499,9 +504,9 @@ export function generateElementPropsFromSchemas(parameters: {
       }
 
       const definedUiProps = (definitionUi || {})[pathArr[2]!]
-      uischema[parameter] = {
+      elementUiOptions = {
         ...(definedUiProps || {}),
-        ...uischema[parameter],
+        ...elementUiOptions,
       }
     }
     newElement.name = parameter
@@ -512,11 +517,11 @@ export function generateElementPropsFromSchemas(parameters: {
     if (elementDetails.type && elementDetails.type === "object") {
       // create a section
       newElement.schema = elementDetails
-      newElement.uischema = uischema[parameter] || {}
+      newElement.uischema = elementUiOptions
       newElement.propType = "section"
     } else {
       // create a card
-      newElement.uiOptions = uischema[parameter] || {}
+      newElement.uiOptions = elementUiOptions
 
       // ensure that uiOptions does not have duplicate keys with dataOptions
       const reservedKeys = Object.keys(newElement.dataOptions)
@@ -900,6 +905,142 @@ export function getCardParameterInputComponentForType(
   return (allFormInputs[category] && allFormInputs[category]!.modalBody) || (() => null)
 }
 
+function isJsonObject(value: any): value is { [key: string]: any } {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+}
+
+function cloneJsonValue<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneJsonValue(item)) as T
+  }
+  if (isJsonObject(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+    ) as T
+  }
+  return value
+}
+
+function jsonValuesEqual(left: any, right: any): boolean {
+  if (Object.is(left, right)) return true
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return (
+      Array.isArray(left) &&
+      Array.isArray(right) &&
+      left.length === right.length &&
+      left.every((value, index) => jsonValuesEqual(value, right[index]))
+    )
+  }
+  if (!isJsonObject(left) || !isJsonObject(right)) return false
+
+  const leftKeys = Object.keys(left)
+  const rightKeys = Object.keys(right)
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key) => Object.prototype.hasOwnProperty.call(right, key) && jsonValuesEqual(left[key], right[key])
+    )
+  )
+}
+
+function mergeUiOrder(
+  originalOrder: any,
+  baselineOrder: string[],
+  nextOrder: string[]
+): string[] {
+  if (!Array.isArray(originalOrder)) return cloneJsonValue(nextOrder)
+
+  const visuallyOwnedNames = new Set([...baselineOrder, ...nextOrder])
+  const explicitVisualNames = new Set(
+    originalOrder.filter(
+      (name): name is string => typeof name === "string" && visuallyOwnedNames.has(name)
+    )
+  )
+  const wildcardNames = baselineOrder.filter((name) => !explicitVisualNames.has(name))
+  const expandedOriginalOrder = originalOrder.flatMap((name) =>
+    name === "*" ? wildcardNames : [name]
+  )
+
+  const mergedOrder: string[] = []
+  let nextVisualIndex = 0
+  expandedOriginalOrder.forEach((name) => {
+    if (typeof name === "string" && visuallyOwnedNames.has(name)) {
+      if (nextVisualIndex < nextOrder.length) {
+        mergedOrder.push(nextOrder[nextVisualIndex]!)
+        nextVisualIndex += 1
+      }
+    } else {
+      mergedOrder.push(name)
+    }
+  })
+  mergedOrder.push(...nextOrder.slice(nextVisualIndex))
+  return mergedOrder
+}
+
+// Apply only changes made by the visual model. Anything it did not model remains opaque.
+function applyVisualChanges(
+  original: any,
+  baselineGenerated: any,
+  nextGenerated: any,
+  key?: string
+): any {
+  if (jsonValuesEqual(baselineGenerated, nextGenerated)) {
+    return cloneJsonValue(original)
+  }
+
+  if (
+    key === "ui:order" &&
+    Array.isArray(baselineGenerated) &&
+    Array.isArray(nextGenerated)
+  ) {
+    return mergeUiOrder(original, baselineGenerated, nextGenerated)
+  }
+
+  if (
+    Array.isArray(original) &&
+    Array.isArray(baselineGenerated) &&
+    Array.isArray(nextGenerated) &&
+    baselineGenerated.length === nextGenerated.length
+  ) {
+    return nextGenerated.map((nextValue, index) =>
+      applyVisualChanges(original[index], baselineGenerated[index], nextValue)
+    )
+  }
+
+  if (isJsonObject(baselineGenerated) && isJsonObject(nextGenerated)) {
+    const merged = isJsonObject(original) ? cloneJsonValue(original) : {}
+    const generatedKeys = new Set([
+      ...Object.keys(baselineGenerated),
+      ...Object.keys(nextGenerated),
+    ])
+
+    generatedKeys.forEach((generatedKey) => {
+      const existedBefore = Object.prototype.hasOwnProperty.call(baselineGenerated, generatedKey)
+      const existsNext = Object.prototype.hasOwnProperty.call(nextGenerated, generatedKey)
+      if (!existsNext) {
+        if (existedBefore) delete merged[generatedKey]
+        return
+      }
+      if (!existedBefore) {
+        merged[generatedKey] = cloneJsonValue(nextGenerated[generatedKey])
+        return
+      }
+      if (jsonValuesEqual(baselineGenerated[generatedKey], nextGenerated[generatedKey])) {
+        return
+      }
+      merged[generatedKey] = applyVisualChanges(
+        isJsonObject(original) ? original[generatedKey] : undefined,
+        baselineGenerated[generatedKey],
+        nextGenerated[generatedKey],
+        generatedKey
+      )
+    })
+    return merged
+  }
+
+  return cloneJsonValue(nextGenerated)
+}
+
 // takes in an array of Card Objects and updates both schemas
 export function updateSchemas(
   elementArr: ElementProps[],
@@ -909,18 +1050,41 @@ export function updateSchemas(
     onChange: (schema: { [key: string]: any }, uischema: { [key: string]: any }) => any
     definitionData?: { [key: string]: any }
     definitionUi?: { [key: string]: any }
+    categoryHash: { [key: string]: string }
   }
 ) {
-  const { schema, uischema, onChange, definitionUi } = parameters
-  const newSchema = Object.assign({ ...schema }, generateSchemaFromElementProps(elementArr))
+  const {
+    schema,
+    uischema,
+    onChange,
+    definitionData,
+    definitionUi,
+    categoryHash,
+  } = parameters
+  const baselineSchema = cloneJsonValue(schema)
+  const baselineUiSchema = cloneJsonValue(uischema)
+  const baselineElements = generateElementPropsFromSchemas({
+    schema: baselineSchema,
+    uischema: baselineUiSchema,
+    definitionData: definitionData || baselineSchema.definitions,
+    definitionUi: definitionUi || baselineUiSchema.definitions,
+    categoryHash,
+  })
 
-  const newUiSchema: {
-    [key: string]: any
-    definitions?: { [key: string]: any }
-  } = generateUiSchemaFromElementProps(elementArr, definitionUi)
-  if (uischema.definitions) {
-    newUiSchema.definitions = uischema.definitions
-  }
+  const baselineGeneratedSchema = generateSchemaFromElementProps(baselineElements)
+  const nextGeneratedSchema = generateSchemaFromElementProps(elementArr)
+  const newSchema = applyVisualChanges(schema, baselineGeneratedSchema, nextGeneratedSchema)
+
+  const baselineGeneratedUiSchema = generateUiSchemaFromElementProps(
+    baselineElements,
+    definitionUi
+  )
+  const nextGeneratedUiSchema = generateUiSchemaFromElementProps(elementArr, definitionUi)
+  const newUiSchema = applyVisualChanges(
+    uischema,
+    baselineGeneratedUiSchema,
+    nextGeneratedUiSchema
+  )
 
   // mandate that the type is an object if not already done
   newSchema.type = "object"
@@ -991,6 +1155,7 @@ export function addCardObj(parameters: AddFormObjectParametersType) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange,
   })
 }
@@ -1037,6 +1202,7 @@ export function addSectionObj(parameters: AddFormObjectParametersType) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange,
   })
 }
@@ -1203,6 +1369,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1224,6 +1391,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1251,6 +1419,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1277,6 +1446,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1349,6 +1519,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1374,6 +1545,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1396,6 +1568,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1424,6 +1597,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               onChange,
               definitionData,
               definitionUi,
+              categoryHash,
             })
           }}
           onDelete={() => {
@@ -1444,6 +1618,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1471,6 +1646,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1497,6 +1673,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1578,6 +1755,7 @@ export function onDragEnd(
     uischema,
     definitionData: definitionData || {},
     definitionUi: definitionUi || {},
+    categoryHash,
     onChange,
   })
 }
@@ -1655,6 +1833,7 @@ export function propagateDefinitionChanges(
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange,
   })
 }

@@ -7922,7 +7922,7 @@ function generateDependencyElement(name, dataProps, uiProperties, requiredNames,
     ...uiProperties
   };
   const newElement = {};
-  let elementDetails = dataProps && typeof dataProps === "object" ? dataProps : {};
+  let elementDetails = dataProps && typeof dataProps === "object" ? { ...dataProps } : {};
   if (elementDetails.$ref !== void 0 && definitionData) {
     const pathArr = typeof elementDetails.$ref === "string" ? elementDetails.$ref.split("/") : [];
     if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]] && useDefinitionDetails === true) {
@@ -7968,7 +7968,10 @@ function generateElementPropsFromSchemas(parameters) {
   const requiredNames = schema.required ? schema.required : [];
   Object.entries(schema.properties).forEach(([parameter, element]) => {
     const newElement = {};
-    let elementDetails = element && typeof element === "object" ? element : {};
+    let elementDetails = element && typeof element === "object" ? { ...element } : {};
+    let elementUiOptions = {
+      ...uischema[parameter] || {}
+    };
     if (elementDetails?.$ref !== void 0 && definitionData) {
       if (elementDetails.$ref && !elementDetails.$ref.startsWith("#/definitions")) {
         throw new Error(`Invalid definition, not at '#/definitions': ${elementDetails.$ref}`);
@@ -7981,9 +7984,9 @@ function generateElementPropsFromSchemas(parameters) {
         };
       }
       const definedUiProps = (definitionUi || {})[pathArr[2]];
-      uischema[parameter] = {
+      elementUiOptions = {
         ...definedUiProps || {},
-        ...uischema[parameter]
+        ...elementUiOptions
       };
     }
     newElement.name = parameter;
@@ -7992,10 +7995,10 @@ function generateElementPropsFromSchemas(parameters) {
     newElement.dataOptions = elementDetails;
     if (elementDetails.type && elementDetails.type === "object") {
       newElement.schema = elementDetails;
-      newElement.uischema = uischema[parameter] || {};
+      newElement.uischema = elementUiOptions;
       newElement.propType = "section";
     } else {
-      newElement.uiOptions = uischema[parameter] || {};
+      newElement.uiOptions = elementUiOptions;
       const reservedKeys = Object.keys(newElement.dataOptions);
       Object.keys(newElement.uiOptions).forEach((uiKey) => {
         if (reservedKeys.includes(uiKey)) {
@@ -8253,13 +8256,133 @@ function generateUiSchemaFromElementProps(elementArr, definitionUi) {
 function getCardParameterInputComponentForType(category, allFormInputs) {
   return allFormInputs[category] && allFormInputs[category].modalBody || (() => null);
 }
-function updateSchemas(elementArr, parameters) {
-  const { schema, uischema, onChange, definitionUi } = parameters;
-  const newSchema = Object.assign({ ...schema }, generateSchemaFromElementProps(elementArr));
-  const newUiSchema = generateUiSchemaFromElementProps(elementArr, definitionUi);
-  if (uischema.definitions) {
-    newUiSchema.definitions = uischema.definitions;
+function isJsonObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function cloneJsonValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneJsonValue(item));
   }
+  if (isJsonObject(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+    );
+  }
+  return value;
+}
+function jsonValuesEqual(left, right) {
+  if (Object.is(left, right)) return true;
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return Array.isArray(left) && Array.isArray(right) && left.length === right.length && left.every((value, index) => jsonValuesEqual(value, right[index]));
+  }
+  if (!isJsonObject(left) || !isJsonObject(right)) return false;
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  return leftKeys.length === rightKeys.length && leftKeys.every(
+    (key) => Object.prototype.hasOwnProperty.call(right, key) && jsonValuesEqual(left[key], right[key])
+  );
+}
+function mergeUiOrder(originalOrder, baselineOrder, nextOrder) {
+  if (!Array.isArray(originalOrder)) return cloneJsonValue(nextOrder);
+  const visuallyOwnedNames = /* @__PURE__ */ new Set([...baselineOrder, ...nextOrder]);
+  const explicitVisualNames = new Set(
+    originalOrder.filter(
+      (name) => typeof name === "string" && visuallyOwnedNames.has(name)
+    )
+  );
+  const wildcardNames = baselineOrder.filter((name) => !explicitVisualNames.has(name));
+  const expandedOriginalOrder = originalOrder.flatMap(
+    (name) => name === "*" ? wildcardNames : [name]
+  );
+  const mergedOrder = [];
+  let nextVisualIndex = 0;
+  expandedOriginalOrder.forEach((name) => {
+    if (typeof name === "string" && visuallyOwnedNames.has(name)) {
+      if (nextVisualIndex < nextOrder.length) {
+        mergedOrder.push(nextOrder[nextVisualIndex]);
+        nextVisualIndex += 1;
+      }
+    } else {
+      mergedOrder.push(name);
+    }
+  });
+  mergedOrder.push(...nextOrder.slice(nextVisualIndex));
+  return mergedOrder;
+}
+function applyVisualChanges(original, baselineGenerated, nextGenerated, key) {
+  if (jsonValuesEqual(baselineGenerated, nextGenerated)) {
+    return cloneJsonValue(original);
+  }
+  if (key === "ui:order" && Array.isArray(baselineGenerated) && Array.isArray(nextGenerated)) {
+    return mergeUiOrder(original, baselineGenerated, nextGenerated);
+  }
+  if (Array.isArray(original) && Array.isArray(baselineGenerated) && Array.isArray(nextGenerated) && baselineGenerated.length === nextGenerated.length) {
+    return nextGenerated.map(
+      (nextValue, index) => applyVisualChanges(original[index], baselineGenerated[index], nextValue)
+    );
+  }
+  if (isJsonObject(baselineGenerated) && isJsonObject(nextGenerated)) {
+    const merged = isJsonObject(original) ? cloneJsonValue(original) : {};
+    const generatedKeys = /* @__PURE__ */ new Set([
+      ...Object.keys(baselineGenerated),
+      ...Object.keys(nextGenerated)
+    ]);
+    generatedKeys.forEach((generatedKey) => {
+      const existedBefore = Object.prototype.hasOwnProperty.call(baselineGenerated, generatedKey);
+      const existsNext = Object.prototype.hasOwnProperty.call(nextGenerated, generatedKey);
+      if (!existsNext) {
+        if (existedBefore) delete merged[generatedKey];
+        return;
+      }
+      if (!existedBefore) {
+        merged[generatedKey] = cloneJsonValue(nextGenerated[generatedKey]);
+        return;
+      }
+      if (jsonValuesEqual(baselineGenerated[generatedKey], nextGenerated[generatedKey])) {
+        return;
+      }
+      merged[generatedKey] = applyVisualChanges(
+        isJsonObject(original) ? original[generatedKey] : void 0,
+        baselineGenerated[generatedKey],
+        nextGenerated[generatedKey],
+        generatedKey
+      );
+    });
+    return merged;
+  }
+  return cloneJsonValue(nextGenerated);
+}
+function updateSchemas(elementArr, parameters) {
+  const {
+    schema,
+    uischema,
+    onChange,
+    definitionData,
+    definitionUi,
+    categoryHash
+  } = parameters;
+  const baselineSchema = cloneJsonValue(schema);
+  const baselineUiSchema = cloneJsonValue(uischema);
+  const baselineElements = generateElementPropsFromSchemas({
+    schema: baselineSchema,
+    uischema: baselineUiSchema,
+    definitionData: definitionData || baselineSchema.definitions,
+    definitionUi: definitionUi || baselineUiSchema.definitions,
+    categoryHash
+  });
+  const baselineGeneratedSchema = generateSchemaFromElementProps(baselineElements);
+  const nextGeneratedSchema = generateSchemaFromElementProps(elementArr);
+  const newSchema = applyVisualChanges(schema, baselineGeneratedSchema, nextGeneratedSchema);
+  const baselineGeneratedUiSchema = generateUiSchemaFromElementProps(
+    baselineElements,
+    definitionUi
+  );
+  const nextGeneratedUiSchema = generateUiSchemaFromElementProps(elementArr, definitionUi);
+  const newUiSchema = applyVisualChanges(
+    uischema,
+    baselineGeneratedUiSchema,
+    nextGeneratedUiSchema
+  );
   newSchema.type = "object";
   onChange(newSchema, newUiSchema);
 }
@@ -8312,6 +8435,7 @@ function addCardObj(parameters) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange
   });
 }
@@ -8350,6 +8474,7 @@ function addSectionObj(parameters) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange
   });
 }
@@ -8484,6 +8609,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8504,6 +8630,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8528,6 +8655,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8552,6 +8680,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8615,6 +8744,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8637,6 +8767,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8658,6 +8789,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8679,7 +8811,8 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               onChange,
               definitionData,
-              definitionUi
+              definitionUi,
+              categoryHash
             });
           },
           onDelete: () => {
@@ -8699,6 +8832,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8723,6 +8857,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8747,6 +8882,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -8801,6 +8937,7 @@ function onDragEnd(result, details) {
     uischema,
     definitionData: definitionData || {},
     definitionUi: definitionUi || {},
+    categoryHash,
     onChange
   });
 }
@@ -10617,18 +10754,27 @@ function Section({
                         Section
                       }).map((element, index) => (
                         // @ts-ignore: suppress key error, can't change key assignment
-                        /* @__PURE__ */ jsx21(Draggable, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx21(
-                          "div",
+                        /* @__PURE__ */ jsx21(
+                          Draggable,
                           {
-                            ref: providedDraggable.innerRef,
-                            ...providedDraggable.draggableProps,
-                            style: providedDraggable.draggableProps.style,
-                            className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
-                            children: React13.cloneElement(element, {
-                              dragHandleProps: providedDraggable.dragHandleProps
-                            })
-                          }
-                        ) }, element.key)
+                            draggableId: element.key,
+                            index,
+                            isDragDisabled: element.props.compatibility !== void 0,
+                            children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx21(
+                              "div",
+                              {
+                                ref: providedDraggable.innerRef,
+                                ...providedDraggable.draggableProps,
+                                style: providedDraggable.draggableProps.style,
+                                className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
+                                children: React13.cloneElement(element, {
+                                  dragHandleProps: providedDraggable.dragHandleProps
+                                })
+                              }
+                            )
+                          },
+                          element.key
+                        )
                       )),
                       providedDroppable.placeholder
                     ]
@@ -11542,18 +11688,27 @@ function FormBuilder({
                     Section
                   }).map((element, index) => (
                     // @ts-ignore: suppress key error, can't change key assignment
-                    /* @__PURE__ */ jsx27(Draggable2, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx27(
-                      "div",
+                    /* @__PURE__ */ jsx27(
+                      Draggable2,
                       {
-                        ref: providedDraggable.innerRef,
-                        ...providedDraggable.draggableProps,
-                        style: providedDraggable.draggableProps.style,
-                        className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
-                        children: React18.cloneElement(element, {
-                          dragHandleProps: providedDraggable.dragHandleProps
-                        })
-                      }
-                    ) }, element.key)
+                        draggableId: element.key,
+                        index,
+                        isDragDisabled: element.props.compatibility !== void 0,
+                        children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx27(
+                          "div",
+                          {
+                            ref: providedDraggable.innerRef,
+                            ...providedDraggable.draggableProps,
+                            style: providedDraggable.draggableProps.style,
+                            className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
+                            children: React18.cloneElement(element, {
+                              dragHandleProps: providedDraggable.dragHandleProps
+                            })
+                          }
+                        )
+                      },
+                      element.key
+                    )
                   )),
                   providedDroppable.placeholder
                 ]

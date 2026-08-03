@@ -281,7 +281,12 @@ export default function Section({
                       Section,
                     }).map((element: any, index) => (
                       // @ts-ignore: suppress key error, can't change key assignment
-                      <Draggable key={element.key} draggableId={element.key} index={index}>
+                      <Draggable
+                        key={element.key}
+                        draggableId={element.key}
+                        index={index}
+                        isDragDisabled={element.props.compatibility !== undefined}
+                      >
                         {(providedDraggable, snapshot) => (
                           <div
                             ref={providedDraggable.innerRef}

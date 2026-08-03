@@ -138,6 +138,7 @@ function roundTrip(schemaInput: Record<string, any>, uiSchemaInput: Record<strin
     uischema: uiSchema,
     definitionData: schema.definitions,
     definitionUi: uiSchema.definitions,
+    categoryHash,
     onChange: (nextSchema, nextUiSchema) => {
       outputSchema = clone(nextSchema)
       outputUiSchema = clone(nextUiSchema)
@@ -168,13 +169,52 @@ function roundTrip(schemaInput: Record<string, any>, uiSchemaInput: Record<strin
     .filter((element) => element.propType === "card" && element.compatibility?.kind === "migration")
     .map((element) => element.name)
 
-  const status: Status = unsupportedVisualFields.length
+  const unsupportedRootComposition = ["allOf", "anyOf", "oneOf", "not"].some((keyword) =>
+    Object.prototype.hasOwnProperty.call(schemaInput, keyword)
+  )
+
+  const status: Status = unsupportedVisualFields.length || unsupportedRootComposition
     ? "unsupported"
     : !equivalent || migrationFields.length
       ? "lossy"
       : "pass"
 
   return { status, preservationStatus, outputSchema, outputUiSchema }
+}
+
+function roundTripWithElementEdit(
+  schemaInput: Record<string, any>,
+  uiSchemaInput: Record<string, any>,
+  edit: (elements: ReturnType<typeof generateElementPropsFromSchemas>) => void
+) {
+  const schema = clone(schemaInput)
+  const uiSchema = clone(uiSchemaInput)
+  const elements = generateElementPropsFromSchemas({
+    schema,
+    uischema: uiSchema,
+    definitionData: schema.definitions,
+    definitionUi: uiSchema.definitions,
+    categoryHash,
+  })
+  edit(elements)
+
+  let outputSchema: Record<string, any> | undefined
+  let outputUiSchema: Record<string, any> | undefined
+  updateSchemas(elements, {
+    schema,
+    uischema: uiSchema,
+    definitionData: schema.definitions,
+    definitionUi: uiSchema.definitions,
+    categoryHash,
+    onChange: (nextSchema, nextUiSchema) => {
+      outputSchema = clone(nextSchema)
+      outputUiSchema = clone(nextUiSchema)
+    },
+  })
+
+  assert.ok(outputSchema)
+  assert.ok(outputUiSchema)
+  return { outputSchema, outputUiSchema }
 }
 
 const fixtures = await loadFixtures()
@@ -250,6 +290,130 @@ test("generated object-array fields use the read-only compatibility presentation
 
   assert.match(markup, /data-compatibility-code="FS_OBJECT_ARRAY_READ_ONLY"/)
   assert.doesNotMatch(markup, /Item Type/)
+})
+
+test("conditional-only UI paths survive a no-op visual round trip", () => {
+  const fixture = fixtures.find(({ id }) => id === "conditional-if-then")
+  assert.ok(fixture)
+
+  const result = roundTrip(fixture.schema, fixture.uiSchema)
+
+  assert.deepEqual(result.outputSchema?.allOf, fixture.schema.allOf)
+  assert.deepEqual(result.outputUiSchema, fixture.uiSchema)
+})
+
+test("reading schemas into the visual model does not annotate the source documents", () => {
+  const schema = {
+    type: "object",
+    properties: { title: { type: "string" } },
+  }
+  const uiSchema = {
+    title: { "ui:placeholder": "Title" },
+  }
+  const expectedSchema = clone(schema)
+  const expectedUiSchema = clone(uiSchema)
+
+  generateElementPropsFromSchemas({ schema, uischema: uiSchema, categoryHash })
+
+  assert.deepEqual(schema, expectedSchema)
+  assert.deepEqual(uiSchema, expectedUiSchema)
+})
+
+test("conditional schemas and UI survive an unrelated supported-field edit", () => {
+  const fixture = fixtures.find(({ id }) => id === "conditional-if-then")
+  assert.ok(fixture)
+
+  const result = roundTripWithElementEdit(fixture.schema, fixture.uiSchema, (elements) => {
+    const access = elements.find(({ name }) => name === "access")
+    assert.ok(access?.dataOptions)
+    access.dataOptions = { ...access.dataOptions, title: "Access level" }
+  })
+
+  assert.equal(result.outputSchema.properties.access.title, "Access level")
+  assert.deepEqual(result.outputSchema.allOf, fixture.schema.allOf)
+  assert.deepEqual(result.outputUiSchema, fixture.uiSchema)
+})
+
+test("visual reordering retains conditional-only ui:order entries in place", () => {
+  const schema = {
+    type: "object",
+    properties: {
+      first: { type: "string" },
+      second: { type: "string" },
+    },
+    allOf: [
+      {
+        if: { properties: { first: { const: "show" } } },
+        then: { properties: { conditionalOnly: { type: "string" } } },
+      },
+    ],
+  }
+  const uiSchema = {
+    "ui:order": ["first", "conditionalOnly", "second"],
+    conditionalOnly: { "ui:widget": "textarea" },
+  }
+
+  const result = roundTripWithElementEdit(schema, uiSchema, (elements) => {
+    elements.reverse()
+  })
+
+  assert.deepEqual(result.outputUiSchema, {
+    "ui:order": ["second", "conditionalOnly", "first"],
+    conditionalOnly: { "ui:widget": "textarea" },
+  })
+})
+
+test("supported UI edits preserve opaque root UI options without adding synthetic order", () => {
+  const schema = {
+    type: "object",
+    properties: { title: { type: "string" } },
+  }
+  const uiSchema = {
+    title: { "ui:placeholder": "Original placeholder" },
+    "ui:submitButtonOptions": { norender: true },
+  }
+
+  const result = roundTripWithElementEdit(schema, uiSchema, (elements) => {
+    const title = elements.find(({ name }) => name === "title")
+    assert.ok(title?.uiOptions)
+    title.uiOptions = { ...title.uiOptions, "ui:placeholder": "Updated placeholder" }
+  })
+
+  assert.deepEqual(result.outputUiSchema, {
+    title: { "ui:placeholder": "Updated placeholder" },
+    "ui:submitButtonOptions": { norender: true },
+  })
+})
+
+test("draft-07 dependencies remain byte-for-byte unchanged after an unrelated edit", () => {
+  const fixture = fixtures.find(({ id }) => id === "legacy-dependencies")
+  assert.ok(fixture)
+
+  const result = roundTripWithElementEdit(fixture.schema, fixture.uiSchema, (elements) => {
+    const kind = elements.find(({ name }) => name === "kind")
+    assert.ok(kind?.dataOptions)
+    kind.dataOptions = { ...kind.dataOptions, title: "Kind" }
+  })
+
+  assert.equal(result.outputSchema.properties.kind.title, "Kind")
+  assert.deepEqual(result.outputSchema.dependencies, fixture.schema.dependencies)
+})
+
+test("supported dependency edits change only the represented dependency value", () => {
+  const fixture = fixtures.find(({ id }) => id === "legacy-dependencies")
+  assert.ok(fixture)
+
+  const result = roundTripWithElementEdit(fixture.schema, fixture.uiSchema, (elements) => {
+    const details = elements.find(({ name }) => name === "details")
+    assert.ok(details?.dataOptions)
+    details.dataOptions = { ...details.dataOptions, title: "Extended details" }
+  })
+
+  const alternatives = result.outputSchema.dependencies.kind.oneOf
+  assert.deepEqual(alternatives[0], fixture.schema.dependencies.kind.oneOf[0])
+  assert.equal(alternatives[1].properties.details.title, "Extended details")
+  assert.equal(alternatives[1].properties.details.minLength, 1)
+  assert.deepEqual(alternatives[1].required, ["details"])
 })
 
 for (const fixture of fixtures) {
