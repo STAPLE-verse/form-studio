@@ -23,7 +23,6 @@ export interface InputSelectDataType {
 
 export interface CardComponentPropsType {
   name: string
-  ontologyId?: string
   required?: boolean
   hideKey?: boolean
   definitionData?: { [key: string]: any }

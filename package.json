@@ -29,6 +29,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "test": "tsup --config tsup.test.config.ts && node .test-dist/capability-fixtures.test.js",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {
@@ -49,6 +50,7 @@
     "@rjsf/core": "^6.6.2",
     "@rjsf/utils": "^6.6.2",
     "@rjsf/validator-ajv8": "^6.6.2",
+    "@types/node": "^20.19.43",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "daisyui": "^5.7.4",

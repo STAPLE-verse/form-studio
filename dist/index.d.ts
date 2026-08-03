@@ -24,7 +24,6 @@ interface InputSelectDataType {
 }
 interface CardComponentPropsType {
     name: string;
-    ontologyId?: string;
     required?: boolean;
     hideKey?: boolean;
     definitionData?: {

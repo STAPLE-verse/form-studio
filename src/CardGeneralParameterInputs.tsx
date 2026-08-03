@@ -243,26 +243,6 @@ export default function CardGeneralParameterInputs({
           allFormInputs={allFormInputs}
         />
       </div>
-
-      <div className={`${entryRowClass} mt-4`}>
-        <div className={entryClass}>
-          <h5 className={entryLabelClass}>
-            Ontology ID (Optional){` `}
-            <Tooltip
-              text="Bind this field to a standard ontology code (e.g., SNOMED:75367002). This drastically improves the reusability and semantic findability of your template!"
-              id={`${elementId}-ontologyinfo`}
-              type="help"
-            />
-          </h5>
-          <input
-            value={parameters.ontologyId || ""}
-            placeholder="e.g. NCIT:C25150"
-            type="text"
-            onChange={(ev) => onChange({ ...parameters, ontologyId: ev.target.value })}
-            className={`input input-primary input-bordered ${entryControlClass} card-text`}
-          />
-        </div>
-      </div>
     </React.Fragment>
   )
 }

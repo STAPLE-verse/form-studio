@@ -9,7 +9,8 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src", "tests", "tsup.config.ts", "tsup.test.config.ts"]
 }

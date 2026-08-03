@@ -7702,8 +7702,7 @@ var supportedPropertyParameters = /* @__PURE__ */ new Set([
   "$id",
   "$schema",
   "meta",
-  "additionalProperties",
-  "ontologyId"
+  "additionalProperties"
 ]);
 var supportedUiParameters = /* @__PURE__ */ new Set([
   "ui:order",
@@ -9787,31 +9786,7 @@ function CardGeneralParameterInputs({
         mods,
         allFormInputs
       }
-    ) }),
-    /* @__PURE__ */ jsx16("div", { className: `${entryRowClass} mt-4`, children: /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-      /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
-        "Ontology ID (Optional)",
-        ` `,
-        /* @__PURE__ */ jsx16(
-          Tooltip,
-          {
-            text: "Bind this field to a standard ontology code (e.g., SNOMED:75367002). This drastically improves the reusability and semantic findability of your template!",
-            id: `${elementId}-ontologyinfo`,
-            type: "help"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsx16(
-        "input",
-        {
-          value: parameters.ontologyId || "",
-          placeholder: "e.g. NCIT:C25150",
-          type: "text",
-          onChange: (ev) => onChange({ ...parameters, ontologyId: ev.target.value }),
-          className: `input input-primary input-bordered ${entryControlClass} card-text`
-        }
-      )
-    ] }) })
+    ) })
   ] });
 }
 
