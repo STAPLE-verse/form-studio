@@ -4,6 +4,7 @@ import { lazy, Suspense, useState, useEffect, useRef } from "react"
 import { FormStudioProvider, useFormStudio, type FormStudioState } from "./FormStudioContext"
 import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
+import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
 
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid"
 import type { Mods } from "./types"
@@ -46,6 +47,7 @@ export function FormStudioUI({
 }: FormStudioUIProps) {
   const { state, setSchema, setUiSchema } = useFormStudio()
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
+  const panelResetKey = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema })
   
   // Track if the JSON tab has ever been visited so we only load the heavy editor once,
   // but keep it mounted in the background to preserve undo history and unsaved text.
@@ -161,21 +163,31 @@ export function FormStudioUI({
       </div>
 
       <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6">
-        <div className={activeTab === "builder" ? "block" : "hidden"}>
-          <FormBuilder
-            schema={typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema)}
-            uiSchema={typeof state.uiSchema === "string" ? state.uiSchema : JSON.stringify(state.uiSchema)}
-            onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
-              try {
-                setSchema(JSON.parse(newSchemaStr))
-                setUiSchema(JSON.parse(newUiSchemaStr))
-              } catch (e) {
-                console.error("Failed to parse schema from FormBuilder", e)
-              }
-            }}
-            mods={mods}
-          />
-        </div>
+        {activeTab === "builder" && (
+          <div className="block" data-studio-panel="builder">
+            <StudioPanelErrorBoundary panelName="Visual Builder" resetKey={panelResetKey}>
+              <FormBuilder
+                schema={
+                  typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema)
+                }
+                uiSchema={
+                  typeof state.uiSchema === "string"
+                    ? state.uiSchema
+                    : JSON.stringify(state.uiSchema)
+                }
+                onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
+                  try {
+                    setSchema(JSON.parse(newSchemaStr))
+                    setUiSchema(JSON.parse(newUiSchemaStr))
+                  } catch (e) {
+                    console.error("Failed to parse schema from FormBuilder", e)
+                  }
+                }}
+                mods={mods}
+              />
+            </StudioPanelErrorBoundary>
+          </div>
+        )}
         <div className={activeTab === "json" ? "block h-full" : "hidden"}>
           {hasVisitedJson && (
             <Suspense fallback={<JsonEditorFallback />}>
@@ -183,9 +195,13 @@ export function FormStudioUI({
             </Suspense>
           )}
         </div>
-        <div className={activeTab === "preview" ? "block" : "hidden"}>
-          <FormPreview />
-        </div>
+        {activeTab === "preview" && (
+          <div className="block" data-studio-panel="preview">
+            <StudioPanelErrorBoundary panelName="Live Preview" resetKey={panelResetKey}>
+              <FormPreview />
+            </StudioPanelErrorBoundary>
+          </div>
+        )}
       </div>
     </div>
   )

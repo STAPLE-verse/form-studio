@@ -8,7 +8,9 @@ import validator from "@rjsf/validator-ajv8"
 import Card from "../src/Card"
 import DaisyTheme from "../src/DaisyTheme"
 import CompatibilityCard from "../src/CompatibilityCard"
+import FormStudio from "../src/FormStudio"
 import Section from "../src/Section"
+import { StudioPanelErrorFallback } from "../src/StudioPanelErrorBoundary"
 import DEFAULT_FORM_INPUTS from "../src/defaults/defaultFormInputs"
 import {
   StringArrayParameterInputs,
@@ -340,6 +342,48 @@ test("generated legacy textarea fields show actionable migration diagnostics wit
   assert.match(markup, /remove &quot;format&quot;/)
   assert.match(markup, /ui:widget &quot;textarea&quot;/)
   assert.doesNotMatch(markup, /<(input|select|button|textarea)\b/)
+})
+
+test("inactive preview does not render a parseable intermediate Monaco widget", () => {
+  const originalError = console.error
+  console.error = () => undefined
+
+  try {
+    const markup = renderToStaticMarkup(
+      <FormStudio
+        initialSchema={{
+          type: "object",
+          properties: {
+            description: { type: "string", title: "Description" },
+          },
+        }}
+        initialUiSchema={{
+          description: { "ui:widget": "hidde" },
+        }}
+      />
+    )
+
+    assert.match(markup, /data-studio-panel="builder"/)
+    assert.match(markup, /FS_UNKNOWN_FIELD_READ_ONLY/)
+    assert.doesNotMatch(markup, /data-studio-panel="preview"/)
+  } finally {
+    console.error = originalError
+  }
+})
+
+test("panel render failures produce an inline recovery diagnostic", () => {
+  const markup = renderToStaticMarkup(
+    <StudioPanelErrorFallback
+      panelName="Live Preview"
+      error={new Error("No widget 'hidde' for type 'string'")}
+    />
+  )
+
+  assert.match(markup, /data-studio-panel-error="true"/)
+  assert.match(markup, /flex min-w-0 flex-col items-start gap-2/)
+  assert.match(markup, /Live Preview unavailable/)
+  assert.match(markup, /No widget &#x27;hidde&#x27;/)
+  assert.match(markup, /Use the JSON Editor/)
 })
 
 test("generated string arrays use the constrained text-list editor without a fixed card body", () => {
