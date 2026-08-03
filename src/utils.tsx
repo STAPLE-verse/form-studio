@@ -146,23 +146,44 @@ export function classifyCard(
     cardProps.dataOptions.enum ? "true" : "false"
   }`
   const category = categoryHash[currentHash]
-  if (category) return { kind: "editable", category }
-  if (cardProps.$ref !== undefined) return { kind: "editable", category: "ref" }
-
-  if (dataOptions.type === "array" && dataOptions.items?.type === "object") {
-    return {
-      kind: "readOnly",
-      code: "FS_OBJECT_ARRAY_READ_ONLY",
-      message: "Arrays of objects are preserved but cannot be edited visually.",
-    }
-  }
 
   if (dataOptions.type === "array") {
-    if (["string", "number", "integer", "boolean"].includes(dataOptions.items?.type)) {
+    if (category && category !== "stringArray") {
+      return { kind: "editable", category }
+    }
+
+    if (
+      category === "stringArray" &&
+      !Array.isArray(dataOptions.items) &&
+      dataOptions.items?.type === "string" &&
+      !["oneOf", "anyOf", "allOf", "not", "$ref"].some((keyword) =>
+        Object.prototype.hasOwnProperty.call(dataOptions.items, keyword)
+      )
+    ) {
+      return { kind: "editable", category }
+    }
+
+    if (dataOptions.items?.type === "object") {
+      return {
+        kind: "readOnly",
+        code: "FS_OBJECT_ARRAY_READ_ONLY",
+        message: "Arrays of objects are preserved but cannot be edited visually.",
+      }
+    }
+
+    if (dataOptions.items?.type === "string") {
+      return {
+        kind: "readOnly",
+        code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+        message: "This string item schema is composed or referenced and cannot be edited visually.",
+      }
+    }
+
+    if (["number", "integer", "boolean"].includes(dataOptions.items?.type)) {
       return {
         kind: "readOnly",
         code: "FS_SCALAR_ARRAY_READ_ONLY",
-        message: "Scalar array authoring is not available yet; this field is read-only.",
+        message: "Only arrays of strings can currently be edited visually; this field is read-only.",
       }
     }
 
@@ -172,6 +193,9 @@ export function classifyCard(
       message: "This array shape cannot be edited visually.",
     }
   }
+
+  if (category) return { kind: "editable", category }
+  if (cardProps.$ref !== undefined) return { kind: "editable", category: "ref" }
 
   return {
     kind: "readOnly",
@@ -203,6 +227,7 @@ const supportedPropertyParameters = new Set([
   "$ref",
   "minItems",
   "maxItems",
+  "uniqueItems",
   "enumNames",
   "dependencies",
   "$id",

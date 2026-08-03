@@ -67,6 +67,7 @@ interface CardComponentPropsType {
     "ui:placeholder"?: string;
     minItems?: number;
     maxItems?: number;
+    uniqueItems?: boolean;
     title?: string;
     $ref?: string;
     format?: string;

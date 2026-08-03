@@ -48,7 +48,7 @@ export default function CardGeneralParameterInputs({
   const objectNameLabel = fetchLabel("objectNameLabel", "Variable Name")
   const displayNameLabel = fetchLabel("displayNameLabel", "Display Name")
   const descriptionLabel = fetchLabel("descriptionLabel", "Description")
-  const inputTypeLabel = fetchLabel("inputTypeLabel", "Item Type")
+  const inputTypeLabel = fetchLabel("inputTypeLabel", "Field Type")
 
   const availableInputTypes = () => {
     const definitionsInSchema =
@@ -71,7 +71,7 @@ export default function CardGeneralParameterInputs({
       "longAnswer",
       "integer",
       "number",
-      //"array",
+      "stringArray",
       "ref",
     ]
 
@@ -194,7 +194,7 @@ export default function CardGeneralParameterInputs({
                 mods.tooltipDescriptions &&
                 typeof mods.tooltipDescriptions.cardInputType === "string"
                   ? mods.tooltipDescriptions.cardInputType
-                  : "The type of item displayed on the form"
+                  : "The form control and value type used for this field"
               }
               id={`${elementId}-inputinfo`}
               type="help"

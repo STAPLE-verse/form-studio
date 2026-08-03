@@ -36,7 +36,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
 
 // src/FormStudioContext.tsx
 import { createContext, useContext, useState as useState14 } from "react";
-import { jsx as jsx28 } from "react/jsx-runtime";
+import { jsx as jsx29 } from "react/jsx-runtime";
 function FormStudioProvider({
   initialSchema = {},
   initialUiSchema = {},
@@ -70,7 +70,7 @@ function FormStudioProvider({
   const updateState = (newState) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
-  return /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsx29(
     FormStudioContext.Provider,
     {
       value: {
@@ -7324,7 +7324,7 @@ __export(JsonEditor_exports, {
 });
 import { useState as useState21 } from "react";
 import Editor from "@monaco-editor/react";
-import { jsx as jsx31, jsxs as jsxs24 } from "react/jsx-runtime";
+import { jsx as jsx32, jsxs as jsxs25 } from "react/jsx-runtime";
 function JsonEditor() {
   const { state, setSchema, setUiSchema } = useFormStudio();
   const [localSchema, setLocalSchema] = useState21(() => JSON.stringify(state.schema, null, 2));
@@ -7375,10 +7375,10 @@ function JsonEditor() {
     } catch {
     }
   };
-  return /* @__PURE__ */ jsx31("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs24("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
-    /* @__PURE__ */ jsxs24("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx31("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
-      /* @__PURE__ */ jsx31("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx31(
+  return /* @__PURE__ */ jsx32("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs25("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
+    /* @__PURE__ */ jsxs25("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
+      /* @__PURE__ */ jsx32("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
+      /* @__PURE__ */ jsx32("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx32(
         Editor,
         {
           height: "100%",
@@ -7397,9 +7397,9 @@ function JsonEditor() {
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsxs24("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx31("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
-      /* @__PURE__ */ jsx31("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx31(
+    /* @__PURE__ */ jsxs25("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
+      /* @__PURE__ */ jsx32("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
+      /* @__PURE__ */ jsx32("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx32(
         Editor,
         {
           height: "100%",
@@ -7726,21 +7726,34 @@ function classifyCard(cardProps, categoryHash) {
   }
   const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${widget || ""};field:${cardProps.uiOptions["ui:field"] || ""};format:${cardProps.dataOptions.format || ""};$ref:${cardProps.$ref !== void 0 ? "true" : "false"};enum:${cardProps.dataOptions.enum ? "true" : "false"}`;
   const category = categoryHash[currentHash];
-  if (category) return { kind: "editable", category };
-  if (cardProps.$ref !== void 0) return { kind: "editable", category: "ref" };
-  if (dataOptions.type === "array" && dataOptions.items?.type === "object") {
-    return {
-      kind: "readOnly",
-      code: "FS_OBJECT_ARRAY_READ_ONLY",
-      message: "Arrays of objects are preserved but cannot be edited visually."
-    };
-  }
   if (dataOptions.type === "array") {
-    if (["string", "number", "integer", "boolean"].includes(dataOptions.items?.type)) {
+    if (category && category !== "stringArray") {
+      return { kind: "editable", category };
+    }
+    if (category === "stringArray" && !Array.isArray(dataOptions.items) && dataOptions.items?.type === "string" && !["oneOf", "anyOf", "allOf", "not", "$ref"].some(
+      (keyword) => Object.prototype.hasOwnProperty.call(dataOptions.items, keyword)
+    )) {
+      return { kind: "editable", category };
+    }
+    if (dataOptions.items?.type === "object") {
+      return {
+        kind: "readOnly",
+        code: "FS_OBJECT_ARRAY_READ_ONLY",
+        message: "Arrays of objects are preserved but cannot be edited visually."
+      };
+    }
+    if (dataOptions.items?.type === "string") {
+      return {
+        kind: "readOnly",
+        code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+        message: "This string item schema is composed or referenced and cannot be edited visually."
+      };
+    }
+    if (["number", "integer", "boolean"].includes(dataOptions.items?.type)) {
       return {
         kind: "readOnly",
         code: "FS_SCALAR_ARRAY_READ_ONLY",
-        message: "Scalar array authoring is not available yet; this field is read-only."
+        message: "Only arrays of strings can currently be edited visually; this field is read-only."
       };
     }
     return {
@@ -7749,6 +7762,8 @@ function classifyCard(cardProps, categoryHash) {
       message: "This array shape cannot be edited visually."
     };
   }
+  if (category) return { kind: "editable", category };
+  if (cardProps.$ref !== void 0) return { kind: "editable", category: "ref" };
   return {
     kind: "readOnly",
     code: "FS_UNKNOWN_FIELD_READ_ONLY",
@@ -7777,6 +7792,7 @@ var supportedPropertyParameters = /* @__PURE__ */ new Set([
   "$ref",
   "minItems",
   "maxItems",
+  "uniqueItems",
   "enumNames",
   "dependencies",
   "$id",
@@ -9850,7 +9866,7 @@ function CardGeneralParameterInputs({
   const objectNameLabel = fetchLabel("objectNameLabel", "Variable Name");
   const displayNameLabel = fetchLabel("displayNameLabel", "Display Name");
   const descriptionLabel = fetchLabel("descriptionLabel", "Description");
-  const inputTypeLabel = fetchLabel("inputTypeLabel", "Item Type");
+  const inputTypeLabel = fetchLabel("inputTypeLabel", "Field Type");
   const availableInputTypes = () => {
     const definitionsInSchema = parameters.definitionData && Object.keys(parameters.definitionData).length !== 0;
     let inputKeys = Object.keys(categoryMap).filter((key) => key !== "ref" || definitionsInSchema);
@@ -9868,7 +9884,7 @@ function CardGeneralParameterInputs({
       "longAnswer",
       "integer",
       "number",
-      //"array",
+      "stringArray",
       "ref"
     ];
     return groupOrder.filter((key) => inputKeys.includes(key)).map((key) => ({ value: key, label: categoryMap[key] }));
@@ -9975,7 +9991,7 @@ function CardGeneralParameterInputs({
               /* @__PURE__ */ jsx17(
                 Tooltip,
                 {
-                  text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardInputType === "string" ? mods.tooltipDescriptions.cardInputType : "The type of item displayed on the form",
+                  text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardInputType === "string" ? mods.tooltipDescriptions.cardInputType : "The form control and value type used for this field",
                   id: `${elementId}-inputinfo`,
                   type: "help"
                 }
@@ -11481,21 +11497,172 @@ var numberInputs = {
 };
 var numberInputs_default = numberInputs;
 
+// src/defaults/stringArrayInputs.tsx
+import { jsx as jsx26, jsxs as jsxs22 } from "react/jsx-runtime";
+function parseOptionalNonNegativeInteger(value) {
+  if (value === "") return void 0;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+function updateArrayIntegerConstraint(parameters, key, value) {
+  const parsed = parseOptionalNonNegativeInteger(value);
+  if (parsed === null) return parameters;
+  if (parsed !== void 0 && (key === "minItems" && typeof parameters.maxItems === "number" && parsed > parameters.maxItems || key === "maxItems" && typeof parameters.minItems === "number" && parsed < parameters.minItems)) {
+    return parameters;
+  }
+  const next = { ...parameters };
+  if (parsed === void 0) delete next[key];
+  else next[key] = parsed;
+  return next;
+}
+function updateItemConstraint(parameters, key, value) {
+  const items = { ...parameters.items || {}, type: "string" };
+  if (key === "pattern") {
+    if (value === "") delete items.pattern;
+    else items.pattern = value;
+  } else {
+    const parsed = parseOptionalNonNegativeInteger(value);
+    if (parsed === null) return parameters;
+    if (parsed !== void 0 && (key === "minLength" && typeof items.maxLength === "number" && parsed > items.maxLength || key === "maxLength" && typeof items.minLength === "number" && parsed < items.minLength)) {
+      return parameters;
+    }
+    if (parsed === void 0) delete items[key];
+    else items[key] = parsed;
+  }
+  return { ...parameters, items };
+}
+var constraintValue = (value) => typeof value === "number" ? value : "";
+var StringArrayParameterInputs = ({ parameters, onChange }) => {
+  const items = parameters.items || {};
+  return /* @__PURE__ */ jsxs22("div", { className: fieldStackClass, "data-string-array-constraints": "true", children: [
+    /* @__PURE__ */ jsxs22("div", { className: "rounded-lg border border-base-300 bg-base-200 p-3", children: [
+      /* @__PURE__ */ jsxs22("div", { className: "flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsx26("span", { className: "text-sm font-semibold", children: "Item type" }),
+        /* @__PURE__ */ jsx26("span", { className: "badge badge-ghost", children: "Text (string)" })
+      ] }),
+      /* @__PURE__ */ jsx26("p", { className: "mt-2 text-xs text-base-content/70", children: "The item type is fixed to keep this editor lossless. Other array shapes remain read-only." })
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Minimum items" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(parameters.minItems),
+          placeholder: "No minimum",
+          type: "number",
+          min: 0,
+          max: parameters.maxItems,
+          step: 1,
+          onChange: (event) => onChange(updateArrayIntegerConstraint(parameters, "minItems", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Maximum items" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(parameters.maxItems),
+          placeholder: "No maximum",
+          type: "number",
+          min: parameters.minItems ?? 0,
+          step: 1,
+          onChange: (event) => onChange(updateArrayIntegerConstraint(parameters, "maxItems", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsx26("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx26(
+      FBCheckbox_default,
+      {
+        onChangeValue: () => {
+          const next = { ...parameters };
+          if (parameters.uniqueItems === true) delete next.uniqueItems;
+          else next.uniqueItems = true;
+          onChange(next);
+        },
+        isChecked: parameters.uniqueItems === true,
+        label: "Require unique items"
+      }
+    ) }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Minimum item length" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(items.minLength),
+          placeholder: "No minimum",
+          type: "number",
+          min: 0,
+          max: typeof items.maxLength === "number" ? items.maxLength : void 0,
+          step: 1,
+          onChange: (event) => onChange(updateItemConstraint(parameters, "minLength", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Maximum item length" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(items.maxLength),
+          placeholder: "No maximum",
+          type: "number",
+          min: typeof items.minLength === "number" ? items.minLength : 0,
+          step: 1,
+          onChange: (event) => onChange(updateItemConstraint(parameters, "maxLength", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Item pattern" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: typeof items.pattern === "string" ? items.pattern : "",
+          placeholder: "Optional regular expression",
+          type: "text",
+          onChange: (event) => onChange(updateItemConstraint(parameters, "pattern", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] })
+  ] });
+};
+var StringArrayField = () => null;
+var stringArrayInputs = {
+  stringArray: {
+    displayName: "List of text values",
+    matchIf: [{ types: ["array"] }],
+    defaultDataSchema: {
+      items: { type: "string" }
+    },
+    defaultUiSchema: {},
+    type: "array",
+    cardBody: StringArrayField,
+    modalBody: StringArrayParameterInputs
+  }
+};
+var stringArrayInputs_default = stringArrayInputs;
+
 // src/defaults/referenceInputs.tsx
-import { jsx as jsx26 } from "react/jsx-runtime";
+import { jsx as jsx27 } from "react/jsx-runtime";
 var CardReferenceParameterInputs = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsx26("div", { children: /* @__PURE__ */ jsx26(PlaceholderInput, { parameters, onChange }) });
+  return /* @__PURE__ */ jsx27("div", { children: /* @__PURE__ */ jsx27(PlaceholderInput, { parameters, onChange }) });
 };
 var RefChoice = ({ parameters, onChange }) => {
   const pathArr = (parameters.$ref || "").split("/");
   const currentValueLabel = pathArr.length === 3 && pathArr[0] === "#" && pathArr[1] === "definitions" && pathArr[2] && (parameters.definitionData || {})[pathArr[2]] ? parameters.definitionData[pathArr[2]].title || parameters.$ref : parameters.$ref;
-  return /* @__PURE__ */ jsx26("div", { className: "card-select", children: /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx27("div", { className: "card-select", children: /* @__PURE__ */ jsx27(
     "select",
     {
       className: "select select-bordered w-full text-primary border-primary border-2 bg-primary-content",
       value: parameters.$ref || "",
       onChange: (e) => onChange({ ...parameters, $ref: e.target.value }),
-      children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx26("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
+      children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx27("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
     }
   ) });
 };
@@ -11527,13 +11694,14 @@ var DEFAULT_FORM_INPUTS = {
   ...referenceInputs_default,
   ...shortAnswerInputs_default,
   ...longAnswerInputs_default,
-  ...numberInputs_default
-  //...arrayInputs,
+  ...numberInputs_default,
+  // Deliberately separate from the disabled recursive generic array editor.
+  ...stringArrayInputs_default
 };
 var defaultFormInputs_default = DEFAULT_FORM_INPUTS;
 
 // src/FormBuilder.tsx
-import { jsx as jsx27, jsxs as jsxs22 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs23 } from "react/jsx-runtime";
 function FormBuilder({
   schema,
   uiSchema,
@@ -11590,12 +11758,12 @@ function FormBuilder({
       isFirstRender.current = false;
     }
   }, [onMount, categoryHash]);
-  return /* @__PURE__ */ jsxs22(
+  return /* @__PURE__ */ jsxs23(
     "div",
     {
       className: `formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`,
       children: [
-        /* @__PURE__ */ jsxs22(
+        /* @__PURE__ */ jsxs23(
           "div",
           {
             className: "alert alert-warning mb-4 flex-col items-start",
@@ -11603,20 +11771,20 @@ function FormBuilder({
               display: unsupportedFeatures.length === 0 ? "none" : "flex"
             },
             children: [
-              /* @__PURE__ */ jsx27("h5", { className: "font-bold", children: "Compatibility diagnostics:" }),
-              /* @__PURE__ */ jsx27("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx27("li", { children: message }, index)) })
+              /* @__PURE__ */ jsx28("h5", { className: "font-bold", children: "Compatibility diagnostics:" }),
+              /* @__PURE__ */ jsx28("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx28("li", { children: message }, index)) })
             ]
           }
         ),
-        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs22(
+        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs23(
           "div",
           {
             className: "formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4",
             "data-test": "form-head",
             children: [
-              /* @__PURE__ */ jsxs22("div", { children: [
-                /* @__PURE__ */ jsx27("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
-                /* @__PURE__ */ jsx27(
+              /* @__PURE__ */ jsxs23("div", { children: [
+                /* @__PURE__ */ jsx28("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
+                /* @__PURE__ */ jsx28(
                   "input",
                   {
                     value: schemaData.title || "",
@@ -11635,9 +11803,9 @@ function FormBuilder({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs22("div", { children: [
-                /* @__PURE__ */ jsx27("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
-                /* @__PURE__ */ jsx27(
+              /* @__PURE__ */ jsxs23("div", { children: [
+                /* @__PURE__ */ jsx28("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
+                /* @__PURE__ */ jsx28(
                   MarkdownDescriptionInput,
                   {
                     value: schemaData.description || "",
@@ -11654,7 +11822,7 @@ function FormBuilder({
             ]
           }
         ),
-        /* @__PURE__ */ jsx27("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx27(
+        /* @__PURE__ */ jsx28("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx28(
           DragDropContext2,
           {
             onDragEnd: (result) => onDragEnd(result, {
@@ -11665,7 +11833,7 @@ function FormBuilder({
               definitionUi: uiSchemaData.definitions,
               categoryHash
             }),
-            children: /* @__PURE__ */ jsx27(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs22(
+            children: /* @__PURE__ */ jsx28(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs23(
               "div",
               {
                 ref: providedDroppable.innerRef,
@@ -11688,13 +11856,13 @@ function FormBuilder({
                     Section
                   }).map((element, index) => (
                     // @ts-ignore: suppress key error, can't change key assignment
-                    /* @__PURE__ */ jsx27(
+                    /* @__PURE__ */ jsx28(
                       Draggable2,
                       {
                         draggableId: element.key,
                         index,
                         isDragDisabled: element.props.compatibility !== void 0,
-                        children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx27(
+                        children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx28(
                           "div",
                           {
                             ref: providedDraggable.innerRef,
@@ -11716,9 +11884,9 @@ function FormBuilder({
             ) })
           }
         ) }),
-        /* @__PURE__ */ jsxs22("div", { className: "form-footer formFooter", children: [
+        /* @__PURE__ */ jsxs23("div", { className: "form-footer formFooter", children: [
           !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
-          !mods?.components?.add && /* @__PURE__ */ jsx27(
+          !mods?.components?.add && /* @__PURE__ */ jsx28(
             Add,
             {
               tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -25549,23 +25717,23 @@ function withTheme(themeProps) {
 import ReactMarkdown2 from "react-markdown";
 import remarkGfm2 from "remark-gfm";
 import remarkBreaks2 from "remark-breaks";
-import { jsx as jsx29, jsxs as jsxs23 } from "react/jsx-runtime";
+import { jsx as jsx30, jsxs as jsxs24 } from "react/jsx-runtime";
 var REQUIRED_FIELD_SYMBOL3 = " *";
 function Label2(props) {
   const { label, required, id } = props;
   if (!label) {
     return null;
   }
-  return /* @__PURE__ */ jsxs23("label", { className: "text-lg font-bold", htmlFor: id, children: [
+  return /* @__PURE__ */ jsxs24("label", { className: "text-lg font-bold", htmlFor: id, children: [
     label,
-    required && /* @__PURE__ */ jsx29("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx30("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyTitleField(props) {
   const { id, title, required } = props;
-  return /* @__PURE__ */ jsxs23("legend", { id, className: "text-xl font-bold", children: [
+  return /* @__PURE__ */ jsxs24("legend", { id, className: "text-xl font-bold", children: [
     title,
-    required && /* @__PURE__ */ jsx29("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx30("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyDescriptionField(props) {
@@ -25574,16 +25742,16 @@ function MyDescriptionField(props) {
     return null;
   }
   if (typeof description === "string") {
-    return /* @__PURE__ */ jsx29(
+    return /* @__PURE__ */ jsx30(
       "div",
       {
         id,
         className: "markdown-display prose max-w-none dark:prose-invert text-md italic mb-2",
-        children: /* @__PURE__ */ jsx29(ReactMarkdown2, { remarkPlugins: [remarkGfm2, remarkBreaks2], children: description })
+        children: /* @__PURE__ */ jsx30(ReactMarkdown2, { remarkPlugins: [remarkGfm2, remarkBreaks2], children: description })
       }
     );
   } else {
-    return /* @__PURE__ */ jsx29("div", { id, className: "text-md italic", children: description });
+    return /* @__PURE__ */ jsx30("div", { id, className: "text-md italic", children: description });
   }
 }
 function MyFieldTemplate(props) {
@@ -25607,10 +25775,10 @@ function MyFieldTemplate(props) {
     uiOptions
   );
   if (hidden) {
-    return /* @__PURE__ */ jsx29("div", { className: "hidden", children });
+    return /* @__PURE__ */ jsx30("div", { className: "hidden", children });
   }
-  return /* @__PURE__ */ jsxs23(WrapIfAdditionalTemplate2, { ...props, children: [
-    displayLabel && /* @__PURE__ */ jsx29(Label2, { label, required, id }),
+  return /* @__PURE__ */ jsxs24(WrapIfAdditionalTemplate2, { ...props, children: [
+    displayLabel && /* @__PURE__ */ jsx30(Label2, { label, required, id }),
     displayLabel && description ? description : null,
     children,
     errors,
@@ -25626,7 +25794,7 @@ function MySubmitButton({ uiSchema }) {
   if (norender) {
     return null;
   }
-  return /* @__PURE__ */ jsx29("div", { children: /* @__PURE__ */ jsx29(
+  return /* @__PURE__ */ jsx30("div", { children: /* @__PURE__ */ jsx30(
     "button",
     {
       type: "submit",
@@ -25637,7 +25805,7 @@ function MySubmitButton({ uiSchema }) {
   ) });
 }
 var MyTextWidget = (props) => {
-  return /* @__PURE__ */ jsx29("div", { className: "flex", children: /* @__PURE__ */ jsx29(
+  return /* @__PURE__ */ jsx30("div", { className: "flex", children: /* @__PURE__ */ jsx30(
     "input",
     {
       type: "text",
@@ -25650,7 +25818,7 @@ var MyTextWidget = (props) => {
   ) });
 };
 var MyEmailWidget = (props) => {
-  return /* @__PURE__ */ jsx29("div", { className: "flex", children: /* @__PURE__ */ jsx29(
+  return /* @__PURE__ */ jsx30("div", { className: "flex", children: /* @__PURE__ */ jsx30(
     "input",
     {
       type: "email",
@@ -25681,12 +25849,12 @@ var MyCheckboxWidget = (props) => {
   const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
   const description = options.description ?? schema.description;
   const required = schemaRequiresTrueValue(schema);
-  return /* @__PURE__ */ jsxs23("div", { className: "field-checkbox", children: [
-    !hideLabel && label && /* @__PURE__ */ jsxs23("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
+  return /* @__PURE__ */ jsxs24("div", { className: "field-checkbox", children: [
+    !hideLabel && label && /* @__PURE__ */ jsxs24("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
       label,
-      required && /* @__PURE__ */ jsx29("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
+      required && /* @__PURE__ */ jsx30("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
     ] }),
-    !hideLabel && !!description && /* @__PURE__ */ jsx29(
+    !hideLabel && !!description && /* @__PURE__ */ jsx30(
       DescriptionFieldTemplate,
       {
         id: descriptionId(id),
@@ -25696,7 +25864,7 @@ var MyCheckboxWidget = (props) => {
         registry
       }
     ),
-    /* @__PURE__ */ jsx29("label", { className: "flex items-center gap-2 mt-1 cursor-pointer", children: /* @__PURE__ */ jsx29(
+    /* @__PURE__ */ jsx30("label", { className: "flex items-center gap-2 mt-1 cursor-pointer", children: /* @__PURE__ */ jsx30(
       "input",
       {
         type: "checkbox",
@@ -25727,12 +25895,12 @@ var MyCheckboxesWidget = (props) => {
   } = props;
   const { enumOptions, enumDisabled, emptyValue } = options;
   const checkboxesValues = Array.isArray(value) ? value : [value];
-  return /* @__PURE__ */ jsx29("div", { className: "checkboxes-group", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+  return /* @__PURE__ */ jsx30("div", { className: "checkboxes-group", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
     const checked = enumOptionsIsSelected(option.value, checkboxesValues);
     const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
     const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
-    return /* @__PURE__ */ jsxs23("label", { className: `checkboxes-option ${disabledCls}`, children: [
-      /* @__PURE__ */ jsx29(
+    return /* @__PURE__ */ jsxs24("label", { className: `checkboxes-option ${disabledCls}`, children: [
+      /* @__PURE__ */ jsx30(
         "input",
         {
           type: "checkbox",
@@ -25754,7 +25922,7 @@ var MyCheckboxesWidget = (props) => {
           "aria-describedby": ariaDescribedByIds(id)
         }
       ),
-      /* @__PURE__ */ jsx29("span", { children: option.label })
+      /* @__PURE__ */ jsx30("span", { children: option.label })
     ] }, index);
   }) });
 };
@@ -25796,7 +25964,7 @@ var DaisyTheme_default = DaisyTheme;
 
 // src/FormPreview.tsx
 init_FormStudioContext();
-import { jsx as jsx30 } from "react/jsx-runtime";
+import { jsx as jsx31 } from "react/jsx-runtime";
 var ThemedForm = withTheme(DaisyTheme_default);
 var hideSubmitButton = (uiSchema) => {
   return {
@@ -25810,12 +25978,12 @@ function FormPreview() {
   const { state, setFormData } = useFormStudio();
   const uiSchema = React20.useMemo(() => hideSubmitButton(state.uiSchema), [state.uiSchema]);
   if (!state.schema || Object.keys(state.schema).length === 0) {
-    return /* @__PURE__ */ jsx30("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx30("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
+    return /* @__PURE__ */ jsx31("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx31("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
   }
   const handleChange = ({ formData }) => {
     setFormData(formData);
   };
-  return /* @__PURE__ */ jsx30("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx30(
+  return /* @__PURE__ */ jsx31("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx31(
     ThemedForm,
     {
       schema: state.schema,
@@ -25829,10 +25997,10 @@ function FormPreview() {
 
 // src/FormStudio.tsx
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
-import { jsx as jsx32, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx33, jsxs as jsxs26 } from "react/jsx-runtime";
 var JsonEditor2 = lazy(() => Promise.resolve().then(() => (init_JsonEditor(), JsonEditor_exports)));
 function JsonEditorFallback() {
-  return /* @__PURE__ */ jsx32("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx32("span", { className: "loading loading-spinner text-primary loading-lg" }) });
+  return /* @__PURE__ */ jsx33("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx33("span", { className: "loading loading-spinner text-primary loading-lg" }) });
 }
 function FormStudioUI({
   onAutoSave,
@@ -25871,10 +26039,10 @@ function FormStudioUI({
     }, 1500);
     return () => clearTimeout(handler);
   }, [state.schema, state.uiSchema, onAutoSave, state]);
-  return /* @__PURE__ */ jsxs25("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
-    /* @__PURE__ */ jsxs25("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
-      /* @__PURE__ */ jsxs25("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
-        /* @__PURE__ */ jsx32(
+  return /* @__PURE__ */ jsxs26("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
+    /* @__PURE__ */ jsxs26("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
+      /* @__PURE__ */ jsxs26("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
+        /* @__PURE__ */ jsx33(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "builder" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -25882,7 +26050,7 @@ function FormStudioUI({
             children: "Visual Builder"
           }
         ),
-        /* @__PURE__ */ jsx32(
+        /* @__PURE__ */ jsx33(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "json" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -25890,7 +26058,7 @@ function FormStudioUI({
             children: "JSON Editor"
           }
         ),
-        /* @__PURE__ */ jsx32(
+        /* @__PURE__ */ jsx33(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "preview" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -25899,35 +26067,35 @@ function FormStudioUI({
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs25("div", { className: "flex items-center gap-3 pb-3", children: [
-        saveStatus !== void 0 && /* @__PURE__ */ jsxs25(
+      /* @__PURE__ */ jsxs26("div", { className: "flex items-center gap-3 pb-3", children: [
+        saveStatus !== void 0 && /* @__PURE__ */ jsxs26(
           "div",
           {
             className: "flex items-center mr-1 bg-base-100 px-3 py-1.5 rounded-full border border-base-300 shadow-sm min-w-[160px] justify-center transition-all",
             title: saveStatus === "unsaved" ? "Backed up in browser \xB7 not yet saved to your collection" : void 0,
             children: [
-              saveStatus === "synced" && /* @__PURE__ */ jsxs25("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx32(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
+              saveStatus === "synced" && /* @__PURE__ */ jsxs26("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx33(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
                 "All changes saved"
               ] }),
-              saveStatus === "saving" && /* @__PURE__ */ jsxs25("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx32("span", { className: "loading loading-spinner loading-xs text-primary" }),
+              saveStatus === "saving" && /* @__PURE__ */ jsxs26("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx33("span", { className: "loading loading-spinner loading-xs text-primary" }),
                 "Saving\u2026"
               ] }),
-              saveStatus === "unsaved" && /* @__PURE__ */ jsxs25("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx32(ExclamationCircleIcon, { className: "w-4 h-4" }),
+              saveStatus === "unsaved" && /* @__PURE__ */ jsxs26("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx33(ExclamationCircleIcon, { className: "w-4 h-4" }),
                 "Unsaved changes"
               ] })
             ]
           }
         ),
-        onCancel && /* @__PURE__ */ jsx32("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
-        onSave && /* @__PURE__ */ jsx32("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx32("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
-        onSaveNewVersion && /* @__PURE__ */ jsx32("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx32("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
+        onCancel && /* @__PURE__ */ jsx33("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
+        onSave && /* @__PURE__ */ jsx33("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx33("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
+        onSaveNewVersion && /* @__PURE__ */ jsx33("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx33("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
       ] })
     ] }),
-    /* @__PURE__ */ jsxs25("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
-      /* @__PURE__ */ jsx32("div", { className: activeTab === "builder" ? "block" : "hidden", children: /* @__PURE__ */ jsx32(
+    /* @__PURE__ */ jsxs26("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
+      /* @__PURE__ */ jsx33("div", { className: activeTab === "builder" ? "block" : "hidden", children: /* @__PURE__ */ jsx33(
         FormBuilder,
         {
           schema: typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema),
@@ -25943,13 +26111,13 @@ function FormStudioUI({
           mods
         }
       ) }),
-      /* @__PURE__ */ jsx32("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx32(Suspense, { fallback: /* @__PURE__ */ jsx32(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx32(JsonEditor2, {}) }) }),
-      /* @__PURE__ */ jsx32("div", { className: activeTab === "preview" ? "block" : "hidden", children: /* @__PURE__ */ jsx32(FormPreview, {}) })
+      /* @__PURE__ */ jsx33("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx33(Suspense, { fallback: /* @__PURE__ */ jsx33(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx33(JsonEditor2, {}) }) }),
+      /* @__PURE__ */ jsx33("div", { className: activeTab === "preview" ? "block" : "hidden", children: /* @__PURE__ */ jsx33(FormPreview, {}) })
     ] })
   ] });
 }
 function FormStudio(props) {
-  return /* @__PURE__ */ jsx32(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx32(
+  return /* @__PURE__ */ jsx33(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx33(
     FormStudioUI,
     {
       onAutoSave: props.onAutoSave,

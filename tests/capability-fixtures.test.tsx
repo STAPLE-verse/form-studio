@@ -11,6 +11,11 @@ import CompatibilityCard from "../src/CompatibilityCard"
 import Section from "../src/Section"
 import DEFAULT_FORM_INPUTS from "../src/defaults/defaultFormInputs"
 import {
+  StringArrayParameterInputs,
+  updateArrayIntegerConstraint,
+  updateItemConstraint,
+} from "../src/defaults/stringArrayInputs"
+import {
   classifyCard,
   generateCategoryHash,
   generateElementComponentsFromSchemas,
@@ -235,7 +240,19 @@ test("Form Studio classifies editable, read-only, and migration fields explicitl
     category: "shortAnswer",
   })
   assert.equal(classifyField({ type: "array", items: { type: "object" } }).kind, "readOnly")
-  assert.equal(classifyField({ type: "array", items: { type: "string" } }).kind, "readOnly")
+  assert.deepEqual(classifyField({ type: "array", items: { type: "string" } }), {
+    kind: "editable",
+    category: "stringArray",
+  })
+  assert.equal(classifyField({ type: "array", items: { type: "number" } }).kind, "readOnly")
+  assert.equal(classifyField({ type: "array", items: { type: "boolean" } }).kind, "readOnly")
+  assert.equal(
+    classifyField({
+      type: "array",
+      items: { type: "string", oneOf: [{ const: "a" }, { const: "b" }] },
+    }).kind,
+    "readOnly"
+  )
   assert.equal(classifyField({ oneOf: [{ const: "a" }, { const: "b" }] }).kind, "readOnly")
   assert.equal(
     classifyField({ type: "string", readOnly: true }, { "ui:widget": "hidden" }).kind,
@@ -290,6 +307,119 @@ test("generated object-array fields use the read-only compatibility presentation
 
   assert.match(markup, /data-compatibility-code="FS_OBJECT_ARRAY_READ_ONLY"/)
   assert.doesNotMatch(markup, /Item Type/)
+})
+
+test("generated string arrays use the constrained text-list editor without a fixed card body", () => {
+  const components = generateElementComponentsFromSchemas({
+    schemaData: {
+      type: "object",
+      properties: {
+        keywords: {
+          type: "array",
+          title: "Keywords",
+          items: { type: "string", minLength: 1 },
+          minItems: 1,
+          maxItems: 5,
+          uniqueItems: true,
+        },
+      },
+    },
+    uiSchemaData: {},
+    onChange: () => undefined,
+    path: "root",
+    cardOpenState: { root_keywords: true },
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+  const markup = renderToStaticMarkup(<>{components}</>)
+
+  assert.doesNotMatch(markup, /Repeatable list of text values/)
+  assert.doesNotMatch(markup, /FS_SCALAR_ARRAY_READ_ONLY/)
+})
+
+test("string-array constraints expose a fixed text item type", () => {
+  const markup = renderToStaticMarkup(
+    <StringArrayParameterInputs
+      parameters={{
+        name: "keywords",
+        type: "array",
+        items: { type: "string", minLength: 1 },
+        minItems: 1,
+        maxItems: 5,
+        uniqueItems: true,
+      }}
+      onChange={() => undefined}
+    />
+  )
+
+  assert.match(markup, /data-string-array-constraints="true"/)
+  assert.match(markup, /Text \(string\)/)
+  assert.match(markup, /Minimum items/)
+  assert.match(markup, /Require unique items/)
+  assert.doesNotMatch(markup, /<select\b/)
+})
+
+test("string-array constraint updates reject invalid values and preserve item details", () => {
+  const parameters = {
+    name: "keywords",
+    type: "array",
+    minItems: 1,
+    items: { type: "string", minLength: 1, format: "uri", "x-note": "opaque" },
+  }
+
+  assert.equal(updateArrayIntegerConstraint(parameters, "minItems", "0").minItems, 0)
+  assert.strictEqual(updateArrayIntegerConstraint(parameters, "minItems", "1.5"), parameters)
+  const rangeConstrainedParameters = { ...parameters, maxItems: 3 }
+  assert.strictEqual(
+    updateArrayIntegerConstraint(rangeConstrainedParameters, "minItems", "4"),
+    rangeConstrainedParameters
+  )
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(
+      updateArrayIntegerConstraint(parameters, "minItems", ""),
+      "minItems"
+    ),
+    false
+  )
+
+  const updatedItems = updateItemConstraint(parameters, "maxLength", "20").items
+  assert.deepEqual(updatedItems, {
+    type: "string",
+    minLength: 1,
+    maxLength: 20,
+    format: "uri",
+    "x-note": "opaque",
+  })
+})
+
+test("string-array visual edits preserve unedited array and item constraints", () => {
+  const fixture = fixtures.find(({ id }) => id === "scalar-array")
+  assert.ok(fixture)
+
+  const result = roundTripWithElementEdit(fixture.schema, fixture.uiSchema, (elements) => {
+    const keywords = elements.find(({ name }) => name === "keywords")
+    assert.ok(keywords?.dataOptions)
+    keywords.dataOptions = {
+      ...keywords.dataOptions,
+      minItems: 2,
+      items: {
+        ...keywords.dataOptions.items,
+        minLength: 2,
+        pattern: "^[A-Za-z]+$",
+      },
+    }
+  })
+
+  assert.deepEqual(result.outputSchema.properties.keywords, {
+    type: "array",
+    items: { type: "string", minLength: 2, pattern: "^[A-Za-z]+$" },
+    minItems: 2,
+    maxItems: 5,
+    uniqueItems: true,
+  })
 })
 
 test("conditional-only UI paths survive a no-op visual round trip", () => {
