@@ -408,4 +408,37 @@ declare function JsonEditor(): react.JSX.Element;
 
 declare function FormPreview(): react__default.JSX.Element;
 
-export { type AddFormObjectParametersType, type CardComponentPropsType, type CardComponentType, type CardModalProps, type CardModalType, type CardProps, type CardPropsType, type CardType, type ComponentProps, type DataOptions, type DataType, type DefinitionData, type ElementProps, type FieldCompatibility, FormBuilder, type FormElement, type FormInput, FormPreview, FormStudio, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type InitParameters, type InputSelectDataType, JsonEditor, type ModLabels, type Mods, type SectionProps, type SectionPropsType, type SectionType, useFormStudio };
+type JsonSchemaDocument = Record<string, unknown>;
+interface JsonSchemaFormEvent<TFormData extends object = Record<string, unknown>> {
+    formData: TFormData;
+}
+interface JsonSchemaFormValidationError {
+    name?: string;
+    property?: string;
+    message?: string;
+    params?: Record<string, unknown>;
+    stack?: string;
+    schemaPath?: string;
+}
+interface JsonSchemaFormProps<TFormData extends object = Record<string, unknown>> {
+    schema: JsonSchemaDocument;
+    uiSchema?: JsonSchemaDocument;
+    formData?: TFormData;
+    onChange?: (event: JsonSchemaFormEvent<TFormData>) => void;
+    onSubmit?: (event: JsonSchemaFormEvent<TFormData>) => void | Promise<void>;
+    onError?: (errors: JsonSchemaFormValidationError[]) => void;
+    disabled?: boolean;
+    readonly?: boolean;
+    className?: string;
+    idPrefix?: string;
+    name?: string;
+    noHtml5Validate?: boolean;
+    focusOnFirstError?: boolean;
+}
+/**
+ * Canonical context-free JSON Schema renderer shared by Form Studio consumers.
+ * RJSF, its validator, and the DaisyUI theme remain private implementation details.
+ */
+declare function JsonSchemaForm<TFormData extends object = Record<string, unknown>>({ schema, uiSchema, formData, onChange, onSubmit, onError, ...formProps }: JsonSchemaFormProps<TFormData>): react.JSX.Element;
+
+export { type AddFormObjectParametersType, type CardComponentPropsType, type CardComponentType, type CardModalProps, type CardModalType, type CardProps, type CardPropsType, type CardType, type ComponentProps, type DataOptions, type DataType, type DefinitionData, type ElementProps, type FieldCompatibility, FormBuilder, type FormElement, type FormInput, FormPreview, FormStudio, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type InitParameters, type InputSelectDataType, JsonEditor, type JsonSchemaDocument, JsonSchemaForm, type JsonSchemaFormEvent, type JsonSchemaFormProps, type JsonSchemaFormValidationError, type ModLabels, type Mods, type SectionProps, type SectionPropsType, type SectionType, useFormStudio };

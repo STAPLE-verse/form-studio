@@ -9,6 +9,7 @@ import Card from "../src/Card"
 import DaisyTheme from "../src/DaisyTheme"
 import CompatibilityCard from "../src/CompatibilityCard"
 import FormStudio from "../src/FormStudio"
+import JsonSchemaForm from "../src/JsonSchemaForm"
 import Section from "../src/Section"
 import { StudioPanelErrorFallback } from "../src/StudioPanelErrorBoundary"
 import { resolveLocalDefinitionReference } from "../src/localReferences"
@@ -563,6 +564,28 @@ test("RJSF preview styles single-line, multiline, and nested object fields consi
     /<textarea[^>]*class="[^"]*textarea-bordered[^"]*w-full[^"]*border-primary[^"]*bg-primary\/10[^"]*focus:ring-2[^"]*"/
   )
   assert.match(markup, /placeholder="Enter a multiline description"/)
+})
+
+test("exported JSON Schema renderer owns the themed RJSF integration without studio context", () => {
+  const markup = renderToStaticMarkup(
+    <JsonSchemaForm
+      schema={{
+        type: "object",
+        properties: {
+          website: { type: "string", title: "Website", format: "uri" },
+          access: { type: "string", title: "Access", enum: ["open", "restricted"] },
+        },
+        required: ["website"],
+      }}
+      uiSchema={{ "ui:submitButtonOptions": { norender: true } }}
+      formData={{ website: "https://example.org", access: "open" }}
+    />
+  )
+
+  assert.match(markup, /<input[^>]*type="url"/)
+  assert.match(markup, /class="[^"]*input-bordered[^"]*bg-primary\/10[^"]*"/)
+  assert.match(markup, /<select[^>]*class="[^"]*select-primary[^"]*"/)
+  assert.doesNotMatch(markup, /type="submit"/)
 })
 
 test("Visual Builder and Live Preview share control surface and focus treatments", () => {

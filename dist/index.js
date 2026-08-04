@@ -7324,7 +7324,7 @@ __export(JsonEditor_exports, {
 });
 import { useState as useState21 } from "react";
 import Editor from "@monaco-editor/react";
-import { jsx as jsx33, jsxs as jsxs26 } from "react/jsx-runtime";
+import { jsx as jsx34, jsxs as jsxs26 } from "react/jsx-runtime";
 function JsonEditor() {
   const { state, setSchema, setUiSchema } = useFormStudio();
   const [localSchema, setLocalSchema] = useState21(() => JSON.stringify(state.schema, null, 2));
@@ -7375,10 +7375,10 @@ function JsonEditor() {
     } catch {
     }
   };
-  return /* @__PURE__ */ jsx33("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs26("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
+  return /* @__PURE__ */ jsx34("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs26("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
     /* @__PURE__ */ jsxs26("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx33("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
-      /* @__PURE__ */ jsx33("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx33(
+      /* @__PURE__ */ jsx34("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
+      /* @__PURE__ */ jsx34("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx34(
         Editor,
         {
           height: "100%",
@@ -7398,8 +7398,8 @@ function JsonEditor() {
       ) })
     ] }),
     /* @__PURE__ */ jsxs26("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx33("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
-      /* @__PURE__ */ jsx33("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx33(
+      /* @__PURE__ */ jsx34("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
+      /* @__PURE__ */ jsx34("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx34(
         Editor,
         {
           height: "100%",
@@ -26544,10 +26544,46 @@ var DaisyTheme = {
 };
 var DaisyTheme_default = DaisyTheme;
 
-// src/FormPreview.tsx
-init_FormStudioContext();
+// src/JsonSchemaForm.tsx
 import { jsx as jsx31 } from "react/jsx-runtime";
 var ThemedForm = withTheme(DaisyTheme_default);
+function normalizeValidationErrors(errors) {
+  return errors.map((error) => ({
+    name: typeof error?.name === "string" ? error.name : void 0,
+    property: typeof error?.property === "string" ? error.property : void 0,
+    message: typeof error?.message === "string" ? error.message : void 0,
+    params: error?.params && typeof error.params === "object" && !Array.isArray(error.params) ? error.params : void 0,
+    stack: typeof error?.stack === "string" ? error.stack : void 0,
+    schemaPath: typeof error?.schemaPath === "string" ? error.schemaPath : void 0
+  }));
+}
+function JsonSchemaForm({
+  schema,
+  uiSchema = {},
+  formData,
+  onChange,
+  onSubmit,
+  onError,
+  ...formProps
+}) {
+  return /* @__PURE__ */ jsx31(
+    ThemedForm,
+    {
+      ...formProps,
+      schema,
+      uiSchema,
+      formData,
+      validator: lib_default,
+      onChange: onChange ? ({ formData: nextFormData }) => onChange({ formData: nextFormData }) : void 0,
+      onSubmit: onSubmit ? ({ formData: submittedFormData }) => onSubmit({ formData: submittedFormData }) : void 0,
+      onError: onError ? (errors) => onError(normalizeValidationErrors(errors)) : void 0
+    }
+  );
+}
+
+// src/FormPreview.tsx
+init_FormStudioContext();
+import { jsx as jsx32 } from "react/jsx-runtime";
 var hideSubmitButton = (uiSchema) => {
   return {
     ...uiSchema,
@@ -26560,31 +26596,30 @@ function FormPreview() {
   const { state, setFormData } = useFormStudio();
   const uiSchema = React20.useMemo(() => hideSubmitButton(state.uiSchema), [state.uiSchema]);
   if (!state.schema || Object.keys(state.schema).length === 0) {
-    return /* @__PURE__ */ jsx31("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx31("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
+    return /* @__PURE__ */ jsx32("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx32("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
   }
   const handleChange = ({ formData }) => {
     setFormData(formData);
   };
-  return /* @__PURE__ */ jsx31("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx31(
-    ThemedForm,
+  return /* @__PURE__ */ jsx32("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx32(
+    JsonSchemaForm,
     {
       schema: state.schema,
       uiSchema,
       formData: state.formData,
-      onChange: handleChange,
-      validator: lib_default
+      onChange: handleChange
     }
   ) });
 }
 
 // src/StudioPanelErrorBoundary.tsx
 import { Component as Component4 } from "react";
-import { jsx as jsx32, jsxs as jsxs25 } from "react/jsx-runtime";
+import { jsx as jsx33, jsxs as jsxs25 } from "react/jsx-runtime";
 function StudioPanelErrorFallback({
   error,
   panelName
 }) {
-  return /* @__PURE__ */ jsx32(
+  return /* @__PURE__ */ jsx33(
     "div",
     {
       className: "alert alert-warning",
@@ -26595,9 +26630,9 @@ function StudioPanelErrorFallback({
           panelName,
           " unavailable"
         ] }),
-        /* @__PURE__ */ jsx32("p", { className: "text-sm", children: "This panel could not interpret the current schema. The rest of Form Studio is still available." }),
-        /* @__PURE__ */ jsx32("p", { className: "max-w-full overflow-x-auto whitespace-pre-wrap font-mono text-xs", children: error.message }),
-        /* @__PURE__ */ jsx32("p", { className: "text-sm", children: "Use the JSON Editor to correct the schema or UI schema." })
+        /* @__PURE__ */ jsx33("p", { className: "text-sm", children: "This panel could not interpret the current schema. The rest of Form Studio is still available." }),
+        /* @__PURE__ */ jsx33("p", { className: "max-w-full overflow-x-auto whitespace-pre-wrap font-mono text-xs", children: error.message }),
+        /* @__PURE__ */ jsx33("p", { className: "text-sm", children: "Use the JSON Editor to correct the schema or UI schema." })
       ] })
     }
   );
@@ -26620,7 +26655,7 @@ var StudioPanelErrorBoundary = class extends Component4 {
   }
   render() {
     if (this.state.error) {
-      return /* @__PURE__ */ jsx32(StudioPanelErrorFallback, { error: this.state.error, panelName: this.props.panelName });
+      return /* @__PURE__ */ jsx33(StudioPanelErrorFallback, { error: this.state.error, panelName: this.props.panelName });
     }
     return this.props.children;
   }
@@ -26628,10 +26663,10 @@ var StudioPanelErrorBoundary = class extends Component4 {
 
 // src/FormStudio.tsx
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
-import { jsx as jsx34, jsxs as jsxs27 } from "react/jsx-runtime";
+import { jsx as jsx35, jsxs as jsxs27 } from "react/jsx-runtime";
 var JsonEditor2 = lazy(() => Promise.resolve().then(() => (init_JsonEditor(), JsonEditor_exports)));
 function JsonEditorFallback() {
-  return /* @__PURE__ */ jsx34("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx34("span", { className: "loading loading-spinner text-primary loading-lg" }) });
+  return /* @__PURE__ */ jsx35("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx35("span", { className: "loading loading-spinner text-primary loading-lg" }) });
 }
 function FormStudioUI({
   onAutoSave,
@@ -26674,7 +26709,7 @@ function FormStudioUI({
   return /* @__PURE__ */ jsxs27("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
     /* @__PURE__ */ jsxs27("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
       /* @__PURE__ */ jsxs27("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
-        /* @__PURE__ */ jsx34(
+        /* @__PURE__ */ jsx35(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "builder" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -26682,7 +26717,7 @@ function FormStudioUI({
             children: "Visual Builder"
           }
         ),
-        /* @__PURE__ */ jsx34(
+        /* @__PURE__ */ jsx35(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "json" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -26690,7 +26725,7 @@ function FormStudioUI({
             children: "JSON Editor"
           }
         ),
-        /* @__PURE__ */ jsx34(
+        /* @__PURE__ */ jsx35(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "preview" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -26707,27 +26742,27 @@ function FormStudioUI({
             title: saveStatus === "unsaved" ? "Backed up in browser \xB7 not yet saved to your collection" : void 0,
             children: [
               saveStatus === "synced" && /* @__PURE__ */ jsxs27("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx34(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
+                /* @__PURE__ */ jsx35(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
                 "All changes saved"
               ] }),
               saveStatus === "saving" && /* @__PURE__ */ jsxs27("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx34("span", { className: "loading loading-spinner loading-xs text-primary" }),
+                /* @__PURE__ */ jsx35("span", { className: "loading loading-spinner loading-xs text-primary" }),
                 "Saving\u2026"
               ] }),
               saveStatus === "unsaved" && /* @__PURE__ */ jsxs27("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx34(ExclamationCircleIcon, { className: "w-4 h-4" }),
+                /* @__PURE__ */ jsx35(ExclamationCircleIcon, { className: "w-4 h-4" }),
                 "Unsaved changes"
               ] })
             ]
           }
         ),
-        onCancel && /* @__PURE__ */ jsx34("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
-        onSave && /* @__PURE__ */ jsx34("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx34("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
-        onSaveNewVersion && /* @__PURE__ */ jsx34("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx34("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
+        onCancel && /* @__PURE__ */ jsx35("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
+        onSave && /* @__PURE__ */ jsx35("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx35("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
+        onSaveNewVersion && /* @__PURE__ */ jsx35("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx35("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
       ] })
     ] }),
     /* @__PURE__ */ jsxs27("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
-      activeTab === "builder" && /* @__PURE__ */ jsx34("div", { className: "block", "data-studio-panel": "builder", children: /* @__PURE__ */ jsx34(StudioPanelErrorBoundary, { panelName: "Visual Builder", resetKey: panelResetKey, children: /* @__PURE__ */ jsx34(
+      activeTab === "builder" && /* @__PURE__ */ jsx35("div", { className: "block", "data-studio-panel": "builder", children: /* @__PURE__ */ jsx35(StudioPanelErrorBoundary, { panelName: "Visual Builder", resetKey: panelResetKey, children: /* @__PURE__ */ jsx35(
         FormBuilder,
         {
           schema: typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema),
@@ -26743,13 +26778,13 @@ function FormStudioUI({
           mods
         }
       ) }) }),
-      /* @__PURE__ */ jsx34("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx34(Suspense, { fallback: /* @__PURE__ */ jsx34(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx34(JsonEditor2, {}) }) }),
-      activeTab === "preview" && /* @__PURE__ */ jsx34("div", { className: "block", "data-studio-panel": "preview", children: /* @__PURE__ */ jsx34(StudioPanelErrorBoundary, { panelName: "Live Preview", resetKey: panelResetKey, children: /* @__PURE__ */ jsx34(FormPreview, {}) }) })
+      /* @__PURE__ */ jsx35("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx35(Suspense, { fallback: /* @__PURE__ */ jsx35(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx35(JsonEditor2, {}) }) }),
+      activeTab === "preview" && /* @__PURE__ */ jsx35("div", { className: "block", "data-studio-panel": "preview", children: /* @__PURE__ */ jsx35(StudioPanelErrorBoundary, { panelName: "Live Preview", resetKey: panelResetKey, children: /* @__PURE__ */ jsx35(FormPreview, {}) }) })
     ] })
   ] });
 }
 function FormStudio(props) {
-  return /* @__PURE__ */ jsx34(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx34(
+  return /* @__PURE__ */ jsx35(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx35(
     FormStudioUI,
     {
       onAutoSave: props.onAutoSave,
@@ -26772,6 +26807,7 @@ export {
   FormStudioProvider,
   FormStudioUI,
   JsonEditor,
+  JsonSchemaForm,
   useFormStudio
 };
 /*! Bundled license information:

@@ -88,15 +88,35 @@ export default function Page() {
 }
 ```
 
+For rendering a schema without the studio state provider, use the canonical context-free
+renderer. Form Studio owns the matching RJSF, AJV validator, and DaisyUI theme internally:
+
+```tsx
+import { JsonSchemaForm } from "@staple-verse/form-studio"
+
+export default function MetadataForm({ schema, uiSchema, formData, save }) {
+  return (
+    <JsonSchemaForm
+      schema={schema}
+      uiSchema={uiSchema}
+      formData={formData}
+      onSubmit={({ formData }) => save(formData)}
+    />
+  )
+}
+```
+
 ### Exports
 
 - `FormStudio` — full studio with provider, tabs, and save UI
 - `FormStudioUI` — studio UI without the provider (use with `FormStudioProvider`)
 - `FormBuilder` — visual schema builder only
 - `FormPreview` — live RJSF preview
+- `JsonSchemaForm` — canonical context-free JSON Schema renderer and validator
 - `JsonEditor` — Monaco JSON editor
 - `FormStudioProvider`, `useFormStudio` — shared state context
 - `FormStudioState`, `FormStudioProviderProps` — shared integration types
+- `JsonSchemaFormProps`, `JsonSchemaFormEvent`, `JsonSchemaFormValidationError` — renderer API types
 - All types from `./types`
 
 ## Development

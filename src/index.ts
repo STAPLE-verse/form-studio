@@ -3,6 +3,13 @@ export { default as FormStudio, FormStudioUI, type FormStudioSaveStatus } from "
 export { default as JsonEditor } from "./JsonEditor"
 export { default as FormPreview } from "./FormPreview"
 export {
+  default as JsonSchemaForm,
+  type JsonSchemaDocument,
+  type JsonSchemaFormEvent,
+  type JsonSchemaFormProps,
+  type JsonSchemaFormValidationError,
+} from "./JsonSchemaForm"
+export {
   FormStudioProvider,
   useFormStudio,
   type FormStudioProviderProps,

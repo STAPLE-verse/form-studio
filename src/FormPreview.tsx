@@ -1,14 +1,8 @@
 "use client"
 
 import React from "react"
-import { withTheme } from "@rjsf/core"
-import validator from "@rjsf/validator-ajv8"
-import DaisyTheme from "./DaisyTheme"
+import JsonSchemaForm from "./JsonSchemaForm"
 import { useFormStudio } from "./FormStudioContext"
-
-// RJSF expects a validator to run its schemas against.
-// We bundle it here with DaisyTheme for a seamless experience.
-const ThemedForm = withTheme(DaisyTheme)
 
 // Helper to remove submit button visually from the preview if needed
 const hideSubmitButton = (uiSchema: any) => {
@@ -39,13 +33,11 @@ export default function FormPreview() {
 
   return (
     <div className="h-full overflow-y-auto pt-2 pb-8">
-      {/* We use strict true to match standard RJSF typing */}
-      <ThemedForm
-        schema={state.schema as any}
+      <JsonSchemaForm
+        schema={state.schema as Record<string, unknown>}
         uiSchema={uiSchema}
         formData={state.formData}
         onChange={handleChange}
-        validator={validator}
       />
     </div>
   )
