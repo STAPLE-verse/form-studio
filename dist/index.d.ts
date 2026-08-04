@@ -1,6 +1,8 @@
 import * as react from 'react';
 import react__default, { FunctionComponent, ReactElement, ReactNode } from 'react';
 
+type LocalReferenceResolutionStatus = "resolved" | "unresolved" | "unsupportedLocal" | "external" | "cycle";
+
 interface ComponentProps {
     dependents: {
         children: string[];
@@ -27,7 +29,7 @@ type FieldCompatibility = {
     category: string;
 } | {
     kind: "readOnly";
-    code: "FS_OBJECT_ARRAY_READ_ONLY" | "FS_SCALAR_ARRAY_READ_ONLY" | "FS_UNSUPPORTED_ARRAY_READ_ONLY" | "FS_ONE_OF_READ_ONLY" | "FS_COMPOSITION_READ_ONLY" | "FS_HIDDEN_READ_ONLY" | "FS_UNKNOWN_FIELD_READ_ONLY";
+    code: "FS_OBJECT_ARRAY_READ_ONLY" | "FS_SCALAR_ARRAY_READ_ONLY" | "FS_UNSUPPORTED_ARRAY_READ_ONLY" | "FS_ONE_OF_READ_ONLY" | "FS_COMPOSITION_READ_ONLY" | "FS_HIDDEN_READ_ONLY" | "FS_REFERENCE_CYCLE_READ_ONLY" | "FS_REFERENCE_EXTERNAL_READ_ONLY" | "FS_REFERENCE_UNRESOLVED_READ_ONLY" | "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY" | "FS_UNKNOWN_FIELD_READ_ONLY";
     message: string;
 } | {
     kind: "migration";
@@ -186,6 +188,7 @@ type CardProps = {
     };
     compatibility?: FieldCompatibility;
     $ref?: string;
+    referenceResolution?: LocalReferenceResolutionStatus;
     dependents?: Array<{
         children: Array<string>;
         value?: any;
@@ -205,6 +208,7 @@ type SectionProps = {
         [key: string]: any;
     };
     $ref?: string;
+    referenceResolution?: LocalReferenceResolutionStatus;
     dependents?: Array<{
         children: Array<string>;
         value?: any;
@@ -298,6 +302,7 @@ interface FormElement {
     description?: string;
     required?: boolean;
     $ref?: string;
+    referenceResolution?: LocalReferenceResolutionStatus;
     schema?: {
         [key: string]: any;
     };
@@ -348,7 +353,7 @@ interface AddFormObjectParametersType {
 }
 interface DefinitionData {
     [key: string]: {
-        "ui:order"?: string[];
+        [key: string]: any;
     };
 }
 

@@ -1,4 +1,5 @@
 import { ReactElement, FunctionComponent } from "react"
+import type { LocalReferenceResolutionStatus } from "./localReferences"
 
 export interface ComponentProps {
   dependents: {
@@ -35,6 +36,10 @@ export type FieldCompatibility =
         | "FS_ONE_OF_READ_ONLY"
         | "FS_COMPOSITION_READ_ONLY"
         | "FS_HIDDEN_READ_ONLY"
+        | "FS_REFERENCE_CYCLE_READ_ONLY"
+        | "FS_REFERENCE_EXTERNAL_READ_ONLY"
+        | "FS_REFERENCE_UNRESOLVED_READ_ONLY"
+        | "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY"
         | "FS_UNKNOWN_FIELD_READ_ONLY"
       message: string
     }
@@ -168,6 +173,7 @@ export type CardProps = {
   compatibility?: FieldCompatibility
   // only defined if a reference
   $ref?: string
+  referenceResolution?: LocalReferenceResolutionStatus
   // only defined if a dependency parent
   dependents?: Array<{
     children: Array<string>
@@ -189,6 +195,7 @@ export type SectionProps = {
   uischema: { [key: string]: any }
   // only defined if a reference
   $ref?: string
+  referenceResolution?: LocalReferenceResolutionStatus
   // only defined if a dependency parent
   dependents?: Array<{
     children: Array<string>
@@ -298,6 +305,7 @@ export interface FormElement {
   description?: string
   required?: boolean
   $ref?: string
+  referenceResolution?: LocalReferenceResolutionStatus
   schema?: { [key: string]: any }
   uischema?: { [key: string]: any }
   propType?: string
@@ -325,5 +333,5 @@ export interface AddFormObjectParametersType {
 }
 
 export interface DefinitionData {
-  [key: string]: { "ui:order"?: string[] }
+  [key: string]: { [key: string]: any }
 }

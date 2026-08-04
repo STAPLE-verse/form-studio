@@ -17,6 +17,11 @@ import {
   FieldCompatibility,
 } from "./types"
 import CompatibilityCard from "./CompatibilityCard"
+import {
+  getLocalDefinitionName,
+  resolveLocalDefinitionReference,
+  type LocalReferenceResolutionStatus,
+} from "./localReferences"
 
 // parse in either YAML or JSON
 export function parse(text: string): any {
@@ -100,6 +105,36 @@ export function classifyCard(
 ): FieldCompatibility {
   const { dataOptions, uiOptions } = cardProps
   const widget = uiOptions["ui:widget"]
+
+  if (cardProps.referenceResolution && cardProps.referenceResolution !== "resolved") {
+    const diagnostics: Record<
+      Exclude<LocalReferenceResolutionStatus, "resolved">,
+      Extract<FieldCompatibility, { kind: "readOnly" }>
+    > = {
+      cycle: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_CYCLE_READ_ONLY",
+        message: "Recursive local references are preserved but cannot be expanded visually.",
+      },
+      external: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_EXTERNAL_READ_ONLY",
+        message: "External references are preserved but cannot be edited visually.",
+      },
+      unresolved: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNRESOLVED_READ_ONLY",
+        message: "This reference does not resolve to an available local definition.",
+      },
+      unsupportedLocal: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY",
+        message:
+          "This local reference is preserved, but Form Studio only edits references under #/definitions.",
+      },
+    }
+    return diagnostics[cardProps.referenceResolution]
+  }
 
   if (dataOptions.oneOf !== undefined) {
     return {
@@ -255,7 +290,9 @@ function checkObjectForUnsupportedFeatures(
   uischema: { [key: string]: any },
   supportedWidgets: Set<string>,
   supportedFields: Set<string>,
-  supportedOptions: Set<string>
+  supportedOptions: Set<string>,
+  definitionData: DefinitionData,
+  definitionUi: { [key: string]: any }
 ) {
   // add each unsupported feature to this array
   const unsupportedFeatures: Array<string> = []
@@ -311,6 +348,18 @@ function checkObjectForUnsupportedFeatures(
   // check for unsupported property parameters
   if (schema.properties) {
     Object.entries(schema.properties).forEach(([parameter, element]: [string, any]) => {
+      const referenceResolution =
+        element && typeof element === "object" && typeof element.$ref === "string"
+          ? resolveLocalDefinitionReference({
+              schema: element,
+              uiSchema: uischema?.[parameter],
+              definitions: definitionData,
+              definitionUi,
+            })
+          : undefined
+      const inspectedElement =
+        referenceResolution?.status === "resolved" ? referenceResolution.schema : element
+
       if (element && typeof element === "object" && element.type && element.type !== "object") {
         // make sure that the type is valid
         if (!["array", "string", "integer", "number", "boolean"].includes(element.type)) {
@@ -335,8 +384,9 @@ function checkObjectForUnsupportedFeatures(
       if (
         uischema &&
         uischema[parameter] &&
-        element &&
-        (!element.type || element.type !== "object")
+        inspectedElement &&
+        (!referenceResolution || referenceResolution.status === "resolved") &&
+        (!inspectedElement.type || inspectedElement.type !== "object")
       ) {
         // check for unsupported ui properties
         Object.keys(uischema[parameter]).forEach((uiProp) => {
@@ -374,7 +424,9 @@ function checkObjectForUnsupportedFeatures(
 export function checkForUnsupportedFeatures(
   schema: { [key: string]: any },
   uischema: { [key: string]: any },
-  allFormInputs: { [key: string]: FormInput }
+  allFormInputs: { [key: string]: FormInput },
+  definitionData: DefinitionData = schema.definitions || {},
+  definitionUi: { [key: string]: any } = uischema.definitions || {}
 ): string[] {
   // add each unsupported feature to this array
   const unsupportedFeatures: string[] = []
@@ -410,7 +462,9 @@ export function checkForUnsupportedFeatures(
         uischema,
         supportedWidgets,
         supportedFields,
-        supportedOptions
+        supportedOptions,
+        definitionData,
+        definitionUi
       )
     )
   } else {
@@ -437,32 +491,27 @@ function generateDependencyElement(
   const newElement: FormElement = {}
   let elementDetails =
     dataProps && typeof dataProps === "object" ? { ...dataProps } : {}
+  let referenceResolution: LocalReferenceResolutionStatus | undefined
 
   // populate newElement with reference if applicable
   if (elementDetails.$ref !== undefined && definitionData) {
-    const pathArr = typeof elementDetails.$ref === "string" ? elementDetails.$ref.split("/") : []
-    if (
-      pathArr[0] === "#" &&
-      pathArr[1] === "definitions" &&
-      definitionData[pathArr[2]] &&
-      useDefinitionDetails === true
-    ) {
-      elementDetails = {
-        ...elementDetails,
-        ...definitionData[pathArr[2]],
-      }
-    }
-
-    const definedUiProps = (definitionUi || {})[pathArr[2]]
-    uiProps = {
-      ...(definedUiProps || {}),
-      ...uiProps,
+    const resolution = resolveLocalDefinitionReference({
+      schema: elementDetails,
+      uiSchema: uiProps,
+      definitions: definitionData,
+      definitionUi,
+    })
+    referenceResolution = resolution.status
+    if (resolution.status === "resolved") {
+      if (useDefinitionDetails) elementDetails = resolution.schema
+      uiProps = resolution.uiSchema
     }
   }
 
   newElement.name = name
   newElement.required = requiredNames.includes(name)
   newElement.$ref = typeof elementDetails.$ref === "string" ? elementDetails.$ref : undefined
+  newElement.referenceResolution = referenceResolution
 
   if (elementDetails.type && elementDetails.type === "object") {
     // create a section
@@ -514,29 +563,26 @@ export function generateElementPropsFromSchemas(parameters: {
     let elementUiOptions = {
       ...(uischema[parameter] || {}),
     }
+    let referenceResolution: LocalReferenceResolutionStatus | undefined
 
     // populate newElement with reference if applicable
     if (elementDetails?.$ref !== undefined && definitionData) {
-      if (elementDetails.$ref && !elementDetails.$ref.startsWith("#/definitions")) {
-        throw new Error(`Invalid definition, not at '#/definitions': ${elementDetails.$ref}`)
-      }
-      const pathArr = elementDetails.$ref !== undefined ? elementDetails.$ref.split("/") : []
-      if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]!]) {
-        elementDetails = {
-          ...definitionData[pathArr[2]!],
-          ...elementDetails,
-        }
-      }
-
-      const definedUiProps = (definitionUi || {})[pathArr[2]!]
-      elementUiOptions = {
-        ...(definedUiProps || {}),
-        ...elementUiOptions,
+      const resolution = resolveLocalDefinitionReference({
+        schema: elementDetails,
+        uiSchema: elementUiOptions,
+        definitions: definitionData,
+        definitionUi,
+      })
+      referenceResolution = resolution.status
+      if (resolution.status === "resolved") {
+        elementDetails = resolution.schema
+        elementUiOptions = resolution.uiSchema
       }
     }
     newElement.name = parameter
     newElement.required = requiredNames.includes(parameter)
     newElement.$ref = elementDetails.$ref
+    newElement.referenceResolution = referenceResolution
     newElement.dataOptions = elementDetails
 
     if (elementDetails.type && elementDetails.type === "object") {
@@ -899,9 +945,9 @@ export function generateUiSchemaFromElementProps(
     uiOrder.push(element.name)
     if (element.$ref !== undefined) {
       // look for the reference
-      const pathArr = typeof element.$ref === "string" ? element.$ref.split("/") : []
-      if (definitions && definitions[pathArr[2]!]) {
-        uiSchema[element.name] = definitions[pathArr[2]!]
+      const definitionName = getLocalDefinitionName(element.$ref)
+      if (definitionName !== undefined && definitions && definitions[definitionName]) {
+        uiSchema[element.name] = definitions[definitionName]
       }
     }
     if (element.propType === "card" && element.uiOptions) {

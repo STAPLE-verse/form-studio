@@ -56,7 +56,9 @@ export default function Section({
   const unsupportedFeatures = checkForUnsupportedFeatures(
     schema || {},
     uischema || {},
-    allFormInputs
+    allFormInputs,
+    definitionData,
+    definitionUi
   )
   const schemaData = schema || {}
   const [cardOpenState, setCardOpenState] = React.useState<Record<string, boolean>>({})

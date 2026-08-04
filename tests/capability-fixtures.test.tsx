@@ -11,6 +11,11 @@ import CompatibilityCard from "../src/CompatibilityCard"
 import FormStudio from "../src/FormStudio"
 import Section from "../src/Section"
 import { StudioPanelErrorFallback } from "../src/StudioPanelErrorBoundary"
+import { resolveLocalDefinitionReference } from "../src/localReferences"
+import {
+  builderControlAppearanceClass,
+  controlAppearanceClass,
+} from "../src/controlAppearance"
 import DEFAULT_FORM_INPUTS from "../src/defaults/defaultFormInputs"
 import {
   StringArrayParameterInputs,
@@ -19,6 +24,7 @@ import {
 } from "../src/defaults/stringArrayInputs"
 import {
   classifyCard,
+  checkForUnsupportedFeatures,
   generateCategoryHash,
   generateElementComponentsFromSchemas,
   generateElementPropsFromSchemas,
@@ -265,6 +271,158 @@ test("Form Studio classifies editable, read-only, and migration fields explicitl
   assert.equal(classifyField({ type: "string", format: "textarea" }).kind, "migration")
 })
 
+test("local reference diagnostics inspect the same resolved object shape as the visual builder", () => {
+  const schema = {
+    type: "object",
+    definitions: {
+      email: {
+        type: "string",
+        title: "Contact email",
+        format: "email",
+      },
+      contact: {
+        type: "object",
+        title: "Contact details",
+        properties: {
+          email: { $ref: "#/definitions/email" },
+        },
+      },
+    },
+    properties: {
+      contact: { $ref: "#/definitions/contact" },
+    },
+  }
+  const uiSchema = {
+    contact: {
+      email: { "ui:placeholder": "name@example.org" },
+    },
+  }
+  const originalSchema = clone(schema)
+  const originalUiSchema = clone(uiSchema)
+
+  const diagnostics = checkForUnsupportedFeatures(
+    schema,
+    uiSchema,
+    DEFAULT_FORM_INPUTS,
+    schema.definitions
+  )
+  const elements = generateElementPropsFromSchemas({
+    schema,
+    uischema: uiSchema,
+    definitionData: schema.definitions,
+    categoryHash,
+  })
+
+  assert.doesNotMatch(diagnostics.join("\n"), /UI Property: email for contact/)
+  assert.equal(elements[0]?.propType, "section")
+  assert.equal(elements[0]?.referenceResolution, "resolved")
+  assert.deepEqual(schema, originalSchema)
+  assert.deepEqual(uiSchema, originalUiSchema)
+})
+
+test("resolved scalar references still validate their actual UI options", () => {
+  const schema = {
+    type: "object",
+    definitions: {
+      email: { type: "string", format: "email" },
+    },
+    properties: {
+      email: { $ref: "#/definitions/email" },
+    },
+  }
+
+  assert.deepEqual(
+    checkForUnsupportedFeatures(
+      schema,
+      { email: { "ui:placeholder": "name@example.org" } },
+      DEFAULT_FORM_INPUTS,
+      schema.definitions
+    ),
+    []
+  )
+  assert.match(
+    checkForUnsupportedFeatures(
+      schema,
+      { email: { unexpected: true } },
+      DEFAULT_FORM_INPUTS,
+      schema.definitions
+    ).join("\n"),
+    /UI Property: unexpected for email/
+  )
+})
+
+test("local definition resolution follows chains, handles escaped names, and does not mutate input", () => {
+  const definitions = {
+    contactAlias: { $ref: "#/definitions/contact~1details" },
+    "contact/details": {
+      type: "object",
+      title: "Contact details",
+      properties: {
+        email: { type: "string", format: "email" },
+      },
+    },
+  }
+  const definitionUi = {
+    "contact/details": {
+      email: { "ui:placeholder": "name@example.org" },
+    },
+  }
+  const schema = { $ref: "#/definitions/contactAlias" }
+  const uiSchema = { "ui:description": "Instance guidance" }
+  const original = clone({ schema, uiSchema, definitions, definitionUi })
+
+  const resolution = resolveLocalDefinitionReference({
+    schema,
+    uiSchema,
+    definitions,
+    definitionUi,
+  })
+
+  assert.equal(resolution.status, "resolved")
+  assert.equal(resolution.schema.type, "object")
+  assert.equal(resolution.schema.$ref, "#/definitions/contactAlias")
+  assert.equal(resolution.uiSchema.email["ui:placeholder"], "name@example.org")
+  assert.equal(resolution.uiSchema["ui:description"], "Instance guidance")
+  assert.deepEqual({ schema, uiSchema, definitions, definitionUi }, original)
+})
+
+test("cyclic, unresolved, unsupported local, and external references are read-only instead of throwing", () => {
+  const definitions = {
+    cycleA: { $ref: "#/definitions/cycleB" },
+    cycleB: { $ref: "#/definitions/cycleA" },
+  }
+  const schema = {
+    type: "object",
+    definitions,
+    properties: {
+      cyclic: { $ref: "#/definitions/cycleA" },
+      missing: { $ref: "#/definitions/missing" },
+      otherLocal: { $ref: "#/properties/cyclic" },
+      external: { $ref: "https://example.org/contact.schema.json" },
+    },
+  }
+
+  const elements = generateElementPropsFromSchemas({
+    schema,
+    uischema: {},
+    definitionData: definitions,
+    categoryHash,
+  })
+  const compatibilityCodes = Object.fromEntries(
+    elements.map((element) => [
+      element.name,
+      element.compatibility?.kind === "readOnly" ? element.compatibility.code : undefined,
+    ])
+  )
+
+  assert.deepEqual(compatibilityCodes, {
+    cyclic: "FS_REFERENCE_CYCLE_READ_ONLY",
+    missing: "FS_REFERENCE_UNRESOLVED_READ_ONLY",
+    otherLocal: "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY",
+    external: "FS_REFERENCE_EXTERNAL_READ_ONLY",
+  })
+})
+
 test("read-only compatibility cards expose diagnostics without destructive controls", () => {
   const compatibility = classifyField({ type: "array", items: { type: "object" } })
   assert.notEqual(compatibility.kind, "editable")
@@ -342,6 +500,165 @@ test("generated legacy textarea fields show actionable migration diagnostics wit
   assert.match(markup, /remove &quot;format&quot;/)
   assert.match(markup, /ui:widget &quot;textarea&quot;/)
   assert.doesNotMatch(markup, /<(input|select|button|textarea)\b/)
+})
+
+test("RJSF preview styles single-line, multiline, and nested object fields consistently", () => {
+  const markup = renderToStaticMarkup(
+    <ThemedForm
+      schema={{
+        type: "object",
+        title: "Preview style test",
+        properties: {
+          title: { type: "string", title: "Title" },
+          website: { type: "string", title: "Website", format: "uri" },
+          issued: { type: "string", title: "Issued", format: "date" },
+          count: { type: "integer", title: "Count", minimum: 0 },
+          description: { type: "string", title: "Description" },
+          contact: {
+            type: "object",
+            title: "Contact details",
+            properties: {
+              email: { type: "string", title: "Contact email", format: "email" },
+            },
+          },
+        },
+      }}
+      uiSchema={{
+        description: {
+          "ui:widget": "textarea",
+          "ui:placeholder": "Enter a multiline description",
+        },
+        "ui:submitButtonOptions": { norender: true },
+      }}
+      validator={validator}
+    />
+  )
+
+  assert.match(markup, /<legend class="[^"]*text-2xl[^"]*"/)
+  assert.match(markup, /<fieldset id="root_contact" class="[^"]*mt-8[^"]*min-w-0[^"]*"/)
+  assert.match(markup, /<legend class="[^"]*mb-4[^"]*text-xl[^"]*"[^>]*>.*Contact details/)
+  assert.doesNotMatch(markup, /<fieldset id="root_contact" class="[^"]*(?:rounded|border|bg-|px-|pl-)/)
+  assert.doesNotMatch(markup, /class="[^"]*border-l-2[^"]*"/)
+  assert.match(markup, /class="[^"]*mb-5[^"]*"/)
+  assert.doesNotMatch(markup, /class="[^"]*last:mb-0[^"]*"/)
+  assert.match(markup, /<label class="[^"]*mb-1[^"]*block[^"]*"[^>]*>Title/)
+  assert.match(
+    markup,
+    /<input[^>]*class="[^"]*input-bordered[^"]*w-full[^"]*border-primary[^"]*bg-primary\/10[^"]*focus:ring-2[^"]*"/
+  )
+  for (const [id, type] of [
+    ["root_website", "url"],
+    ["root_issued", "date"],
+    ["root_count", "number"],
+  ]) {
+    assert.match(
+      markup,
+      new RegExp(
+        `<input id="${id}"[^>]*class="[^"]*input-bordered[^"]*border-primary[^"]*bg-primary/10[^"]*"[^>]*type="${type}"`
+      )
+    )
+  }
+  assert.match(
+    markup,
+    /<textarea[^>]*class="[^"]*textarea-bordered[^"]*w-full[^"]*border-primary[^"]*bg-primary\/10[^"]*focus:ring-2[^"]*"/
+  )
+  assert.match(markup, /placeholder="Enter a multiline description"/)
+})
+
+test("Visual Builder and Live Preview share control surface and focus treatments", () => {
+  assert.match(controlAppearanceClass, /border border-primary/)
+  assert.match(controlAppearanceClass, /bg-primary\/10/)
+  assert.match(controlAppearanceClass, /focus:ring-2 focus:ring-primary\/40/)
+
+  for (const control of ["input", "textarea", "select"]) {
+    assert.match(builderControlAppearanceClass, new RegExp(`\\[&_\\.${control}\\]:border`))
+    assert.match(builderControlAppearanceClass, new RegExp(`\\[&_\\.${control}\\]:bg-primary/10`))
+    assert.match(
+      builderControlAppearanceClass,
+      new RegExp(`\\[&_\\.${control}:focus\\]:ring-primary/40`)
+    )
+  }
+})
+
+test("RJSF preview uses DaisyUI controls for every choice presentation", () => {
+  const markup = renderToStaticMarkup(
+    <ThemedForm
+      schema={{
+        type: "object",
+        properties: {
+          confirmed: { type: "boolean", title: "Confirmed" },
+          access: {
+            type: "string",
+            title: "Access",
+            enum: ["open", "restricted", "closed"],
+          },
+          priority: {
+            type: "string",
+            title: "Priority",
+            enum: ["low", "normal", "high"],
+          },
+          topics: {
+            type: "array",
+            title: "Topics",
+            items: { type: "string", enum: ["metadata", "validation"] },
+            uniqueItems: true,
+          },
+        },
+      }}
+      uiSchema={{
+        priority: { "ui:widget": "radio" },
+        topics: { "ui:widget": "checkboxes" },
+        "ui:submitButtonOptions": { norender: true },
+      }}
+      validator={validator}
+    />
+  )
+
+  assert.match(
+    markup,
+    /<select[^>]*class="[^"]*select-bordered[^"]*select-primary[^"]*bg-primary\/10[^"]*"/
+  )
+  assert.match(markup, /<input[^>]*type="radio"[^>]*class="[^"]*radio radio-primary[^"]*"/)
+  assert.match(
+    markup,
+    /<input[^>]*type="checkbox"[^>]*class="[^"]*checkbox checkbox-primary[^"]*"/
+  )
+  assert.match(markup, /role="radiogroup"/)
+  assert.match(markup, /metadata/)
+  assert.match(markup, /validation/)
+})
+
+test("RJSF string arrays use full-width fields and labeled DaisyUI actions", () => {
+  const markup = renderToStaticMarkup(
+    <ThemedForm
+      schema={{
+        type: "object",
+        properties: {
+          keywords: {
+            type: "array",
+            title: "List of text values",
+            items: { type: "string", minLength: 1 },
+            minItems: 1,
+            maxItems: 5,
+            uniqueItems: true,
+          },
+        },
+      }}
+      uiSchema={{
+        keywords: { items: { "ui:placeholder": "Keyword" } },
+        "ui:submitButtonOptions": { norender: true },
+      }}
+      validator={validator}
+    />
+  )
+
+  assert.match(markup, /array-item[^" ]*[^>]*mb-3 flex w-full min-w-0 items-end gap-2/)
+  assert.match(markup, /<input[^>]*id="root_keywords_0"[^>]*class="[^"]*w-full[^"]*"/)
+  assert.match(markup, /<button[^>]*aria-label="Remove"[^>]*>.*<svg/)
+  assert.match(markup, /<button[^>]*aria-label="Add"[^>]*>.*<svg.*Add item/)
+  assert.match(markup, /<button[^>]*class="[^"]*h-11[^"]*min-h-11[^"]*"/)
+  assert.match(markup, /<button[^>]*class="[^"]*ml-1[^"]*"[^>]*aria-label="Add"/)
+  assert.doesNotMatch(markup, /glyphicon/)
 })
 
 test("inactive preview does not render a parseable intermediate Monaco widget", () => {

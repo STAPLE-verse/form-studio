@@ -21,6 +21,7 @@ import {
 } from "./utils"
 import DEFAULT_FORM_INPUTS from "./defaults/defaultFormInputs"
 import type { Mods, InitParameters, AddFormObjectParametersType } from "./types"
+import { builderControlAppearanceClass } from "./controlAppearance"
 
 
 export default function FormBuilder({
@@ -101,7 +102,7 @@ export default function FormBuilder({
 
   return (
     <div
-      className={`formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`}
+      className={`formBuilder ${builderControlAppearanceClass} ${className || ""}`}
     >
       <div
         className="alert alert-warning mb-4 flex-col items-start"

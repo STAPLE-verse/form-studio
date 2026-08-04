@@ -7640,6 +7640,105 @@ function CompatibilityCard({
   );
 }
 
+// src/localReferences.ts
+function cloneJsonValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneJsonValue(item));
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+    );
+  }
+  return value;
+}
+function decodePointerToken(token) {
+  if (/~(?:[^01]|$)/.test(token)) return void 0;
+  return token.replace(/~1/g, "/").replace(/~0/g, "~");
+}
+function getLocalDefinitionName(reference) {
+  if (!reference.startsWith("#")) return void 0;
+  let pointer;
+  try {
+    pointer = decodeURIComponent(reference.slice(1));
+  } catch {
+    return void 0;
+  }
+  const path = pointer.split("/");
+  if (path.length !== 3 || path[0] !== "" || path[1] !== "definitions") {
+    return void 0;
+  }
+  return decodePointerToken(path[2]);
+}
+function resolveLocalDefinitionReference({
+  schema,
+  uiSchema = {},
+  definitions = {},
+  definitionUi = {}
+}) {
+  const sourceSchema = cloneJsonValue(schema);
+  const sourceUiSchema = cloneJsonValue(uiSchema);
+  const reference = typeof schema.$ref === "string" ? schema.$ref : "";
+  const unresolved = (status, currentReference = reference) => ({
+    status,
+    reference: currentReference,
+    schema: sourceSchema,
+    uiSchema: sourceUiSchema
+  });
+  if (!reference) return unresolved("unresolved");
+  if (!reference.startsWith("#")) return unresolved("external");
+  const resolve = (currentSchema, currentUiSchema, seenReferences) => {
+    const currentReference = typeof currentSchema.$ref === "string" ? currentSchema.$ref : "";
+    if (!currentReference) {
+      return {
+        status: "resolved",
+        reference,
+        schema: cloneJsonValue(currentSchema),
+        uiSchema: cloneJsonValue(currentUiSchema)
+      };
+    }
+    if (!currentReference.startsWith("#")) {
+      return unresolved("external", currentReference);
+    }
+    const definitionName = getLocalDefinitionName(currentReference);
+    if (definitionName === void 0) {
+      return unresolved("unsupportedLocal", currentReference);
+    }
+    if (seenReferences.has(currentReference)) {
+      return unresolved("cycle", currentReference);
+    }
+    const definition = definitions[definitionName];
+    if (!definition || typeof definition !== "object" || Array.isArray(definition)) {
+      return unresolved("unresolved", currentReference);
+    }
+    const nextSeenReferences = new Set(seenReferences);
+    nextSeenReferences.add(currentReference);
+    const definedUiSchema = definitionUi[definitionName] && typeof definitionUi[definitionName] === "object" ? definitionUi[definitionName] : {};
+    let resolvedDefinition = cloneJsonValue(definition);
+    let resolvedDefinitionUi = cloneJsonValue(definedUiSchema);
+    if (typeof definition.$ref === "string") {
+      const nestedResolution = resolve(definition, definedUiSchema, nextSeenReferences);
+      if (nestedResolution.status !== "resolved") return nestedResolution;
+      resolvedDefinition = nestedResolution.schema;
+      resolvedDefinitionUi = nestedResolution.uiSchema;
+    }
+    return {
+      status: "resolved",
+      reference,
+      definitionName,
+      schema: {
+        ...resolvedDefinition,
+        ...cloneJsonValue(currentSchema)
+      },
+      uiSchema: {
+        ...resolvedDefinitionUi,
+        ...cloneJsonValue(currentUiSchema)
+      }
+    };
+  };
+  return resolve(schema, uiSchema, /* @__PURE__ */ new Set());
+}
+
 // src/utils.tsx
 import { jsx as jsx7 } from "react/jsx-runtime";
 function parse(text) {
@@ -7696,6 +7795,31 @@ function generateCategoryHash(allFormInputs) {
 function classifyCard(cardProps, categoryHash) {
   const { dataOptions, uiOptions } = cardProps;
   const widget = uiOptions["ui:widget"];
+  if (cardProps.referenceResolution && cardProps.referenceResolution !== "resolved") {
+    const diagnostics = {
+      cycle: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_CYCLE_READ_ONLY",
+        message: "Recursive local references are preserved but cannot be expanded visually."
+      },
+      external: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_EXTERNAL_READ_ONLY",
+        message: "External references are preserved but cannot be edited visually."
+      },
+      unresolved: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNRESOLVED_READ_ONLY",
+        message: "This reference does not resolve to an available local definition."
+      },
+      unsupportedLocal: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY",
+        message: "This local reference is preserved, but Form Studio only edits references under #/definitions."
+      }
+    };
+    return diagnostics[cardProps.referenceResolution];
+  }
   if (dataOptions.oneOf !== void 0) {
     return {
       kind: "readOnly",
@@ -7812,7 +7936,7 @@ var supportedUiParameters = /* @__PURE__ */ new Set([
   "items",
   "definitions"
 ]);
-function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, supportedFields, supportedOptions) {
+function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, supportedFields, supportedOptions, definitionData, definitionUi) {
   const unsupportedFeatures = [];
   if (schema && typeof schema === "object") {
     Object.keys(schema).forEach((property2) => {
@@ -7857,6 +7981,13 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
   }
   if (schema.properties) {
     Object.entries(schema.properties).forEach(([parameter, element]) => {
+      const referenceResolution = element && typeof element === "object" && typeof element.$ref === "string" ? resolveLocalDefinitionReference({
+        schema: element,
+        uiSchema: uischema?.[parameter],
+        definitions: definitionData,
+        definitionUi
+      }) : void 0;
+      const inspectedElement = referenceResolution?.status === "resolved" ? referenceResolution.schema : element;
       if (element && typeof element === "object" && element.type && element.type !== "object") {
         if (!["array", "string", "integer", "number", "boolean"].includes(element.type)) {
           unsupportedFeatures.push(`Unrecognized type: ${element.type} in ${parameter}`);
@@ -7873,7 +8004,7 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
           }
         });
       }
-      if (uischema && uischema[parameter] && element && (!element.type || element.type !== "object")) {
+      if (uischema && uischema[parameter] && inspectedElement && (!referenceResolution || referenceResolution.status === "resolved") && (!inspectedElement.type || inspectedElement.type !== "object")) {
         Object.keys(uischema[parameter]).forEach((uiProp) => {
           if (!supportedUiParameters.has(uiProp)) {
             unsupportedFeatures.push(`UI Property: ${uiProp} for ${parameter}`);
@@ -7897,7 +8028,7 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
   }
   return unsupportedFeatures;
 }
-function checkForUnsupportedFeatures(schema, uischema, allFormInputs) {
+function checkForUnsupportedFeatures(schema, uischema, allFormInputs, definitionData = schema.definitions || {}, definitionUi = uischema.definitions || {}) {
   const unsupportedFeatures = [];
   const widgets2 = [];
   const fields2 = [];
@@ -7925,7 +8056,9 @@ function checkForUnsupportedFeatures(schema, uischema, allFormInputs) {
         uischema,
         supportedWidgets,
         supportedFields,
-        supportedOptions
+        supportedOptions,
+        definitionData,
+        definitionUi
       )
     );
   } else {
@@ -7939,23 +8072,24 @@ function generateDependencyElement(name, dataProps, uiProperties, requiredNames,
   };
   const newElement = {};
   let elementDetails = dataProps && typeof dataProps === "object" ? { ...dataProps } : {};
+  let referenceResolution;
   if (elementDetails.$ref !== void 0 && definitionData) {
-    const pathArr = typeof elementDetails.$ref === "string" ? elementDetails.$ref.split("/") : [];
-    if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]] && useDefinitionDetails === true) {
-      elementDetails = {
-        ...elementDetails,
-        ...definitionData[pathArr[2]]
-      };
+    const resolution = resolveLocalDefinitionReference({
+      schema: elementDetails,
+      uiSchema: uiProps,
+      definitions: definitionData,
+      definitionUi
+    });
+    referenceResolution = resolution.status;
+    if (resolution.status === "resolved") {
+      if (useDefinitionDetails) elementDetails = resolution.schema;
+      uiProps = resolution.uiSchema;
     }
-    const definedUiProps = (definitionUi || {})[pathArr[2]];
-    uiProps = {
-      ...definedUiProps || {},
-      ...uiProps
-    };
   }
   newElement.name = name;
   newElement.required = requiredNames.includes(name);
   newElement.$ref = typeof elementDetails.$ref === "string" ? elementDetails.$ref : void 0;
+  newElement.referenceResolution = referenceResolution;
   if (elementDetails.type && elementDetails.type === "object") {
     newElement.schema = elementDetails;
     newElement.uischema = uiProps || {};
@@ -7988,26 +8122,24 @@ function generateElementPropsFromSchemas(parameters) {
     let elementUiOptions = {
       ...uischema[parameter] || {}
     };
+    let referenceResolution;
     if (elementDetails?.$ref !== void 0 && definitionData) {
-      if (elementDetails.$ref && !elementDetails.$ref.startsWith("#/definitions")) {
-        throw new Error(`Invalid definition, not at '#/definitions': ${elementDetails.$ref}`);
+      const resolution = resolveLocalDefinitionReference({
+        schema: elementDetails,
+        uiSchema: elementUiOptions,
+        definitions: definitionData,
+        definitionUi
+      });
+      referenceResolution = resolution.status;
+      if (resolution.status === "resolved") {
+        elementDetails = resolution.schema;
+        elementUiOptions = resolution.uiSchema;
       }
-      const pathArr = elementDetails.$ref !== void 0 ? elementDetails.$ref.split("/") : [];
-      if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]]) {
-        elementDetails = {
-          ...definitionData[pathArr[2]],
-          ...elementDetails
-        };
-      }
-      const definedUiProps = (definitionUi || {})[pathArr[2]];
-      elementUiOptions = {
-        ...definedUiProps || {},
-        ...elementUiOptions
-      };
     }
     newElement.name = parameter;
     newElement.required = requiredNames.includes(parameter);
     newElement.$ref = elementDetails.$ref;
+    newElement.referenceResolution = referenceResolution;
     newElement.dataOptions = elementDetails;
     if (elementDetails.type && elementDetails.type === "object") {
       newElement.schema = elementDetails;
@@ -8248,9 +8380,9 @@ function generateUiSchemaFromElementProps(elementArr, definitionUi) {
   elementArr.forEach((element) => {
     uiOrder.push(element.name);
     if (element.$ref !== void 0) {
-      const pathArr = typeof element.$ref === "string" ? element.$ref.split("/") : [];
-      if (definitions && definitions[pathArr[2]]) {
-        uiSchema[element.name] = definitions[pathArr[2]];
+      const definitionName = getLocalDefinitionName(element.$ref);
+      if (definitionName !== void 0 && definitions && definitions[definitionName]) {
+        uiSchema[element.name] = definitions[definitionName];
       }
     }
     if (element.propType === "card" && element.uiOptions) {
@@ -8275,13 +8407,13 @@ function getCardParameterInputComponentForType(category, allFormInputs) {
 function isJsonObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
-function cloneJsonValue(value) {
+function cloneJsonValue2(value) {
   if (Array.isArray(value)) {
-    return value.map((item) => cloneJsonValue(item));
+    return value.map((item) => cloneJsonValue2(item));
   }
   if (isJsonObject(value)) {
     return Object.fromEntries(
-      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue2(child)])
     );
   }
   return value;
@@ -8299,7 +8431,7 @@ function jsonValuesEqual(left, right) {
   );
 }
 function mergeUiOrder(originalOrder, baselineOrder, nextOrder) {
-  if (!Array.isArray(originalOrder)) return cloneJsonValue(nextOrder);
+  if (!Array.isArray(originalOrder)) return cloneJsonValue2(nextOrder);
   const visuallyOwnedNames = /* @__PURE__ */ new Set([...baselineOrder, ...nextOrder]);
   const explicitVisualNames = new Set(
     originalOrder.filter(
@@ -8327,7 +8459,7 @@ function mergeUiOrder(originalOrder, baselineOrder, nextOrder) {
 }
 function applyVisualChanges(original, baselineGenerated, nextGenerated, key) {
   if (jsonValuesEqual(baselineGenerated, nextGenerated)) {
-    return cloneJsonValue(original);
+    return cloneJsonValue2(original);
   }
   if (key === "ui:order" && Array.isArray(baselineGenerated) && Array.isArray(nextGenerated)) {
     return mergeUiOrder(original, baselineGenerated, nextGenerated);
@@ -8338,7 +8470,7 @@ function applyVisualChanges(original, baselineGenerated, nextGenerated, key) {
     );
   }
   if (isJsonObject(baselineGenerated) && isJsonObject(nextGenerated)) {
-    const merged = isJsonObject(original) ? cloneJsonValue(original) : {};
+    const merged = isJsonObject(original) ? cloneJsonValue2(original) : {};
     const generatedKeys = /* @__PURE__ */ new Set([
       ...Object.keys(baselineGenerated),
       ...Object.keys(nextGenerated)
@@ -8351,7 +8483,7 @@ function applyVisualChanges(original, baselineGenerated, nextGenerated, key) {
         return;
       }
       if (!existedBefore) {
-        merged[generatedKey] = cloneJsonValue(nextGenerated[generatedKey]);
+        merged[generatedKey] = cloneJsonValue2(nextGenerated[generatedKey]);
         return;
       }
       if (jsonValuesEqual(baselineGenerated[generatedKey], nextGenerated[generatedKey])) {
@@ -8366,7 +8498,7 @@ function applyVisualChanges(original, baselineGenerated, nextGenerated, key) {
     });
     return merged;
   }
-  return cloneJsonValue(nextGenerated);
+  return cloneJsonValue2(nextGenerated);
 }
 function updateSchemas(elementArr, parameters) {
   const {
@@ -8377,8 +8509,8 @@ function updateSchemas(elementArr, parameters) {
     definitionUi,
     categoryHash
   } = parameters;
-  const baselineSchema = cloneJsonValue(schema);
-  const baselineUiSchema = cloneJsonValue(uischema);
+  const baselineSchema = cloneJsonValue2(schema);
+  const baselineUiSchema = cloneJsonValue2(uischema);
   const baselineElements = generateElementPropsFromSchemas({
     schema: baselineSchema,
     uischema: baselineUiSchema,
@@ -10559,7 +10691,9 @@ function Section({
   const unsupportedFeatures = checkForUnsupportedFeatures(
     schema || {},
     uischema || {},
-    allFormInputs
+    allFormInputs,
+    definitionData,
+    definitionUi
   );
   const schemaData = schema || {};
   const [cardOpenState, setCardOpenState] = React13.useState({});
@@ -11700,6 +11834,10 @@ var DEFAULT_FORM_INPUTS = {
 };
 var defaultFormInputs_default = DEFAULT_FORM_INPUTS;
 
+// src/controlAppearance.ts
+var controlAppearanceClass = "border border-primary bg-primary/10 transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+var builderControlAppearanceClass = "[&_.input]:border [&_.input:not(.input-error)]:border-primary [&_.input]:bg-primary/10 [&_.input]:transition-shadow [&_.input:focus]:border-primary [&_.input:focus]:outline-none [&_.input:focus]:ring-2 [&_.input:focus]:ring-primary/40 [&_.input:focus]:ring-offset-1 [&_.input:focus]:ring-offset-base-100 [&_.textarea]:border [&_.textarea]:border-primary [&_.textarea]:bg-primary/10 [&_.textarea]:transition-shadow [&_.textarea:focus]:border-primary [&_.textarea:focus]:outline-none [&_.textarea:focus]:ring-2 [&_.textarea:focus]:ring-primary/40 [&_.textarea:focus]:ring-offset-1 [&_.textarea:focus]:ring-offset-base-100 [&_.select]:border [&_.select]:border-primary [&_.select]:bg-primary/10 [&_.select]:transition-shadow [&_.select:focus]:border-primary [&_.select:focus]:outline-none [&_.select:focus]:ring-2 [&_.select:focus]:ring-primary/40 [&_.select:focus]:ring-offset-1 [&_.select:focus]:ring-offset-base-100";
+
 // src/FormBuilder.tsx
 import { jsx as jsx28, jsxs as jsxs23 } from "react/jsx-runtime";
 function FormBuilder({
@@ -11761,7 +11899,7 @@ function FormBuilder({
   return /* @__PURE__ */ jsxs23(
     "div",
     {
-      className: `formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`,
+      className: `formBuilder ${builderControlAppearanceClass} ${className || ""}`,
       children: [
         /* @__PURE__ */ jsxs23(
           "div",
@@ -25714,6 +25852,15 @@ function withTheme(themeProps) {
 }
 
 // src/DaisyTheme.tsx
+import { useCallback as useCallback18 } from "react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  DocumentDuplicateIcon,
+  PlusIcon as PlusIcon4,
+  TrashIcon as TrashIcon3,
+  XMarkIcon as XMarkIcon5
+} from "@heroicons/react/24/outline";
 import ReactMarkdown2 from "react-markdown";
 import remarkGfm2 from "remark-gfm";
 import remarkBreaks2 from "remark-breaks";
@@ -25724,16 +25871,16 @@ function Label2(props) {
   if (!label) {
     return null;
   }
-  return /* @__PURE__ */ jsxs24("label", { className: "text-lg font-bold", htmlFor: id, children: [
+  return /* @__PURE__ */ jsxs24("label", { className: "mb-1 block text-base font-semibold text-base-content", htmlFor: id, children: [
     label,
-    required && /* @__PURE__ */ jsx30("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx30("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyTitleField(props) {
   const { id, title, required } = props;
-  return /* @__PURE__ */ jsxs24("legend", { id, className: "text-xl font-bold", children: [
+  return /* @__PURE__ */ jsxs24("legend", { id, className: "mb-4 text-xl font-semibold text-base-content", children: [
     title,
-    required && /* @__PURE__ */ jsx30("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx30("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyDescriptionField(props) {
@@ -25777,13 +25924,97 @@ function MyFieldTemplate(props) {
   if (hidden) {
     return /* @__PURE__ */ jsx30("div", { className: "hidden", children });
   }
-  return /* @__PURE__ */ jsxs24(WrapIfAdditionalTemplate2, { ...props, children: [
+  return /* @__PURE__ */ jsx30(WrapIfAdditionalTemplate2, { ...props, children: /* @__PURE__ */ jsxs24("div", { className: "rjsf-field-layout mb-5 min-w-0 px-1", children: [
     displayLabel && /* @__PURE__ */ jsx30(Label2, { label, required, id }),
     displayLabel && description ? description : null,
-    children,
+    /* @__PURE__ */ jsx30("div", { className: "min-w-0", children }),
     errors,
     help
-  ] });
+  ] }) });
+}
+function MyArrayFieldItemTemplate(props) {
+  const { children, className, buttonsProps, hasToolbar, registry, uiSchema } = props;
+  const options = getUiOptions(uiSchema);
+  const ArrayFieldItemButtonsTemplate2 = getTemplate("ArrayFieldItemButtonsTemplate", registry, options);
+  return /* @__PURE__ */ jsxs24(
+    "div",
+    {
+      className: `${className} mb-3 flex w-full min-w-0 items-end gap-2 [&_.rjsf-field-layout]:mb-0`,
+      children: [
+        /* @__PURE__ */ jsx30("div", { className: "min-w-0 flex-1", children }),
+        hasToolbar ? /* @__PURE__ */ jsx30("div", { className: "flex shrink-0 items-center gap-1 py-1", children: /* @__PURE__ */ jsx30(ArrayFieldItemButtonsTemplate2, { ...buttonsProps }) }) : null
+      ]
+    }
+  );
+}
+function MyObjectFieldTemplate(props) {
+  const {
+    description,
+    disabled,
+    fieldPathId,
+    formData,
+    onAddProperty,
+    optionalDataControl,
+    properties,
+    readonly,
+    registry,
+    required,
+    schema,
+    title,
+    uiSchema
+  } = props;
+  const options = getUiOptions(uiSchema);
+  const DescriptionFieldTemplate = getTemplate(
+    "DescriptionFieldTemplate",
+    registry,
+    options
+  );
+  const { AddButton: AddButton2 } = registry.templates.ButtonTemplates;
+  const isRoot = fieldPathId.path.length === 0;
+  const showOptionalDataControlInTitle = !readonly && !disabled;
+  return /* @__PURE__ */ jsxs24(
+    "fieldset",
+    {
+      id: fieldPathId.$id,
+      className: isRoot ? "min-w-0" : "mt-8 min-w-0",
+      children: [
+        title && /* @__PURE__ */ jsxs24(
+          "legend",
+          {
+            className: isRoot ? "mb-6 block w-full text-2xl font-bold text-base-content" : "mb-4 block w-full text-xl font-semibold text-base-content",
+            children: [
+              /* @__PURE__ */ jsx30("span", { id: titleId(fieldPathId), children: title }),
+              required && /* @__PURE__ */ jsx30("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 }),
+              showOptionalDataControlInTitle ? optionalDataControl : void 0
+            ]
+          }
+        ),
+        description && /* @__PURE__ */ jsx30(
+          DescriptionFieldTemplate,
+          {
+            id: descriptionId(fieldPathId),
+            description,
+            schema,
+            uiSchema,
+            registry
+          }
+        ),
+        !showOptionalDataControlInTitle ? optionalDataControl : void 0,
+        /* @__PURE__ */ jsx30("div", { className: "min-w-0", children: properties.map((property2) => /* @__PURE__ */ jsx30("div", { children: property2.content }, property2.name)) }),
+        canExpand(schema, uiSchema, formData) && /* @__PURE__ */ jsx30(
+          AddButton2,
+          {
+            id: buttonId(fieldPathId, "add"),
+            className: "rjsf-object-property-expand",
+            onClick: onAddProperty,
+            disabled: disabled || readonly,
+            uiSchema,
+            registry
+          }
+        )
+      ]
+    }
+  );
 }
 function MySubmitButton({ uiSchema }) {
   const {
@@ -25804,29 +26035,209 @@ function MySubmitButton({ uiSchema }) {
     }
   ) });
 }
-var MyTextWidget = (props) => {
-  return /* @__PURE__ */ jsx30("div", { className: "flex", children: /* @__PURE__ */ jsx30(
-    "input",
+var actionButtonClassName = "btn h-11 min-h-11 gap-2 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+function buttonLabel(props, key) {
+  return props.registry.translateString(key);
+}
+function MyAddButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.AddButton);
+  return /* @__PURE__ */ jsxs24(
+    "button",
     {
-      type: "text",
-      style: { fontSize: "1rem" },
-      className: "input input-primary input-bordered w-full mt-2",
-      value: props.value || "",
-      required: props.required,
-      onChange: (event) => props.onChange(event.target.value)
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-primary ml-1 mt-1 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: [
+        /* @__PURE__ */ jsx30(PlusIcon4, { className: "h-4 w-4", "aria-hidden": "true" }),
+        /* @__PURE__ */ jsxs24("span", { children: [
+          label,
+          " item"
+        ] })
+      ]
     }
-  ) });
-};
-var MyEmailWidget = (props) => {
-  return /* @__PURE__ */ jsx30("div", { className: "flex", children: /* @__PURE__ */ jsx30(
-    "input",
+  );
+}
+function MyRemoveButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.RemoveButton);
+  return /* @__PURE__ */ jsxs24(
+    "button",
     {
-      type: "email",
-      style: { fontSize: "1rem" },
-      className: "input input-primary input-bordered w-full mt-2",
-      value: props.value || "",
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-error btn-outline ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: [
+        /* @__PURE__ */ jsx30(TrashIcon3, { className: "h-4 w-4", "aria-hidden": "true" }),
+        /* @__PURE__ */ jsx30("span", { className: "hidden sm:inline", children: label })
+      ]
+    }
+  );
+}
+function MyMoveUpButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.MoveUpButton);
+  return /* @__PURE__ */ jsx30(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx30(ArrowUpIcon, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+function MyMoveDownButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.MoveDownButton);
+  return /* @__PURE__ */ jsx30(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx30(ArrowDownIcon, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+function MyCopyButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.CopyButton);
+  return /* @__PURE__ */ jsx30(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx30(DocumentDuplicateIcon, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+function MyClearButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.ClearButton);
+  return /* @__PURE__ */ jsx30(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx30(XMarkIcon5, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+var inputClassName = `input input-bordered input-primary h-11 w-full text-base text-base-content ${controlAppearanceClass}`;
+var textareaClassName = `textarea textarea-bordered textarea-primary min-h-28 w-full resize-y text-base text-base-content ${controlAppearanceClass}`;
+var choiceFocusClassName = "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+var checkboxClassName = `checkbox checkbox-primary ${choiceFocusClassName}`;
+var radioClassName = `radio radio-primary ${choiceFocusClassName}`;
+var selectClassName = `select select-bordered select-primary w-full text-base text-base-content ${controlAppearanceClass}`;
+function MyBaseInputTemplate(props) {
+  const {
+    id,
+    name: _name,
+    htmlName,
+    value,
+    readonly,
+    disabled,
+    autofocus,
+    onBlur,
+    onFocus,
+    onChange,
+    onChangeOverride,
+    options,
+    schema,
+    uiSchema: _uiSchema,
+    registry,
+    rawErrors: _rawErrors,
+    type,
+    hideLabel: _hideLabel,
+    hideError: _hideError,
+    className,
+    ...rest
+  } = props;
+  const { ClearButton: ClearButton2 } = registry.templates.ButtonTemplates;
+  if (!id) {
+    throw new Error("RJSF base input requires an id");
+  }
+  const inputProps = {
+    ...rest,
+    ...getInputProps(schema, type, options)
+  };
+  const inputValue = inputProps.type === "number" || inputProps.type === "integer" ? value || value === 0 ? value : "" : value == null ? "" : value;
+  const handleChange = useCallback18(
+    ({ target: { value: nextValue } }) => onChange(nextValue === "" ? options.emptyValue : nextValue),
+    [onChange, options]
+  );
+  const handleBlur = useCallback18(
+    ({ target }) => onBlur(id, target?.value),
+    [id, onBlur]
+  );
+  const handleFocus = useCallback18(
+    ({ target }) => onFocus(id, target?.value),
+    [id, onFocus]
+  );
+  const handleClear = useCallback18(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onChange(options.emptyValue ?? "");
+    },
+    [onChange, options.emptyValue]
+  );
+  return /* @__PURE__ */ jsxs24("div", { className: "min-w-0 py-1", children: [
+    /* @__PURE__ */ jsx30(
+      "input",
+      {
+        id,
+        name: htmlName || id,
+        className: `${inputClassName} ${className || ""}`.trim(),
+        readOnly: readonly,
+        disabled,
+        autoFocus: autofocus,
+        value: inputValue,
+        ...inputProps,
+        list: schema.examples ? examplesId(id) : void 0,
+        onChange: onChangeOverride || handleChange,
+        onBlur: handleBlur,
+        onFocus: handleFocus,
+        "aria-describedby": ariaDescribedByIds(id, !!schema.examples)
+      }
+    ),
+    options.allowClearTextInputs && !readonly && !disabled && inputValue ? /* @__PURE__ */ jsx30(ClearButton2, { registry, onClick: handleClear }) : null,
+    /* @__PURE__ */ jsx30(SchemaExamples, { id, schema })
+  ] });
+}
+var MyTextareaWidget = (props) => {
+  return /* @__PURE__ */ jsx30("div", { className: "min-w-0 py-1", children: /* @__PURE__ */ jsx30(
+    "textarea",
+    {
+      id: props.id,
+      name: props.htmlName || props.id,
+      className: textareaClassName,
+      value: props.value ?? "",
+      placeholder: props.placeholder,
       required: props.required,
-      onChange: (event) => props.onChange(event.target.value)
+      disabled: props.disabled,
+      readOnly: props.readonly,
+      autoFocus: props.autofocus,
+      rows: typeof props.options.rows === "number" ? props.options.rows : 5,
+      onChange: (event) => props.onChange(event.target.value === "" ? props.options.emptyValue : event.target.value),
+      onBlur: (event) => props.onBlur(props.id, event.target.value),
+      onFocus: (event) => props.onFocus(props.id, event.target.value),
+      "aria-describedby": ariaDescribedByIds(props.id)
     }
   ) });
 };
@@ -25844,16 +26255,14 @@ var MyCheckboxWidget = (props) => {
     options,
     schema,
     uiSchema,
-    registry
+    registry,
+    htmlName,
+    autofocus
   } = props;
   const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
   const description = options.description ?? schema.description;
   const required = schemaRequiresTrueValue(schema);
-  return /* @__PURE__ */ jsxs24("div", { className: "field-checkbox", children: [
-    !hideLabel && label && /* @__PURE__ */ jsxs24("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
-      label,
-      required && /* @__PURE__ */ jsx30("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
-    ] }),
+  return /* @__PURE__ */ jsxs24("div", { className: "field-checkbox py-1", children: [
     !hideLabel && !!description && /* @__PURE__ */ jsx30(
       DescriptionFieldTemplate,
       {
@@ -25864,22 +26273,165 @@ var MyCheckboxWidget = (props) => {
         registry
       }
     ),
-    /* @__PURE__ */ jsx30("label", { className: "flex items-center gap-2 mt-1 cursor-pointer", children: /* @__PURE__ */ jsx30(
-      "input",
+    /* @__PURE__ */ jsxs24(
+      "label",
       {
-        type: "checkbox",
-        id,
-        name: id,
-        checked: typeof value === "undefined" ? false : value,
-        required,
-        disabled: disabled || readonly,
-        "aria-describedby": ariaDescribedByIds(id),
-        onChange: (e) => onChange(e.target.checked),
-        onBlur: (e) => onBlur(id, e.target.checked),
-        onFocus: (e) => onFocus(id, e.target.checked)
+        className: `flex items-center gap-3 ${disabled || readonly ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`,
+        htmlFor: id,
+        children: [
+          /* @__PURE__ */ jsx30(
+            "input",
+            {
+              type: "checkbox",
+              id,
+              name: htmlName || id,
+              className: checkboxClassName,
+              checked: typeof value === "undefined" ? false : value,
+              required,
+              disabled: disabled || readonly,
+              autoFocus: autofocus,
+              "aria-describedby": ariaDescribedByIds(id),
+              onChange: (e) => onChange(e.target.checked),
+              onBlur: (e) => onBlur(id, e.target.checked),
+              onFocus: (e) => onFocus(id, e.target.checked)
+            }
+          ),
+          !hideLabel && label ? /* @__PURE__ */ jsxs24("span", { className: "text-base font-semibold text-base-content", children: [
+            label,
+            required && /* @__PURE__ */ jsx30("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 })
+          ] }) : null
+        ]
       }
-    ) })
+    )
   ] });
+};
+var getSelectValue = (event, multiple) => multiple ? Array.from(event.target.options).filter((option) => option.selected).map((option) => option.value) : event.target.value;
+var MySelectWidget = (props) => {
+  const {
+    schema,
+    id,
+    options,
+    value,
+    required,
+    disabled,
+    readonly,
+    multiple = false,
+    autofocus = false,
+    onChange,
+    onBlur,
+    onFocus,
+    placeholder,
+    htmlName
+  } = props;
+  const { enumOptions, enumDisabled, emptyValue: optionEmptyValue } = options;
+  const emptyValue = multiple ? [] : "";
+  const optionValueFormat = getOptionValueFormat(options);
+  const selectedValue = enumOptionSelectedValue(
+    value,
+    enumOptions,
+    multiple,
+    optionValueFormat,
+    emptyValue
+  );
+  const decodeValue = (event) => enumOptionValueDecoder(
+    getSelectValue(event, multiple),
+    enumOptions,
+    optionValueFormat,
+    optionEmptyValue
+  );
+  return /* @__PURE__ */ jsx30("div", { className: "min-w-0 py-1", children: /* @__PURE__ */ jsxs24(
+    "select",
+    {
+      id,
+      name: htmlName || id,
+      multiple,
+      className: `${selectClassName} ${multiple ? "min-h-28" : "h-11"}`,
+      value: selectedValue,
+      required,
+      disabled: disabled || readonly,
+      autoFocus: autofocus,
+      onChange: (event) => onChange(decodeValue(event)),
+      onBlur: (event) => onBlur(id, decodeValue(event)),
+      onFocus: (event) => onFocus(id, decodeValue(event)),
+      "aria-describedby": ariaDescribedByIds(id),
+      children: [
+        !multiple && schema.default === void 0 ? /* @__PURE__ */ jsx30("option", { value: "", children: placeholder }) : null,
+        Array.isArray(enumOptions) ? enumOptions.map(({ value: optionValue, label: optionLabel }, index) => /* @__PURE__ */ jsx30(
+          "option",
+          {
+            value: enumOptionValueEncoder(optionValue, index, optionValueFormat),
+            disabled: Array.isArray(enumDisabled) && enumDisabled.includes(optionValue),
+            children: optionLabel
+          },
+          String(optionValue)
+        )) : null
+      ]
+    }
+  ) });
+};
+var MyRadioWidget = (props) => {
+  const {
+    options,
+    value,
+    required,
+    disabled,
+    readonly,
+    autofocus = false,
+    onBlur,
+    onFocus,
+    onChange,
+    id,
+    htmlName
+  } = props;
+  const { enumOptions, enumDisabled, inline = false, emptyValue } = options;
+  const optionValueFormat = getOptionValueFormat(options);
+  return /* @__PURE__ */ jsx30(
+    "div",
+    {
+      className: `flex gap-3 py-1 ${inline ? "flex-row flex-wrap" : "flex-col"}`,
+      id,
+      role: "radiogroup",
+      children: Array.isArray(enumOptions) ? enumOptions.map((option, index) => {
+        const itemDisabled = disabled || readonly || Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
+        const encodedValue = enumOptionValueEncoder(option.value, index, optionValueFormat);
+        const decodeValue = (event) => enumOptionValueDecoder(
+          event.target.value,
+          enumOptions,
+          optionValueFormat,
+          emptyValue
+        );
+        return /* @__PURE__ */ jsxs24(
+          "label",
+          {
+            className: `flex items-center gap-3 ${itemDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`,
+            htmlFor: optionId(id, index),
+            children: [
+              /* @__PURE__ */ jsx30(
+                "input",
+                {
+                  type: "radio",
+                  className: radioClassName,
+                  id: optionId(id, index),
+                  checked: enumOptionsIsSelected(option.value, value),
+                  name: htmlName || id,
+                  required,
+                  value: encodedValue,
+                  disabled: itemDisabled,
+                  autoFocus: autofocus && index === 0,
+                  onChange: () => onChange(option.value),
+                  onBlur: (event) => onBlur(id, decodeValue(event)),
+                  onFocus: (event) => onFocus(id, decodeValue(event)),
+                  "aria-describedby": ariaDescribedByIds(id)
+                }
+              ),
+              /* @__PURE__ */ jsx30("span", { className: "text-base text-base-content", children: option.label })
+            ]
+          },
+          String(option.value)
+        );
+      }) : null
+    }
+  );
 };
 var MyCheckboxesWidget = (props) => {
   const {
@@ -25891,52 +26443,81 @@ var MyCheckboxesWidget = (props) => {
     onChange,
     onBlur,
     onFocus,
-    autofocus = false
+    autofocus = false,
+    htmlName
   } = props;
-  const { enumOptions, enumDisabled, emptyValue } = options;
+  const { enumOptions, enumDisabled, emptyValue, inline = false } = options;
   const checkboxesValues = Array.isArray(value) ? value : [value];
-  return /* @__PURE__ */ jsx30("div", { className: "checkboxes-group", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
-    const checked = enumOptionsIsSelected(option.value, checkboxesValues);
-    const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
-    const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
-    return /* @__PURE__ */ jsxs24("label", { className: `checkboxes-option ${disabledCls}`, children: [
-      /* @__PURE__ */ jsx30(
-        "input",
-        {
-          type: "checkbox",
-          id: optionId(id, index),
-          name: id,
-          checked,
-          value: String(index),
-          disabled: disabled || itemDisabled || readonly,
-          autoFocus: autofocus && index === 0,
-          onChange: (event) => {
-            if (event.target.checked) {
-              onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
-            } else {
-              onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
-            }
+  const optionValueFormat = getOptionValueFormat(options);
+  return /* @__PURE__ */ jsx30(
+    "div",
+    {
+      className: `checkboxes-group flex gap-3 py-1 ${inline ? "flex-row flex-wrap" : "flex-col"}`,
+      id,
+      children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+        const checked = enumOptionsIsSelected(option.value, checkboxesValues);
+        const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
+        const isDisabled = disabled || itemDisabled || readonly;
+        const encodedValue = enumOptionValueEncoder(option.value, index, optionValueFormat);
+        const decodeValue = (event) => enumOptionValueDecoder(
+          event.target.value,
+          enumOptions,
+          optionValueFormat,
+          emptyValue
+        );
+        return /* @__PURE__ */ jsxs24(
+          "label",
+          {
+            className: `checkboxes-option flex items-center gap-3 ${isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`,
+            htmlFor: optionId(id, index),
+            children: [
+              /* @__PURE__ */ jsx30(
+                "input",
+                {
+                  type: "checkbox",
+                  className: checkboxClassName,
+                  id: optionId(id, index),
+                  name: htmlName || id,
+                  checked,
+                  value: encodedValue,
+                  disabled: isDisabled,
+                  autoFocus: autofocus && index === 0,
+                  onChange: (event) => {
+                    if (event.target.checked) {
+                      onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
+                    } else {
+                      onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
+                    }
+                  },
+                  onBlur: (event) => onBlur(id, decodeValue(event)),
+                  onFocus: (event) => onFocus(id, decodeValue(event)),
+                  "aria-describedby": ariaDescribedByIds(id)
+                }
+              ),
+              /* @__PURE__ */ jsx30("span", { children: option.label })
+            ]
           },
-          onBlur: ({ target: { value: v3 } }) => onBlur(id, enumOptionsValueForIndex(v3, enumOptions, emptyValue)),
-          onFocus: ({ target: { value: v3 } }) => onFocus(id, enumOptionsValueForIndex(v3, enumOptions, emptyValue)),
-          "aria-describedby": ariaDescribedByIds(id)
-        }
-      ),
-      /* @__PURE__ */ jsx30("span", { children: option.label })
-    ] }, index);
-  }) });
+          String(option.value)
+        );
+      })
+    }
+  );
 };
 var myTemplates = {
   TitleFieldTemplate: MyTitleField,
   DescriptionFieldTemplate: MyDescriptionField,
   FieldTemplate: MyFieldTemplate,
+  ObjectFieldTemplate: MyObjectFieldTemplate,
+  ArrayFieldItemTemplate: MyArrayFieldItemTemplate,
+  BaseInputTemplate: MyBaseInputTemplate,
   ButtonTemplates: {
-    SubmitButton: MySubmitButton
-    // AddButton: DefaultTemplate,
-    // CopyButton: DefaultTemplate,
-    // MoveDownButton: DefaultTemplate,
-    // MoveUpButton: DefaultTemplate,
-    // RemoveButton: DefaultTemplate,
+    SubmitButton: MySubmitButton,
+    AddButton: MyAddButton,
+    CopyButton: MyCopyButton,
+    MoveDownButton: MyMoveDownButton,
+    MoveUpButton: MyMoveUpButton,
+    RemoveButton: MyRemoveButton,
+    ClearButton: MyClearButton
   }
   // ArrayFieldTemplate: DefaultTemplate,
   // ArrayFieldDescriptionTemplate: DefaultTemplate,
@@ -25951,10 +26532,11 @@ var myTemplates = {
   // WrapIfAdditionalTemplate: DefaultTemplate,
 };
 var myWidgets = {
-  TextWidget: MyTextWidget,
-  EmailWidget: MyEmailWidget,
+  TextareaWidget: MyTextareaWidget,
   CheckboxWidget: MyCheckboxWidget,
-  CheckboxesWidget: MyCheckboxesWidget
+  CheckboxesWidget: MyCheckboxesWidget,
+  RadioWidget: MyRadioWidget,
+  SelectWidget: MySelectWidget
 };
 var DaisyTheme = {
   widgets: myWidgets,
