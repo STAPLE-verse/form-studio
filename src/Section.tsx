@@ -84,7 +84,7 @@ export default function Section({
         toggleCollapse={() => setCardOpen(!cardOpen)}
         title={
           <div className="flex justify-between items-center w-full">
-            <span onClick={() => setCardOpen(!cardOpen)} className="text-xl font-bold cursor-pointer select-none">
+            <span onClick={() => setCardOpen(!cardOpen)} className="text-lg font-bold cursor-pointer select-none">
               {schemaData.title || keyName}{" "}
               {parent ? (
                 <Tooltip

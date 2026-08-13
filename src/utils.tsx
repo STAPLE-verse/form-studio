@@ -938,13 +938,13 @@ export function addSectionObj(parameters: AddFormObjectParametersType) {
     name: `${DEFAULT_INPUT_NAME}${i}`,
     required: false,
     dataOptions: {
-      title: `New Input ${i}`,
+      title: `New Section ${i}`,
       type: "object",
       default: "",
     },
     uiOptions: {},
     propType: "section",
-    schema: { title: `New Input ${i}`, type: "object" },
+    schema: { title: `New Section ${i}`, type: "object" },
     uischema: {},
     neighborNames: [],
   }

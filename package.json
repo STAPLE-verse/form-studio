@@ -29,7 +29,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "postinstall": "rm -rf node_modules/react node_modules/react-dom"
   },
   "peerDependencies": {
     "daisyui": "^4.6.1 || ^5.0.0",
@@ -52,8 +53,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "daisyui": "^5.7.4",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
     "tailwindcss": "^4.3.3",
     "tsup": "^8.5.1",
     "typescript": "^5.8.0"
