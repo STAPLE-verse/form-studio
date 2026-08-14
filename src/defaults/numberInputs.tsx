@@ -58,7 +58,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
             if (Number.isNaN(newVal)) newVal = null
             onChange(updateNumberParameter(parameters, "multipleOf", newVal))
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
         />
       </div>
       <div className={fieldClass}>
@@ -82,7 +82,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
               )
             }
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
         />
       </div>
       <div className={`${fieldClass} card-modal-boolean`}>
@@ -132,7 +132,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
               )
             }
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
         />
       </div>
       <div className={`${fieldClass} card-modal-boolean`}>
@@ -179,7 +179,7 @@ const NumberField: CardComponentType = ({ parameters, onChange }) => {
             default: parseFloat(ev.target.value),
           })
         }
-        className="input input-primary input-bordered w-full"
+        className="input input-primary input-bordered focus:outline-secondary w-full"
       />
     </React.Fragment>
   )

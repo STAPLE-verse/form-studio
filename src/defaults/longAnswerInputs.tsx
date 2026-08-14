@@ -24,7 +24,7 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
               minLength: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
         />
       </div>
       <div className={fieldClass}>
@@ -40,7 +40,7 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
               maxLength: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
         />
       </div>
       <div className={fieldClass}>
@@ -65,7 +65,7 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
               pattern: ev.target.value,
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
         />
       </div>
       <PlaceholderInput parameters={parameters} onChange={onChange} />
@@ -95,7 +95,7 @@ const LongAnswer: CardComponentType = ({ parameters, onChange }) => {
         value={(parameters.default ?? "") as string | number | readonly string[]}
         placeholder="Default"
         onChange={(ev) => onChange({ ...parameters, default: ev.target.value })}
-        className="textarea textarea-primary textarea-bordered w-full"
+        className="textarea textarea-primary textarea-bordered focus:outline-secondary w-full"
       />
     </React.Fragment>
   )

@@ -74,7 +74,7 @@ const CardModal: CardModalType = ({
                   "ui:column": ev.target.value,
                 })
               }}
-              className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+              className={`input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`}
             />
           </div>
           <DependencyField

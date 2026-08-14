@@ -88,7 +88,7 @@ export default function FormBuilder({
 
   return (
     <div
-      className={`formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`}
+      className={`formBuilder [&_.input]:bg-base-300 [&_.textarea]:bg-base-300 [&_.select]:bg-base-300 ${className || ""}`}
     >
       <div
         className="alert alert-warning mb-4 flex-col items-start"
@@ -127,7 +127,7 @@ export default function FormBuilder({
                   uiSchema
                 )
               }}
-              className="input input-primary input-bordered w-full form-title mb-4"
+              className="input input-primary input-bordered focus:outline-secondary w-full form-title mb-4"
             />
           </div>
           <div>

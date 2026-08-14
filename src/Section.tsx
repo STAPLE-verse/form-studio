@@ -119,7 +119,7 @@ export default function Section({
               <div className={`${sectionEntryClass} section-reference`}>
                 <h5 className={sectionLabelClass}>Reference Section</h5>
                 <select
-                  className={`select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content`}
+                  className={`select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content focus:outline-secondary`}
                   value={reference}
                   onChange={(e) => {
                     onChange(schema, uischema, e.target.value)
@@ -168,7 +168,7 @@ export default function Section({
                       onNameChange(name)
                     }
                   }}
-                  className={`input input-primary input-bordered ${sectionControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
+                  className={`input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
                   readOnly={hideKey}
                 />
                 {keyError && (
@@ -207,7 +207,7 @@ export default function Section({
                     uischema
                   )
                 }
-                className={`input input-primary input-bordered ${sectionControlClass} card-text`}
+                className={`input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text`}
               />
             </div>
             <div className={sectionEntryClass} data-test="section-description">

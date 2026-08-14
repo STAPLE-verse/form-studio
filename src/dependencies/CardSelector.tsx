@@ -38,7 +38,7 @@ export default function CardSelector({
             onChange([...chosenChoices, e.target.value])
           }
         }}
-        className={`select select-primary select-bordered select-sm ${fieldControlClass}`}
+        className={`select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`}
       >
         <option value="" disabled>
           {placeholder}

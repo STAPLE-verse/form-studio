@@ -23,6 +23,13 @@ import {
   enumOptionsDeselectValue,
   enumOptionsValueForIndex,
   optionId,
+  enumOptionSelectedValue,
+  enumOptionValueDecoder,
+  enumOptionValueEncoder,
+  getOptionValueFormat,
+  getInputProps,
+  examplesId,
+  BaseInputTemplateProps,
 } from "@rjsf/utils"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -130,13 +137,15 @@ function MyFieldTemplate<
     return <div className="hidden">{children}</div>
   }
   return (
-    <WrapIfAdditionalTemplate {...props}>
-      {displayLabel && <Label label={label} required={required} id={id} />}
-      {displayLabel && description ? description : null}
-      {children}
-      {errors}
-      {help}
-    </WrapIfAdditionalTemplate>
+    <div className="mb-4">
+      <WrapIfAdditionalTemplate {...props}>
+        {displayLabel && <Label label={label} required={required} id={id} />}
+        {displayLabel && description ? description : null}
+        {children}
+        {errors}
+        {help}
+      </WrapIfAdditionalTemplate>
+    </div>
   )
 }
 
@@ -176,7 +185,7 @@ const MyTextWidget = (props: WidgetProps) => {
       <input
         type="text"
         style={{ fontSize: "1rem" }}
-        className="input input-primary input-bordered w-full mt-2"
+        className="input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2"
         value={props.value || ""}
         required={props.required}
         onChange={(event) => props.onChange(event.target.value)}
@@ -191,12 +200,190 @@ const MyEmailWidget = (props: WidgetProps) => {
       <input
         type="email"
         style={{ fontSize: "1rem" }}
-        className="input input-primary input-bordered w-full mt-2"
+        className="input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2"
         value={props.value || ""}
         required={props.required}
         onChange={(event) => props.onChange(event.target.value)}
       />
     </div>
+  )
+}
+
+const MyTextareaWidget = (props: WidgetProps) => {
+  const options = props.options || {}
+  const rows = typeof options.rows === "number" || typeof options.rows === "string" ? options.rows : 5
+  return (
+    <div className="flex">
+      <textarea
+        style={{ fontSize: "1rem" }}
+        className="textarea textarea-primary textarea-bordered focus:outline-secondary bg-base-300 w-full mt-2"
+        rows={rows as number}
+        value={props.value || ""}
+        required={props.required}
+        onChange={(event) => props.onChange(event.target.value === "" ? options.emptyValue : event.target.value)}
+      />
+    </div>
+  )
+}
+
+// base input template, covers date/datetime/time/number/password/url/color/range/file widgets,
+// since RJSF's built-in widgets for those types all delegate to BaseInputTemplate with a different `type`
+function MyBaseInputTemplate(props: BaseInputTemplateProps) {
+  const {
+    id,
+    name,
+    htmlName,
+    value,
+    readonly,
+    disabled,
+    autofocus,
+    onBlur,
+    onFocus,
+    onChange,
+    onChangeOverride,
+    options,
+    schema,
+    type,
+    hideLabel,
+    hideError,
+    ...rest
+  } = props
+
+  const inputProps = {
+    ...rest,
+    ...getInputProps(schema, type, options),
+  }
+
+  let inputValue
+  if (inputProps.type === "number" || inputProps.type === "integer") {
+    inputValue = value || value === 0 ? value : ""
+  } else {
+    inputValue = value == null ? "" : value
+  }
+
+  const handleChange = (event: any) =>
+    onChange(event.target.value === "" ? options.emptyValue : event.target.value)
+  const handleBlur = (event: any) => onBlur(id, event.target?.value)
+  const handleFocus = (event: any) => onFocus(id, event.target?.value)
+
+  let className = "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2"
+  if (inputProps.type === "range") {
+    className = "range range-primary mt-2"
+  } else if (inputProps.type === "file") {
+    className = "file-input file-input-primary file-input-bordered focus:outline-secondary bg-base-300 w-full mt-2"
+  } else if (inputProps.type === "color") {
+    className = "input input-primary input-bordered focus:outline-secondary h-12 w-20 p-1 mt-2"
+  }
+
+  return (
+    <input
+      id={id}
+      name={htmlName || id}
+      className={className}
+      readOnly={readonly}
+      disabled={disabled}
+      autoFocus={autofocus}
+      value={inputValue}
+      {...inputProps}
+      list={schema.examples ? examplesId(id) : undefined}
+      onChange={onChangeOverride || handleChange}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      aria-describedby={ariaDescribedByIds(id, !!schema.examples)}
+    />
+  )
+}
+
+// radio widget
+const MyRadioWidget = (props: WidgetProps) => {
+  const { id, options, value, required, disabled, readonly, onChange, htmlName } = props
+  const { enumOptions, enumDisabled } = options
+
+  return (
+    <div id={id} role="radiogroup" className="flex flex-col gap-1 mt-1">
+      {Array.isArray(enumOptions) &&
+        enumOptions.map((option: any, i: number) => {
+          const checked = option.value === value
+          const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value)
+          return (
+            <label key={String(option.value)} className="label cursor-pointer justify-start gap-3 px-0">
+              <input
+                type="radio"
+                id={optionId(id, i)}
+                name={htmlName || id}
+                checked={checked}
+                required={required}
+                value={option.value}
+                disabled={disabled || itemDisabled || readonly}
+                onChange={() => onChange(option.value)}
+                className="radio radio-primary radio-sm"
+                aria-describedby={ariaDescribedByIds(id)}
+              />
+              <span className="label-text text-base">{option.label}</span>
+            </label>
+          )
+        })}
+    </div>
+  )
+}
+
+const MySelectWidget = (props: WidgetProps) => {
+  const {
+    schema,
+    id,
+    options,
+    value,
+    required,
+    disabled,
+    readonly,
+    multiple = false,
+    onChange,
+    onBlur,
+    onFocus,
+    placeholder,
+    htmlName,
+  } = props
+  const { enumOptions, enumDisabled, emptyValue: optEmptyVal } = options
+  const emptyValue = multiple ? [] : ""
+  const optionValueFormat = getOptionValueFormat(options)
+
+  const getValue = (event: any) => {
+    if (multiple) {
+      return Array.from(event.target.options as HTMLOptionElement[])
+        .filter((o) => o.selected)
+        .map((o) => o.value)
+    }
+    return event.target.value
+  }
+
+  const selectValue = enumOptionSelectedValue(value, enumOptions, multiple, optionValueFormat, emptyValue)
+  const showPlaceholderOption = !multiple && schema.default === undefined
+
+  return (
+    <select
+      id={id}
+      name={htmlName || id}
+      multiple={multiple}
+      className="select select-primary select-bordered focus:outline-secondary bg-base-300 w-full mt-2"
+      value={selectValue}
+      required={required}
+      disabled={disabled || readonly}
+      onBlur={(event) => onBlur(id, enumOptionValueDecoder(getValue(event), enumOptions, optionValueFormat, optEmptyVal))}
+      onFocus={(event) => onFocus(id, enumOptionValueDecoder(getValue(event), enumOptions, optionValueFormat, optEmptyVal))}
+      onChange={(event) => onChange(enumOptionValueDecoder(getValue(event), enumOptions, optionValueFormat, optEmptyVal))}
+      aria-describedby={ariaDescribedByIds(id)}
+    >
+      {showPlaceholderOption && <option value="">{placeholder}</option>}
+      {Array.isArray(enumOptions) &&
+        enumOptions.map(({ value: enumValue, label: enumLabel }: any, i: number) => {
+          const isDisabled = enumDisabled && enumDisabled.includes(enumValue)
+          return (
+            <option key={String(enumValue)} value={enumOptionValueEncoder(enumValue, i, optionValueFormat)} disabled={isDisabled}>
+              {enumLabel}
+            </option>
+          )
+        })}
+    </select>
   )
 }
 
@@ -237,11 +424,12 @@ const MyCheckboxWidget = (props: WidgetProps) => {
           registry={registry}
         />
       )}
-      <label className="flex items-center gap-2 mt-1 cursor-pointer">
+      <label className="label cursor-pointer justify-start gap-3 mt-1 px-0">
         <input
           type="checkbox"
           id={id}
           name={id}
+          className="checkbox checkbox-primary"
           checked={typeof value === "undefined" ? false : value}
           required={required}
           disabled={disabled || readonly}
@@ -271,7 +459,7 @@ const MyCheckboxesWidget = (props: WidgetProps) => {
   const checkboxesValues = Array.isArray(value) ? value : [value]
 
   return (
-    <div className="checkboxes-group" id={id}>
+    <div className="checkboxes-group flex flex-col gap-1" id={id}>
       {Array.isArray(enumOptions) &&
         enumOptions.map((option, index) => {
           const checked = enumOptionsIsSelected(option.value, checkboxesValues)
@@ -280,11 +468,15 @@ const MyCheckboxesWidget = (props: WidgetProps) => {
           const disabledCls = disabled || itemDisabled || readonly ? "disabled" : ""
 
           return (
-            <label key={index} className={`checkboxes-option ${disabledCls}`}>
+            <label
+              key={index}
+              className={`checkboxes-option label cursor-pointer justify-start gap-3 px-0 ${disabledCls}`}
+            >
               <input
                 type="checkbox"
                 id={optionId(id, index)}
                 name={id}
+                className="checkbox checkbox-primary"
                 checked={checked}
                 value={String(index)}
                 disabled={disabled || itemDisabled || readonly}
@@ -332,7 +524,7 @@ const myTemplates: Partial<TemplatesType> = {
   // ArrayFieldTitleTemplate: DefaultTemplate,
   // ObjectFieldTemplate: DefaultTemplate,
   // ErrorListTemplate: DefaultTemplate,
-  // BaseInputTemplate: DefaultTemplate,
+  BaseInputTemplate: MyBaseInputTemplate,
   // UnsupportedFieldTemplate: DefaultTemplate,
   // FieldErrorTemplate: DefaultTemplate,
   // FieldHelpTemplate: DefaultTemplate,
@@ -343,6 +535,9 @@ const myTemplates: Partial<TemplatesType> = {
 const myWidgets: RegistryWidgetsType = {
   TextWidget: MyTextWidget,
   EmailWidget: MyEmailWidget,
+  TextareaWidget: MyTextareaWidget,
+  SelectWidget: MySelectWidget,
+  RadioWidget: MyRadioWidget,
   CheckboxWidget: MyCheckboxWidget,
   CheckboxesWidget: MyCheckboxesWidget,
 }

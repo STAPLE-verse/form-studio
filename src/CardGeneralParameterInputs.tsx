@@ -123,7 +123,7 @@ export default function CardGeneralParameterInputs({
                     onChange({ ...parameters })
                   }
                 }}
-                className={`input input-primary input-bordered ${entryControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
+                className={`input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
               />
               {keyError && (
                 <div className="label px-0 pb-0 pt-1">
@@ -156,7 +156,7 @@ export default function CardGeneralParameterInputs({
             onBlur={(ev) => {
               onChange({ ...parameters, title: ev.target.value })
             }}
-            className={`input input-primary input-bordered ${entryControlClass} card-text`}
+            className={`input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`}
           />
         </div>
       </div>
@@ -201,7 +201,7 @@ export default function CardGeneralParameterInputs({
             />
           </h5>
           <select
-            className={`select select-primary select-bordered ${entryControlClass}`}
+            className={`select select-primary select-bordered focus:outline-secondary ${entryControlClass}`}
             value={parameters.category}
             onChange={(e) => {
               const newCategory = e.target.value
@@ -259,7 +259,7 @@ export default function CardGeneralParameterInputs({
             placeholder="e.g. NCIT:C25150"
             type="text"
             onChange={(ev) => onChange({ ...parameters, ontologyId: ev.target.value })}
-            className={`input input-primary input-bordered ${entryControlClass} card-text`}
+            className={`input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`}
           />
         </div>
       </div>
