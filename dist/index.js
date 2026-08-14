@@ -9196,13 +9196,13 @@ function addSectionObj(parameters) {
     name: `${DEFAULT_INPUT_NAME}${i}`,
     required: false,
     dataOptions: {
-      title: `New Input ${i}`,
+      title: `New Section ${i}`,
       type: "object",
       default: ""
     },
     uiOptions: {},
     propType: "section",
-    schema: { title: `New Input ${i}`, type: "object" },
+    schema: { title: `New Section ${i}`, type: "object" },
     uischema: {},
     neighborNames: []
   };
@@ -9811,7 +9811,7 @@ function CardSelector({
             onChange([...chosenChoices, e2.target.value]);
           }
         },
-        className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
+        className: `select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`,
         children: [
           /* @__PURE__ */ jsx8("option", { value: "", disabled: true, children: placeholder }),
           possibleChoices.filter((choice) => !chosenChoices.includes(choice)).map((choice) => /* @__PURE__ */ jsx8("option", { value: choice, children: choice }, choice))
@@ -9867,7 +9867,7 @@ function CardEnumOptions({
                 names
               );
             },
-            className: "input input-primary input-bordered input-sm w-full"
+            className: "input input-primary input-bordered focus:outline-secondary w-full"
           },
           `val-${index}`
         ),
@@ -9885,7 +9885,7 @@ function CardEnumOptions({
                   ...names.slice(index + 1)
                 ]);
             },
-            className: "input input-primary input-bordered input-sm w-full",
+            className: "input input-primary input-bordered focus:outline-secondary w-full",
             style: { display: showNames ? "initial" : "none" }
           },
           `name-${index}`
@@ -10427,7 +10427,7 @@ var CardModal = ({
                           "ui:column": ev.target.value
                         });
                       },
-                      className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+                      className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
                     },
                     "ui:column"
                   )
@@ -10537,10 +10537,10 @@ function MarkdownDescriptionInput({
         value,
         placeholder: "Description",
         rows: 4,
-        className: "textarea textarea-primary textarea-bordered w-full form-description",
+        className: "textarea textarea-primary textarea-bordered focus:outline-secondary w-full form-description",
         onChange: (ev) => onChange(ev.target.value)
       }
-    ) : /* @__PURE__ */ jsx15("div", { className: "markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered w-full h-auto min-h-[6rem]", children: value ? /* @__PURE__ */ jsx15(ReactMarkdown, { remarkPlugins: [remarkGfm, remarkBreaks], children: value }) : /* @__PURE__ */ jsx15("span", { className: "text-base-content/40 italic", children: "Nothing to preview yet\u2026" }) })
+    ) : /* @__PURE__ */ jsx15("div", { className: "markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered focus:outline-secondary w-full h-auto min-h-[6rem]", children: value ? /* @__PURE__ */ jsx15(ReactMarkdown, { remarkPlugins: [remarkGfm, remarkBreaks], children: value }) : /* @__PURE__ */ jsx15("span", { className: "text-base-content/40 italic", children: "Nothing to preview yet\u2026" }) })
   ] });
 }
 
@@ -10627,7 +10627,7 @@ function CardGeneralParameterInputs({
                   onChange({ ...parameters });
                 }
               },
-              className: `input input-primary input-bordered ${entryControlClass} card-text ${keyError !== null ? "input-error" : ""}`
+              className: `input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text ${keyError !== null ? "input-error" : ""}`
             }
           ),
           keyError && /* @__PURE__ */ jsx16("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx16("span", { className: "label-text-alt text-error", children: keyError }) })
@@ -10655,7 +10655,7 @@ function CardGeneralParameterInputs({
             onBlur: (ev) => {
               onChange({ ...parameters, title: ev.target.value });
             },
-            className: `input input-primary input-bordered ${entryControlClass} card-text`
+            className: `input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`
           }
         )
       ] })
@@ -10702,7 +10702,7 @@ function CardGeneralParameterInputs({
             /* @__PURE__ */ jsx16(
               "select",
               {
-                className: `select select-primary select-bordered ${entryControlClass}`,
+                className: `select select-primary select-bordered focus:outline-secondary ${entryControlClass}`,
                 value: parameters.category,
                 onChange: (e2) => {
                   const newCategory = e2.target.value;
@@ -10762,7 +10762,7 @@ function CardGeneralParameterInputs({
           placeholder: "e.g. NCIT:C25150",
           type: "text",
           onChange: (ev) => onChange({ ...parameters, ontologyId: ev.target.value }),
-          className: `input input-primary input-bordered ${entryControlClass} card-text`
+          className: `input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`
         }
       )
     ] }) })
@@ -10770,7 +10770,8 @@ function CardGeneralParameterInputs({
 }
 
 // src/Add.tsx
-import { useState as useState9, useEffect, useRef } from "react";
+import { useState as useState9, useEffect, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { PlusIcon as PlusIcon3 } from "@heroicons/react/24/outline";
 import { Fragment, jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
 function Add({
@@ -10781,10 +10782,13 @@ function Add({
 }) {
   const [popoverOpen, setPopoverOpen] = useState9(false);
   const [createChoice, setCreateChoice] = useState9("card");
+  const [popoverPos, setPopoverPos] = useState9({ top: 0, left: 0 });
   const containerRef = useRef(null);
+  const popoverRef = useRef(null);
   useEffect(() => {
     function handleClickOutside(event) {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      const target = event.target;
+      if (containerRef.current && !containerRef.current.contains(target) && popoverRef.current && !popoverRef.current.contains(target)) {
         setPopoverOpen(false);
       }
     }
@@ -10795,55 +10799,75 @@ function Add({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popoverOpen]);
+  useLayoutEffect(() => {
+    if (!popoverOpen || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const popoverWidth = 256;
+    setPopoverPos({
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.left + window.scrollX + rect.width / 2 - popoverWidth / 2
+    });
+  }, [popoverOpen]);
   if (hidden) return /* @__PURE__ */ jsx17(Fragment, {});
   return /* @__PURE__ */ jsxs13("div", { ref: containerRef, className: "relative flex flex-col items-center mt-4 w-full", children: [
     /* @__PURE__ */ jsx17(
       "div",
       {
-        className: "group w-full py-2 flex justify-center cursor-pointer border-2 border-dashed border-base-content/40 hover:border-primary hover:bg-primary/5 rounded-lg transition-all",
+        className: "group w-full py-2 flex justify-center cursor-pointer border-2 border-dashed border-base-content/40 bg-base-300 hover:border-primary hover:bg-primary/5 rounded-lg transition-all",
         onClick: () => setPopoverOpen(!popoverOpen),
         title: tooltipDescription || "Add a new item or section",
         children: /* @__PURE__ */ jsx17(PlusIcon3, { className: "h-6 w-6 text-base-content/70 group-hover:text-primary transition-colors" })
       }
     ),
-    popoverOpen && /* @__PURE__ */ jsxs13("div", { className: "absolute top-12 z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300", children: [
-      /* @__PURE__ */ jsx17("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
-      /* @__PURE__ */ jsx17(
-        FBRadioGroup,
+    popoverOpen && createPortal(
+      /* @__PURE__ */ jsxs13(
+        "div",
         {
-          className: "choose-create text-sm",
-          defaultValue: createChoice,
-          horizontal: false,
-          options: [
-            {
-              value: "card",
-              label: labels?.addElementLabel ?? "Item"
-            },
-            {
-              value: "section",
-              label: labels?.addSectionLabel ?? "Section"
-            }
-          ],
-          onChange: (selection) => {
-            setCreateChoice(selection);
-          }
+          ref: popoverRef,
+          style: { position: "absolute", top: popoverPos.top, left: popoverPos.left },
+          className: "z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300",
+          children: [
+            /* @__PURE__ */ jsx17("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
+            /* @__PURE__ */ jsx17(
+              FBRadioGroup,
+              {
+                className: "choose-create text-sm",
+                defaultValue: createChoice,
+                horizontal: false,
+                options: [
+                  {
+                    value: "card",
+                    label: labels?.addElementLabel ?? "Item"
+                  },
+                  {
+                    value: "section",
+                    label: labels?.addSectionLabel ?? "Section"
+                  }
+                ],
+                onChange: (selection) => {
+                  setCreateChoice(selection);
+                }
+              }
+            ),
+            /* @__PURE__ */ jsxs13("div", { className: "flex justify-between mt-4", children: [
+              /* @__PURE__ */ jsx17("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-secondary", children: "Cancel" }),
+              /* @__PURE__ */ jsx17(
+                "button",
+                {
+                  onClick: () => {
+                    addElem(createChoice);
+                    setPopoverOpen(false);
+                  },
+                  className: "btn btn-sm btn-primary",
+                  children: "Create"
+                }
+              )
+            ] })
+          ]
         }
       ),
-      /* @__PURE__ */ jsxs13("div", { className: "flex justify-between mt-4", children: [
-        /* @__PURE__ */ jsx17("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-outline btn-secondary", children: "Cancel" }),
-        /* @__PURE__ */ jsx17(
-          "button",
-          {
-            onClick: () => {
-              addElem(createChoice);
-              setPopoverOpen(false);
-            },
-            className: "btn btn-sm btn-primary",
-            children: "Create"
-          }
-        )
-      ] })
-    ] })
+      document.body
+    )
   ] });
 }
 
@@ -10986,7 +11010,7 @@ var getInputCardBodyComponent = ({ type }) => function InputCardBodyComponent({
         placeholder: "Default",
         type,
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "input input-primary input-bordered w-full"
+        className: "input input-primary input-bordered focus:outline-secondary w-full"
       }
     )
   ] });
@@ -11310,7 +11334,7 @@ function Section({
         isOpen: cardOpen,
         toggleCollapse: () => setCardOpen(!cardOpen),
         title: /* @__PURE__ */ jsxs16("div", { className: "flex justify-between items-center w-full", children: [
-          /* @__PURE__ */ jsxs16("span", { onClick: () => setCardOpen(!cardOpen), className: "text-xl font-bold cursor-pointer select-none", children: [
+          /* @__PURE__ */ jsxs16("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
             schemaData.title || keyName,
             " ",
             parent2 ? /* @__PURE__ */ jsx20(
@@ -11349,7 +11373,7 @@ function Section({
                 /* @__PURE__ */ jsx20(
                   "select",
                   {
-                    className: `select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content`,
+                    className: `select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content focus:outline-secondary`,
                     value: reference,
                     onChange: (e2) => {
                       onChange(schema, uischema, e2.target.value);
@@ -11390,7 +11414,7 @@ function Section({
                           onNameChange(name);
                         }
                       },
-                      className: `input input-primary input-bordered ${sectionControlClass} card-text ${keyError !== null ? "input-error" : ""}`,
+                      className: `input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text ${keyError !== null ? "input-error" : ""}`,
                       readOnly: hideKey
                     }
                   ),
@@ -11423,7 +11447,7 @@ function Section({
                       },
                       uischema
                     ),
-                    className: `input input-primary input-bordered ${sectionControlClass} card-text`
+                    className: `input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text`
                   }
                 )
               ] }),
@@ -11644,7 +11668,7 @@ var PlaceholderInput = ({ parameters, onChange }) => {
             "ui:placeholder": ev.target.value
           });
         },
-        className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
       },
       "placeholder"
     )
@@ -11689,7 +11713,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
               minLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "minLength"
       )
@@ -11708,7 +11732,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
               maxLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "maxLength"
       )
@@ -11746,7 +11770,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
               pattern: ev.target.value
             });
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "pattern"
       )
@@ -11767,7 +11791,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
       /* @__PURE__ */ jsx22(
         "select",
         {
-          className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
+          className: `select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`,
           value: parameters.format || "",
           onChange: (e2) => onChange({
             ...parameters,
@@ -11801,7 +11825,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
       /* @__PURE__ */ jsx22(
         "select",
         {
-          className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
+          className: `select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`,
           value: parameters["ui:autocomplete"] || "",
           onChange: (e2) => onChange({
             ...parameters,
@@ -11837,7 +11861,7 @@ var ShortAnswerField = ({ parameters, onChange }) => {
         placeholder: "Default",
         type: formatTypeDictionary[parameters.format] || "text",
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "input input-primary input-bordered w-full"
+        className: "input input-primary input-bordered focus:outline-secondary w-full"
       }
     )
   ] });
@@ -11852,7 +11876,7 @@ var Password = ({ parameters, onChange }) => {
         placeholder: "Default",
         type: "password",
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "input input-primary input-bordered w-full"
+        className: "input input-primary input-bordered focus:outline-secondary w-full"
       }
     )
   ] });
@@ -11914,7 +11938,7 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
               minLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "minLength"
       )
@@ -11933,7 +11957,7 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
               maxLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "maxLength"
       )
@@ -11963,7 +11987,7 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
               pattern: ev.target.value
             });
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "pattern"
       )
@@ -11993,7 +12017,7 @@ var LongAnswer = ({ parameters, onChange }) => {
         value: parameters.default ?? "",
         placeholder: "Default",
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "textarea textarea-primary textarea-bordered w-full"
+        className: "textarea textarea-primary textarea-bordered focus:outline-secondary w-full"
       }
     )
   ] });
@@ -12059,7 +12083,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
             if (Number.isNaN(newVal)) newVal = null;
             onChange(updateNumberParameter(parameters, "multipleOf", newVal));
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "multipleOf"
       )
@@ -12085,7 +12109,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
               );
             }
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "minimum"
       )
@@ -12133,7 +12157,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
               );
             }
           },
-          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
         },
         "maximum"
       )
@@ -12175,7 +12199,7 @@ var NumberField = ({ parameters, onChange }) => {
           ...parameters,
           default: parseFloat(ev.target.value)
         }),
-        className: "input input-primary input-bordered w-full"
+        className: "input input-primary input-bordered focus:outline-secondary w-full"
       }
     )
   ] });
@@ -12225,7 +12249,7 @@ var RefChoice = ({ parameters, onChange }) => {
   return /* @__PURE__ */ jsx25("div", { className: "card-select", children: /* @__PURE__ */ jsx25(
     "select",
     {
-      className: "select select-bordered w-full text-primary border-primary border-2 bg-primary-content",
+      className: "select select-bordered w-full text-primary border-primary border-2 bg-primary-content focus:outline-secondary",
       value: parameters.$ref || "",
       onChange: (e2) => onChange({ ...parameters, $ref: e2.target.value }),
       children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx25("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
@@ -12314,7 +12338,7 @@ function FormBuilder({
   return /* @__PURE__ */ jsxs21(
     "div",
     {
-      className: `formBuilder [&_.input]:bg-primary/10 [&_.textarea]:bg-primary/10 [&_.select]:bg-primary/10 ${className || ""}`,
+      className: `formBuilder [&_.input]:bg-base-300 [&_.textarea]:bg-base-300 [&_.select]:bg-base-300 ${className || ""}`,
       children: [
         /* @__PURE__ */ jsxs21(
           "div",
@@ -12352,7 +12376,7 @@ function FormBuilder({
                         uiSchema
                       );
                     },
-                    className: "input input-primary input-bordered w-full form-title mb-4"
+                    className: "input input-primary input-bordered focus:outline-secondary w-full form-title mb-4"
                   }
                 )
               ] }),
@@ -26691,13 +26715,13 @@ function MyFieldTemplate(props) {
   if (hidden) {
     return /* @__PURE__ */ jsx28("div", { className: "hidden", children });
   }
-  return /* @__PURE__ */ jsxs22(WrapIfAdditionalTemplate2, { ...props, children: [
+  return /* @__PURE__ */ jsx28("div", { className: "mb-4", children: /* @__PURE__ */ jsxs22(WrapIfAdditionalTemplate2, { ...props, children: [
     displayLabel && /* @__PURE__ */ jsx28(Label2, { label, required, id }),
     displayLabel && description ? description : null,
     children,
     errors,
     help
-  ] });
+  ] }) });
 }
 function MySubmitButton({ uiSchema }) {
   const {
@@ -26724,7 +26748,7 @@ var MyTextWidget = (props) => {
     {
       type: "text",
       style: { fontSize: "1rem" },
-      className: "input input-primary input-bordered w-full mt-2",
+      className: "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2",
       value: props.value || "",
       required: props.required,
       onChange: (event) => props.onChange(event.target.value)
@@ -26737,12 +26761,164 @@ var MyEmailWidget = (props) => {
     {
       type: "email",
       style: { fontSize: "1rem" },
-      className: "input input-primary input-bordered w-full mt-2",
+      className: "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2",
       value: props.value || "",
       required: props.required,
       onChange: (event) => props.onChange(event.target.value)
     }
   ) });
+};
+var MyTextareaWidget = (props) => {
+  const options = props.options || {};
+  const rows = typeof options.rows === "number" || typeof options.rows === "string" ? options.rows : 5;
+  return /* @__PURE__ */ jsx28("div", { className: "flex", children: /* @__PURE__ */ jsx28(
+    "textarea",
+    {
+      style: { fontSize: "1rem" },
+      className: "textarea textarea-primary textarea-bordered focus:outline-secondary bg-base-300 w-full mt-2",
+      rows,
+      value: props.value || "",
+      required: props.required,
+      onChange: (event) => props.onChange(event.target.value === "" ? options.emptyValue : event.target.value)
+    }
+  ) });
+};
+function MyBaseInputTemplate(props) {
+  const {
+    id,
+    name,
+    htmlName,
+    value,
+    readonly,
+    disabled,
+    autofocus,
+    onBlur,
+    onFocus,
+    onChange,
+    onChangeOverride,
+    options,
+    schema,
+    type,
+    hideLabel,
+    hideError,
+    ...rest
+  } = props;
+  const inputProps = {
+    ...rest,
+    ...getInputProps(schema, type, options)
+  };
+  let inputValue;
+  if (inputProps.type === "number" || inputProps.type === "integer") {
+    inputValue = value || value === 0 ? value : "";
+  } else {
+    inputValue = value == null ? "" : value;
+  }
+  const handleChange = (event) => onChange(event.target.value === "" ? options.emptyValue : event.target.value);
+  const handleBlur = (event) => onBlur(id, event.target?.value);
+  const handleFocus = (event) => onFocus(id, event.target?.value);
+  let className = "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2";
+  if (inputProps.type === "range") {
+    className = "range range-primary mt-2";
+  } else if (inputProps.type === "file") {
+    className = "file-input file-input-primary file-input-bordered focus:outline-secondary bg-base-300 w-full mt-2";
+  } else if (inputProps.type === "color") {
+    className = "input input-primary input-bordered focus:outline-secondary h-12 w-20 p-1 mt-2";
+  }
+  return /* @__PURE__ */ jsx28(
+    "input",
+    {
+      id,
+      name: htmlName || id,
+      className,
+      readOnly: readonly,
+      disabled,
+      autoFocus: autofocus,
+      value: inputValue,
+      ...inputProps,
+      list: schema.examples ? examplesId(id) : void 0,
+      onChange: onChangeOverride || handleChange,
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      "aria-describedby": ariaDescribedByIds(id, !!schema.examples)
+    }
+  );
+}
+var MyRadioWidget = (props) => {
+  const { id, options, value, required, disabled, readonly, onChange, htmlName } = props;
+  const { enumOptions, enumDisabled } = options;
+  return /* @__PURE__ */ jsx28("div", { id, role: "radiogroup", className: "flex flex-col gap-1 mt-1", children: Array.isArray(enumOptions) && enumOptions.map((option, i) => {
+    const checked = option.value === value;
+    const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
+    return /* @__PURE__ */ jsxs22("label", { className: "label cursor-pointer justify-start gap-3 px-0", children: [
+      /* @__PURE__ */ jsx28(
+        "input",
+        {
+          type: "radio",
+          id: optionId(id, i),
+          name: htmlName || id,
+          checked,
+          required,
+          value: option.value,
+          disabled: disabled || itemDisabled || readonly,
+          onChange: () => onChange(option.value),
+          className: "radio radio-primary radio-sm",
+          "aria-describedby": ariaDescribedByIds(id)
+        }
+      ),
+      /* @__PURE__ */ jsx28("span", { className: "label-text text-base", children: option.label })
+    ] }, String(option.value));
+  }) });
+};
+var MySelectWidget = (props) => {
+  const {
+    schema,
+    id,
+    options,
+    value,
+    required,
+    disabled,
+    readonly,
+    multiple = false,
+    onChange,
+    onBlur,
+    onFocus,
+    placeholder,
+    htmlName
+  } = props;
+  const { enumOptions, enumDisabled, emptyValue: optEmptyVal } = options;
+  const emptyValue = multiple ? [] : "";
+  const optionValueFormat = getOptionValueFormat(options);
+  const getValue3 = (event) => {
+    if (multiple) {
+      return Array.from(event.target.options).filter((o2) => o2.selected).map((o2) => o2.value);
+    }
+    return event.target.value;
+  };
+  const selectValue = enumOptionSelectedValue(value, enumOptions, multiple, optionValueFormat, emptyValue);
+  const showPlaceholderOption = !multiple && schema.default === void 0;
+  return /* @__PURE__ */ jsxs22(
+    "select",
+    {
+      id,
+      name: htmlName || id,
+      multiple,
+      className: "select select-primary select-bordered focus:outline-secondary bg-base-300 w-full mt-2",
+      value: selectValue,
+      required,
+      disabled: disabled || readonly,
+      onBlur: (event) => onBlur(id, enumOptionValueDecoder(getValue3(event), enumOptions, optionValueFormat, optEmptyVal)),
+      onFocus: (event) => onFocus(id, enumOptionValueDecoder(getValue3(event), enumOptions, optionValueFormat, optEmptyVal)),
+      onChange: (event) => onChange(enumOptionValueDecoder(getValue3(event), enumOptions, optionValueFormat, optEmptyVal)),
+      "aria-describedby": ariaDescribedByIds(id),
+      children: [
+        showPlaceholderOption && /* @__PURE__ */ jsx28("option", { value: "", children: placeholder }),
+        Array.isArray(enumOptions) && enumOptions.map(({ value: enumValue, label: enumLabel }, i) => {
+          const isDisabled = enumDisabled && enumDisabled.includes(enumValue);
+          return /* @__PURE__ */ jsx28("option", { value: enumOptionValueEncoder(enumValue, i, optionValueFormat), disabled: isDisabled, children: enumLabel }, String(enumValue));
+        })
+      ]
+    }
+  );
 };
 var MyCheckboxWidget = (props) => {
   const {
@@ -26778,12 +26954,13 @@ var MyCheckboxWidget = (props) => {
         registry
       }
     ),
-    /* @__PURE__ */ jsx28("label", { className: "flex items-center gap-2 mt-1 cursor-pointer", children: /* @__PURE__ */ jsx28(
+    /* @__PURE__ */ jsx28("label", { className: "label cursor-pointer justify-start gap-3 mt-1 px-0", children: /* @__PURE__ */ jsx28(
       "input",
       {
         type: "checkbox",
         id,
         name: id,
+        className: "checkbox checkbox-primary",
         checked: typeof value === "undefined" ? false : value,
         required,
         disabled: disabled || readonly,
@@ -26809,35 +26986,43 @@ var MyCheckboxesWidget = (props) => {
   } = props;
   const { enumOptions, enumDisabled, emptyValue } = options;
   const checkboxesValues = Array.isArray(value) ? value : [value];
-  return /* @__PURE__ */ jsx28("div", { className: "checkboxes-group", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+  return /* @__PURE__ */ jsx28("div", { className: "checkboxes-group flex flex-col gap-1", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
     const checked = enumOptionsIsSelected(option.value, checkboxesValues);
     const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
     const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
-    return /* @__PURE__ */ jsxs22("label", { className: `checkboxes-option ${disabledCls}`, children: [
-      /* @__PURE__ */ jsx28(
-        "input",
-        {
-          type: "checkbox",
-          id: optionId(id, index),
-          name: id,
-          checked,
-          value: String(index),
-          disabled: disabled || itemDisabled || readonly,
-          autoFocus: autofocus && index === 0,
-          onChange: (event) => {
-            if (event.target.checked) {
-              onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
-            } else {
-              onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
+    return /* @__PURE__ */ jsxs22(
+      "label",
+      {
+        className: `checkboxes-option label cursor-pointer justify-start gap-3 px-0 ${disabledCls}`,
+        children: [
+          /* @__PURE__ */ jsx28(
+            "input",
+            {
+              type: "checkbox",
+              id: optionId(id, index),
+              name: id,
+              className: "checkbox checkbox-primary",
+              checked,
+              value: String(index),
+              disabled: disabled || itemDisabled || readonly,
+              autoFocus: autofocus && index === 0,
+              onChange: (event) => {
+                if (event.target.checked) {
+                  onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
+                } else {
+                  onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
+                }
+              },
+              onBlur: ({ target: { value: v2 } }) => onBlur(id, enumOptionsValueForIndex(v2, enumOptions, emptyValue)),
+              onFocus: ({ target: { value: v2 } }) => onFocus(id, enumOptionsValueForIndex(v2, enumOptions, emptyValue)),
+              "aria-describedby": ariaDescribedByIds(id)
             }
-          },
-          onBlur: ({ target: { value: v2 } }) => onBlur(id, enumOptionsValueForIndex(v2, enumOptions, emptyValue)),
-          onFocus: ({ target: { value: v2 } }) => onFocus(id, enumOptionsValueForIndex(v2, enumOptions, emptyValue)),
-          "aria-describedby": ariaDescribedByIds(id)
-        }
-      ),
-      /* @__PURE__ */ jsx28("span", { children: option.label })
-    ] }, index);
+          ),
+          /* @__PURE__ */ jsx28("span", { children: option.label })
+        ]
+      },
+      index
+    );
   }) });
 };
 var myTemplates = {
@@ -26851,14 +27036,14 @@ var myTemplates = {
     // MoveDownButton: DefaultTemplate,
     // MoveUpButton: DefaultTemplate,
     // RemoveButton: DefaultTemplate,
-  }
+  },
   // ArrayFieldTemplate: DefaultTemplate,
   // ArrayFieldDescriptionTemplate: DefaultTemplate,
   // ArrayFieldItemTemplate: DefaultTemplate,
   // ArrayFieldTitleTemplate: DefaultTemplate,
   // ObjectFieldTemplate: DefaultTemplate,
   // ErrorListTemplate: DefaultTemplate,
-  // BaseInputTemplate: DefaultTemplate,
+  BaseInputTemplate: MyBaseInputTemplate
   // UnsupportedFieldTemplate: DefaultTemplate,
   // FieldErrorTemplate: DefaultTemplate,
   // FieldHelpTemplate: DefaultTemplate,
@@ -26867,6 +27052,9 @@ var myTemplates = {
 var myWidgets = {
   TextWidget: MyTextWidget,
   EmailWidget: MyEmailWidget,
+  TextareaWidget: MyTextareaWidget,
+  SelectWidget: MySelectWidget,
+  RadioWidget: MyRadioWidget,
   CheckboxWidget: MyCheckboxWidget,
   CheckboxesWidget: MyCheckboxesWidget
 };
