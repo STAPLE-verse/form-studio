@@ -12,6 +12,7 @@ export {
 export {
   FormStudioProvider,
   useFormStudio,
+  computeStateFingerprint,
   type FormStudioProviderProps,
   type FormStudioState,
 } from "./FormStudioContext"

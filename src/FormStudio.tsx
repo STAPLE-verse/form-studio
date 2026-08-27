@@ -1,7 +1,13 @@
 "use client"
 
 import { lazy, Suspense, useState, useEffect, useRef } from "react"
-import { FormStudioProvider, useFormStudio, type FormStudioState } from "./FormStudioContext"
+import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
+import {
+  FormStudioProvider,
+  useFormStudio,
+  computeStateFingerprint,
+  type FormStudioState,
+} from "./FormStudioContext"
 import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
 import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
@@ -35,6 +41,8 @@ interface FormStudioUIProps {
 interface FormStudioProps extends FormStudioUIProps {
   initialSchema?: string | object
   initialUiSchema?: string | object
+  /** Omit for a Core-only form; see FormStudioState.semantics. */
+  initialSemantics?: string | SemanticV1Component
 }
 
 export function FormStudioUI({
@@ -47,7 +55,7 @@ export function FormStudioUI({
 }: FormStudioUIProps) {
   const { state, setSchema, setUiSchema } = useFormStudio()
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
-  const panelResetKey = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema })
+  const panelResetKey = computeStateFingerprint(state)
   
   // Track if the JSON tab has ever been visited so we only load the heavy editor once,
   // but keep it mounted in the background to preserve undo history and unsaved text.
@@ -63,13 +71,13 @@ export function FormStudioUI({
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
-      lastBufferedStateRef.current = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema })
+      lastBufferedStateRef.current = computeStateFingerprint(state)
       return
     }
     if (!onAutoSave) return
 
-    const currentStateStr = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema })
-    
+    const currentStateStr = computeStateFingerprint(state)
+
     if (currentStateStr === lastBufferedStateRef.current) {
       return
     }
@@ -84,7 +92,7 @@ export function FormStudioUI({
     }, 1500)
 
     return () => clearTimeout(handler)
-  }, [state.schema, state.uiSchema, onAutoSave, state])
+  }, [state.schema, state.uiSchema, state.semantics, onAutoSave, state])
 
   return (
     <div className="form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden">
@@ -209,7 +217,11 @@ export function FormStudioUI({
 
 export default function FormStudio(props: FormStudioProps) {
   return (
-    <FormStudioProvider initialSchema={props.initialSchema} initialUiSchema={props.initialUiSchema}>
+    <FormStudioProvider
+      initialSchema={props.initialSchema}
+      initialUiSchema={props.initialUiSchema}
+      initialSemantics={props.initialSemantics}
+    >
       <FormStudioUI
         onAutoSave={props.onAutoSave}
         onSave={props.onSave}
