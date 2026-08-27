@@ -8,6 +8,8 @@ import Section from "./Section"
 import Add from "./Add"
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput"
 import SemanticRootClassInput from "./SemanticRootClassInput"
+import { SemanticAuthoringProvider } from "./SemanticAuthoringContext"
+import { computeSemanticDiagnostics } from "./semanticValidation"
 import {
   parse,
   stringify,
@@ -60,6 +62,10 @@ export default function FormBuilder({
     mods && mods.deactivatedFormInputs
   )
   const categoryHash = generateCategoryHash(allFormInputs)
+
+  const semanticDiagnostics = onSemanticsChange
+    ? computeSemanticDiagnostics({ schema: schemaData, semantics })
+    : []
 
   const compatibilityDiagnostics = generateElementPropsFromSchemas({
     schema: schemaData,
@@ -114,6 +120,18 @@ export default function FormBuilder({
   }, [onMount, categoryHash])
 
   return (
+    <SemanticAuthoringProvider
+      value={
+        onSemanticsChange
+          ? {
+              rootSchema: schemaData,
+              semantics,
+              onSemanticsChange,
+              diagnostics: semanticDiagnostics,
+            }
+          : undefined
+      }
+    >
     <div
       className={`formBuilder ${builderControlAppearanceClass} ${className || ""}`}
     >
@@ -210,6 +228,7 @@ export default function FormBuilder({
                   definitionData: schemaData.definitions,
                   definitionUi: uiSchemaData.definitions,
                   path: "root",
+                  fieldPointer: "",
                   cardOpenState,
                   setCardOpenState,
                   allFormInputs,
@@ -263,5 +282,6 @@ export default function FormBuilder({
         )}
       </div>
     </div>
+    </SemanticAuthoringProvider>
   )
 }

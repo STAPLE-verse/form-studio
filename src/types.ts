@@ -87,6 +87,8 @@ export interface CardComponentPropsType {
   enum?: (number | string)[]
   enumNames?: string[] | null
   description?: string
+  /** RFC 6901 pointer rooted at `form.schema` for this field's Semantic V1 binding (§5.3). */
+  fieldPointer?: string
 }
 
 export interface CardModalProps {
@@ -120,6 +122,8 @@ export interface SectionPropsType {
   onMoveUp?: () => any
   onMoveDown?: () => any
   path: string
+  /** RFC 6901 pointer rooted at `form.schema` for this section's own Semantic V1 binding (§5.3). */
+  fieldPointer?: string
   definitionData: { [key: string]: any }
   definitionUi: { [key: string]: any }
   dependents?: Array<{

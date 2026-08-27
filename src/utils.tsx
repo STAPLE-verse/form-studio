@@ -22,6 +22,7 @@ import {
   resolveLocalDefinitionReference,
   type LocalReferenceResolutionStatus,
 } from "./localReferences"
+import { buildChildFieldPointer } from "./semanticFieldPointer"
 
 // parse in either YAML or JSON
 export function parse(text: string): any {
@@ -1287,6 +1288,8 @@ export function generateElementComponentsFromSchemas(parameters: {
   definitionUi?: { [key: string]: any }
   hideKey?: boolean
   path: string
+  /** RFC 6901 pointer rooted at `form.schema` identifying this level's own field (§5.3); `""` at the schema root. */
+  fieldPointer?: string
   cardOpenState: Record<string, boolean>
   setCardOpenState: (newState: Record<string, boolean>) => void
   allFormInputs: { [key: string]: FormInput }
@@ -1303,6 +1306,7 @@ export function generateElementComponentsFromSchemas(parameters: {
     definitionUi,
     hideKey,
     path,
+    fieldPointer = "",
     cardOpenState,
     setCardOpenState,
     allFormInputs,
@@ -1338,6 +1342,7 @@ export function generateElementComponentsFromSchemas(parameters: {
     }
 
     const expanded = cardOpenState[elementKey] || false
+    const childFieldPointer = buildChildFieldPointer(fieldPointer, elementProp.name)
     if (elementProp.propType === "card") {
       const compatibility = elementProp.compatibility
       if (compatibility && compatibility.kind !== "editable") {
@@ -1347,6 +1352,7 @@ export function generateElementComponentsFromSchemas(parameters: {
             name={elementProp.name}
             title={elementProp.dataOptions.title}
             compatibility={compatibility}
+            fieldPointer={childFieldPointer}
           />
         )
       }
@@ -1367,6 +1373,7 @@ export function generateElementComponentsFromSchemas(parameters: {
                 required: elementPropArr[index]!.required,
                 hideKey,
                 path: `${path}_${elementPropArr[index]!.name}`,
+                fieldPointer: childFieldPointer,
                 definitionData,
                 definitionUi,
                 neighborNames: elementPropArr[index]!.neighborNames,
@@ -1753,6 +1760,7 @@ export function generateElementComponentsFromSchemas(parameters: {
           key={elementKey}
           required={elementProp.required}
           path={`${path}_${elementProp.name}`}
+          fieldPointer={childFieldPointer}
           definitionData={definitionData || {}}
           definitionUi={definitionUi || {}}
           hideKey={hideKey}

@@ -4,11 +4,14 @@ import type { ConformanceDiagnostic } from "@staple-verse/marker-template-runtim
 import { useFormStudio } from "./FormStudioContext"
 
 /**
- * Compact form-level summary of semantic diagnostics that cannot yet be
- * shown beside their originating field (§7). Field-specific presentation is
- * added alongside the Visual Builder binding controls; until then every
- * diagnostic — including field-pointer and relationship errors — surfaces
- * here so an invalid component is never mistaken for a conformant save.
+ * Compact, always-visible summary of every current semantic diagnostic
+ * (§7). Bindings also show their own diagnostics in-context beside their
+ * "Semantic binding" section (§5.2), but that requires opening the owning
+ * field's Additional Settings — a field a user hasn't opened must not be
+ * silently invalid, so every diagnostic is duplicated here regardless of
+ * whether it also has a field-local presentation. This keeps "an invalid
+ * component is never mistaken for a conformant save" true independent of
+ * which field panels happen to be open.
  */
 export default function SemanticDiagnosticsSummary(): React.ReactElement | null {
   const { semanticDiagnostics } = useFormStudio()

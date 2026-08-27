@@ -286,6 +286,14 @@ Prefer a documented analysis/field-resolution API from the shared runtime.
 consume it directly, rather than building the selector or the field-pointer
 resolver against internal Form Studio logic.
 
+**Found during step 7:** the same risk exists on the *construction* side, not
+just resolution. The runtime's own pointer-escaping primitive
+(`escapePointerToken`/`childPointer`) is unexported and independently
+duplicated three times inside the runtime itself; Form Studio ended up adding
+a fourth copy to build field pointers while walking the Visual Builder's
+rendering tree. See §13 for the concrete evidence and the requested runtime
+export.
+
 ## 6. JSON Editor integration
 
 Extend the existing JSON Editor with a third **Semantics** document beside Data
@@ -331,7 +339,15 @@ Live validation runs when either `schema` or `semantics` changes and covers:
 Diagnostics retain the runtime's `stage`, `code`, `pointer`, and message.
 Field-specific diagnostics should appear beside the affected binding; a compact
 form-level summary handles component or relationship errors that cannot be
-shown on one field.
+shown on one field. The form-level summary must keep showing every diagnostic
+regardless of field-level presentation, since a field the user has not opened
+must not read as conformant merely because its issue is also shown elsewhere.
+
+**Found during step 7:** matching a diagnostic to its originating binding
+currently relies on an unexported convention — the runtime emits binding-level
+diagnostics with a `/semantics/bindings/<index>...` pointer prefix, but does
+not publish that shape as a documented contract or helper. Form Studio infers
+it by string-prefix matching. See §13.
 
 Form Studio validates the editable components. Complete Core package validation
 remains the host application's responsibility because Form Studio does not own
@@ -471,3 +487,49 @@ The first integration does not include:
 
 These features require separate evidence and must not delay the lean Semantic
 V1 authoring integration.
+
+## 13. Known duplication found during field-level binding work (step 7)
+
+Implementing the field-level binding controls (§5.2/§5.3) surfaced two places
+where Form Studio ended up re-implementing something the runtime already
+defines internally, rather than the runtime exposing it as a reusable
+primitive. Both are functioning correctly today — this is not a defect in the
+current release — but both are the same class of drift risk §5.3 already
+warns about for field-pointer *resolution*, just discovered on the
+construction and diagnostics side instead. Both are candidates for a later
+`marker-template-spec` runtime revision that Form Studio then adopts, the same
+way `rc.2`'s `analyzeSemanticV1Bindings` export was adopted (§4.1, §10) —
+neither blocks step 7 or step 8.
+
+- **Pointer-token escaping.** Form Studio builds each field's RFC 6901 pointer
+  (`/properties/<name>/...`) incrementally while walking the Visual Builder's
+  own rendering tree (`src/semanticFieldPointer.ts`). The escaping rule it
+  needs (`~` → `~0`, `/` → `~1`) is exactly `escapePointerToken`/
+  `childPointer` from the runtime's TypeScript source — implemented
+  identically three separate times (`core.ts`, `projector.ts`, `semantic.ts`)
+  and exported from none of them. Form Studio's copy is therefore a *fourth*
+  independent implementation of the same primitive, not a second one. The
+  runtime should export one canonical escaping/pointer-append helper (letting
+  it deduplicate its own three internal copies in the process), and Form
+  Studio should consume that helper instead of maintaining a local copy.
+- **Binding-diagnostic association.** Field-level diagnostic presentation
+  (§7) matches a `ConformanceDiagnostic` to its originating binding by
+  checking whether `pointer` starts with `/semantics/bindings/<index>` — a
+  convention confirmed in the runtime's `semantic.ts` but never published as
+  a documented contract or helper. A future change to the runtime's
+  pointer-emission shape would silently stop matching in Form Studio's
+  per-field UI. Nothing would become invisible (the always-on form-level
+  summary in §7 shows every diagnostic independent of field-level matching),
+  but the per-field presentation would regress with no compile-time or
+  test-time signal from the runtime side. The runtime should expose either a
+  documented pointer-shape guarantee or a small helper (e.g. a
+  binding-diagnostics-by-index filter) instead of leaving this as an inferred
+  convention.
+
+A related, lower-priority observation from the same work: Form Studio's exact
+local value-mapping editor (§5.2, `iri`-kind bindings) coerces typed-in mapping
+values to `string`/`number`/`boolean` with a generic heuristic, even though the
+same component already has the runtime-resolved expected type available via
+`analyzeSemanticV1Bindings`'s `valueSchemas`. This is not a `marker-template-spec`
+gap — the runtime already exposes the type it needs — just an opportunity for
+Form Studio to use already-available data more precisely in a later pass.

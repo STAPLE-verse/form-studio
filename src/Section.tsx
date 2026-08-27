@@ -37,6 +37,7 @@ export default function Section({
   onDependentsChange,
   onDelete,
   path,
+  fieldPointer,
   definitionData,
   definitionUi,
   hideKey,
@@ -272,6 +273,7 @@ export default function Section({
                       uiSchemaData: uischema,
                       onChange,
                       path,
+                      fieldPointer,
                       definitionData,
                       definitionUi,
                       cardOpenState,
@@ -357,6 +359,7 @@ export default function Section({
             type: "object",
             "ui:column": uischema["ui:column"] ?? "",
             "ui:options": uischema["ui:options"] ?? "",
+            fieldPointer,
           }}
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}

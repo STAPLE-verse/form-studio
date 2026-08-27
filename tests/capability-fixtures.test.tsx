@@ -6,11 +6,15 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { withTheme } from "@rjsf/core"
 import validator from "@rjsf/validator-ajv8"
 import Card from "../src/Card"
+import CardModal from "../src/CardModal"
 import DaisyTheme from "../src/DaisyTheme"
 import CompatibilityCard from "../src/CompatibilityCard"
 import FormStudio from "../src/FormStudio"
 import JsonSchemaForm from "../src/JsonSchemaForm"
 import Section from "../src/Section"
+import SemanticBindingSection from "../src/SemanticBindingSection"
+import { SemanticAuthoringProvider, type SemanticAuthoringContextValue } from "../src/SemanticAuthoringContext"
+import { buildChildFieldPointer, escapeJsonPointerToken } from "../src/semanticFieldPointer"
 import { StudioPanelErrorFallback } from "../src/StudioPanelErrorBoundary"
 import { resolveLocalDefinitionReference } from "../src/localReferences"
 import {
@@ -762,6 +766,363 @@ test("Visual Builder surfaces the shared semantic diagnostics summary for an inv
 
   assert.match(markup, /data-semantic-diagnostics="true"/)
   assert.match(markup, /SEMANTIC_COMPONENT_INVALID/)
+})
+
+test("buildChildFieldPointer chains properties segments and escapes RFC 6901 special characters", () => {
+  assert.equal(buildChildFieldPointer("", "name"), "/properties/name")
+  assert.equal(buildChildFieldPointer("/properties/address", "city"), "/properties/address/properties/city")
+  assert.equal(escapeJsonPointerToken("weird/name~x"), "weird~1name~0x")
+})
+
+test("generateElementComponentsFromSchemas computes nested RFC 6901 field pointers", () => {
+  const outer = generateElementComponentsFromSchemas({
+    schemaData: {
+      type: "object",
+      properties: {
+        address: {
+          type: "object",
+          properties: { "weird/name~x": { type: "string", title: "Weird" } },
+        },
+      },
+    },
+    uiSchemaData: {},
+    onChange: () => undefined,
+    path: "root",
+    fieldPointer: "",
+    cardOpenState: {},
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+
+  const sectionElement = outer[0] as any
+  assert.equal(sectionElement.props.fieldPointer, "/properties/address")
+
+  const inner = generateElementComponentsFromSchemas({
+    schemaData: sectionElement.props.schema,
+    uiSchemaData: sectionElement.props.uischema,
+    onChange: () => undefined,
+    path: sectionElement.props.path,
+    fieldPointer: sectionElement.props.fieldPointer,
+    cardOpenState: {},
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+
+  const cardElement = inner[0] as any
+  assert.equal(cardElement.props.componentProps.fieldPointer, "/properties/address/properties/weird~1name~0x")
+})
+
+test("field pointers traverse local $ref sections using the instance-bearing pointer, not a definitions pointer", () => {
+  const schema = {
+    type: "object",
+    definitions: {
+      email: { type: "string", title: "Contact email" },
+      contact: {
+        type: "object",
+        title: "Contact details",
+        properties: { email: { $ref: "#/definitions/email" } },
+      },
+    },
+    properties: {
+      contact: { $ref: "#/definitions/contact" },
+    },
+  }
+
+  const outer = generateElementComponentsFromSchemas({
+    schemaData: schema,
+    uiSchemaData: {},
+    onChange: () => undefined,
+    path: "root",
+    fieldPointer: "",
+    definitionData: schema.definitions,
+    cardOpenState: {},
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+
+  const sectionElement = outer[0] as any
+  assert.equal(sectionElement.props.fieldPointer, "/properties/contact")
+
+  const inner = generateElementComponentsFromSchemas({
+    schemaData: sectionElement.props.schema,
+    uiSchemaData: sectionElement.props.uischema,
+    onChange: () => undefined,
+    path: sectionElement.props.path,
+    fieldPointer: sectionElement.props.fieldPointer,
+    cardOpenState: {},
+    setCardOpenState: () => undefined,
+    allFormInputs: DEFAULT_FORM_INPUTS,
+    categoryHash,
+    Card,
+    Section,
+  })
+
+  const cardElement = inner[0] as any
+  assert.equal(cardElement.props.componentProps.fieldPointer, "/properties/contact/properties/email")
+})
+
+function semanticContext(
+  overrides: Partial<SemanticAuthoringContextValue> = {}
+): SemanticAuthoringContextValue {
+  return {
+    rootSchema: { type: "object", properties: {} },
+    semantics: undefined,
+    onSemanticsChange: () => undefined,
+    diagnostics: [],
+    ...overrides,
+  }
+}
+
+test("SemanticBindingSection renders nothing outside a semantic authoring context", () => {
+  const markup = renderToStaticMarkup(<SemanticBindingSection fieldPointer="/properties/name" />)
+  assert.equal(markup, "")
+})
+
+test("SemanticBindingSection offers to add the first binding for an unbound field", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider value={semanticContext()}>
+      <SemanticBindingSection fieldPointer="/properties/name" />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /data-field-pointer="\/properties\/name"/)
+  assert.match(markup, /Add semantic binding/)
+  assert.doesNotMatch(markup, /Predicate IRI/)
+})
+
+test("SemanticBindingSection exposes literal-kind controls for an existing binding", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            { fieldPointer: "/properties/name", predicate: "https://example.org/name", valueKind: "literal" },
+          ],
+        },
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/name" />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /Predicate IRI/)
+  assert.match(markup, /value="https:\/\/example\.org\/name"/)
+  assert.match(markup, /Datatype IRI \(optional\)/)
+  assert.match(markup, /Language tag \(optional\)/)
+  assert.match(markup, /Remove binding/)
+  assert.doesNotMatch(markup, /Class IRI/)
+})
+
+test("SemanticBindingSection disables the language input once a datatype IRI is set, and vice versa", () => {
+  const withDatatype = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            {
+              fieldPointer: "/properties/date",
+              predicate: "https://example.org/date",
+              valueKind: "literal",
+              datatypeIri: "http://www.w3.org/2001/XMLSchema#date",
+            },
+          ],
+        },
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/date" />
+    </SemanticAuthoringProvider>
+  )
+  assert.match(withDatatype, /value="http:\/\/www\.w3\.org\/2001\/XMLSchema#date"[^>]*\/>/)
+  assert.match(withDatatype, /placeholder="en"[^>]*disabled=""/)
+
+  const withLanguage = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            {
+              fieldPointer: "/properties/title",
+              predicate: "https://example.org/title",
+              valueKind: "literal",
+              language: "en",
+            },
+          ],
+        },
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/title" />
+    </SemanticAuthoringProvider>
+  )
+  assert.match(withLanguage, /placeholder="http:\/\/www\.w3\.org\/2001\/XMLSchema#date"[^>]*disabled=""/)
+})
+
+test("SemanticBindingSection exposes IRI-kind mapping controls when mappings are set", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            {
+              fieldPointer: "/properties/status",
+              predicate: "https://example.org/status",
+              valueKind: "iri",
+              valueMappings: [{ value: "active", iri: "https://example.org/Active" }],
+            },
+          ],
+        },
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/status" />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /IRI behavior/)
+  assert.match(markup, /Value → IRI mappings/)
+  assert.match(markup, /value="active"/)
+  assert.match(markup, /value="https:\/\/example\.org\/Active"/)
+})
+
+test("SemanticBindingSection exposes node-kind class IRI control", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            {
+              fieldPointer: "/properties/address",
+              predicate: "https://example.org/address",
+              valueKind: "node",
+              classIri: "https://example.org/Address",
+            },
+          ],
+        },
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/address" />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /Class IRI \(optional\)/)
+  assert.match(markup, /value="https:\/\/example\.org\/Address"/)
+})
+
+test("SemanticBindingSection recommends the nearest containing node as an explicit, unforced choice", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            {
+              fieldPointer: "/properties/address",
+              predicate: "https://example.org/address",
+              valueKind: "node",
+              classIri: "https://example.org/Address",
+            },
+            {
+              fieldPointer: "/properties/address/properties/city",
+              predicate: "https://example.org/city",
+              valueKind: "literal",
+            },
+          ],
+        },
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/address/properties/city" />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /Parent node/)
+  assert.match(markup, /<option value="\/properties\/address">\/properties\/address \(nearest\)<\/option>/)
+  assert.match(markup, /Recommended: the nearest containing node is \/properties\/address/)
+})
+
+test("SemanticBindingSection scopes diagnostics to the field's own binding index", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider
+      value={semanticContext({
+        semantics: {
+          bindings: [
+            { fieldPointer: "/properties/a", predicate: "not-an-iri", valueKind: "literal" },
+            { fieldPointer: "/properties/b", predicate: "https://example.org/b", valueKind: "literal" },
+          ],
+        },
+        diagnostics: [
+          {
+            stage: "structural",
+            code: "SEMANTIC_COMPONENT_INVALID",
+            pointer: "/semantics/bindings/0/predicate",
+            message: "must match pattern for an absolute IRI",
+          },
+        ],
+      })}
+    >
+      <SemanticBindingSection fieldPointer="/properties/b" />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.doesNotMatch(markup, /SEMANTIC_COMPONENT_INVALID/)
+})
+
+test("CardModal exposes the semantic binding section when a field pointer and context are present", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider value={semanticContext()}>
+      <CardModal
+        componentProps={{ name: "name", fieldPointer: "/properties/name" } as any}
+        isOpen={true}
+        onClose={() => undefined}
+        onChange={() => undefined}
+        TypeSpecificParameters={() => null}
+      />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /data-semantic-binding-section="true"/)
+  assert.match(markup, /Add semantic binding/)
+})
+
+test("CardModal omits the semantic binding section without a field pointer", () => {
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider value={semanticContext()}>
+      <CardModal
+        componentProps={{ name: "name" } as any}
+        isOpen={true}
+        onClose={() => undefined}
+        onChange={() => undefined}
+        TypeSpecificParameters={() => null}
+      />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.doesNotMatch(markup, /data-semantic-binding-section="true"/)
+})
+
+test("CompatibilityCard exposes a semantic binding section for its own field pointer when semantics are enabled", () => {
+  const compatibility = classifyField({ type: "array", items: { type: "object" } })
+  assert.notEqual(compatibility.kind, "editable")
+  if (compatibility.kind === "editable") return
+
+  const markup = renderToStaticMarkup(
+    <SemanticAuthoringProvider value={semanticContext()}>
+      <CompatibilityCard
+        name="contributors"
+        title="Contributors"
+        compatibility={compatibility}
+        fieldPointer="/properties/contributors"
+      />
+    </SemanticAuthoringProvider>
+  )
+
+  assert.match(markup, /data-semantic-binding-section="true"/)
+  assert.match(markup, /Add semantic binding/)
 })
 
 test("panel render failures produce an inline recovery diagnostic", () => {
