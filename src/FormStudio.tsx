@@ -1,7 +1,7 @@
 "use client"
 
 import { lazy, Suspense, useState, useEffect, useRef } from "react"
-import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
+import type { ConformanceDiagnostic, SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import {
   FormStudioProvider,
   useFormStudio,
@@ -11,6 +11,7 @@ import {
 import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
 import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
+import SemanticDiagnosticsSummary from "./SemanticDiagnosticsSummary"
 
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid"
 import type { Mods } from "./types"
@@ -36,6 +37,13 @@ interface FormStudioUIProps {
   mods?: Mods
   /** When provided, the route layer owns save-status semantics (§8.11.4). */
   saveStatus?: FormStudioSaveStatus
+  /**
+   * Notified with the current Semantic V1 diagnostics whenever they change,
+   * including on mount, so a host can reflect semantic validity (e.g. to
+   * gate its own save action) without re-running validation itself. Always
+   * called with `[]` for a Core-only form.
+   */
+  onSemanticValidationChange?: (diagnostics: ConformanceDiagnostic[]) => void
 }
 
 interface FormStudioProps extends FormStudioUIProps {
@@ -52,10 +60,15 @@ export function FormStudioUI({
   onCancel,
   mods,
   saveStatus,
+  onSemanticValidationChange,
 }: FormStudioUIProps) {
-  const { state, setSchema, setUiSchema } = useFormStudio()
+  const { state, setSchema, setUiSchema, semanticDiagnostics } = useFormStudio()
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
   const panelResetKey = computeStateFingerprint(state)
+
+  useEffect(() => {
+    onSemanticValidationChange?.(semanticDiagnostics)
+  }, [semanticDiagnostics, onSemanticValidationChange])
   
   // Track if the JSON tab has ever been visited so we only load the heavy editor once,
   // but keep it mounted in the background to preserve undo history and unsaved text.
@@ -170,6 +183,12 @@ export function FormStudioUI({
         </div>
       </div>
 
+      {semanticDiagnostics.length > 0 && (
+        <div className="px-6 pt-6">
+          <SemanticDiagnosticsSummary />
+        </div>
+      )}
+
       <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6">
         {activeTab === "builder" && (
           <div className="block" data-studio-panel="builder">
@@ -229,6 +248,7 @@ export default function FormStudio(props: FormStudioProps) {
         onCancel={props.onCancel}
         mods={props.mods}
         saveStatus={props.saveStatus}
+        onSemanticValidationChange={props.onSemanticValidationChange}
       />
     </FormStudioProvider>
   )

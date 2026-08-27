@@ -1,7 +1,8 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode } from "react"
-import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
+import React, { createContext, useContext, useMemo, useState, ReactNode } from "react"
+import type { ConformanceDiagnostic, SemanticV1Component } from "@staple-verse/marker-template-runtime"
+import { computeSemanticDiagnostics } from "./semanticValidation"
 
 export interface FormStudioState {
   schema: object
@@ -39,6 +40,13 @@ interface FormStudioContextType {
   setSemantics: (newSemantics: SemanticV1Component | undefined) => void
   setFormData: (newFormData: object) => void
   updateState: (newState: Partial<FormStudioState>) => void
+  /**
+   * Live Semantic V1 diagnostics for the current `schema`/`semantics` pair,
+   * from the pinned runtime — always `[]` for a Core-only form. Recomputed
+   * whenever either input changes (§7); per-keystroke debouncing during
+   * schema edits is deferred to the Visual Builder invalidation work (§8).
+   */
+  semanticDiagnostics: ConformanceDiagnostic[]
 }
 
 const FormStudioContext = createContext<FormStudioContextType | undefined>(undefined)
@@ -113,6 +121,11 @@ export function FormStudioProvider({
     setState((prev) => ({ ...prev, ...newState }))
   }
 
+  const semanticDiagnostics = useMemo(
+    () => computeSemanticDiagnostics({ schema: state.schema, semantics: state.semantics }),
+    [state.schema, state.semantics]
+  )
+
   return (
     <FormStudioContext.Provider
       value={{
@@ -122,6 +135,7 @@ export function FormStudioProvider({
         setSemantics,
         setFormData,
         updateState,
+        semanticDiagnostics,
       }}
     >
       {children}
