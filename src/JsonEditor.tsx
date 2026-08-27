@@ -2,72 +2,34 @@
 
 import { useState } from "react"
 import Editor from "@monaco-editor/react"
+import { PlusIcon, TrashIcon } from "@heroicons/react/20/solid"
+import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import { useFormStudio } from "./FormStudioContext"
+import { useSyncedJsonDocument } from "./useSyncedJsonDocument"
+
+const EMPTY_OBJECT = {}
+
+// A deliberately valid (not merely syntactically well-formed) starter so
+// clicking "Add semantic component" never emits the invalid
+// `{ "bindings": [] }` shape the authoring plan §3 rules out.
+const STARTER_SEMANTICS: SemanticV1Component = {
+  root: { classIri: "https://example.org/ChangeMe" },
+  bindings: [],
+}
+
+function ParseErrorNotice({ message }: { message: string }) {
+  return (
+    <p className="mt-2 text-xs text-error font-mono break-words" role="alert">
+      Invalid JSON — not yet applied: {message}
+    </p>
+  )
+}
 
 export default function JsonEditor() {
-  const { state, setSchema, setUiSchema } = useFormStudio()
+  const { state, setSchema, setUiSchema, setSemantics, semanticDiagnostics } = useFormStudio()
 
-  // Local state to hold the raw string values
-  const [localSchema, setLocalSchema] = useState(() => JSON.stringify(state.schema, null, 2))
-  const [localUiSchema, setLocalUiSchema] = useState(() => JSON.stringify(state.uiSchema, null, 2))
-
-  // Track previous master state to know when external changes occur
-  const [prevSchema, setPrevSchema] = useState(state.schema)
-  const [prevUiSchema, setPrevUiSchema] = useState(state.uiSchema)
-
-  // Sync local schema if master schema changed externally (Render-phase state update)
-  if (state.schema !== prevSchema) {
-    setPrevSchema(state.schema)
-    try {
-      const parsedLocal = JSON.parse(localSchema)
-      if (JSON.stringify(parsedLocal) !== JSON.stringify(state.schema)) {
-        setLocalSchema(JSON.stringify(state.schema, null, 2))
-      }
-    } catch (e) {
-      if (JSON.stringify(state.schema) !== "{}") {
-        setLocalSchema(JSON.stringify(state.schema, null, 2))
-      }
-    }
-  }
-
-  // Sync local UI schema if master UI schema changed externally (Render-phase state update)
-  if (state.uiSchema !== prevUiSchema) {
-    setPrevUiSchema(state.uiSchema)
-    try {
-      const parsedLocal = JSON.parse(localUiSchema)
-      if (JSON.stringify(parsedLocal) !== JSON.stringify(state.uiSchema)) {
-        setLocalUiSchema(JSON.stringify(state.uiSchema, null, 2))
-      }
-    } catch (e) {
-      if (JSON.stringify(state.uiSchema) !== "{}") {
-        setLocalUiSchema(JSON.stringify(state.uiSchema, null, 2))
-      }
-    }
-  }
-
-  const handleSchemaChange = (value: string | undefined) => {
-    const val = value || ""
-    setLocalSchema(val)
-    try {
-      // Must try/catch because JSON.parse throws fatal exceptions on invalid strings
-      const parsed = JSON.parse(val)
-      setSchema(parsed)
-    } catch {
-      // Silently swallow the exception. Monaco shows the red squiggles to the user,
-      // so we just wait until they fix it before updating the master context.
-    }
-  }
-
-  const handleUiSchemaChange = (value: string | undefined) => {
-    const val = value || ""
-    setLocalUiSchema(val)
-    try {
-      const parsed = JSON.parse(val)
-      setUiSchema(parsed)
-    } catch {
-      // Silently swallow
-    }
-  }
+  const schemaDoc = useSyncedJsonDocument(state.schema, setSchema, EMPTY_OBJECT)
+  const uiSchemaDoc = useSyncedJsonDocument(state.uiSchema, setUiSchema, EMPTY_OBJECT)
 
   return (
     <div className="flex flex-col h-full">
@@ -79,8 +41,8 @@ export default function JsonEditor() {
               height="100%"
               language="json"
               theme="vs-dark"
-              value={localSchema}
-              onChange={handleSchemaChange}
+              value={schemaDoc.text}
+              onChange={schemaDoc.handleChange}
               options={{
                 readOnly: false,
                 minimap: { enabled: false },
@@ -91,8 +53,9 @@ export default function JsonEditor() {
               }}
             />
           </div>
+          {schemaDoc.parseError && <ParseErrorNotice message={schemaDoc.parseError} />}
         </div>
-        
+
         <div className="flex-1 min-w-0 flex flex-col h-[500px] lg:h-full">
           <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2">UI Schema</h4>
           <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative">
@@ -100,8 +63,8 @@ export default function JsonEditor() {
               height="100%"
               language="json"
               theme="vs-dark"
-              value={localUiSchema}
-              onChange={handleUiSchemaChange}
+              value={uiSchemaDoc.text}
+              onChange={uiSchemaDoc.handleChange}
               options={{
                 readOnly: false,
                 minimap: { enabled: false },
@@ -112,8 +75,120 @@ export default function JsonEditor() {
               }}
             />
           </div>
+          {uiSchemaDoc.parseError && <ParseErrorNotice message={uiSchemaDoc.parseError} />}
         </div>
+
+        <SemanticsDocumentColumn
+          semantics={state.semantics}
+          setSemantics={setSemantics}
+          diagnosticsCount={semanticDiagnostics.length}
+        />
       </div>
+    </div>
+  )
+}
+
+function SemanticsDocumentColumn({
+  semantics,
+  setSemantics,
+  diagnosticsCount,
+}: {
+  semantics: SemanticV1Component | undefined
+  setSemantics: (newSemantics: SemanticV1Component | undefined) => void
+  diagnosticsCount: number
+}) {
+  const [confirmingRemoval, setConfirmingRemoval] = useState(false)
+
+  // Always call the hook (Rules of Hooks); while absent it tracks a value
+  // that is never shown or committed anywhere.
+  const semanticsDoc = useSyncedJsonDocument(semantics ?? STARTER_SEMANTICS, setSemantics, STARTER_SEMANTICS)
+
+  return (
+    <div className="flex-1 min-w-0 flex flex-col h-[500px] lg:h-full" data-json-editor-document="semantics">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider">Semantics</h4>
+        {semantics !== undefined && !confirmingRemoval && (
+          <button
+            type="button"
+            className="btn btn-ghost btn-xs text-error gap-1"
+            onClick={() => setConfirmingRemoval(true)}
+          >
+            <TrashIcon className="w-3.5 h-3.5" />
+            Remove
+          </button>
+        )}
+      </div>
+
+      {confirmingRemoval && (
+        <div className="alert alert-warning mb-2 py-2 text-sm" role="alert">
+          <span>Remove the entire semantic component? This cannot be undone.</span>
+          <div className="flex gap-2 ml-auto">
+            <button
+              type="button"
+              className="btn btn-xs btn-ghost"
+              onClick={() => setConfirmingRemoval(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-xs btn-error"
+              onClick={() => {
+                setSemantics(undefined)
+                setConfirmingRemoval(false)
+              }}
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      )}
+
+      {semantics === undefined ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center">
+          <p className="text-base-content/60 italic">
+            This form has no Semantic V1 component yet.
+          </p>
+          <button
+            type="button"
+            className="btn btn-primary btn-sm gap-1.5"
+            onClick={() => setSemantics(STARTER_SEMANTICS)}
+          >
+            <PlusIcon className="w-4 h-4" />
+            Add semantic component
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative">
+            <Editor
+              height="100%"
+              language="json"
+              theme="vs-dark"
+              value={semanticsDoc.text}
+              onChange={semanticsDoc.handleChange}
+              options={{
+                readOnly: false,
+                minimap: { enabled: false },
+                fontSize: 14,
+                wordWrap: "on",
+                formatOnPaste: true,
+                scrollBeyondLastLine: false,
+              }}
+            />
+          </div>
+          {semanticsDoc.parseError ? (
+            <ParseErrorNotice message={semanticsDoc.parseError} />
+          ) : diagnosticsCount > 0 ? (
+            <p className="mt-2 text-xs text-warning">
+              {diagnosticsCount === 1 ? "1 semantic issue" : `${diagnosticsCount} semantic issues`} — see
+              summary above.
+            </p>
+          ) : (
+            <p className="mt-2 text-xs text-success">Semantics valid.</p>
+          )}
+        </>
+      )}
     </div>
   )
 }
