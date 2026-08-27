@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import Editor from "@monaco-editor/react"
-import { PlusIcon, TrashIcon } from "@heroicons/react/20/solid"
+import { PlusIcon } from "@heroicons/react/20/solid"
 import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import { useFormStudio } from "./FormStudioContext"
 import { useSyncedJsonDocument } from "./useSyncedJsonDocument"
+import RemoveSemanticComponentControl from "./RemoveSemanticComponentControl"
 
 const EMPTY_OBJECT = {}
 
@@ -97,8 +97,6 @@ function SemanticsDocumentColumn({
   setSemantics: (newSemantics: SemanticV1Component | undefined) => void
   diagnosticsCount: number
 }) {
-  const [confirmingRemoval, setConfirmingRemoval] = useState(false)
-
   // Always call the hook (Rules of Hooks); while absent it tracks a value
   // that is never shown or committed anywhere.
   const semanticsDoc = useSyncedJsonDocument(semantics ?? STARTER_SEMANTICS, setSemantics, STARTER_SEMANTICS)
@@ -107,42 +105,10 @@ function SemanticsDocumentColumn({
     <div className="flex-1 min-w-0 flex flex-col h-[500px] lg:h-full" data-json-editor-document="semantics">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider">Semantics</h4>
-        {semantics !== undefined && !confirmingRemoval && (
-          <button
-            type="button"
-            className="btn btn-ghost btn-xs text-error gap-1"
-            onClick={() => setConfirmingRemoval(true)}
-          >
-            <TrashIcon className="w-3.5 h-3.5" />
-            Remove
-          </button>
+        {semantics !== undefined && (
+          <RemoveSemanticComponentControl onRemove={() => setSemantics(undefined)} />
         )}
       </div>
-
-      {confirmingRemoval && (
-        <div className="alert alert-warning mb-2 py-2 text-sm" role="alert">
-          <span>Remove the entire semantic component? This cannot be undone.</span>
-          <div className="flex gap-2 ml-auto">
-            <button
-              type="button"
-              className="btn btn-xs btn-ghost"
-              onClick={() => setConfirmingRemoval(false)}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn btn-xs btn-error"
-              onClick={() => {
-                setSemantics(undefined)
-                setConfirmingRemoval(false)
-              }}
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      )}
 
       {semantics === undefined ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center">

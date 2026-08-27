@@ -2,10 +2,12 @@
 
 import React, { ReactElement, useEffect } from "react"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
+import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import Card from "./Card"
 import Section from "./Section"
 import Add from "./Add"
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput"
+import SemanticRootClassInput from "./SemanticRootClassInput"
 import {
   parse,
   stringify,
@@ -27,15 +29,26 @@ import { builderControlAppearanceClass } from "./controlAppearance"
 export default function FormBuilder({
   schema,
   uiSchema,
+  semantics,
   onMount,
   onChange,
+  onSemanticsChange,
   mods,
   className,
 }: {
   schema: string
   uiSchema: string
+  /** Omit for a Core-only form; see FormStudioState.semantics. */
+  semantics?: SemanticV1Component
   onMount?: (parameters: InitParameters) => any
   onChange: (schema: string, uiSchema: string) => any
+  /**
+   * Enables the form-level semantic root-class control (§5.1). Without it
+   * the control is not rendered — there would be nowhere to persist a
+   * change — so a host that does not pass this prop sees no behavior
+   * change, preserving Core-only compatibility for existing consumers.
+   */
+  onSemanticsChange?: (newSemantics: SemanticV1Component | undefined) => void
   mods?: Mods
   className?: string
 }): ReactElement {
@@ -163,6 +176,9 @@ export default function FormBuilder({
               }
             />
           </div>
+          {onSemanticsChange && (
+            <SemanticRootClassInput semantics={semantics} onSemanticsChange={onSemanticsChange} />
+          )}
         </div>
       )}
       <div className="form-body formBody mt-6">

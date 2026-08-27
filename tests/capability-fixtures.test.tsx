@@ -711,6 +711,59 @@ test("inactive preview does not render a parseable intermediate Monaco widget", 
   }
 })
 
+test("Visual Builder shows an empty semantic root class control for a Core-only form", () => {
+  const markup = renderToStaticMarkup(
+    <FormStudio
+      initialSchema={{
+        type: "object",
+        properties: { name: { type: "string", title: "Name" } },
+      }}
+    />
+  )
+
+  assert.match(markup, /Semantic root class \(optional\)/)
+  assert.match(markup, /data-test="semantic-root-class-input"[^>]*value=""/)
+  assert.doesNotMatch(markup, /Remove semantic component/)
+})
+
+test("Visual Builder reflects an existing root class and offers removal", () => {
+  const markup = renderToStaticMarkup(
+    <FormStudio
+      initialSchema={{
+        type: "object",
+        properties: { name: { type: "string", title: "Name" } },
+      }}
+      initialSemantics={{
+        root: { classIri: "https://example.org/Person" },
+        bindings: [],
+      }}
+    />
+  )
+
+  assert.match(markup, /data-test="semantic-root-class-input"[^>]*value="https:\/\/example\.org\/Person"/)
+  assert.match(markup, /Remove semantic component/)
+})
+
+test("Visual Builder surfaces the shared semantic diagnostics summary for an invalid component", () => {
+  const markup = renderToStaticMarkup(
+    <FormStudio
+      initialSchema={{
+        type: "object",
+        properties: { name: { type: "string", title: "Name" } },
+      }}
+      initialSemantics={{
+        root: { classIri: "https://example.org/Person" },
+        bindings: [
+          { fieldPointer: "/properties/missing", predicate: "not-an-iri", valueKind: "literal" },
+        ],
+      }}
+    />
+  )
+
+  assert.match(markup, /data-semantic-diagnostics="true"/)
+  assert.match(markup, /SEMANTIC_COMPONENT_INVALID/)
+})
+
 test("panel render failures produce an inline recovery diagnostic", () => {
   const markup = renderToStaticMarkup(
     <StudioPanelErrorFallback

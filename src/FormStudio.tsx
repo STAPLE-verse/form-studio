@@ -62,7 +62,7 @@ export function FormStudioUI({
   saveStatus,
   onSemanticValidationChange,
 }: FormStudioUIProps) {
-  const { state, setSchema, setUiSchema, semanticDiagnostics } = useFormStudio()
+  const { state, setSchema, setUiSchema, setSemantics, semanticDiagnostics } = useFormStudio()
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
   const panelResetKey = computeStateFingerprint(state)
 
@@ -202,6 +202,7 @@ export function FormStudioUI({
                     ? state.uiSchema
                     : JSON.stringify(state.uiSchema)
                 }
+                semantics={state.semantics}
                 onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
                   try {
                     setSchema(JSON.parse(newSchemaStr))
@@ -210,6 +211,7 @@ export function FormStudioUI({
                     console.error("Failed to parse schema from FormBuilder", e)
                   }
                 }}
+                onSemanticsChange={setSemantics}
                 mods={mods}
               />
             </StudioPanelErrorBoundary>
