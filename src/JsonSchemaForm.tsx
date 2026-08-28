@@ -2,6 +2,7 @@
 
 import { withTheme } from "@rjsf/core"
 import validator from "@rjsf/validator-ajv8"
+import type { ReactElement } from "react"
 import DaisyTheme from "./DaisyTheme"
 
 export type JsonSchemaDocument = Record<string, unknown>
@@ -69,7 +70,7 @@ export default function JsonSchemaForm<
   onSubmit,
   onError,
   ...formProps
-}: JsonSchemaFormProps<TFormData>) {
+}: JsonSchemaFormProps<TFormData>): ReactElement {
   return (
     <ThemedForm
       {...formProps}

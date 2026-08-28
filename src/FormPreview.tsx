@@ -14,7 +14,7 @@ const hideSubmitButton = (uiSchema: any) => {
   }
 }
 
-export default function FormPreview() {
+export default function FormPreview(): React.ReactElement {
   const { state, setFormData } = useFormStudio()
   const uiSchema = React.useMemo(() => hideSubmitButton(state.uiSchema), [state.uiSchema])
 

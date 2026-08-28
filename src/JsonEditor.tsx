@@ -1,6 +1,7 @@
 "use client"
 
 import Editor from "@monaco-editor/react"
+import type { ReactElement } from "react"
 import { useFormStudio } from "./FormStudioContext"
 import { useSyncedJsonDocument } from "./useSyncedJsonDocument"
 import { JsonDocumentExtensionOutlet } from "./extensions/outlets"
@@ -15,7 +16,7 @@ function ParseErrorNotice({ message }: { message: string }) {
   )
 }
 
-export default function JsonEditor() {
+export default function JsonEditor(): ReactElement {
   const { state, setSchema, setUiSchema } = useFormStudio()
 
   const schemaDoc = useSyncedJsonDocument(state.schema, setSchema, EMPTY_OBJECT)

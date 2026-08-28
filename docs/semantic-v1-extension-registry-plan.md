@@ -1,8 +1,10 @@
 # Semantic V1 Extension Registry Plan
 
 > **Status:** Approved architecture and phased implementation plan. Phases
-> 0–4 are complete: the generic registry, Semantic V1 extension, and generic
-> turnkey API are implemented. STAPLE migration and packaging remain.
+> 0–5 are complete: the generic registry, Semantic V1 extension, generic
+> turnkey API, and STAPLE composition migration are implemented. Phase 6
+> packaging verification is complete; the exact prerelease and STAPLE pin are
+> being finalized.
 >
 > **Purpose:** This document is the source of truth for extracting Semantic V1
 > from Form Studio's generic editor core while preserving Semantic V1 as a
@@ -720,6 +722,17 @@ registry lifecycle, and the base entry has no Semantic V1 import.
 
 ### Phase 5 — Migrate STAPLE's custom composition
 
+**Implementation status (2026-08-28): Complete.** STAPLE registers the static
+Semantic V1 descriptor once, initializes it through `initialExtensionValues`,
+uses the generic outlets and diagnostics renderer, validates manual and
+server-side autosaves through `validateForCommit()`, and reads persistence
+values through `getSemanticV1Value()`.
+
+The independently built `./semantic-v1` entry and package export were pulled
+forward as the minimum prerequisite for compiling this consumer migration.
+Phase 6 still owns clean-install verification, dependency-graph assertions,
+React 18/19 fixtures, artifact reproducibility, and release/pinning work.
+
 1. Import `semanticV1Extension` from the semantic subpath.
 2. Register it once at the provider boundary with a stable extension array.
 3. Initialize its value from `FormVersion.semantics`.
@@ -741,6 +754,13 @@ Builder, and Preview tabs and its own save controls while no longer importing
 semantic validation details from Form Studio's base entry.
 
 ### Phase 6 — Split build, packaging verification, and release
+
+**Implementation status (2026-08-28): Release in progress.** Independent base
+and Semantic V1 entries, subpath exports and declarations, permanent artifact
+boundary assertions, React 18/19 packed consumers, clean-install testing,
+byte-for-byte reproducible `dist/`, and STAPLE tarball suites all pass. The
+remaining work is publishing `v0.2.0-rc.0` and pinning STAPLE to that exact
+GitHub tag.
 
 1. Add independent base and Semantic V1 build entries.
 2. Add the `./semantic-v1` package export and declarations.

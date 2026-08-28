@@ -1,6 +1,13 @@
 "use client"
 
-import React, { createContext, useContext, useRef, useState, ReactNode } from "react"
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react"
 import type {
   FormStudioDiagnostic,
   FormStudioExtension,
@@ -85,7 +92,7 @@ export function FormStudioProvider({
   initialUiSchema = {},
   initialFormData = {},
   children,
-}: FormStudioProviderProps) {
+}: FormStudioProviderProps): ReactElement {
   const registryRef = useRef<FormStudioExtensionRegistry | undefined>(undefined)
   if (!registryRef.current) {
     registryRef.current = createFormStudioExtensionRegistry(extensions)

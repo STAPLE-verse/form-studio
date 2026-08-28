@@ -11,7 +11,7 @@ Add the package to your app's `package.json`:
 ```json
 {
   "dependencies": {
-    "@staple-verse/form-studio": "github:STAPLE-verse/form-studio#v0.1.0"
+    "@staple-verse/form-studio": "github:STAPLE-verse/form-studio#v0.2.0-rc.0"
   }
 }
 ```
@@ -159,8 +159,9 @@ exposes debounced `extensionDiagnostics` for live feedback and a synchronous
 
 Semantic V1 is implemented as the first registered extension under
 `src/semantic-v1`. It exports `semanticV1Extension`, `getSemanticV1Value`, and
-`useSemanticV1Value`; the published `./semantic-v1` package subpath and split
-bundle are added in Phase 6 of the registry migration.
+`useSemanticV1Value` through the independently built `./semantic-v1` package
+subpath. Permanent packaging checks keep the base dependency graph free of the
+marker runtime and exercise packed React 18, React 19, and STAPLE consumers.
 
 The Semantic-aware turnkey composition uses the same generic lifecycle:
 
@@ -210,11 +211,16 @@ for the coordinated breaking prerelease; they are not maintained as aliases.
 npm install
 npm run build      # bundle the ESM library and declarations into dist/
 npm run typecheck  # type-check without emitting
+npm test           # capability, registry/integration, and package-boundary checks
 ```
 
-The build creates a single ESM entry point with bundled internal modules. Runtime and peer
-dependencies remain external, so consuming applications provide and bundle them normally.
-The output includes a `"use client"` directive for compatibility with Next.js App Router.
+The build creates independent base and `semantic-v1` ESM entry points with shared internal
+chunks. Runtime and peer dependencies remain external, so consuming applications provide and
+bundle them normally. Both public entries include a `"use client"` directive for compatibility
+with Next.js App Router.
+
+Release verification also includes `npm run test:packed-consumers`,
+`npm run test:staple:packed`, and `npm run test:clean-install`.
 
 `dist/` is committed, so after making changes, run `npm run build` and commit the updated
 output alongside your source changes. CI fails the build if `dist/` is out of date.

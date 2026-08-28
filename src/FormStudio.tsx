@@ -1,6 +1,14 @@
 "use client"
 
-import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react"
+import {
+  lazy,
+  Suspense,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactElement,
+} from "react"
 import {
   FormStudioProvider,
   useFormStudio,
@@ -59,7 +67,7 @@ export function FormStudioUI({
   mods,
   saveStatus,
   onDiagnosticsChange,
-}: FormStudioUIProps) {
+}: FormStudioUIProps): ReactElement {
   const {
     state,
     setSchema,
@@ -302,7 +310,7 @@ export function FormStudioUI({
   )
 }
 
-export default function FormStudio(props: FormStudioProps) {
+export default function FormStudio(props: FormStudioProps): ReactElement {
   return (
     <FormStudioProvider
       extensions={props.extensions}
