@@ -6,6 +6,7 @@ import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import { useFormStudio } from "./FormStudioContext"
 import { useSyncedJsonDocument } from "./useSyncedJsonDocument"
 import RemoveSemanticComponentControl from "./RemoveSemanticComponentControl"
+import { JsonDocumentExtensionOutlet } from "./extensions/outlets"
 
 const EMPTY_OBJECT = {}
 
@@ -79,6 +80,7 @@ export default function JsonEditor() {
         </div>
 
         <SemanticsDocumentColumn semantics={state.semantics} setSemantics={setSemantics} />
+        <JsonDocumentExtensionOutlet />
       </div>
     </div>
   )

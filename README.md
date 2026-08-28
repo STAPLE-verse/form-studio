@@ -151,9 +151,11 @@ export function Example() {
 ```
 
 Changing registration requires remounting the provider. `undefined` removes
-an extension value; it is distinct from an invalid or empty object. Phase 1
-stores extension values but does not yet render extension controls or run
-their validators.
+an extension value; it is distinct from an invalid or empty object. Registered
+slot components contribute form controls, field controls, and JSON documents
+through the ordinary `FormBuilder` and `JsonEditor` composition. The provider
+exposes debounced `extensionDiagnostics` for live feedback and a synchronous
+`validateForCommit()` result for persistence guards.
 
 ### Exports
 
@@ -167,6 +169,8 @@ their validators.
 - `FormStudioState`, `FormStudioProviderProps` — shared integration types
 - `defineFormStudioExtension`, `getFormStudioExtensionValue` — typed extension helpers
 - `FormStudioExtension`, `FormStudioDiagnostic` — generic extension contracts
+- `FormStudioDiagnostics` — grouped diagnostics for registered extensions
+- `FormExtensionControlProps`, `FieldExtensionControlProps`, `ExtensionDocumentProps` — slot props
 - `JsonSchemaFormProps`, `JsonSchemaFormEvent`, `JsonSchemaFormValidationError` — renderer API types
 - All types from `./types`
 

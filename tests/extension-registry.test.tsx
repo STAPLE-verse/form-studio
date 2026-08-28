@@ -155,7 +155,7 @@ describe("Phase 1 extension registry state", () => {
     expect(screen.getByTestId("descriptor-extension-value").textContent).toBe(
       JSON.stringify(initialNotes)
     )
-    expect(validate).not.toHaveBeenCalled()
+    expect(validate).toHaveBeenCalledTimes(1)
 
     fireEvent.click(screen.getByRole("button", { name: "Update extension value" }))
     expect(screen.getByTestId("context-extension-value").textContent).toBe(

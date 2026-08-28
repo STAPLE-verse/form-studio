@@ -22,7 +22,7 @@ import {
   resolveLocalDefinitionReference,
   type LocalReferenceResolutionStatus,
 } from "./localReferences"
-import { buildChildFieldPointer } from "./semanticFieldPointer"
+import { buildChildFieldPointer } from "./fieldPointer"
 
 // parse in either YAML or JSON
 export function parse(text: string): any {
@@ -1288,7 +1288,7 @@ export function generateElementComponentsFromSchemas(parameters: {
   definitionUi?: { [key: string]: any }
   hideKey?: boolean
   path: string
-  /** RFC 6901 pointer rooted at `form.schema` identifying this level's own field (§5.3); `""` at the schema root. */
+  /** RFC 6901 pointer rooted at the form schema; `""` identifies the schema root. */
   fieldPointer?: string
   cardOpenState: Record<string, boolean>
   setCardOpenState: (newState: Record<string, boolean>) => void

@@ -25,7 +25,15 @@ export {
   type FormStudioExtension,
   type FormStudioExtensionState,
   type FormStudioExtensionValidationInput,
+  type ExtensionDocumentProps,
+  type FieldExtensionControlProps,
+  type FormExtensionControlProps,
+  type FormStudioExtensionControlProps,
+  type FormStudioExtensionSlots,
+  type FormStudioFieldContext,
+  type FormStudioValidationResult,
 } from "./extensions/types"
+export { default as FormStudioDiagnostics } from "./extensions/diagnostics"
 export { default as SemanticDiagnosticsSummary } from "./SemanticDiagnosticsSummary"
 export {
   buildSemanticValidationDocument,

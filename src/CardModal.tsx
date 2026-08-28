@@ -3,7 +3,7 @@ import DependencyField from "./dependencies/DependencyField"
 import type { CardModalType, CardComponentPropsType } from "./types"
 import Tooltip from "./Tooltip"
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "./fieldLayout"
-import SemanticBindingSection from "./SemanticBindingSection"
+import FieldAuthoringControls from "./FieldAuthoringControls"
 
 const CardModal: CardModalType = ({
   componentProps,
@@ -88,7 +88,7 @@ const CardModal: CardModalType = ({
             }}
           />
           {componentPropsState.fieldPointer !== undefined && (
-            <SemanticBindingSection fieldPointer={componentPropsState.fieldPointer} />
+            <FieldAuthoringControls fieldPointer={componentPropsState.fieldPointer} />
           )}
         </div>
         <div className="modal-action shrink-0">

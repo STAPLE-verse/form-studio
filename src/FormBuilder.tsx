@@ -26,6 +26,7 @@ import {
 import DEFAULT_FORM_INPUTS from "./defaults/defaultFormInputs"
 import type { Mods, InitParameters, AddFormObjectParametersType } from "./types"
 import { builderControlAppearanceClass } from "./controlAppearance"
+import { FormExtensionOutlet } from "./extensions/outlets"
 
 
 export default function FormBuilder({
@@ -205,6 +206,7 @@ export default function FormBuilder({
           )}
         </div>
       )}
+      <FormExtensionOutlet schema={schemaData} uiSchema={uiSchemaData} />
       <div className="form-body formBody mt-6">
         <DragDropContext
           onDragEnd={(result) =>

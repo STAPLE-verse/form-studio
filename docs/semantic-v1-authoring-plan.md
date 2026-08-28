@@ -503,7 +503,7 @@ neither blocks step 7 or step 8.
 
 - **Pointer-token escaping.** Form Studio builds each field's RFC 6901 pointer
   (`/properties/<name>/...`) incrementally while walking the Visual Builder's
-  own rendering tree (`src/semanticFieldPointer.ts`). The escaping rule it
+  own rendering tree (`src/fieldPointer.ts`). The escaping rule it
   needs (`~` → `~0`, `/` → `~1`) is exactly `escapePointerToken`/
   `childPointer` from the runtime's TypeScript source — implemented
   identically three separate times (`core.ts`, `projector.ts`, `semantic.ts`)

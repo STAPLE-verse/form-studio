@@ -635,6 +635,10 @@ introducing any UI contribution or semantic migration yet.
 
 ### Phase 2 — Generic UI outlets and diagnostics
 
+**Implementation status (2026-08-28): Complete.** Generic outlets are active;
+the existing Semantic V1 controls and document remain as transitional siblings
+until Phase 3 registers and moves them behind the extension contract.
+
 1. Add the form-control outlet to `FormBuilder`.
 2. Replace hard-coded field insertion points with a field-control outlet in
    both `CardModal` and `CompatibilityCard`.

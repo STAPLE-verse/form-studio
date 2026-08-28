@@ -32,7 +32,7 @@
     "test": "npm run test:capabilities && npm run test:integration",
     "test:baseline": "npm run build && node scripts/verify-phase-0-baseline.mjs",
     "test:capabilities": "tsup --config tsup.test.config.ts && node .test-dist/capability-fixtures.test.js",
-    "test:integration": "vitest run tests/semantic-integration.test.tsx tests/extension-registry.test.tsx",
+    "test:integration": "vitest run tests/semantic-integration.test.tsx tests/extension-registry.test.tsx tests/extension-outlets.test.tsx",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {

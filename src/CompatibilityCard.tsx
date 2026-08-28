@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react"
 import type { FieldCompatibility } from "./types"
-import SemanticBindingSection from "./SemanticBindingSection"
+import FieldAuthoringControls from "./FieldAuthoringControls"
 
 export default function CompatibilityCard({
   name,
@@ -11,7 +11,7 @@ export default function CompatibilityCard({
   name: string
   title?: string
   compatibility: Exclude<FieldCompatibility, { kind: "editable" }>
-  /** RFC 6901 pointer rooted at `form.schema` for this field's Semantic V1 binding (§5.3). */
+  /** RFC 6901 pointer rooted at the form schema for this instance-bearing field. */
   fieldPointer?: string
 }): ReactElement {
   const isMigration = compatibility.kind === "migration"
@@ -41,7 +41,7 @@ export default function CompatibilityCard({
       </p>
       {fieldPointer !== undefined && (
         <div className="mt-4 pt-4 border-t border-base-300">
-          <SemanticBindingSection fieldPointer={fieldPointer} />
+          <FieldAuthoringControls fieldPointer={fieldPointer} compatibility={compatibility} />
         </div>
       )}
     </div>

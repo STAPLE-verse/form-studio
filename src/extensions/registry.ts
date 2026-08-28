@@ -1,6 +1,6 @@
 import type { FormStudioExtension } from "./types"
 
-export type AnyFormStudioExtension = FormStudioExtension<unknown>
+export type AnyFormStudioExtension = FormStudioExtension<any>
 
 export interface FormStudioExtensionRegistry {
   readonly extensions: readonly AnyFormStudioExtension[]

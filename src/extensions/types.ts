@@ -1,3 +1,6 @@
+import type { ComponentType } from "react"
+import type { FieldCompatibility } from "../types"
+
 export interface FormStudioDiagnostic {
   source: string
   sourceLabel: string
@@ -13,6 +16,38 @@ export interface FormStudioExtensionValidationInput<TValue> {
   schema: object
   uiSchema: object
   value: TValue | undefined
+}
+
+export interface FormStudioExtensionControlProps<TValue> {
+  extension: FormStudioExtension<TValue>
+  schema: object
+  uiSchema: object
+  value: TValue | undefined
+  setValue: (value: TValue | undefined) => void
+  diagnostics: readonly FormStudioDiagnostic[]
+}
+
+export interface FormStudioFieldContext {
+  /** RFC 6901 pointer to the instance-bearing field in the root schema. */
+  fieldPointer: string
+  fieldSchema: object
+  rootSchema: object
+  compatibility?: FieldCompatibility
+}
+
+export interface FieldExtensionControlProps<TValue>
+  extends FormStudioExtensionControlProps<TValue> {
+  field: FormStudioFieldContext
+}
+
+export type FormExtensionControlProps<TValue> = FormStudioExtensionControlProps<TValue>
+
+export type ExtensionDocumentProps<TValue> = FormStudioExtensionControlProps<TValue>
+
+export interface FormStudioExtensionSlots<TValue> {
+  FormControls?: ComponentType<FormExtensionControlProps<TValue>>
+  FieldControls?: ComponentType<FieldExtensionControlProps<TValue>>
+  JsonDocument?: ComponentType<ExtensionDocumentProps<TValue>>
 }
 
 /**
@@ -32,6 +67,12 @@ export interface FormStudioExtension<TValue = unknown> {
   readonly id: string
   readonly label: string
   validate(input: FormStudioExtensionValidationInput<TValue>): FormStudioDiagnostic[]
+  readonly slots?: FormStudioExtensionSlots<TValue>
+}
+
+export interface FormStudioValidationResult {
+  diagnostics: FormStudioDiagnostic[]
+  blocked: boolean
 }
 
 export interface DefinedFormStudioExtension<TValue> extends FormStudioExtension<TValue> {

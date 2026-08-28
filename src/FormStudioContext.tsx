@@ -3,7 +3,11 @@
 import React, { createContext, useContext, useRef, useState, ReactNode } from "react"
 import type { ConformanceDiagnostic, SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import { useDebouncedSemanticDiagnostics } from "./useDebouncedSemanticDiagnostics"
-import type { FormStudioExtension } from "./extensions/types"
+import type {
+  FormStudioDiagnostic,
+  FormStudioExtension,
+  FormStudioValidationResult,
+} from "./extensions/types"
 import { getFormStudioExtensionValue } from "./extensions/types"
 import {
   assertRegisteredFormStudioExtension,
@@ -14,6 +18,10 @@ import {
   type AnyFormStudioExtension,
   type FormStudioExtensionRegistry,
 } from "./extensions/registry"
+import {
+  useDebouncedExtensionDiagnostics,
+  validateRegisteredExtensions,
+} from "./extensions/validation"
 
 export interface FormStudioState {
   schema: object
@@ -61,6 +69,10 @@ export interface FormStudioContextValue {
     extension: FormStudioExtension<TValue>,
     value: TValue | undefined
   ) => void
+  /** Debounced, derived diagnostics in stable registry order. */
+  extensionDiagnostics: FormStudioDiagnostic[]
+  /** Fresh synchronous validation against the current provider state. */
+  validateForCommit: () => FormStudioValidationResult
   /**
    * Live Semantic V1 diagnostics for the current `schema`/`semantics` pair,
    * from the pinned runtime — always `[]` for a Core-only form. Recomputed
@@ -189,6 +201,9 @@ export function FormStudioProvider({
   }
 
   const semanticDiagnostics = useDebouncedSemanticDiagnostics(state.schema, state.semantics)
+  const extensionDiagnostics = useDebouncedExtensionDiagnostics(registry, state)
+  const validateForCommit = (): FormStudioValidationResult =>
+    validateRegisteredExtensions(registry, state)
 
   return (
     <FormStudioContext.Provider
@@ -202,6 +217,8 @@ export function FormStudioProvider({
         updateState,
         getExtensionValue,
         setExtensionValue,
+        extensionDiagnostics,
+        validateForCommit,
         semanticDiagnostics,
       }}
     >
@@ -216,4 +233,9 @@ export function useFormStudio() {
     throw new Error("useFormStudio must be used within a FormStudioProvider")
   }
   return context
+}
+
+/** Internal optional lookup used by provider-optional FormBuilder outlets. */
+export function useOptionalFormStudio(): FormStudioContextValue | undefined {
+  return useContext(FormStudioContext)
 }
