@@ -1,10 +1,10 @@
 # Semantic V1 Extension Registry Plan
 
 > **Status:** Approved architecture and phased implementation plan. Phases
-> 0–5 are complete: the generic registry, Semantic V1 extension, generic
-> turnkey API, and STAPLE composition migration are implemented. Phase 6
-> packaging verification is complete; the exact prerelease and STAPLE pin are
-> being finalized.
+> 0–6 are complete: the generic registry, Semantic V1 extension, generic
+> turnkey API, STAPLE composition migration, split packaging, and release
+> verification are implemented. The coordinated release is
+> `v0.2.0-rc.0`.
 >
 > **Purpose:** This document is the source of truth for extracting Semantic V1
 > from Form Studio's generic editor core while preserving Semantic V1 as a
@@ -755,12 +755,12 @@ semantic validation details from Form Studio's base entry.
 
 ### Phase 6 — Split build, packaging verification, and release
 
-**Implementation status (2026-08-28): Release in progress.** Independent base
-and Semantic V1 entries, subpath exports and declarations, permanent artifact
+**Implementation status (2026-08-28): Complete.** Independent base and
+Semantic V1 entries, subpath exports and declarations, permanent artifact
 boundary assertions, React 18/19 packed consumers, clean-install testing,
-byte-for-byte reproducible `dist/`, and STAPLE tarball suites all pass. The
-remaining work is publishing `v0.2.0-rc.0` and pinning STAPLE to that exact
-GitHub tag.
+byte-for-byte reproducible `dist/`, and STAPLE tarball suites all pass. Form
+Studio is released as `v0.2.0-rc.0`, and STAPLE is pinned to that exact GitHub
+tag.
 
 1. Add independent base and Semantic V1 build entries.
 2. Add the `./semantic-v1` package export and declarations.
