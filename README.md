@@ -11,7 +11,7 @@ Add the package to your app's `package.json`:
 ```json
 {
   "dependencies": {
-    "@staple-verse/form-studio": "github:STAPLE-verse/form-studio#v0.2.0-rc.0"
+    "@staple-verse/form-studio": "github:STAPLE-verse/form-studio#v0.2.0-rc.1"
   }
 }
 ```
