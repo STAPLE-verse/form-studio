@@ -20,25 +20,25 @@ export default function SemanticDiagnosticsSummary(): React.ReactElement | null 
 
   return (
     <div
-      className="alert alert-error alert-vertical sm:alert-horizontal items-start shadow-sm"
+      className="rounded-xl border border-error/50 bg-error/10 shadow-sm p-4"
       role="alert"
       data-semantic-diagnostics="true"
       data-semantic-diagnostics-count={semanticDiagnostics.length}
     >
-      <ExclamationTriangleIcon className="w-5 h-5 mt-0.5 shrink-0" />
-      <div className="flex-1 min-w-0">
-        <h4 className="font-bold">
+      <div className="flex items-center gap-2 text-lg">
+        <ExclamationTriangleIcon className="h-[1em] w-[1em] shrink-0 text-error" aria-hidden="true" />
+        <h4 className="text-lg font-bold">
           {semanticDiagnostics.length === 1
             ? "1 semantic issue"
             : `${semanticDiagnostics.length} semantic issues`}{" "}
           must be resolved before this component can be saved
         </h4>
-        <ul className="mt-2 flex flex-col gap-2">
-          {semanticDiagnostics.map((diagnostic, index) => (
-            <SemanticDiagnosticItem key={`${diagnostic.pointer}-${index}`} diagnostic={diagnostic} />
-          ))}
-        </ul>
       </div>
+      <ul className="mt-3 flex flex-col gap-2">
+        {semanticDiagnostics.map((diagnostic, index) => (
+          <SemanticDiagnosticItem key={`${diagnostic.pointer}-${index}`} diagnostic={diagnostic} />
+        ))}
+      </ul>
     </div>
   )
 }
@@ -50,7 +50,7 @@ function SemanticDiagnosticItem({
 }): React.ReactElement {
   return (
     <li
-      className="text-sm bg-base-100/40 rounded-lg px-3 py-2"
+      className="text-sm rounded-lg border border-error/40 bg-error/20 px-3 py-2"
       data-semantic-diagnostic-code={diagnostic.code}
       data-semantic-diagnostic-stage={diagnostic.stage}
     >

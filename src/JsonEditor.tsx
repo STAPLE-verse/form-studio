@@ -26,7 +26,7 @@ function ParseErrorNotice({ message }: { message: string }) {
 }
 
 export default function JsonEditor() {
-  const { state, setSchema, setUiSchema, setSemantics, semanticDiagnostics } = useFormStudio()
+  const { state, setSchema, setUiSchema, setSemantics } = useFormStudio()
 
   const schemaDoc = useSyncedJsonDocument(state.schema, setSchema, EMPTY_OBJECT)
   const uiSchemaDoc = useSyncedJsonDocument(state.uiSchema, setUiSchema, EMPTY_OBJECT)
@@ -78,11 +78,7 @@ export default function JsonEditor() {
           {uiSchemaDoc.parseError && <ParseErrorNotice message={uiSchemaDoc.parseError} />}
         </div>
 
-        <SemanticsDocumentColumn
-          semantics={state.semantics}
-          setSemantics={setSemantics}
-          diagnosticsCount={semanticDiagnostics.length}
-        />
+        <SemanticsDocumentColumn semantics={state.semantics} setSemantics={setSemantics} />
       </div>
     </div>
   )
@@ -91,11 +87,9 @@ export default function JsonEditor() {
 function SemanticsDocumentColumn({
   semantics,
   setSemantics,
-  diagnosticsCount,
 }: {
   semantics: SemanticV1Component | undefined
   setSemantics: (newSemantics: SemanticV1Component | undefined) => void
-  diagnosticsCount: number
 }) {
   // Always call the hook (Rules of Hooks); while absent it tracks a value
   // that is never shown or committed anywhere.
@@ -143,16 +137,7 @@ function SemanticsDocumentColumn({
               }}
             />
           </div>
-          {semanticsDoc.parseError ? (
-            <ParseErrorNotice message={semanticsDoc.parseError} />
-          ) : diagnosticsCount > 0 ? (
-            <p className="mt-2 text-xs text-warning">
-              {diagnosticsCount === 1 ? "1 semantic issue" : `${diagnosticsCount} semantic issues`} — see
-              summary above.
-            </p>
-          ) : (
-            <p className="mt-2 text-xs text-success">Semantics valid.</p>
-          )}
+          {semanticsDoc.parseError && <ParseErrorNotice message={semanticsDoc.parseError} />}
         </>
       )}
     </div>

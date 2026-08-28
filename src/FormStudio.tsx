@@ -240,12 +240,6 @@ export function FormStudioUI({
         </div>
       )}
 
-      {semanticDiagnostics.length > 0 && (
-        <div className="px-6 pt-6">
-          <SemanticDiagnosticsSummary />
-        </div>
-      )}
-
       <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6">
         {activeTab === "builder" && (
           <div className="block" data-studio-panel="builder">
@@ -289,6 +283,12 @@ export function FormStudioUI({
           </div>
         )}
       </div>
+
+      {semanticDiagnostics.length > 0 && (
+        <div className="px-6 pb-6">
+          <SemanticDiagnosticsSummary />
+        </div>
+      )}
     </div>
   )
 }
