@@ -39,7 +39,7 @@ export default function SemanticRootClassInput({
   }
 
   return (
-    <div className="mt-4 pt-4 border-t border-base-300">
+    <div>
       <div className="flex items-center justify-between mb-2">
         <h5 data-test="semantic-root-class-label" className="font-semibold">
           Semantic root class (optional)

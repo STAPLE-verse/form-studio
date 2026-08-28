@@ -2,14 +2,10 @@
 
 import React, { ReactElement, useEffect } from "react"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import Card from "./Card"
 import Section from "./Section"
 import Add from "./Add"
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput"
-import SemanticRootClassInput from "./SemanticRootClassInput"
-import { SemanticAuthoringProvider } from "./SemanticAuthoringContext"
-import { useDebouncedSemanticDiagnostics } from "./useDebouncedSemanticDiagnostics"
 import {
   parse,
   stringify,
@@ -32,26 +28,15 @@ import { FormExtensionOutlet } from "./extensions/outlets"
 export default function FormBuilder({
   schema,
   uiSchema,
-  semantics,
   onMount,
   onChange,
-  onSemanticsChange,
   mods,
   className,
 }: {
   schema: string
   uiSchema: string
-  /** Omit for a Core-only form; see FormStudioState.semantics. */
-  semantics?: SemanticV1Component
   onMount?: (parameters: InitParameters) => any
   onChange: (schema: string, uiSchema: string) => any
-  /**
-   * Enables the form-level semantic root-class control (§5.1). Without it
-   * the control is not rendered — there would be nowhere to persist a
-   * change — so a host that does not pass this prop sees no behavior
-   * change, preserving Core-only compatibility for existing consumers.
-   */
-  onSemanticsChange?: (newSemantics: SemanticV1Component | undefined) => void
   mods?: Mods
   className?: string
 }): ReactElement {
@@ -63,16 +48,6 @@ export default function FormBuilder({
     mods && mods.deactivatedFormInputs
   )
   const categoryHash = generateCategoryHash(allFormInputs)
-
-  // Debounced (§8): re-walking every binding's field pointer against the
-  // schema on each Visual Builder keystroke gets expensive for forms with
-  // many bindings. See `useDebouncedSemanticDiagnostics` for the shared
-  // debounce this and `FormStudioContext` both use.
-  const semanticDiagnostics = useDebouncedSemanticDiagnostics(
-    schemaData,
-    semantics,
-    Boolean(onSemanticsChange)
-  )
 
   const compatibilityDiagnostics = generateElementPropsFromSchemas({
     schema: schemaData,
@@ -127,18 +102,6 @@ export default function FormBuilder({
   }, [onMount, categoryHash])
 
   return (
-    <SemanticAuthoringProvider
-      value={
-        onSemanticsChange
-          ? {
-              rootSchema: schemaData,
-              semantics,
-              onSemanticsChange,
-              diagnostics: semanticDiagnostics,
-            }
-          : undefined
-      }
-    >
     <div
       className={`formBuilder ${builderControlAppearanceClass} ${className || ""}`}
     >
@@ -201,9 +164,6 @@ export default function FormBuilder({
               }
             />
           </div>
-          {onSemanticsChange && (
-            <SemanticRootClassInput semantics={semantics} onSemanticsChange={onSemanticsChange} />
-          )}
         </div>
       )}
       <FormExtensionOutlet schema={schemaData} uiSchema={uiSchemaData} />
@@ -290,6 +250,5 @@ export default function FormBuilder({
         )}
       </div>
     </div>
-    </SemanticAuthoringProvider>
   )
 }

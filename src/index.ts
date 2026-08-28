@@ -1,5 +1,11 @@
 export { default as FormBuilder } from "./FormBuilder"
-export { default as FormStudio, FormStudioUI, type FormStudioSaveStatus } from "./FormStudio"
+export {
+  default as FormStudio,
+  FormStudioUI,
+  type FormStudioProps,
+  type FormStudioUIProps,
+  type FormStudioSaveStatus,
+} from "./FormStudio"
 export { default as JsonEditor } from "./JsonEditor"
 export { default as FormPreview } from "./FormPreview"
 export {
@@ -34,19 +40,4 @@ export {
   type FormStudioValidationResult,
 } from "./extensions/types"
 export { default as FormStudioDiagnostics } from "./extensions/diagnostics"
-export { default as SemanticDiagnosticsSummary } from "./SemanticDiagnosticsSummary"
-export {
-  buildSemanticValidationDocument,
-  computeSemanticDiagnostics,
-  type SemanticValidationInput,
-} from "./semanticValidation"
-export type {
-  ConformanceDiagnostic,
-  SemanticV1Component,
-  SemanticBinding,
-  SemanticIriBinding,
-  SemanticLiteralBinding,
-  SemanticNodeBinding,
-  SemanticValueMapping,
-} from "@staple-verse/marker-template-runtime"
 export * from "./types"

@@ -3,7 +3,7 @@
 import React from "react"
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
-import { FormStudioUI } from "../src/FormStudio"
+import FormStudio, { FormStudioUI } from "../src/FormStudio"
 import {
   FormStudioProvider,
   computeStateFingerprint,
@@ -203,7 +203,6 @@ describe("Phase 1 extension registry state", () => {
       schema: { type: "object" },
       uiSchema: {},
       extensionValues: { "test.notes": initialNotes },
-      semantics: undefined,
       formData: { preview: "one" },
     }
     const changedExtensionState: FormStudioState = {
@@ -291,5 +290,47 @@ describe("Phase 1 extension registry state", () => {
         </FormStudioProvider>
       )
     ).toThrow("FormStudioProvider extensions must remain stable")
+  })
+})
+
+describe("Phase 4 generic turnkey editor", () => {
+  test("FormStudio registers extensions, reports generic diagnostics, and permits non-blocking warnings", () => {
+    const extension = createNotesExtension("test.turnkey", () => [
+      {
+        source: "ignored",
+        sourceLabel: "ignored",
+        code: "TEST_TURNKEY_WARNING",
+        stage: "test",
+        message: "Turnkey warning",
+        severity: "warning",
+        blocksCommit: false,
+      },
+    ])
+    const onDiagnosticsChange = vi.fn<(diagnostics: FormStudioDiagnostic[]) => void>()
+    const onSave = vi.fn<(state: FormStudioState) => Promise<void>>().mockResolvedValue(undefined)
+
+    render(
+      <FormStudio
+        extensions={[extension]}
+        initialExtensionValues={{ [extension.id]: initialNotes }}
+        onDiagnosticsChange={onDiagnosticsChange}
+        onSave={onSave}
+      />
+    )
+
+    expect(onDiagnosticsChange).toHaveBeenLastCalledWith([
+      expect.objectContaining({
+        source: extension.id,
+        sourceLabel: extension.label,
+        code: "TEST_TURNKEY_WARNING",
+        blocksCommit: false,
+      }),
+    ])
+    const saveButton = screen.getByRole("button", { name: "Save Changes" })
+    expect((saveButton as HTMLButtonElement).disabled).toBe(false)
+    fireEvent.click(saveButton)
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ extensionValues: { [extension.id]: initialNotes } })
+    )
   })
 })

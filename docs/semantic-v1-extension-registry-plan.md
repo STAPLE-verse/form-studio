@@ -1,8 +1,8 @@
 # Semantic V1 Extension Registry Plan
 
-> **Status:** Approved architecture and phased implementation plan. Phase 0
-> baseline and regression coverage is complete; the registry refactor is not
-> yet implemented.
+> **Status:** Approved architecture and phased implementation plan. Phases
+> 0–4 are complete: the generic registry, Semantic V1 extension, and generic
+> turnkey API are implemented. STAPLE migration and packaging remain.
 >
 > **Purpose:** This document is the source of truth for extracting Semantic V1
 > from Form Studio's generic editor core while preserving Semantic V1 as a
@@ -635,9 +635,8 @@ introducing any UI contribution or semantic migration yet.
 
 ### Phase 2 — Generic UI outlets and diagnostics
 
-**Implementation status (2026-08-28): Complete.** Generic outlets are active;
-the existing Semantic V1 controls and document remain as transitional siblings
-until Phase 3 registers and moves them behind the extension contract.
+**Implementation status (2026-08-28): Complete.** Generic outlets are active.
+Semantic V1 now consumes them through its Phase 3 descriptor.
 
 1. Add the form-control outlet to `FormBuilder`.
 2. Replace hard-coded field insertion points with a field-control outlet in
@@ -657,6 +656,13 @@ in the registry implementation.
 
 ### Phase 3 — Implement Semantic V1 as the first extension
 
+**Implementation status (2026-08-28): Complete.** Semantic V1 state, controls,
+JSON document, runtime validation, and typed accessors now live behind the
+static `semanticV1Extension` descriptor. The turnkey editor retains its
+semantic-facing compatibility API until its removal in Phase 4, but uses the
+registered value internally; there is no second semantic state or FormBuilder
+validation pass.
+
 1. Move semantic-specific files under `src/semantic-v1/`.
 2. Implement the static `semanticV1Extension` descriptor.
 3. Move Semantic V1 state from the base state property into its registered
@@ -674,6 +680,28 @@ in the registry implementation.
 generic registry, and live runtime validation occurs once per settled state.
 
 ### Phase 4 — Migrate the turnkey FormStudio API
+
+**Implementation status (2026-08-28): Complete.** `FormStudio` now accepts
+generic `extensions` and `initialExtensionValues`; `FormStudioUI` renders
+generic diagnostics, reports them through `onDiagnosticsChange`, and gates
+committed saves with `validateForCommit()`. The base entry has no Semantic V1
+or marker-runtime import.
+
+This phase takes the coordinated breaking-prerelease path. No compatibility
+aliases or second semantic state are retained:
+
+| Removed API | Registry replacement |
+| --- | --- |
+| `initialSemantics` on `FormStudio` or `FormStudioProvider` | Register `semanticV1Extension` and pass `{ [semanticV1Extension.id]: semantics }` through `initialExtensionValues` |
+| `state.semantics` | `semanticV1Extension.getValue(state)` or `getSemanticV1Value(state)` |
+| context `setSemantics` | `setExtensionValue(semanticV1Extension, value)` or `useSemanticV1Value().setValue` |
+| `semantics` and `onSemanticsChange` on `FormBuilder` | Provider-managed extension state consumed by the generic outlets |
+| `onSemanticValidationChange` | `onDiagnosticsChange`, or `extensionDiagnostics` from `useFormStudio()` |
+| Semantic helpers and runtime types from the base entry | Semantic V1 subpath exports |
+
+The historical Phase 0 baseline remains unchanged. Consumer migration is
+coordinated in Phase 5, and the independently resolvable npm subpath is added
+and verified in Phase 6.
 
 1. Make `FormStudio` and `FormStudioUI` consume generic registry diagnostics
    and `validateForCommit()`.

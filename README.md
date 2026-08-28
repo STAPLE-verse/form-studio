@@ -157,10 +157,40 @@ through the ordinary `FormBuilder` and `JsonEditor` composition. The provider
 exposes debounced `extensionDiagnostics` for live feedback and a synchronous
 `validateForCommit()` result for persistence guards.
 
+Semantic V1 is implemented as the first registered extension under
+`src/semantic-v1`. It exports `semanticV1Extension`, `getSemanticV1Value`, and
+`useSemanticV1Value`; the published `./semantic-v1` package subpath and split
+bundle are added in Phase 6 of the registry migration.
+
+The Semantic-aware turnkey composition uses the same generic lifecycle:
+
+```tsx
+import { FormStudio } from "@staple-verse/form-studio"
+import { semanticV1Extension } from "@staple-verse/form-studio/semantic-v1"
+
+const extensions = [semanticV1Extension]
+
+<FormStudio
+  extensions={extensions}
+  initialExtensionValues={{ [semanticV1Extension.id]: semantics }}
+  onDiagnosticsChange={(diagnostics) => {
+    // Debounced diagnostics from every registered extension.
+  }}
+  onSave={async (state) => {
+    const semantics = semanticV1Extension.getValue(state)
+    // Persist only after FormStudio's synchronous commit guard succeeds.
+  }}
+/>
+```
+
+The old `initialSemantics`, `state.semantics`, `setSemantics`, direct
+`FormBuilder` semantic props, and `onSemanticValidationChange` APIs are removed
+for the coordinated breaking prerelease; they are not maintained as aliases.
+
 ### Exports
 
-- `FormStudio` — full studio with provider, tabs, and save UI
-- `FormStudioUI` — studio UI without the provider (use with `FormStudioProvider`)
+- `FormStudio` — full generic studio; accepts `extensions` and `initialExtensionValues`
+- `FormStudioUI` — provider-connected generic studio UI using `validateForCommit()`
 - `FormBuilder` — visual schema builder only
 - `FormPreview` — live RJSF preview
 - `JsonSchemaForm` — canonical context-free JSON Schema renderer and validator

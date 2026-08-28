@@ -1,6 +1,8 @@
 # Semantic V1 authoring in Form Studio
 
-> **Status:** Implementation plan for the MARKER Template V1 release candidate
+> **Status:** Behavioral design implemented. Its direct semantic state/API
+> sections describe the pre-registry integration and are superseded by
+> `semantic-v1-extension-registry-plan.md`.
 >
 > **Normative dependency:** Semantic V1 is defined by the exact pinned
 > `marker-template-spec` release candidate. This document defines Form Studio
@@ -191,7 +193,7 @@ Add:
 
 - `initialSemantics?: SemanticV1Component | string` to `FormStudio` and
   `FormStudioProvider`;
-- `setSemantics` to the context;
+- the registered Semantic V1 value setter to the context;
 - `semantics` to `updateState`, save, save-new-version, and autosave values;
 - semantic changes to dirty-state comparison and panel error-boundary reset
   keys; and

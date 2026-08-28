@@ -1,8 +1,6 @@
 "use client"
 
 import React, { createContext, useContext, useRef, useState, ReactNode } from "react"
-import type { ConformanceDiagnostic, SemanticV1Component } from "@staple-verse/marker-template-runtime"
-import { useDebouncedSemanticDiagnostics } from "./useDebouncedSemanticDiagnostics"
 import type {
   FormStudioDiagnostic,
   FormStudioExtension,
@@ -28,29 +26,22 @@ export interface FormStudioState {
   uiSchema: object
   /** JSON-serializable values for the provider's registered extensions. */
   extensionValues: Record<string, unknown>
-  /**
-   * Absent when the form is Core-only. A present-but-empty component (e.g.
-   * `{ "bindings": [] }` with no root class) is never emitted by Form Studio;
-   * see FormStudioContext's setSemantics and the authoring plan §3.
-   */
-  semantics?: SemanticV1Component
   formData: object
 }
 
 /**
  * Single source of truth for "did the authored (non-preview) part of the
  * state change" — used for the panel error-boundary reset key and the
- * autosave/dirty-state comparisons. Keeping base, legacy semantic, and
- * registered extension values here prevents recovery and dirty-state paths
- * from drifting as authored documents are added or migrated.
+ * autosave/dirty-state comparisons. Keeping base and registered extension
+ * values here prevents recovery and dirty-state paths from drifting as
+ * authored documents are added.
  */
 export function computeStateFingerprint(
-  state: Pick<FormStudioState, "schema" | "uiSchema" | "semantics" | "extensionValues">
+  state: Pick<FormStudioState, "schema" | "uiSchema" | "extensionValues">
 ): string {
   return JSON.stringify({
     schema: state.schema,
     uiSchema: state.uiSchema,
-    semantics: state.semantics,
     extensionValues: state.extensionValues,
   })
 }
@@ -61,7 +52,6 @@ export interface FormStudioContextValue {
   extensions: readonly AnyFormStudioExtension[]
   setSchema: (newSchema: object) => void
   setUiSchema: (newUiSchema: object) => void
-  setSemantics: (newSemantics: SemanticV1Component | undefined) => void
   setFormData: (newFormData: object) => void
   updateState: (newState: Partial<Omit<FormStudioState, "extensionValues">>) => void
   getExtensionValue: <TValue>(extension: FormStudioExtension<TValue>) => TValue | undefined
@@ -73,14 +63,6 @@ export interface FormStudioContextValue {
   extensionDiagnostics: FormStudioDiagnostic[]
   /** Fresh synchronous validation against the current provider state. */
   validateForCommit: () => FormStudioValidationResult
-  /**
-   * Live Semantic V1 diagnostics for the current `schema`/`semantics` pair,
-   * from the pinned runtime — always `[]` for a Core-only form. Recomputed
-   * `DEBOUNCE_MS` after either input settles (§7, §8), via the shared
-   * `useDebouncedSemanticDiagnostics` — see that hook for why revalidation
-   * is deferred rather than run synchronously on every keystroke.
-   */
-  semanticDiagnostics: ConformanceDiagnostic[]
 }
 
 const FormStudioContext = createContext<FormStudioContextValue | undefined>(undefined)
@@ -92,8 +74,6 @@ export interface FormStudioProviderProps {
   initialExtensionValues?: Readonly<Record<string, unknown>>
   initialSchema?: object | string
   initialUiSchema?: object | string
-  /** Omit for a Core-only form; see FormStudioState.semantics. */
-  initialSemantics?: SemanticV1Component | string
   initialFormData?: object
   children?: ReactNode
 }
@@ -103,7 +83,6 @@ export function FormStudioProvider({
   initialExtensionValues = {},
   initialSchema = {},
   initialUiSchema = {},
-  initialSemantics,
   initialFormData = {},
   children,
 }: FormStudioProviderProps) {
@@ -126,27 +105,10 @@ export function FormStudioProvider({
     return data || {}
   }
 
-  // Unlike schema/uiSchema, absence must stay absence: an omitted or
-  // unparsable value means "no semantic component", never `{}`.
-  const parseOptionalJSON = (data: unknown): SemanticV1Component | undefined => {
-    if (data === undefined || data === null) {
-      return undefined
-    }
-    if (typeof data === "string") {
-      try {
-        return JSON.parse(data)
-      } catch (e) {
-        return undefined
-      }
-    }
-    return data as SemanticV1Component
-  }
-
   const [state, setState] = useState<FormStudioState>(() => ({
     schema: parseJSON(initialSchema),
     uiSchema: parseJSON(initialUiSchema),
     extensionValues: createInitialExtensionValues(registry, initialExtensionValues),
-    semantics: parseOptionalJSON(initialSemantics),
     formData: initialFormData,
   }))
 
@@ -156,10 +118,6 @@ export function FormStudioProvider({
 
   const setUiSchema = (newUiSchema: object) => {
     setState((prev) => ({ ...prev, uiSchema: newUiSchema }))
-  }
-
-  const setSemantics = (newSemantics: SemanticV1Component | undefined) => {
-    setState((prev) => ({ ...prev, semantics: newSemantics }))
   }
 
   const setFormData = (newFormData: object) => {
@@ -200,7 +158,6 @@ export function FormStudioProvider({
     })
   }
 
-  const semanticDiagnostics = useDebouncedSemanticDiagnostics(state.schema, state.semantics)
   const extensionDiagnostics = useDebouncedExtensionDiagnostics(registry, state)
   const validateForCommit = (): FormStudioValidationResult =>
     validateRegisteredExtensions(registry, state)
@@ -212,14 +169,12 @@ export function FormStudioProvider({
         extensions: registry.extensions,
         setSchema,
         setUiSchema,
-        setSemantics,
         setFormData,
         updateState,
         getExtensionValue,
         setExtensionValue,
         extensionDiagnostics,
         validateForCommit,
-        semanticDiagnostics,
       }}
     >
       {children}

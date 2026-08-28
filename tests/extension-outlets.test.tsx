@@ -260,11 +260,13 @@ describe("Phase 2 generic extension outlets", () => {
         node.getAttribute("data-test-json-slot")
       )
     ).toEqual(["test.second", "test.first"])
-    const semanticsDocument = container.querySelector('[data-json-editor-document="semantics"]')
+    const baseDocuments = container.querySelectorAll('[data-testid="monaco-json-editor"]')
     const firstExtensionDocument = container.querySelector('[data-test-json-slot="test.second"]')
+    expect(baseDocuments).toHaveLength(2)
+    expect(container.querySelector('[data-json-editor-document="semantics"]')).toBeNull()
     expect(
-      semanticsDocument && firstExtensionDocument
-        ? semanticsDocument.compareDocumentPosition(firstExtensionDocument) &
+      baseDocuments[1] && firstExtensionDocument
+        ? baseDocuments[1].compareDocumentPosition(firstExtensionDocument) &
             Node.DOCUMENT_POSITION_FOLLOWING
         : 0
     ).not.toBe(0)

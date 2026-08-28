@@ -4,7 +4,7 @@ import { TrashIcon } from "@heroicons/react/20/solid"
 /**
  * Destructive "remove the whole semantic component" action shared by the
  * JSON Editor's Semantics document and the Visual Builder's form-level
- * settings (§5.1, §6) — both call the same `setSemantics(undefined)`, so
+ * settings (§5.1, §6) — both clear the same registered value, so
  * this is the one place that implements the required explicit-confirmation
  * step rather than two hand-copied confirm flows.
  */

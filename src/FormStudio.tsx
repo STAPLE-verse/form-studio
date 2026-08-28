@@ -1,18 +1,18 @@
 "use client"
 
-import { lazy, Suspense, useState, useEffect, useRef } from "react"
-import type { ConformanceDiagnostic, SemanticV1Component } from "@staple-verse/marker-template-runtime"
+import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react"
 import {
   FormStudioProvider,
   useFormStudio,
   computeStateFingerprint,
+  type FormStudioProviderProps,
   type FormStudioState,
 } from "./FormStudioContext"
+import type { FormStudioDiagnostic } from "./extensions/types"
 import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
 import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
-import SemanticDiagnosticsSummary from "./SemanticDiagnosticsSummary"
-import { computeSemanticDiagnostics } from "./semanticValidation"
+import FormStudioDiagnostics from "./extensions/diagnostics"
 import { createDebouncer, DEBOUNCE_MS } from "./debounce"
 
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid"
@@ -31,7 +31,7 @@ function JsonEditorFallback() {
 
 export type FormStudioSaveStatus = "synced" | "unsaved" | "saving"
 
-interface FormStudioUIProps {
+export interface FormStudioUIProps {
   onAutoSave?: (state: FormStudioState) => Promise<void> | void
   onSave?: (state: FormStudioState) => Promise<void>
   onSaveNewVersion?: (state: FormStudioState) => Promise<void>
@@ -39,20 +39,16 @@ interface FormStudioUIProps {
   mods?: Mods
   /** When provided, the route layer owns save-status semantics (§8.11.4). */
   saveStatus?: FormStudioSaveStatus
-  /**
-   * Notified with the current Semantic V1 diagnostics whenever they change,
-   * including on mount, so a host can reflect semantic validity (e.g. to
-   * gate its own save action) without re-running validation itself. Always
-   * called with `[]` for a Core-only form.
-   */
-  onSemanticValidationChange?: (diagnostics: ConformanceDiagnostic[]) => void
+  /** Notified with current debounced diagnostics in registry order. */
+  onDiagnosticsChange?: (diagnostics: FormStudioDiagnostic[]) => void
 }
 
-interface FormStudioProps extends FormStudioUIProps {
+export interface FormStudioProps extends FormStudioUIProps {
+  extensions?: FormStudioProviderProps["extensions"]
+  initialExtensionValues?: FormStudioProviderProps["initialExtensionValues"]
   initialSchema?: string | object
   initialUiSchema?: string | object
-  /** Omit for a Core-only form; see FormStudioState.semantics. */
-  initialSemantics?: string | SemanticV1Component
+  initialFormData?: object
 }
 
 export function FormStudioUI({
@@ -62,34 +58,40 @@ export function FormStudioUI({
   onCancel,
   mods,
   saveStatus,
-  onSemanticValidationChange,
+  onDiagnosticsChange,
 }: FormStudioUIProps) {
-  const { state, setSchema, setUiSchema, setSemantics, semanticDiagnostics } = useFormStudio()
+  const {
+    state,
+    setSchema,
+    setUiSchema,
+    extensionDiagnostics,
+    validateForCommit,
+  } = useFormStudio()
+  const blockingDiagnostics = useMemo(
+    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
+    [extensionDiagnostics]
+  )
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
   const panelResetKey = computeStateFingerprint(state)
 
   useEffect(() => {
-    onSemanticValidationChange?.(semanticDiagnostics)
-  }, [semanticDiagnostics, onSemanticValidationChange])
+    onDiagnosticsChange?.(extensionDiagnostics)
+  }, [extensionDiagnostics, onDiagnosticsChange])
 
-  // §7: invalid semantics must never reach a conformant save/export. The
-  // displayed `semanticDiagnostics` above is debounced (§8), so it can be
-  // momentarily stale right after a keystroke — disabling the buttons on it
-  // is a cheap, usually-correct affordance, but the authoritative check on
-  // an actual save attempt re-runs `computeSemanticDiagnostics` synchronously
-  // against the current state, not the debounced value.
-  const [saveBlocked, setSaveBlocked] = useState(false)
+  // Live diagnostics are debounced, so every committed save performs a fresh
+  // synchronous registry validation against the current provider state.
+  const [commitDiagnostics, setCommitDiagnostics] = useState<FormStudioDiagnostic[]>([])
   useEffect(() => {
-    if (semanticDiagnostics.length === 0) setSaveBlocked(false)
-  }, [semanticDiagnostics])
+    if (blockingDiagnostics.length === 0) setCommitDiagnostics([])
+  }, [blockingDiagnostics])
 
   function attemptSave(save: (state: FormStudioState) => Promise<void>) {
-    const diagnostics = computeSemanticDiagnostics({ schema: state.schema, semantics: state.semantics })
-    if (diagnostics.length > 0) {
-      setSaveBlocked(true)
+    const result = validateForCommit()
+    if (result.blocked) {
+      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit))
       return
     }
-    setSaveBlocked(false)
+    setCommitDiagnostics([])
     void save(state)
   }
   
@@ -102,8 +104,8 @@ export function FormStudioUI({
 
   const isInitialMount = useRef(true)
   const lastBufferedStateRef = useRef<string>("")
-  // Same trailing-debounce primitive `useDebouncedSemanticDiagnostics` uses
-  // for schema-change revalidation (§8) — one implementation for both.
+  // Uses the same trailing-debounce interval as registered extension
+  // validation and schema-change revalidation.
   const autoSaveDebouncerRef = useRef(createDebouncer(DEBOUNCE_MS))
 
   // Debounced recovery-buffer write (silent — no status pill updates)
@@ -132,7 +134,7 @@ export function FormStudioUI({
     })
 
     return () => debouncer.cancel()
-  }, [state.schema, state.uiSchema, state.semantics, onAutoSave, state])
+  }, [state.schema, state.uiSchema, state.extensionValues, onAutoSave, state])
 
   return (
     <div className="form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden">
@@ -197,14 +199,14 @@ export function FormStudioUI({
             <div
               className="tooltip tooltip-bottom"
               data-tip={
-                semanticDiagnostics.length > 0
-                  ? "Resolve the semantic validation issues below before saving."
+                blockingDiagnostics.length > 0
+                  ? "Resolve the extension validation issues below before saving."
                   : "Overwrites the current version of this schema."
               }
             >
               <button
                 className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all"
-                disabled={semanticDiagnostics.length > 0}
+                disabled={blockingDiagnostics.length > 0}
                 onClick={() => attemptSave(onSave)}
               >
                 Save Changes
@@ -215,14 +217,14 @@ export function FormStudioUI({
             <div
               className="tooltip tooltip-bottom tooltip-primary"
               data-tip={
-                semanticDiagnostics.length > 0
-                  ? "Resolve the semantic validation issues below before saving."
+                blockingDiagnostics.length > 0
+                  ? "Resolve the extension validation issues below before saving."
                   : "Preserves current history and saves edits as a brand new version."
               }
             >
               <button
                 className="btn btn-primary shadow-sm hover:shadow-md transition-all"
-                disabled={semanticDiagnostics.length > 0}
+                disabled={blockingDiagnostics.length > 0}
                 onClick={() => attemptSave(onSaveNewVersion)}
               >
                 Save as New Version
@@ -232,10 +234,19 @@ export function FormStudioUI({
         </div>
       </div>
 
-      {saveBlocked && (
+      {commitDiagnostics.length > 0 && (
         <div className="px-6 pt-6">
           <div className="alert alert-warning" role="alert">
-            <span>Semantic validation issues must be resolved before saving. See below.</span>
+            <div>
+              <p>Extension validation issues must be resolved before saving.</p>
+              <ul className="mt-2 list-disc pl-5">
+                {commitDiagnostics.map((diagnostic, index) => (
+                  <li key={`${diagnostic.source}-${diagnostic.code}-${index}`}>
+                    <span className="font-mono">{diagnostic.code}</span> — {diagnostic.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       )}
@@ -253,7 +264,6 @@ export function FormStudioUI({
                     ? state.uiSchema
                     : JSON.stringify(state.uiSchema)
                 }
-                semantics={state.semantics}
                 onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
                   try {
                     setSchema(JSON.parse(newSchemaStr))
@@ -262,7 +272,6 @@ export function FormStudioUI({
                     console.error("Failed to parse schema from FormBuilder", e)
                   }
                 }}
-                onSemanticsChange={setSemantics}
                 mods={mods}
               />
             </StudioPanelErrorBoundary>
@@ -284,9 +293,9 @@ export function FormStudioUI({
         )}
       </div>
 
-      {semanticDiagnostics.length > 0 && (
+      {extensionDiagnostics.length > 0 && (
         <div className="px-6 pb-6">
-          <SemanticDiagnosticsSummary />
+          <FormStudioDiagnostics />
         </div>
       )}
     </div>
@@ -296,9 +305,11 @@ export function FormStudioUI({
 export default function FormStudio(props: FormStudioProps) {
   return (
     <FormStudioProvider
+      extensions={props.extensions}
       initialSchema={props.initialSchema}
       initialUiSchema={props.initialUiSchema}
-      initialSemantics={props.initialSemantics}
+      initialExtensionValues={props.initialExtensionValues}
+      initialFormData={props.initialFormData}
     >
       <FormStudioUI
         onAutoSave={props.onAutoSave}
@@ -307,7 +318,7 @@ export default function FormStudio(props: FormStudioProps) {
         onCancel={props.onCancel}
         mods={props.mods}
         saveStatus={props.saveStatus}
-        onSemanticValidationChange={props.onSemanticValidationChange}
+        onDiagnosticsChange={props.onDiagnosticsChange}
       />
     </FormStudioProvider>
   )

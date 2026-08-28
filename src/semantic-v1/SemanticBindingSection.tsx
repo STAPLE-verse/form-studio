@@ -12,24 +12,29 @@ import type {
   SemanticNodeBinding,
   SemanticV1Component,
 } from "@staple-verse/marker-template-runtime"
-import { useSemanticAuthoring } from "./SemanticAuthoringContext"
-import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "./fieldLayout"
+import type { FormStudioDiagnostic } from "../extensions/types"
+import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "../fieldLayout"
 
 /**
  * Field-level Semantic V1 binding controls shown in a field's "Additional
  * Settings" (§5.2). Rendered for every instance-bearing field — including
  * read-only compatibility cards, since inability to visually edit a field's
  * schema structure does not prevent attaching a binding to it (§5.2) — as
- * long as the host opted in via `FormBuilder`'s `onSemanticsChange` prop.
+ * whenever the Semantic V1 extension is registered.
  */
 export default function SemanticBindingSection({
   fieldPointer,
+  rootSchema,
+  semantics,
+  onSemanticsChange,
+  diagnostics,
 }: {
   fieldPointer: string
-}): React.ReactElement | null {
-  const context = useSemanticAuthoring()
-  if (!context) return null
-  const { rootSchema, semantics, onSemanticsChange, diagnostics } = context
+  rootSchema: object
+  semantics: SemanticV1Component | undefined
+  onSemanticsChange: (newSemantics: SemanticV1Component | undefined) => void
+  diagnostics: readonly FormStudioDiagnostic[]
+}): React.ReactElement {
 
   const bindings = semantics?.bindings ?? []
   const bindingIndex = bindings.findIndex((candidate) => candidate.fieldPointer === fieldPointer)
@@ -37,7 +42,9 @@ export default function SemanticBindingSection({
 
   const fieldDiagnostics =
     bindingIndex >= 0
-      ? diagnostics.filter((d) => d.pointer.startsWith(`/semantics/bindings/${bindingIndex}`))
+      ? diagnostics.filter((d) =>
+          d.pointer?.startsWith(`/semantics/bindings/${bindingIndex}`)
+        )
       : []
 
   const analysis = useMemo(

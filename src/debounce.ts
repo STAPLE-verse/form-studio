@@ -1,7 +1,7 @@
 /**
  * Shared trailing-debounce delay (milliseconds). One constant so the
  * autosave recovery-buffer write (`FormStudioUI`, §4.2) and deferred
- * Semantic V1 revalidation (`useDebouncedSemanticDiagnostics`, §8) settle on
+ * registered extension revalidation (§8) settle on
  * the same schedule instead of drifting independently.
  */
 export const DEBOUNCE_MS = 1500

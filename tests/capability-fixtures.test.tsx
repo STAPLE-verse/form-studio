@@ -9,13 +9,16 @@ import Card from "../src/Card"
 import CardModal from "../src/CardModal"
 import DaisyTheme from "../src/DaisyTheme"
 import CompatibilityCard from "../src/CompatibilityCard"
-import FormStudio from "../src/FormStudio"
+import FormStudio, { type FormStudioProps } from "../src/FormStudio"
 import JsonSchemaForm from "../src/JsonSchemaForm"
 import Section from "../src/Section"
-import SemanticBindingSection from "../src/SemanticBindingSection"
-import { SemanticAuthoringProvider, type SemanticAuthoringContextValue } from "../src/SemanticAuthoringContext"
+import SemanticBindingSectionView from "../src/semantic-v1/SemanticBindingSection"
+import { semanticV1Extension } from "../src/semantic-v1/extension"
+import type { SemanticV1Component } from "../src/semantic-v1"
+import { FormStudioProvider, useFormStudio } from "../src/FormStudioContext"
+import { FieldExtensionOutlet } from "../src/extensions/outlets"
 import { buildChildFieldPointer, escapeJsonPointerToken } from "../src/fieldPointer"
-import { computeSemanticDiagnostics } from "../src/semanticValidation"
+import { computeSemanticDiagnostics } from "../src/semantic-v1/semanticValidation"
 import { createDebouncer, DEBOUNCE_MS } from "../src/debounce"
 import { StudioPanelErrorFallback } from "../src/StudioPanelErrorBoundary"
 import { resolveLocalDefinitionReference } from "../src/localReferences"
@@ -61,6 +64,72 @@ const fixtureRoot = path.join(
 )
 const ThemedForm = withTheme(DaisyTheme)
 const categoryHash = generateCategoryHash(DEFAULT_FORM_INPUTS)
+const SEMANTIC_TEST_EXTENSIONS = [semanticV1Extension] as const
+
+function SemanticFormStudio({
+  initialSemantics,
+  ...props
+}: FormStudioProps & { initialSemantics?: SemanticV1Component | string }) {
+  const parsedSemantics =
+    typeof initialSemantics === "string"
+      ? (JSON.parse(initialSemantics) as SemanticV1Component)
+      : initialSemantics
+  return (
+    <FormStudio
+      {...props}
+      extensions={SEMANTIC_TEST_EXTENSIONS}
+      initialExtensionValues={
+        parsedSemantics === undefined
+          ? {}
+          : { [semanticV1Extension.id]: parsedSemantics }
+      }
+    />
+  )
+}
+
+interface SemanticAuthoringContextValue {
+  rootSchema: object
+  semantics: SemanticV1Component | undefined
+  onSemanticsChange: (value: SemanticV1Component | undefined) => void
+  diagnostics: ReturnType<typeof computeSemanticDiagnostics>
+}
+
+function SemanticAuthoringProvider({
+  value,
+  children,
+}: {
+  value: SemanticAuthoringContextValue
+  children: React.ReactNode
+}) {
+  return (
+    <FormStudioProvider
+      extensions={SEMANTIC_TEST_EXTENSIONS}
+      initialSchema={value.rootSchema}
+      initialExtensionValues={
+        value.semantics === undefined
+          ? {}
+          : { [semanticV1Extension.id]: value.semantics }
+      }
+    >
+      {children}
+    </FormStudioProvider>
+  )
+}
+
+function SemanticBindingSection({ fieldPointer }: { fieldPointer: string }) {
+  const { state, getExtensionValue, setExtensionValue, extensionDiagnostics } = useFormStudio()
+  return (
+    <SemanticBindingSectionView
+      fieldPointer={fieldPointer}
+      rootSchema={state.schema}
+      semantics={getExtensionValue(semanticV1Extension)}
+      onSemanticsChange={(value) => setExtensionValue(semanticV1Extension, value)}
+      diagnostics={extensionDiagnostics.filter(
+        (diagnostic) => diagnostic.source === semanticV1Extension.id
+      )}
+    />
+  )
+}
 
 function classifyField(dataOptions: Record<string, any>, uiOptions: Record<string, any> = {}) {
   return classifyCard(
@@ -719,7 +788,7 @@ test("inactive preview does not render a parseable intermediate Monaco widget", 
 
 test("Visual Builder shows an empty semantic root class control for a Core-only form", () => {
   const markup = renderToStaticMarkup(
-    <FormStudio
+    <SemanticFormStudio
       initialSchema={{
         type: "object",
         properties: { name: { type: "string", title: "Name" } },
@@ -734,7 +803,7 @@ test("Visual Builder shows an empty semantic root class control for a Core-only 
 
 test("Visual Builder reflects an existing root class and offers removal", () => {
   const markup = renderToStaticMarkup(
-    <FormStudio
+    <SemanticFormStudio
       initialSchema={{
         type: "object",
         properties: { name: { type: "string", title: "Name" } },
@@ -750,9 +819,9 @@ test("Visual Builder reflects an existing root class and offers removal", () => 
   assert.match(markup, /Remove semantic component/)
 })
 
-test("Visual Builder surfaces the shared semantic diagnostics summary for an invalid component", () => {
+test("Visual Builder surfaces generic diagnostics for an invalid Semantic V1 component", () => {
   const markup = renderToStaticMarkup(
-    <FormStudio
+    <SemanticFormStudio
       initialSchema={{
         type: "object",
         properties: { name: { type: "string", title: "Name" } },
@@ -766,7 +835,7 @@ test("Visual Builder surfaces the shared semantic diagnostics summary for an inv
     />
   )
 
-  assert.match(markup, /data-semantic-diagnostics="true"/)
+  assert.match(markup, /data-form-studio-diagnostics="true"/)
   assert.match(markup, /SEMANTIC_COMPONENT_INVALID/)
 })
 
@@ -949,12 +1018,12 @@ test("a schema change that removes a bound field surfaces a dangling-pointer dia
   }
 
   const beforeMarkup = renderToStaticMarkup(
-    <FormStudio
+    <SemanticFormStudio
       initialSchema={{ type: "object", properties: { name: { type: "string", title: "Name" } } }}
       initialSemantics={semantics}
     />
   )
-  assert.doesNotMatch(beforeMarkup, /data-semantic-diagnostics="true"/)
+  assert.doesNotMatch(beforeMarkup, /data-form-studio-diagnostics="true"/)
 
   // Renaming the field is exactly what a schema edit produces: the schema
   // changes, but nothing in Form Studio's schema-editing code path ever
@@ -962,12 +1031,12 @@ test("a schema change that removes a bound field surfaces a dangling-pointer dia
   // pointing at the field that no longer exists — is retained and
   // revalidated rather than silently dropped or guessed at (§8 points 1-3).
   const afterMarkup = renderToStaticMarkup(
-    <FormStudio
+    <SemanticFormStudio
       initialSchema={{ type: "object", properties: { fullName: { type: "string", title: "Full name" } } }}
       initialSemantics={semantics}
     />
   )
-  assert.match(afterMarkup, /data-semantic-diagnostics="true"/)
+  assert.match(afterMarkup, /data-form-studio-diagnostics="true"/)
   assert.match(afterMarkup, /SEMANTIC_FIELD_POINTER_UNRESOLVED/)
   assert.match(afterMarkup, /\/properties\/name/)
 })
@@ -1149,8 +1218,10 @@ function semanticContext(
   }
 }
 
-test("SemanticBindingSection renders nothing outside a semantic authoring context", () => {
-  const markup = renderToStaticMarkup(<SemanticBindingSection fieldPointer="/properties/name" />)
+test("Semantic V1 field controls render nothing outside a registered provider", () => {
+  const markup = renderToStaticMarkup(
+    <FieldExtensionOutlet fieldPointer="/properties/name" />
+  )
   assert.equal(markup, "")
 })
 

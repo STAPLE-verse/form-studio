@@ -1,7 +1,8 @@
 import React from "react"
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid"
-import type { ConformanceDiagnostic } from "@staple-verse/marker-template-runtime"
-import { useFormStudio } from "./FormStudioContext"
+import type { FormStudioDiagnostic } from "../extensions/types"
+import { useFormStudio } from "../FormStudioContext"
+import { SEMANTIC_V1_EXTENSION_ID } from "./constants"
 
 /**
  * Compact, always-visible summary of every current semantic diagnostic
@@ -14,7 +15,10 @@ import { useFormStudio } from "./FormStudioContext"
  * which field panels happen to be open.
  */
 export default function SemanticDiagnosticsSummary(): React.ReactElement | null {
-  const { semanticDiagnostics } = useFormStudio()
+  const { extensionDiagnostics } = useFormStudio()
+  const semanticDiagnostics = extensionDiagnostics.filter(
+    (diagnostic) => diagnostic.source === SEMANTIC_V1_EXTENSION_ID
+  )
 
   if (semanticDiagnostics.length === 0) return null
 
@@ -46,7 +50,7 @@ export default function SemanticDiagnosticsSummary(): React.ReactElement | null 
 function SemanticDiagnosticItem({
   diagnostic,
 }: {
-  diagnostic: ConformanceDiagnostic
+  diagnostic: FormStudioDiagnostic
 }): React.ReactElement {
   return (
     <li

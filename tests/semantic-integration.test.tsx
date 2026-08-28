@@ -12,8 +12,28 @@ import {
   type FormStudioState,
 } from "../src/FormStudioContext"
 import JsonEditor from "../src/JsonEditor"
-import SemanticDiagnosticsSummary from "../src/SemanticDiagnosticsSummary"
+import SemanticDiagnosticsSummary from "../src/semantic-v1/SemanticDiagnosticsSummary"
+import { semanticV1Extension } from "../src/semantic-v1/extension"
+import {
+  getSemanticV1Value,
+  useSemanticV1Value,
+} from "../src/semantic-v1/accessors"
 import { DEBOUNCE_MS } from "../src/debounce"
+
+const runtimeValidationSpy = vi.hoisted(() => vi.fn())
+
+vi.mock("@staple-verse/marker-template-runtime", async (importOriginal) => {
+  const runtime = await importOriginal<
+    typeof import("@staple-verse/marker-template-runtime")
+  >()
+  return {
+    ...runtime,
+    validateSemanticV1: (...args: Parameters<typeof runtime.validateSemanticV1>) => {
+      runtimeValidationSpy(...args)
+      return runtime.validateSemanticV1(...args)
+    },
+  }
+})
 
 vi.mock("@monaco-editor/react", () => ({
   default: ({ value, onChange }: { value?: string; onChange?: (value?: string) => void }) => (
@@ -65,19 +85,56 @@ const invalidSemantics: SemanticV1Component = {
   bindings: [{ ...validSemantics.bindings[0], predicate: "not-an-iri" }],
 }
 
+const SEMANTIC_EXTENSIONS = [semanticV1Extension] as const
+
+function SemanticProvider({
+  initialSchema,
+  initialSemantics,
+  children,
+}: {
+  initialSchema?: object
+  initialSemantics?: SemanticV1Component | string
+  children: React.ReactNode
+}) {
+  const parsedSemantics =
+    typeof initialSemantics === "string"
+      ? (JSON.parse(initialSemantics) as SemanticV1Component)
+      : initialSemantics
+  return (
+    <FormStudioProvider
+      extensions={SEMANTIC_EXTENSIONS}
+      initialSchema={initialSchema}
+      initialExtensionValues={
+        parsedSemantics === undefined
+          ? {}
+          : { [semanticV1Extension.id]: parsedSemantics }
+      }
+    >
+      {children}
+    </FormStudioProvider>
+  )
+}
+
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
   vi.restoreAllMocks()
+  runtimeValidationSpy.mockClear()
 })
 
 function StateProbe() {
-  const { state, setSchema, setSemantics } = useFormStudio()
+  const { state, setSchema } = useFormStudio()
+  const { value: semantics, setValue: setSemantics } = useSemanticV1Value()
 
   return (
     <>
       <output data-testid="semantic-state">
-        {state.semantics === undefined ? "absent" : JSON.stringify(state.semantics)}
+        {semantics === undefined ? "absent" : JSON.stringify(semantics)}
+      </output>
+      <output data-testid="semantic-descriptor-state">
+        {getSemanticV1Value(state) === undefined
+          ? "absent"
+          : JSON.stringify(getSemanticV1Value(state))}
       </output>
       <button type="button" onClick={() => setSemantics(validSemantics)}>
         Restore semantics externally
@@ -96,18 +153,16 @@ function StateProbe() {
 }
 
 function ConnectedBuilder() {
-  const { state, setSchema, setUiSchema, setSemantics } = useFormStudio()
+  const { state, setSchema, setUiSchema } = useFormStudio()
 
   return (
     <FormBuilder
       schema={JSON.stringify(state.schema)}
       uiSchema={JSON.stringify(state.uiSchema)}
-      semantics={state.semantics}
       onChange={(schema, uiSchema) => {
         setSchema(JSON.parse(schema))
         setUiSchema(JSON.parse(uiSchema))
       }}
-      onSemanticsChange={setSemantics}
     />
   )
 }
@@ -118,21 +173,63 @@ async function settleDebouncedWork() {
   })
 }
 
-describe("Semantic V1 pre-registry integration baseline", () => {
+describe("Semantic V1 registry integration", () => {
+  test("typed accessors read the registered value and validation normalizes runtime diagnostics", () => {
+    const state = {
+      extensionValues: { [semanticV1Extension.id]: invalidSemantics },
+    }
+    expect(getSemanticV1Value(state)).toEqual(invalidSemantics)
+
+    const [diagnostic] = semanticV1Extension.validate({
+      schema: schemaWithName,
+      uiSchema: {},
+      value: invalidSemantics,
+    })
+    expect(diagnostic).toMatchObject({
+      source: semanticV1Extension.id,
+      sourceLabel: semanticV1Extension.label,
+      code: "SEMANTIC_COMPONENT_INVALID",
+      severity: "error",
+      blocksCommit: true,
+    })
+  })
+
+  test("absent semantics skips the runtime and one settled update validates once", async () => {
+    vi.useFakeTimers()
+
+    render(
+      <SemanticProvider initialSchema={schemaWithName}>
+        <StateProbe />
+        <ConnectedBuilder />
+      </SemanticProvider>
+    )
+
+    expect(runtimeValidationSpy).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole("button", { name: "Restore semantics externally" }))
+    expect(runtimeValidationSpy).not.toHaveBeenCalled()
+
+    await settleDebouncedWork()
+
+    expect(runtimeValidationSpy).toHaveBeenCalledTimes(1)
+  })
+
   test("provider initialization, JSON synchronization, invalid local text, and removal share one semantic value", () => {
     render(
-      <FormStudioProvider
+      <SemanticProvider
         initialSchema={schemaWithName}
         initialSemantics={JSON.stringify(validSemantics)}
       >
         <JsonEditor />
         <StateProbe />
-      </FormStudioProvider>
+      </SemanticProvider>
     )
 
     const semanticEditor = screen.getAllByTestId("monaco-json-editor")[2]
     expect((semanticEditor as HTMLTextAreaElement).value).toBe(JSON.stringify(validSemantics, null, 2))
     expect(screen.getByTestId("semantic-state").textContent).toContain(JSON.stringify(validSemantics))
+    expect(screen.getByTestId("semantic-descriptor-state").textContent).toContain(
+      JSON.stringify(validSemantics)
+    )
 
     const editedSemantics: SemanticV1Component = {
       ...validSemantics,
@@ -166,10 +263,10 @@ describe("Semantic V1 pre-registry integration baseline", () => {
     vi.useFakeTimers()
 
     render(
-      <FormStudioProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
+      <SemanticProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
         <StateProbe />
         <SemanticDiagnosticsSummary />
-      </FormStudioProvider>
+      </SemanticProvider>
     )
 
     fireEvent.click(screen.getByRole("button", { name: "Remove bound field" }))
@@ -186,11 +283,11 @@ describe("Semantic V1 pre-registry integration baseline", () => {
     vi.useFakeTimers()
 
     const { container } = render(
-      <FormStudioProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
+      <SemanticProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
         <StateProbe />
         <ConnectedBuilder />
         <SemanticDiagnosticsSummary />
-      </FormStudioProvider>
+      </SemanticProvider>
     )
 
     const settingsIcon = container.querySelector(
@@ -216,10 +313,10 @@ describe("Semantic V1 pre-registry integration baseline", () => {
     const onSave = vi.fn<(state: FormStudioState) => Promise<void>>().mockResolvedValue(undefined)
 
     render(
-      <FormStudioProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
+      <SemanticProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
         <StateProbe />
         <FormStudioUI onSave={onSave} />
-      </FormStudioProvider>
+      </SemanticProvider>
     )
 
     fireEvent.click(screen.getByRole("button", { name: "Make semantics invalid" }))
@@ -229,7 +326,7 @@ describe("Semantic V1 pre-registry integration baseline", () => {
 
     expect(onSave).not.toHaveBeenCalled()
     expect(screen.getByRole("alert").textContent).toContain(
-      "Semantic validation issues must be resolved before saving"
+      "Extension validation issues must be resolved before saving"
     )
   })
 
@@ -238,10 +335,10 @@ describe("Semantic V1 pre-registry integration baseline", () => {
     const onAutoSave = vi.fn<(state: FormStudioState) => Promise<void>>().mockResolvedValue(undefined)
 
     render(
-      <FormStudioProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
+      <SemanticProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
         <StateProbe />
         <FormStudioUI onAutoSave={onAutoSave} />
-      </FormStudioProvider>
+      </SemanticProvider>
     )
 
     fireEvent.click(screen.getByRole("button", { name: "Make semantics invalid" }))
@@ -250,6 +347,8 @@ describe("Semantic V1 pre-registry integration baseline", () => {
     await settleDebouncedWork()
 
     expect(onAutoSave).toHaveBeenCalledTimes(1)
-    expect(onAutoSave.mock.calls[0][0].semantics).toEqual(invalidSemantics)
+    expect(onAutoSave.mock.calls[0][0].extensionValues[semanticV1Extension.id]).toEqual(
+      invalidSemantics
+    )
   })
 })
