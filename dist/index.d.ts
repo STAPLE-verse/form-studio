@@ -381,9 +381,60 @@ declare function FormBuilder({ schema, uiSchema, semantics, onMount, onChange, o
     className?: string;
 }): ReactElement;
 
+interface FormStudioDiagnostic {
+    source: string;
+    sourceLabel: string;
+    code: string;
+    pointer?: string;
+    stage?: string;
+    message: string;
+    severity: "warning" | "error";
+    blocksCommit: boolean;
+}
+interface FormStudioExtensionValidationInput<TValue> {
+    schema: object;
+    uiSchema: object;
+    value: TValue | undefined;
+}
+/**
+ * The state surface needed by a typed extension accessor. Keeping this shape
+ * independent of FormStudioState avoids a dependency from the generic
+ * extension contract back into the provider implementation.
+ */
+interface FormStudioExtensionState {
+    readonly extensionValues: Readonly<Record<string, unknown>>;
+}
+/**
+ * Static authoring capability registered for one provider lifetime. Document
+ * values live in FormStudioState.extensionValues, never on this descriptor.
+ */
+interface FormStudioExtension<TValue = unknown> {
+    readonly id: string;
+    readonly label: string;
+    validate(input: FormStudioExtensionValidationInput<TValue>): FormStudioDiagnostic[];
+}
+interface DefinedFormStudioExtension<TValue> extends FormStudioExtension<TValue> {
+    getValue(state: FormStudioExtensionState): TValue | undefined;
+}
+/**
+ * Centralizes the only cast needed to recover a descriptor's value type from
+ * the heterogeneous provider record.
+ */
+declare function getFormStudioExtensionValue<TValue>(state: FormStudioExtensionState, extension: FormStudioExtension<TValue>): TValue | undefined;
+/**
+ * Creates an immutable descriptor with a typed state accessor. Consumers may
+ * pass a structural FormStudioExtension directly, but extension packages
+ * should prefer this helper so reads remain cast-free at their call sites.
+ */
+declare function defineFormStudioExtension<TValue>(extension: FormStudioExtension<TValue>): Readonly<DefinedFormStudioExtension<TValue>>;
+
+type AnyFormStudioExtension = FormStudioExtension<unknown>;
+
 interface FormStudioState {
     schema: object;
     uiSchema: object;
+    /** JSON-serializable values for the provider's registered extensions. */
+    extensionValues: Record<string, unknown>;
     /**
      * Absent when the form is Core-only. A present-but-empty component (e.g.
      * `{ "bindings": [] }` with no root class) is never emitted by Form Studio;
@@ -395,18 +446,22 @@ interface FormStudioState {
 /**
  * Single source of truth for "did the authored (non-preview) part of the
  * state change" — used for the panel error-boundary reset key and the
- * autosave/dirty-state comparisons. Keeping one helper means adding a fourth
- * authored document later only means one edit, not a hunt for every
- * hand-copied `JSON.stringify({ schema, uiSchema })` call site.
+ * autosave/dirty-state comparisons. Keeping base, legacy semantic, and
+ * registered extension values here prevents recovery and dirty-state paths
+ * from drifting as authored documents are added or migrated.
  */
-declare function computeStateFingerprint(state: Pick<FormStudioState, "schema" | "uiSchema" | "semantics">): string;
-interface FormStudioContextType {
+declare function computeStateFingerprint(state: Pick<FormStudioState, "schema" | "uiSchema" | "semantics" | "extensionValues">): string;
+interface FormStudioContextValue {
     state: FormStudioState;
+    /** Stable registration order captured when the provider mounts. */
+    extensions: readonly AnyFormStudioExtension[];
     setSchema: (newSchema: object) => void;
     setUiSchema: (newUiSchema: object) => void;
     setSemantics: (newSemantics: SemanticV1Component | undefined) => void;
     setFormData: (newFormData: object) => void;
-    updateState: (newState: Partial<FormStudioState>) => void;
+    updateState: (newState: Partial<Omit<FormStudioState, "extensionValues">>) => void;
+    getExtensionValue: <TValue>(extension: FormStudioExtension<TValue>) => TValue | undefined;
+    setExtensionValue: <TValue>(extension: FormStudioExtension<TValue>, value: TValue | undefined) => void;
     /**
      * Live Semantic V1 diagnostics for the current `schema`/`semantics` pair,
      * from the pinned runtime — always `[]` for a Core-only form. Recomputed
@@ -417,6 +472,10 @@ interface FormStudioContextType {
     semanticDiagnostics: ConformanceDiagnostic[];
 }
 interface FormStudioProviderProps {
+    /** Registration is fixed for this provider's lifetime; remount to change it. */
+    extensions?: readonly AnyFormStudioExtension[];
+    /** Values whose keys match registered extension IDs. Undefined means absent. */
+    initialExtensionValues?: Readonly<Record<string, unknown>>;
     initialSchema?: object | string;
     initialUiSchema?: object | string;
     /** Omit for a Core-only form; see FormStudioState.semantics. */
@@ -424,8 +483,8 @@ interface FormStudioProviderProps {
     initialFormData?: object;
     children?: ReactNode;
 }
-declare function FormStudioProvider({ initialSchema, initialUiSchema, initialSemantics, initialFormData, children, }: FormStudioProviderProps): react__default.JSX.Element;
-declare function useFormStudio(): FormStudioContextType;
+declare function FormStudioProvider({ extensions, initialExtensionValues, initialSchema, initialUiSchema, initialSemantics, initialFormData, children, }: FormStudioProviderProps): react__default.JSX.Element;
+declare function useFormStudio(): FormStudioContextValue;
 
 type FormStudioSaveStatus = "synced" | "unsaved" | "saving";
 interface FormStudioUIProps {
@@ -526,4 +585,4 @@ declare function buildSemanticValidationDocument(state: SemanticValidationInput)
  */
 declare function computeSemanticDiagnostics(state: SemanticValidationInput): ConformanceDiagnostic[];
 
-export { type AddFormObjectParametersType, type CardComponentPropsType, type CardComponentType, type CardModalProps, type CardModalType, type CardProps, type CardPropsType, type CardType, type ComponentProps, type DataOptions, type DataType, type DefinitionData, type ElementProps, type FieldCompatibility, FormBuilder, type FormElement, type FormInput, FormPreview, FormStudio, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type InitParameters, type InputSelectDataType, JsonEditor, type JsonSchemaDocument, JsonSchemaForm, type JsonSchemaFormEvent, type JsonSchemaFormProps, type JsonSchemaFormValidationError, type ModLabels, type Mods, type SectionProps, type SectionPropsType, type SectionType, SemanticDiagnosticsSummary, type SemanticValidationInput, buildSemanticValidationDocument, computeSemanticDiagnostics, computeStateFingerprint, useFormStudio };
+export { type AddFormObjectParametersType, type CardComponentPropsType, type CardComponentType, type CardModalProps, type CardModalType, type CardProps, type CardPropsType, type CardType, type ComponentProps, type DataOptions, type DataType, type DefinedFormStudioExtension, type DefinitionData, type ElementProps, type FieldCompatibility, FormBuilder, type FormElement, type FormInput, FormPreview, FormStudio, type FormStudioContextValue, type FormStudioDiagnostic, type FormStudioExtension, type FormStudioExtensionState, type FormStudioExtensionValidationInput, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type InitParameters, type InputSelectDataType, JsonEditor, type JsonSchemaDocument, JsonSchemaForm, type JsonSchemaFormEvent, type JsonSchemaFormProps, type JsonSchemaFormValidationError, type ModLabels, type Mods, type SectionProps, type SectionPropsType, type SectionType, SemanticDiagnosticsSummary, type SemanticValidationInput, buildSemanticValidationDocument, computeSemanticDiagnostics, computeStateFingerprint, defineFormStudioExtension, getFormStudioExtensionValue, useFormStudio };

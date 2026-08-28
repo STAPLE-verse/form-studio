@@ -15,7 +15,17 @@ export {
   computeStateFingerprint,
   type FormStudioProviderProps,
   type FormStudioState,
+  type FormStudioContextValue,
 } from "./FormStudioContext"
+export {
+  defineFormStudioExtension,
+  getFormStudioExtensionValue,
+  type DefinedFormStudioExtension,
+  type FormStudioDiagnostic,
+  type FormStudioExtension,
+  type FormStudioExtensionState,
+  type FormStudioExtensionValidationInput,
+} from "./extensions/types"
 export { default as SemanticDiagnosticsSummary } from "./SemanticDiagnosticsSummary"
 export {
   buildSemanticValidationDocument,

@@ -179,23 +179,120 @@ var init_useDebouncedSemanticDiagnostics = __esm({
   }
 });
 
+// src/extensions/types.ts
+function getFormStudioExtensionValue(state, extension) {
+  return state.extensionValues[extension.id];
+}
+function defineFormStudioExtension(extension) {
+  const id = extension.id;
+  return Object.freeze({
+    ...extension,
+    getValue: (state) => state.extensionValues[id]
+  });
+}
+var init_types = __esm({
+  "src/extensions/types.ts"() {
+    "use strict";
+  }
+});
+
+// src/extensions/registry.ts
+function createFormStudioExtensionRegistry(extensions) {
+  const registered = [...extensions];
+  const byId = /* @__PURE__ */ new Map();
+  for (const extension of registered) {
+    if (extension.id.trim().length === 0) {
+      throw new Error("Form Studio extension IDs must be non-empty strings.");
+    }
+    if (byId.has(extension.id)) {
+      throw new Error(`Duplicate Form Studio extension ID: ${extension.id}`);
+    }
+    byId.set(extension.id, extension);
+  }
+  return {
+    extensions: Object.freeze(registered),
+    ids: Object.freeze(registered.map((extension) => extension.id)),
+    byId
+  };
+}
+function assertStableFormStudioExtensionRegistry(registry, nextExtensions) {
+  const changed = registry.extensions.length !== nextExtensions.length || registry.extensions.some(
+    (extension, index) => extension !== nextExtensions[index] || extension.id !== registry.ids[index]
+  );
+  if (changed) {
+    throw new Error(
+      "FormStudioProvider extensions must remain stable for the provider lifetime. Remount the provider to change registration."
+    );
+  }
+}
+function assertRegisteredFormStudioExtension(registry, extension) {
+  if (registry.byId.get(extension.id) !== extension) {
+    throw new Error(
+      `Form Studio extension "${extension.id}" is not registered with this provider.`
+    );
+  }
+}
+function createInitialExtensionValues(registry, initialValues) {
+  for (const id of Object.keys(initialValues)) {
+    if (!registry.byId.has(id)) {
+      throw new Error(`Initial value supplied for unregistered Form Studio extension: ${id}`);
+    }
+  }
+  return orderExtensionValues(registry, initialValues);
+}
+function setRegisteredExtensionValue(registry, currentValues, extension, value) {
+  assertRegisteredFormStudioExtension(registry, extension);
+  const nextValues = { ...currentValues };
+  if (value === void 0) {
+    delete nextValues[extension.id];
+  } else {
+    nextValues[extension.id] = value;
+  }
+  return orderExtensionValues(registry, nextValues);
+}
+function orderExtensionValues(registry, values2) {
+  const ordered = {};
+  for (const extension of registry.extensions) {
+    const value = values2[extension.id];
+    if (value !== void 0) {
+      ordered[extension.id] = value;
+    }
+  }
+  return ordered;
+}
+var init_registry = __esm({
+  "src/extensions/registry.ts"() {
+    "use strict";
+  }
+});
+
 // src/FormStudioContext.tsx
-import { createContext as createContext2, useContext as useContext2, useState as useState16 } from "react";
+import { createContext as createContext2, useContext as useContext2, useRef as useRef4, useState as useState16 } from "react";
 import { jsx as jsx32 } from "react/jsx-runtime";
 function computeStateFingerprint(state) {
   return JSON.stringify({
     schema: state.schema,
     uiSchema: state.uiSchema,
-    semantics: state.semantics
+    semantics: state.semantics,
+    extensionValues: state.extensionValues
   });
 }
 function FormStudioProvider({
+  extensions = [],
+  initialExtensionValues = {},
   initialSchema = {},
   initialUiSchema = {},
   initialSemantics,
   initialFormData = {},
   children
 }) {
+  const registryRef = useRef4(void 0);
+  if (!registryRef.current) {
+    registryRef.current = createFormStudioExtensionRegistry(extensions);
+  } else {
+    assertStableFormStudioExtensionRegistry(registryRef.current, extensions);
+  }
+  const registry = registryRef.current;
   const parseJSON = (data) => {
     if (typeof data === "string") {
       try {
@@ -219,12 +316,13 @@ function FormStudioProvider({
     }
     return data;
   };
-  const [state, setState] = useState16({
+  const [state, setState] = useState16(() => ({
     schema: parseJSON(initialSchema),
     uiSchema: parseJSON(initialUiSchema),
+    extensionValues: createInitialExtensionValues(registry, initialExtensionValues),
     semantics: parseOptionalJSON(initialSemantics),
     formData: initialFormData
-  });
+  }));
   const setSchema = (newSchema) => {
     setState((prev) => ({ ...prev, schema: newSchema }));
   };
@@ -240,17 +338,43 @@ function FormStudioProvider({
   const updateState = (newState) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
+  const getExtensionValue = (extension) => {
+    assertRegisteredFormStudioExtension(registry, extension);
+    return getFormStudioExtensionValue(state, extension);
+  };
+  const setExtensionValue = (extension, value) => {
+    setState((prev) => {
+      const extensionValues = setRegisteredExtensionValue(
+        registry,
+        prev.extensionValues,
+        extension,
+        value
+      );
+      if (extensionValues[extension.id] === prev.extensionValues[extension.id]) {
+        const previousHasValue = Object.prototype.hasOwnProperty.call(
+          prev.extensionValues,
+          extension.id
+        );
+        const nextHasValue = Object.prototype.hasOwnProperty.call(extensionValues, extension.id);
+        if (previousHasValue === nextHasValue) return prev;
+      }
+      return { ...prev, extensionValues };
+    });
+  };
   const semanticDiagnostics = useDebouncedSemanticDiagnostics(state.schema, state.semantics);
   return /* @__PURE__ */ jsx32(
     FormStudioContext.Provider,
     {
       value: {
         state,
+        extensions: registry.extensions,
         setSchema,
         setUiSchema,
         setSemantics,
         setFormData,
         updateState,
+        getExtensionValue,
+        setExtensionValue,
         semanticDiagnostics
       },
       children
@@ -270,6 +394,8 @@ var init_FormStudioContext = __esm({
     "use strict";
     "use client";
     init_useDebouncedSemanticDiagnostics();
+    init_types();
+    init_registry();
     FormStudioContext = createContext2(void 0);
   }
 });
@@ -12687,7 +12813,7 @@ function FormBuilder({
 
 // src/FormStudio.tsx
 init_FormStudioContext();
-import { lazy, Suspense, useState as useState24, useEffect as useEffect7, useRef as useRef8 } from "react";
+import { lazy, Suspense, useState as useState24, useEffect as useEffect7, useRef as useRef9 } from "react";
 
 // src/FormPreview.tsx
 import React22 from "react";
@@ -19822,9 +19948,9 @@ function useAltDateWidgetProps(props) {
 }
 
 // node_modules/@rjsf/utils/lib/useDeepCompareMemo.js
-import { useRef as useRef4 } from "react";
+import { useRef as useRef5 } from "react";
 function useDeepCompareMemo(newValue) {
-  const valueRef = useRef4(newValue);
+  const valueRef = useRef5(newValue);
   if (!deepEquals_default(newValue, valueRef.current)) {
     valueRef.current = newValue;
   }
@@ -20030,7 +20156,7 @@ var unset_default = unset;
 
 // node_modules/@rjsf/core/lib/components/fields/ArrayField.js
 import { jsx as _jsx3 } from "react/jsx-runtime";
-import { memo, useCallback as useCallback3, useMemo as useMemo5, useRef as useRef5, useState as useState18 } from "react";
+import { memo, useCallback as useCallback3, useMemo as useMemo5, useRef as useRef6, useState as useState18 } from "react";
 function generateRowId() {
   return uniqueId_default("rjsf-array-item-");
 }
@@ -20381,9 +20507,9 @@ function ArrayField(props) {
   const { schema, uiSchema, errorSchema, fieldPathId, registry, formData, onChange } = props;
   const { globalFormOptions, schemaUtils, translateString } = registry;
   const { keyedFormData, updateKeyedFormData } = useKeyedFormData(formData);
-  const keyedFormDataRef = useRef5(keyedFormData);
+  const keyedFormDataRef = useRef6(keyedFormData);
   keyedFormDataRef.current = keyedFormData;
-  const errorSchemaRef = useRef5(errorSchema);
+  const errorSchemaRef = useRef6(errorSchema);
   errorSchemaRef.current = errorSchema;
   const childFieldPathId = props.childFieldPathId ?? fieldPathId;
   const handleAddItem = useCallback3((event, index) => {
@@ -21334,7 +21460,7 @@ var NumberField_default = NumberField2;
 
 // node_modules/@rjsf/core/lib/components/fields/ObjectField.js
 import { jsx as _jsx11, jsxs as _jsxs } from "react/jsx-runtime";
-import { memo as memo2, useCallback as useCallback6, useMemo as useMemo8, useRef as useRef7, useState as useState22 } from "react";
+import { memo as memo2, useCallback as useCallback6, useMemo as useMemo8, useRef as useRef8, useState as useState22 } from "react";
 
 // node_modules/markdown-to-jsx/dist/react.js
 import * as c0 from "react";
@@ -24260,13 +24386,13 @@ function ObjectField(props) {
   const { schema: rawSchema, uiSchema = {}, formData, errorSchema, fieldPathId, name, required = false, disabled, readonly, hideError, onBlur, onFocus, onChange, registry, title } = props;
   const { fields: fields2, schemaUtils, translateString, globalUiOptions } = registry;
   const { OptionalDataControlsField: OptionalDataControlsField2 } = fields2;
-  const formDataRef = useRef7(formData);
+  const formDataRef = useRef8(formData);
   formDataRef.current = formData;
   const schema = useMemo8(() => schemaUtils.retrieveSchema(rawSchema, formData, true), [schemaUtils, rawSchema, formData]);
   const uiOptions = useMemo8(() => getUiOptions(uiSchema, globalUiOptions), [uiSchema, globalUiOptions]);
   const { properties: schemaProperties = {} } = schema;
   const childFieldPathId = props.childFieldPathId ?? fieldPathId;
-  const lastRenamedProperty = useRef7({ previousKey: "", currentKey: void 0 });
+  const lastRenamedProperty = useRef8({ previousKey: "", currentKey: void 0 });
   const templateTitle = uiOptions.title ?? schema.title ?? title ?? name;
   const description = uiOptions.description ?? schema.description;
   const renderOptionalField = shouldRenderOptionalField(registry, schema, required, uiSchema);
@@ -27390,9 +27516,9 @@ function FormStudioUI({
   if (activeTab === "json" && !hasVisitedJson) {
     setHasVisitedJson(true);
   }
-  const isInitialMount = useRef8(true);
-  const lastBufferedStateRef = useRef8("");
-  const autoSaveDebouncerRef = useRef8(createDebouncer(DEBOUNCE_MS));
+  const isInitialMount = useRef9(true);
+  const lastBufferedStateRef = useRef9("");
+  const autoSaveDebouncerRef = useRef9(createDebouncer(DEBOUNCE_MS));
   useEffect7(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -27552,6 +27678,7 @@ function FormStudio(props) {
 // src/index.ts
 init_JsonEditor();
 init_FormStudioContext();
+init_types();
 init_semanticValidation();
 export {
   FormBuilder,
@@ -27565,6 +27692,8 @@ export {
   buildSemanticValidationDocument,
   computeSemanticDiagnostics,
   computeStateFingerprint,
+  defineFormStudioExtension,
+  getFormStudioExtensionValue,
   useFormStudio
 };
 /*! Bundled license information:

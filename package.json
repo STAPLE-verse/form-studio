@@ -29,7 +29,10 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
-    "test": "tsup --config tsup.test.config.ts && node .test-dist/capability-fixtures.test.js",
+    "test": "npm run test:capabilities && npm run test:integration",
+    "test:baseline": "npm run build && node scripts/verify-phase-0-baseline.mjs",
+    "test:capabilities": "tsup --config tsup.test.config.ts && node .test-dist/capability-fixtures.test.js",
+    "test:integration": "vitest run tests/semantic-integration.test.tsx tests/extension-registry.test.tsx",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {
@@ -51,14 +54,17 @@
     "@rjsf/core": "^6.6.2",
     "@rjsf/utils": "^6.6.2",
     "@rjsf/validator-ajv8": "^6.6.2",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^20.19.43",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "daisyui": "^5.7.4",
+    "jsdom": "^26.1.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.3.3",
     "tsup": "^8.5.1",
-    "typescript": "^5.8.0"
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.4"
   }
 }

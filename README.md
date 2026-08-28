@@ -81,7 +81,7 @@ export default function Page() {
       initialSchema={{}}
       initialUiSchema={{}}
       onSave={async (state) => {
-        // persist state.schema, state.uiSchema, state.formData
+        // persist state.schema, state.uiSchema, state.extensionValues, state.formData
       }}
     />
   )
@@ -106,6 +106,55 @@ export default function MetadataForm({ schema, uiSchema, formData, save }) {
 }
 ```
 
+### Provider-scoped extension state
+
+Extension registration is fixed for a provider's lifetime. Define descriptors
+and the ordered registration array outside render, then use the typed context
+helpers or descriptor accessor for values:
+
+```tsx
+import {
+  FormStudioProvider,
+  defineFormStudioExtension,
+  useFormStudio,
+} from "@staple-verse/form-studio"
+
+const notesExtension = defineFormStudioExtension<{ note: string }>({
+  id: "example.notes",
+  label: "Notes",
+  validate: () => [],
+})
+const extensions = [notesExtension]
+
+function NotesControl() {
+  const { state, setExtensionValue } = useFormStudio()
+  const value = notesExtension.getValue(state)
+
+  return (
+    <input
+      value={value?.note ?? ""}
+      onChange={(event) => setExtensionValue(notesExtension, { note: event.target.value })}
+    />
+  )
+}
+
+export function Example() {
+  return (
+    <FormStudioProvider
+      extensions={extensions}
+      initialExtensionValues={{ [notesExtension.id]: { note: "Initial" } }}
+    >
+      <NotesControl />
+    </FormStudioProvider>
+  )
+}
+```
+
+Changing registration requires remounting the provider. `undefined` removes
+an extension value; it is distinct from an invalid or empty object. Phase 1
+stores extension values but does not yet render extension controls or run
+their validators.
+
 ### Exports
 
 - `FormStudio` — full studio with provider, tabs, and save UI
@@ -116,6 +165,8 @@ export default function MetadataForm({ schema, uiSchema, formData, save }) {
 - `JsonEditor` — Monaco JSON editor
 - `FormStudioProvider`, `useFormStudio` — shared state context
 - `FormStudioState`, `FormStudioProviderProps` — shared integration types
+- `defineFormStudioExtension`, `getFormStudioExtensionValue` — typed extension helpers
+- `FormStudioExtension`, `FormStudioDiagnostic` — generic extension contracts
 - `JsonSchemaFormProps`, `JsonSchemaFormEvent`, `JsonSchemaFormValidationError` — renderer API types
 - All types from `./types`
 
