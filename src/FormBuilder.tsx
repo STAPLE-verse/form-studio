@@ -9,7 +9,7 @@ import Add from "./Add"
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput"
 import SemanticRootClassInput from "./SemanticRootClassInput"
 import { SemanticAuthoringProvider } from "./SemanticAuthoringContext"
-import { computeSemanticDiagnostics } from "./semanticValidation"
+import { useDebouncedSemanticDiagnostics } from "./useDebouncedSemanticDiagnostics"
 import {
   parse,
   stringify,
@@ -63,9 +63,15 @@ export default function FormBuilder({
   )
   const categoryHash = generateCategoryHash(allFormInputs)
 
-  const semanticDiagnostics = onSemanticsChange
-    ? computeSemanticDiagnostics({ schema: schemaData, semantics })
-    : []
+  // Debounced (§8): re-walking every binding's field pointer against the
+  // schema on each Visual Builder keystroke gets expensive for forms with
+  // many bindings. See `useDebouncedSemanticDiagnostics` for the shared
+  // debounce this and `FormStudioContext` both use.
+  const semanticDiagnostics = useDebouncedSemanticDiagnostics(
+    schemaData,
+    semantics,
+    Boolean(onSemanticsChange)
+  )
 
   const compatibilityDiagnostics = generateElementPropsFromSchemas({
     schema: schemaData,

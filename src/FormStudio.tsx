@@ -12,6 +12,7 @@ import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
 import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
 import SemanticDiagnosticsSummary from "./SemanticDiagnosticsSummary"
+import { createDebouncer, DEBOUNCE_MS } from "./debounce"
 
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid"
 import type { Mods } from "./types"
@@ -79,6 +80,9 @@ export function FormStudioUI({
 
   const isInitialMount = useRef(true)
   const lastBufferedStateRef = useRef<string>("")
+  // Same trailing-debounce primitive `useDebouncedSemanticDiagnostics` uses
+  // for schema-change revalidation (§8) — one implementation for both.
+  const autoSaveDebouncerRef = useRef(createDebouncer(DEBOUNCE_MS))
 
   // Debounced recovery-buffer write (silent — no status pill updates)
   useEffect(() => {
@@ -95,16 +99,17 @@ export function FormStudioUI({
       return
     }
 
-    const handler = setTimeout(async () => {
+    const debouncer = autoSaveDebouncerRef.current
+    debouncer.schedule(async () => {
       try {
         await onAutoSave(state)
         lastBufferedStateRef.current = currentStateStr
       } catch (e) {
         console.error("Recovery buffer write failed", e)
       }
-    }, 1500)
+    })
 
-    return () => clearTimeout(handler)
+    return () => debouncer.cancel()
   }, [state.schema, state.uiSchema, state.semantics, onAutoSave, state])
 
   return (

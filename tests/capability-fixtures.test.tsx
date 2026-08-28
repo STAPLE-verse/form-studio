@@ -15,6 +15,8 @@ import Section from "../src/Section"
 import SemanticBindingSection from "../src/SemanticBindingSection"
 import { SemanticAuthoringProvider, type SemanticAuthoringContextValue } from "../src/SemanticAuthoringContext"
 import { buildChildFieldPointer, escapeJsonPointerToken } from "../src/semanticFieldPointer"
+import { computeSemanticDiagnostics } from "../src/semanticValidation"
+import { createDebouncer, DEBOUNCE_MS } from "../src/debounce"
 import { StudioPanelErrorFallback } from "../src/StudioPanelErrorBoundary"
 import { resolveLocalDefinitionReference } from "../src/localReferences"
 import {
@@ -766,6 +768,271 @@ test("Visual Builder surfaces the shared semantic diagnostics summary for an inv
 
   assert.match(markup, /data-semantic-diagnostics="true"/)
   assert.match(markup, /SEMANTIC_COMPONENT_INVALID/)
+})
+
+test("computeSemanticDiagnostics reports a dangling field pointer distinctly from a structurally invalid component", () => {
+  const schema = { type: "object", properties: { name: { type: "string" } } }
+  const semantics = {
+    bindings: [
+      { fieldPointer: "/properties/missing", predicate: "https://example.org/name", valueKind: "literal" as const },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  assert.deepEqual(
+    diagnostics.map((d) => d.code),
+    ["SEMANTIC_FIELD_POINTER_UNRESOLVED"]
+  )
+  assert.equal(diagnostics[0].pointer, "/semantics/bindings/0/fieldPointer")
+})
+
+test("computeSemanticDiagnostics flags duplicate field pointers across bindings", () => {
+  const schema = { type: "object", properties: { name: { type: "string" } } }
+  const semantics = {
+    bindings: [
+      { fieldPointer: "/properties/name", predicate: "https://example.org/a", valueKind: "literal" as const },
+      { fieldPointer: "/properties/name", predicate: "https://example.org/b", valueKind: "literal" as const },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  // Only the later, duplicating binding is flagged; the first occurrence of
+  // a field pointer is legitimate on its own.
+  assert.deepEqual(
+    diagnostics.map((d) => d.code),
+    ["SEMANTIC_FIELD_POINTER_DUPLICATE"]
+  )
+  assert.equal(diagnostics[0].pointer, "/semantics/bindings/1/fieldPointer")
+})
+
+test("computeSemanticDiagnostics flags a node binding on a scalar field as type-incompatible", () => {
+  const schema = { type: "object", properties: { name: { type: "string" } } }
+  const semantics = {
+    bindings: [
+      { fieldPointer: "/properties/name", predicate: "https://example.org/name", valueKind: "node" as const },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  assert.deepEqual(
+    diagnostics.map((d) => d.code),
+    ["SEMANTIC_BINDING_TYPE_INCOMPATIBLE"]
+  )
+})
+
+test("computeSemanticDiagnostics enforces exact local value-mapping coverage and allowed values", () => {
+  const schema = {
+    type: "object",
+    properties: { access: { type: "string", enum: ["open", "restricted"] } },
+  }
+  const semantics = {
+    bindings: [
+      {
+        fieldPointer: "/properties/access",
+        predicate: "https://example.org/access",
+        valueKind: "iri" as const,
+        valueMappings: [
+          { value: "open", iri: "https://example.org/Open" },
+          { value: "unknown", iri: "https://example.org/Unknown" },
+        ],
+      },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  assert.deepEqual(
+    diagnostics.map((d) => d.code).sort(),
+    ["SEMANTIC_MAPPING_ENUM_UNCOVERED", "SEMANTIC_MAPPING_VALUE_NOT_ALLOWED"]
+  )
+})
+
+test("computeSemanticDiagnostics requires an explicit parentNodePointer for a field nested under a node binding", () => {
+  const schema = {
+    type: "object",
+    properties: {
+      address: { type: "object", properties: { city: { type: "string" } } },
+    },
+  }
+  const semantics = {
+    bindings: [
+      {
+        fieldPointer: "/properties/address",
+        predicate: "https://example.org/address",
+        valueKind: "node" as const,
+      },
+      {
+        fieldPointer: "/properties/address/properties/city",
+        predicate: "https://example.org/city",
+        valueKind: "literal" as const,
+      },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  assert.deepEqual(
+    diagnostics.map((d) => d.code),
+    ["SEMANTIC_PARENT_REQUIRED"]
+  )
+})
+
+test("computeSemanticDiagnostics rejects a parentNodePointer that does not identify any binding", () => {
+  const schema = {
+    type: "object",
+    properties: {
+      address: { type: "object", properties: { city: { type: "string" } } },
+    },
+  }
+  const semantics = {
+    bindings: [
+      {
+        fieldPointer: "/properties/address",
+        predicate: "https://example.org/address",
+        valueKind: "node" as const,
+      },
+      {
+        fieldPointer: "/properties/address/properties/city",
+        predicate: "https://example.org/city",
+        valueKind: "literal" as const,
+        parentNodePointer: "/properties/missing",
+      },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  assert.deepEqual(
+    diagnostics.map((d) => d.code),
+    ["SEMANTIC_PARENT_NOT_FOUND"]
+  )
+})
+
+test("computeSemanticDiagnostics detects a parentNodePointer cycle", () => {
+  const schema = {
+    type: "object",
+    properties: {
+      a: { type: "object", properties: {} },
+      b: { type: "object", properties: {} },
+    },
+  }
+  const semantics = {
+    bindings: [
+      {
+        fieldPointer: "/properties/a",
+        predicate: "https://example.org/a",
+        valueKind: "node" as const,
+        parentNodePointer: "/properties/b",
+      },
+      {
+        fieldPointer: "/properties/b",
+        predicate: "https://example.org/b",
+        valueKind: "node" as const,
+        parentNodePointer: "/properties/a",
+      },
+    ],
+  }
+
+  const diagnostics = computeSemanticDiagnostics({ schema, semantics })
+
+  assert.ok(diagnostics.some((d) => d.code === "SEMANTIC_PARENT_CYCLE"))
+})
+
+test("a schema change that removes a bound field surfaces a dangling-pointer diagnostic without altering the stored binding (§8)", () => {
+  const semantics = {
+    bindings: [
+      { fieldPointer: "/properties/name", predicate: "https://example.org/name", valueKind: "literal" as const },
+    ],
+  }
+
+  const beforeMarkup = renderToStaticMarkup(
+    <FormStudio
+      initialSchema={{ type: "object", properties: { name: { type: "string", title: "Name" } } }}
+      initialSemantics={semantics}
+    />
+  )
+  assert.doesNotMatch(beforeMarkup, /data-semantic-diagnostics="true"/)
+
+  // Renaming the field is exactly what a schema edit produces: the schema
+  // changes, but nothing in Form Studio's schema-editing code path ever
+  // writes to `semantics`, so the very same, now-dangling binding — still
+  // pointing at the field that no longer exists — is retained and
+  // revalidated rather than silently dropped or guessed at (§8 points 1-3).
+  const afterMarkup = renderToStaticMarkup(
+    <FormStudio
+      initialSchema={{ type: "object", properties: { fullName: { type: "string", title: "Full name" } } }}
+      initialSemantics={semantics}
+    />
+  )
+  assert.match(afterMarkup, /data-semantic-diagnostics="true"/)
+  assert.match(afterMarkup, /SEMANTIC_FIELD_POINTER_UNRESOLVED/)
+  assert.match(afterMarkup, /\/properties\/name/)
+})
+
+test("an unrelated schema edit leaves valid semantics unchanged", () => {
+  const semantics = {
+    bindings: [
+      { fieldPointer: "/properties/name", predicate: "https://example.org/name", valueKind: "literal" as const },
+    ],
+  }
+  const schema = {
+    type: "object",
+    properties: {
+      name: { type: "string", title: "Name" },
+      note: { type: "string", title: "Note" },
+    },
+  }
+
+  assert.deepEqual(computeSemanticDiagnostics({ schema, semantics }), [])
+
+  const editedSchema = {
+    ...schema,
+    properties: { ...schema.properties, note: { ...schema.properties.note, title: "Notes" } },
+  }
+  assert.deepEqual(computeSemanticDiagnostics({ schema: editedSchema, semantics }), [])
+})
+
+test("createDebouncer defers a scheduled callback and restarts the wait on repeated calls instead of compounding it (§8)", () => {
+  test.mock.timers.enable({ apis: ["setTimeout"] })
+  try {
+    const debouncer = createDebouncer(DEBOUNCE_MS)
+    let calls = 0
+    debouncer.schedule(() => calls++)
+
+    test.mock.timers.tick(DEBOUNCE_MS - 1)
+    assert.equal(calls, 0)
+
+    // Scheduling again before the delay elapses resets the wait rather than
+    // running the callback twice — the essence of a trailing debounce.
+    debouncer.schedule(() => calls++)
+    test.mock.timers.tick(DEBOUNCE_MS - 1)
+    assert.equal(calls, 0)
+
+    test.mock.timers.tick(1)
+    assert.equal(calls, 1)
+  } finally {
+    test.mock.timers.reset()
+  }
+})
+
+test("createDebouncer cancel discards a pending callback without running it", () => {
+  test.mock.timers.enable({ apis: ["setTimeout"] })
+  try {
+    const debouncer = createDebouncer(DEBOUNCE_MS)
+    let called = false
+    debouncer.schedule(() => {
+      called = true
+    })
+    debouncer.cancel()
+
+    test.mock.timers.tick(DEBOUNCE_MS)
+    assert.equal(called, false)
+  } finally {
+    test.mock.timers.reset()
+  }
 })
 
 test("buildChildFieldPointer chains properties segments and escapes RFC 6901 special characters", () => {

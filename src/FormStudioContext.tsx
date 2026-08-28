@@ -1,8 +1,8 @@
 "use client"
 
-import React, { createContext, useContext, useMemo, useState, ReactNode } from "react"
+import React, { createContext, useContext, useState, ReactNode } from "react"
 import type { ConformanceDiagnostic, SemanticV1Component } from "@staple-verse/marker-template-runtime"
-import { computeSemanticDiagnostics } from "./semanticValidation"
+import { useDebouncedSemanticDiagnostics } from "./useDebouncedSemanticDiagnostics"
 
 export interface FormStudioState {
   schema: object
@@ -43,8 +43,9 @@ interface FormStudioContextType {
   /**
    * Live Semantic V1 diagnostics for the current `schema`/`semantics` pair,
    * from the pinned runtime — always `[]` for a Core-only form. Recomputed
-   * whenever either input changes (§7); per-keystroke debouncing during
-   * schema edits is deferred to the Visual Builder invalidation work (§8).
+   * `DEBOUNCE_MS` after either input settles (§7, §8), via the shared
+   * `useDebouncedSemanticDiagnostics` — see that hook for why revalidation
+   * is deferred rather than run synchronously on every keystroke.
    */
   semanticDiagnostics: ConformanceDiagnostic[]
 }
@@ -121,10 +122,7 @@ export function FormStudioProvider({
     setState((prev) => ({ ...prev, ...newState }))
   }
 
-  const semanticDiagnostics = useMemo(
-    () => computeSemanticDiagnostics({ schema: state.schema, semantics: state.semantics }),
-    [state.schema, state.semantics]
-  )
+  const semanticDiagnostics = useDebouncedSemanticDiagnostics(state.schema, state.semantics)
 
   return (
     <FormStudioContext.Provider
