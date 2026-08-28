@@ -12,6 +12,7 @@ import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
 import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
 import SemanticDiagnosticsSummary from "./SemanticDiagnosticsSummary"
+import { computeSemanticDiagnostics } from "./semanticValidation"
 import { createDebouncer, DEBOUNCE_MS } from "./debounce"
 
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid"
@@ -70,6 +71,27 @@ export function FormStudioUI({
   useEffect(() => {
     onSemanticValidationChange?.(semanticDiagnostics)
   }, [semanticDiagnostics, onSemanticValidationChange])
+
+  // §7: invalid semantics must never reach a conformant save/export. The
+  // displayed `semanticDiagnostics` above is debounced (§8), so it can be
+  // momentarily stale right after a keystroke — disabling the buttons on it
+  // is a cheap, usually-correct affordance, but the authoritative check on
+  // an actual save attempt re-runs `computeSemanticDiagnostics` synchronously
+  // against the current state, not the debounced value.
+  const [saveBlocked, setSaveBlocked] = useState(false)
+  useEffect(() => {
+    if (semanticDiagnostics.length === 0) setSaveBlocked(false)
+  }, [semanticDiagnostics])
+
+  function attemptSave(save: (state: FormStudioState) => Promise<void>) {
+    const diagnostics = computeSemanticDiagnostics({ schema: state.schema, semantics: state.semantics })
+    if (diagnostics.length > 0) {
+      setSaveBlocked(true)
+      return
+    }
+    setSaveBlocked(false)
+    void save(state)
+  }
   
   // Track if the JSON tab has ever been visited so we only load the heavy editor once,
   // but keep it mounted in the background to preserve undo history and unsaved text.
@@ -172,21 +194,51 @@ export function FormStudioUI({
             </button>
           )}
           {onSave && (
-            <div className="tooltip tooltip-bottom" data-tip="Overwrites the current version of this schema.">
-              <button className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all" onClick={() => onSave(state)}>
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip={
+                semanticDiagnostics.length > 0
+                  ? "Resolve the semantic validation issues below before saving."
+                  : "Overwrites the current version of this schema."
+              }
+            >
+              <button
+                className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all"
+                disabled={semanticDiagnostics.length > 0}
+                onClick={() => attemptSave(onSave)}
+              >
                 Save Changes
               </button>
             </div>
           )}
           {onSaveNewVersion && (
-            <div className="tooltip tooltip-bottom tooltip-primary" data-tip="Preserves current history and saves edits as a brand new version.">
-              <button className="btn btn-primary shadow-sm hover:shadow-md transition-all" onClick={() => onSaveNewVersion(state)}>
+            <div
+              className="tooltip tooltip-bottom tooltip-primary"
+              data-tip={
+                semanticDiagnostics.length > 0
+                  ? "Resolve the semantic validation issues below before saving."
+                  : "Preserves current history and saves edits as a brand new version."
+              }
+            >
+              <button
+                className="btn btn-primary shadow-sm hover:shadow-md transition-all"
+                disabled={semanticDiagnostics.length > 0}
+                onClick={() => attemptSave(onSaveNewVersion)}
+              >
                 Save as New Version
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {saveBlocked && (
+        <div className="px-6 pt-6">
+          <div className="alert alert-warning" role="alert">
+            <span>Semantic validation issues must be resolved before saving. See below.</span>
+          </div>
+        </div>
+      )}
 
       {semanticDiagnostics.length > 0 && (
         <div className="px-6 pt-6">
