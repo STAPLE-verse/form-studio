@@ -279,7 +279,7 @@ describe("Semantic V1 registry integration", () => {
     expect(screen.getByTestId("semantic-state").textContent).toContain(JSON.stringify(validSemantics))
   })
 
-  test("global and open field-local diagnostics settle to the same current result", async () => {
+  test("global diagnostics reflect a live edit while the open CardModal withholds field-local diagnostics for its staged value", async () => {
     vi.useFakeTimers()
 
     const { container } = render(
@@ -304,8 +304,92 @@ describe("Semantic V1 registry integration", () => {
     const fieldDiagnostics = container.querySelector('[data-semantic-binding-section="true"]')
     expect(globalDiagnostics).not.toBeNull()
     expect(fieldDiagnostics).not.toBeNull()
+    // The live edit went through StateProbe's hook directly, outside the
+    // modal, so global diagnostics (computed against live context state)
+    // correctly pick it up.
     expect(within(globalDiagnostics as HTMLElement).getByText("SEMANTIC_COMPONENT_INVALID")).not.toBeNull()
-    expect(within(fieldDiagnostics as HTMLElement).getByText("SEMANTIC_COMPONENT_INVALID")).not.toBeNull()
+    // CardModal stages field extension edits behind Save/Cancel (see
+    // CardModal.tsx), so its FieldControls slot never receives live
+    // debounced diagnostics — showing them would describe a value the
+    // modal isn't authoritative over yet.
+    expect(
+      within(fieldDiagnostics as HTMLElement).queryByText("SEMANTIC_COMPONENT_INVALID")
+    ).toBeNull()
+  })
+
+  test("CardModal discards a semantic binding edit on Cancel but keeps it on Save", () => {
+    render(
+      <SemanticProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
+        <StateProbe />
+        <ConnectedBuilder />
+      </SemanticProvider>
+    )
+
+    function openModal() {
+      const settingsIcon = document.querySelector(
+        '[data-tip="Additional configurations for this item"] svg'
+      )
+      fireEvent.click(settingsIcon!)
+    }
+
+    const originalPredicate = validSemantics.bindings[0].predicate
+
+    openModal()
+    const predicateInput = screen.getByPlaceholderText(
+      "https://example.org/predicate"
+    ) as HTMLInputElement
+    expect(predicateInput.value).toBe(originalPredicate)
+
+    fireEvent.change(predicateInput, { target: { value: "https://example.org/changed" } })
+    expect(predicateInput.value).toBe("https://example.org/changed")
+    // Still a draft: nothing committed to the provider yet.
+    expect(screen.getByTestId("semantic-state").textContent).toContain(originalPredicate)
+
+    fireEvent.click(screen.getByText("Cancel"))
+    expect(screen.getByTestId("semantic-state").textContent).toContain(originalPredicate)
+    expect(screen.getByTestId("semantic-state").textContent).not.toContain(
+      "https://example.org/changed"
+    )
+
+    openModal()
+    const reopenedPredicateInput = screen.getByPlaceholderText(
+      "https://example.org/predicate"
+    ) as HTMLInputElement
+    expect(reopenedPredicateInput.value).toBe(originalPredicate)
+
+    fireEvent.change(reopenedPredicateInput, { target: { value: "https://example.org/changed" } })
+    fireEvent.click(screen.getByText("Save"))
+    expect(screen.getByTestId("semantic-state").textContent).toContain(
+      "https://example.org/changed"
+    )
+  })
+
+  test("saving a field's Additional Settings does not write fieldPointer into its JSON Schema", () => {
+    function SchemaProbe() {
+      const { state } = useFormStudio()
+      return <output data-testid="schema-state">{JSON.stringify(state.schema)}</output>
+    }
+
+    render(
+      <SemanticProvider initialSchema={schemaWithName} initialSemantics={validSemantics}>
+        <SchemaProbe />
+        <ConnectedBuilder />
+      </SemanticProvider>
+    )
+
+    expect(screen.getByTestId("schema-state").textContent).not.toContain("fieldPointer")
+
+    const settingsIcon = document.querySelector(
+      '[data-tip="Additional configurations for this item"] svg'
+    )
+    fireEvent.click(settingsIcon!)
+    fireEvent.click(screen.getByText("Save"))
+
+    // fieldPointer is routing-only metadata for the modal/outlet, not a JSON
+    // Schema keyword — saving unrelated field settings must never bake it
+    // into the schema itself (see src/utils.tsx's two dataOptions exclusion
+    // lists).
+    expect(screen.getByTestId("schema-state").textContent).not.toContain("fieldPointer")
   })
 
   test("a save attempt synchronously blocks invalid semantics before debounced diagnostics settle", () => {
@@ -326,7 +410,7 @@ describe("Semantic V1 registry integration", () => {
 
     expect(onSave).not.toHaveBeenCalled()
     expect(screen.getByRole("alert").textContent).toContain(
-      "Extension validation issues must be resolved before saving"
+      "Validation issues must be resolved before saving"
     )
   })
 

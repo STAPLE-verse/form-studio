@@ -1,15 +1,16 @@
 "use client";
 import {
+  Tooltip,
   fieldClass,
   fieldControlClass,
   fieldLabelClass,
   fieldStackClass
-} from "./chunk-I4JU2HDP.js";
+} from "./chunk-XRLOQBER.js";
 import {
   defineFormStudioExtension,
   useFormStudio,
   useSyncedJsonDocument
-} from "./chunk-CTI3H5C4.js";
+} from "./chunk-NS4CFN76.js";
 
 // src/semantic-v1/SemanticBindingSection.tsx
 import { useMemo } from "react";
@@ -19,6 +20,9 @@ import {
   findAncestorNodeBindings
 } from "@staple-verse/marker-template-runtime";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+function tooltipId(fieldPointer, suffix) {
+  return `${fieldPointer.replace(/[^a-zA-Z0-9]/g, "_")}_${suffix}_tooltip`;
+}
 function SemanticBindingSection({
   fieldPointer,
   rootSchema,
@@ -62,11 +66,31 @@ function SemanticBindingSection({
   }
   const showParentControl = ancestorNodeBindings.length > 0 || binding?.parentNodePointer !== void 0;
   return /* @__PURE__ */ jsxs("div", { className: fieldStackClass, "data-semantic-binding-section": "true", "data-field-pointer": fieldPointer, children: [
-    /* @__PURE__ */ jsx("h5", { className: fieldLabelClass, children: "Semantic binding" }),
+    /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+      "Semantic binding",
+      /* @__PURE__ */ jsx(
+        Tooltip,
+        {
+          id: tooltipId(fieldPointer, "section"),
+          type: "help",
+          text: "Connects this field to a standard meaning that other systems can understand, so your data can be shared and combined with other datasets."
+        }
+      )
+    ] }),
     /* @__PURE__ */ jsx("p", { className: "text-xs font-mono text-base-content/60 break-all -mt-2", children: fieldPointer }),
     !binding ? /* @__PURE__ */ jsx("button", { type: "button", className: "btn btn-outline btn-sm self-start", onClick: addBinding, children: "Add semantic binding" }) : /* @__PURE__ */ jsxs(Fragment, { children: [
       /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-        /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Predicate IRI" }),
+        /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+          "Predicate IRI",
+          /* @__PURE__ */ jsx(
+            Tooltip,
+            {
+              id: tooltipId(fieldPointer, "predicate"),
+              type: "help",
+              text: "A web address that names what this field represents, like a person's name or a date created. Reuse an address from a known standard when you have one, so other tools recognize it."
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsx(
           "input",
           {
@@ -79,7 +103,17 @@ function SemanticBindingSection({
         )
       ] }),
       /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-        /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Value kind" }),
+        /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+          "Value kind",
+          /* @__PURE__ */ jsx(
+            Tooltip,
+            {
+              id: tooltipId(fieldPointer, "value_kind"),
+              type: "help",
+              text: "How to treat this field's answer: plain text or a number (Literal), a link to something else on the web (IRI), or a related group of fields (Node)."
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsxs(
           "select",
           {
@@ -146,7 +180,17 @@ function LiteralBindingControls({
 }) {
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Datatype IRI (optional)" }),
+      /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+        "Datatype IRI (optional)",
+        /* @__PURE__ */ jsx(
+          Tooltip,
+          {
+            id: tooltipId(binding.fieldPointer, "datatype"),
+            type: "help",
+            text: "Tells other systems what kind of value this is, like a date or a whole number, so it isn't misread as plain text."
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsx(
         "input",
         {
@@ -160,7 +204,17 @@ function LiteralBindingControls({
       )
     ] }),
     /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Language tag (optional)" }),
+      /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+        "Language tag (optional)",
+        /* @__PURE__ */ jsx(
+          Tooltip,
+          {
+            id: tooltipId(binding.fieldPointer, "language"),
+            type: "help",
+            text: "The language this text is written in, like 'en' for English, so it isn't mixed up with translations."
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsx(
         "input",
         {
@@ -189,7 +243,17 @@ function IriBindingControls({
   const hasMappings = binding.valueMappings !== void 0;
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "IRI behavior" }),
+      /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+        "IRI behavior",
+        /* @__PURE__ */ jsx(
+          Tooltip,
+          {
+            id: tooltipId(binding.fieldPointer, "iri_behavior"),
+            type: "help",
+            text: "Whether the answer itself is already a web address (Direct), or whether specific answers should be translated into web addresses you define (Mapped)."
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxs(
         "select",
         {
@@ -213,7 +277,17 @@ function IriBindingControls({
       )
     ] }),
     hasMappings && /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Value \u2192 IRI mappings" }),
+      /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+        "Value \u2192 IRI mappings",
+        /* @__PURE__ */ jsx(
+          Tooltip,
+          {
+            id: tooltipId(binding.fieldPointer, "value_mappings"),
+            type: "help",
+            text: "Pairs that turn one specific answer into its matching web address."
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-2", children: [
         (binding.valueMappings ?? []).map((mapping, index) => /* @__PURE__ */ jsxs("div", { className: "flex gap-2 items-center", children: [
           /* @__PURE__ */ jsx(
@@ -277,7 +351,17 @@ function NodeBindingControls({
   onChange
 }) {
   return /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-    /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Class IRI (optional)" }),
+    /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+      "Class IRI (optional)",
+      /* @__PURE__ */ jsx(
+        Tooltip,
+        {
+          id: tooltipId(binding.fieldPointer, "class_iri"),
+          type: "help",
+          text: "What kind of thing this group of fields describes, for example a Person or an Organization."
+        }
+      )
+    ] }),
     /* @__PURE__ */ jsx(
       "input",
       {
@@ -300,7 +384,17 @@ function ParentNodePointerControl({
     (ancestor) => ancestor.binding.fieldPointer === binding.parentNodePointer
   );
   return /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
-    /* @__PURE__ */ jsx("label", { className: fieldLabelClass, children: "Parent node" }),
+    /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+      "Parent node",
+      /* @__PURE__ */ jsx(
+        Tooltip,
+        {
+          id: tooltipId(binding.fieldPointer, "parent_node"),
+          type: "help",
+          text: "Which related group of fields this one belongs to, so the connection between them isn't lost."
+        }
+      )
+    ] }),
     /* @__PURE__ */ jsxs(
       "select",
       {
@@ -475,7 +569,17 @@ function SemanticRootClassInput({
   };
   return /* @__PURE__ */ jsxs4("div", { children: [
     /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between mb-2", children: [
-      /* @__PURE__ */ jsx4("h5", { "data-test": "semantic-root-class-label", className: "font-semibold", children: "Semantic root class (optional)" }),
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx4("h5", { "data-test": "semantic-root-class-label", className: "font-semibold", children: "Semantic root class (optional)" }),
+        /* @__PURE__ */ jsx4(
+          Tooltip,
+          {
+            id: "semantic_root_class_tooltip",
+            type: "help",
+            text: "What kind of thing this whole form describes, for example a Person or a Research Project. Leave this blank if you don't need to connect your data to other systems yet."
+          }
+        )
+      ] }),
       semantics !== void 0 && /* @__PURE__ */ jsx4(RemoveSemanticComponentControl, { onRemove: () => onSemanticsChange(void 0) })
     ] }),
     /* @__PURE__ */ jsx4(

@@ -208,7 +208,7 @@ export function FormStudioUI({
               className="tooltip tooltip-bottom"
               data-tip={
                 blockingDiagnostics.length > 0
-                  ? "Resolve the extension validation issues below before saving."
+                  ? "Resolve the validation issues below before saving."
                   : "Overwrites the current version of this schema."
               }
             >
@@ -226,7 +226,7 @@ export function FormStudioUI({
               className="tooltip tooltip-bottom tooltip-primary"
               data-tip={
                 blockingDiagnostics.length > 0
-                  ? "Resolve the extension validation issues below before saving."
+                  ? "Resolve the validation issues below before saving."
                   : "Preserves current history and saves edits as a brand new version."
               }
             >
@@ -246,7 +246,7 @@ export function FormStudioUI({
         <div className="px-6 pt-6">
           <div className="alert alert-warning" role="alert">
             <div>
-              <p>Extension validation issues must be resolved before saving.</p>
+              <p>Validation issues must be resolved before saving.</p>
               <ul className="mt-2 list-disc pl-5">
                 {commitDiagnostics.map((diagnostic, index) => (
                   <li key={`${diagnostic.source}-${diagnostic.code}-${index}`}>

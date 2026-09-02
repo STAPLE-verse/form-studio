@@ -3,7 +3,7 @@ import {
   useFormStudio,
   useOptionalFormStudio,
   useSyncedJsonDocument
-} from "./chunk-CTI3H5C4.js";
+} from "./chunk-NS4CFN76.js";
 
 // src/JsonEditor.tsx
 import Editor from "@monaco-editor/react";
@@ -38,7 +38,8 @@ function FormExtensionOutlet({
 }
 function FieldExtensionOutlet({
   fieldPointer,
-  compatibility
+  compatibility,
+  valueOverride
 }) {
   const context = useOptionalFormStudio();
   if (!context || context.extensions.length === 0) return null;
@@ -58,7 +59,8 @@ function FieldExtensionOutlet({
           context,
           extension,
           context.state.schema,
-          context.state.uiSchema
+          context.state.uiSchema,
+          valueOverride
         );
         const props = {
           ...baseProps,
@@ -109,16 +111,17 @@ function JsonDocumentExtensionOutlet() {
     );
   }) });
 }
-function createControlProps(context, extension, schema, uiSchema) {
+function createControlProps(context, extension, schema, uiSchema, valueOverride) {
   return {
     extension,
     schema,
     uiSchema,
-    value: context.getExtensionValue(extension),
-    setValue: (value) => context.setExtensionValue(extension, value),
-    diagnostics: context.extensionDiagnostics.filter(
-      (diagnostic) => diagnostic.source === extension.id
-    )
+    value: valueOverride ? valueOverride.getValue(extension) : context.getExtensionValue(extension),
+    setValue: (value) => valueOverride ? valueOverride.setValue(extension, value) : context.setExtensionValue(extension, value),
+    // A staged host hasn't committed its draft yet, so debounced diagnostics
+    // computed against live context state don't describe it — omit them
+    // rather than show feedback for a value the user isn't looking at.
+    diagnostics: valueOverride ? [] : context.extensionDiagnostics.filter((diagnostic) => diagnostic.source === extension.id)
   };
 }
 function resolveFieldSchema(rootSchema, fieldPointer) {
@@ -249,4 +252,4 @@ export {
   FieldExtensionOutlet,
   JsonEditor
 };
-//# sourceMappingURL=chunk-4PXDTVNU.js.map
+//# sourceMappingURL=chunk-LXAUWV33.js.map

@@ -78,7 +78,7 @@ function validatorFailureDiagnostic(
     sourceLabel,
     code: "FS_EXTENSION_VALIDATION_FAILED",
     stage: "validation",
-    message: error instanceof Error ? error.message : "Extension validation failed",
+    message: error instanceof Error ? error.message : "Validation failed unexpectedly",
     severity: "error",
     blocksCommit: true,
   }

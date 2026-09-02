@@ -14,6 +14,14 @@ import type {
 } from "@staple-verse/marker-template-runtime"
 import type { FormStudioDiagnostic } from "../extensions/types"
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "../fieldLayout"
+import Tooltip from "../Tooltip"
+
+// Shared across every host, keyed by field pointer to stay unique when
+// several fields' binding sections are mounted on screen at once (e.g. one
+// per read-only field in CompatibilityCard).
+function tooltipId(fieldPointer: string, suffix: string): string {
+  return `${fieldPointer.replace(/[^a-zA-Z0-9]/g, "_")}_${suffix}_tooltip`
+}
 
 /**
  * Field-level Semantic V1 binding controls shown in a field's "Additional
@@ -87,7 +95,14 @@ export default function SemanticBindingSection({
 
   return (
     <div className={fieldStackClass} data-semantic-binding-section="true" data-field-pointer={fieldPointer}>
-      <h5 className={fieldLabelClass}>Semantic binding</h5>
+      <div className={`${fieldLabelClass} flex items-center gap-2`}>
+        Semantic binding
+        <Tooltip
+          id={tooltipId(fieldPointer, "section")}
+          type="help"
+          text="Connects this field to a standard meaning that other systems can understand, so your data can be shared and combined with other datasets."
+        />
+      </div>
       <p className="text-xs font-mono text-base-content/60 break-all -mt-2">{fieldPointer}</p>
 
       {!binding ? (
@@ -97,7 +112,14 @@ export default function SemanticBindingSection({
       ) : (
         <>
           <div className={fieldClass}>
-            <label className={fieldLabelClass}>Predicate IRI</label>
+            <div className={`${fieldLabelClass} flex items-center gap-2`}>
+              Predicate IRI
+              <Tooltip
+                id={tooltipId(fieldPointer, "predicate")}
+                type="help"
+                text="A web address that names what this field represents, like a person's name or a date created. Reuse an address from a known standard when you have one, so other tools recognize it."
+              />
+            </div>
             <input
               value={binding.predicate}
               placeholder="https://example.org/predicate"
@@ -108,7 +130,14 @@ export default function SemanticBindingSection({
           </div>
 
           <div className={fieldClass}>
-            <label className={fieldLabelClass}>Value kind</label>
+            <div className={`${fieldLabelClass} flex items-center gap-2`}>
+              Value kind
+              <Tooltip
+                id={tooltipId(fieldPointer, "value_kind")}
+                type="help"
+                text="How to treat this field's answer: plain text or a number (Literal), a link to something else on the web (IRI), or a related group of fields (Node)."
+              />
+            </div>
             <select
               className={`select select-bordered select-sm ${fieldControlClass}`}
               value={binding.valueKind}
@@ -194,7 +223,14 @@ function LiteralBindingControls({
   return (
     <>
       <div className={fieldClass}>
-        <label className={fieldLabelClass}>Datatype IRI (optional)</label>
+        <div className={`${fieldLabelClass} flex items-center gap-2`}>
+          Datatype IRI (optional)
+          <Tooltip
+            id={tooltipId(binding.fieldPointer, "datatype")}
+            type="help"
+            text="Tells other systems what kind of value this is, like a date or a whole number, so it isn't misread as plain text."
+          />
+        </div>
         <input
           value={binding.datatypeIri ?? ""}
           placeholder="http://www.w3.org/2001/XMLSchema#date"
@@ -207,7 +243,14 @@ function LiteralBindingControls({
         />
       </div>
       <div className={fieldClass}>
-        <label className={fieldLabelClass}>Language tag (optional)</label>
+        <div className={`${fieldLabelClass} flex items-center gap-2`}>
+          Language tag (optional)
+          <Tooltip
+            id={tooltipId(binding.fieldPointer, "language")}
+            type="help"
+            text="The language this text is written in, like 'en' for English, so it isn't mixed up with translations."
+          />
+        </div>
         <input
           value={binding.language ?? ""}
           placeholder="en"
@@ -248,7 +291,14 @@ function IriBindingControls({
   return (
     <>
       <div className={fieldClass}>
-        <label className={fieldLabelClass}>IRI behavior</label>
+        <div className={`${fieldLabelClass} flex items-center gap-2`}>
+          IRI behavior
+          <Tooltip
+            id={tooltipId(binding.fieldPointer, "iri_behavior")}
+            type="help"
+            text="Whether the answer itself is already a web address (Direct), or whether specific answers should be translated into web addresses you define (Mapped)."
+          />
+        </div>
         <select
           className={`select select-bordered select-sm ${fieldControlClass}`}
           value={hasMappings ? "mapped" : "direct"}
@@ -270,7 +320,14 @@ function IriBindingControls({
 
       {hasMappings && (
         <div className={fieldClass}>
-          <label className={fieldLabelClass}>Value → IRI mappings</label>
+          <div className={`${fieldLabelClass} flex items-center gap-2`}>
+            Value → IRI mappings
+            <Tooltip
+              id={tooltipId(binding.fieldPointer, "value_mappings")}
+              type="help"
+              text="Pairs that turn one specific answer into its matching web address."
+            />
+          </div>
           <div className="flex flex-col gap-2">
             {(binding.valueMappings ?? []).map((mapping, index) => (
               <div key={index} className="flex gap-2 items-center">
@@ -335,7 +392,14 @@ function NodeBindingControls({
 }): React.ReactElement {
   return (
     <div className={fieldClass}>
-      <label className={fieldLabelClass}>Class IRI (optional)</label>
+      <div className={`${fieldLabelClass} flex items-center gap-2`}>
+        Class IRI (optional)
+        <Tooltip
+          id={tooltipId(binding.fieldPointer, "class_iri")}
+          type="help"
+          text="What kind of thing this group of fields describes, for example a Person or an Organization."
+        />
+      </div>
       <input
         value={binding.classIri ?? ""}
         placeholder="https://example.org/YourClass"
@@ -363,7 +427,14 @@ function ParentNodePointerControl({
 
   return (
     <div className={fieldClass}>
-      <label className={fieldLabelClass}>Parent node</label>
+      <div className={`${fieldLabelClass} flex items-center gap-2`}>
+        Parent node
+        <Tooltip
+          id={tooltipId(binding.fieldPointer, "parent_node")}
+          type="help"
+          text="Which related group of fields this one belongs to, so the connection between them isn't lost."
+        />
+      </div>
       <select
         className={`select select-bordered select-sm ${fieldControlClass}`}
         value={binding.parentNodePointer ?? ""}

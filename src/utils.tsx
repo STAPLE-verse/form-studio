@@ -840,6 +840,7 @@ function generateSchemaElementFromElement(element: ElementProps) {
             "definitionData",
             "definitionUi",
             "allFormInputs",
+            "fieldPointer",
           ].includes(key) &&
           element.dataOptions[key] !== "" &&
           !(nullableNumberParameters.has(key) && element.dataOptions[key] === null)
@@ -1415,6 +1416,7 @@ export function generateElementComponentsFromSchemas(parameters: {
                   "dependents",
                   "dependent",
                   "parent",
+                  "fieldPointer",
                 ].includes(propName)
               ) {
                 newDataProps[propName] = newCardObj[propName]

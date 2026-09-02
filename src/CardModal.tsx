@@ -4,6 +4,14 @@ import type { CardModalType, CardComponentPropsType } from "./types"
 import Tooltip from "./Tooltip"
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "./fieldLayout"
 import FieldAuthoringControls from "./FieldAuthoringControls"
+import { useOptionalFormStudio } from "./FormStudioContext"
+import type { FieldExtensionValueOverride } from "./extensions/outlets"
+import type { FormStudioExtension } from "./extensions/types"
+
+interface StagedExtensionEntry {
+  extension: FormStudioExtension<any>
+  value: unknown
+}
 
 const CardModal: CardModalType = ({
   componentProps,
@@ -15,11 +23,31 @@ const CardModal: CardModalType = ({
   // assign state values for parameters that should only change on hitting "Save"
   const [componentPropsState, setComponentProps] = useState(componentProps)
 
+  // Same "only changes on Save" contract as componentPropsState, but for
+  // registered extensions (e.g. Semantic V1 bindings) edited through the
+  // FieldControls slot below — see extensions/outlets.tsx's
+  // FieldExtensionValueOverride. Keyed by extension id; presence of a key
+  // means "staged", independent of whether the staged value is undefined.
+  const [extensionDraft, setExtensionDraft] = useState<Record<string, StagedExtensionEntry>>({})
+
   const [prevComponentProps, setPrevComponentProps] = useState(componentProps)
   if (componentProps !== prevComponentProps) {
     setPrevComponentProps(componentProps)
     setComponentProps(componentProps)
+    setExtensionDraft({})
   }
+
+  const formStudio = useOptionalFormStudio()
+  const extensionValueOverride: FieldExtensionValueOverride | undefined = formStudio
+    ? {
+        getValue: (extension) =>
+          Object.prototype.hasOwnProperty.call(extensionDraft, extension.id)
+            ? (extensionDraft[extension.id]!.value as any)
+            : formStudio.getExtensionValue(extension),
+        setValue: (extension, value) =>
+          setExtensionDraft((prev) => ({ ...prev, [extension.id]: { extension, value } })),
+      }
+    : undefined
 
   if (!isOpen) return null
 
@@ -88,7 +116,10 @@ const CardModal: CardModalType = ({
             }}
           />
           {componentPropsState.fieldPointer !== undefined && (
-            <FieldAuthoringControls fieldPointer={componentPropsState.fieldPointer} />
+            <FieldAuthoringControls
+              fieldPointer={componentPropsState.fieldPointer}
+              valueOverride={extensionValueOverride}
+            />
           )}
         </div>
         <div className="modal-action shrink-0">
@@ -96,6 +127,7 @@ const CardModal: CardModalType = ({
             onClick={() => {
               onClose()
               setComponentProps(componentProps)
+              setExtensionDraft({})
             }}
             className="btn btn-ghost"
           >
@@ -104,6 +136,10 @@ const CardModal: CardModalType = ({
           <button
             onClick={() => {
               onClose()
+              Object.values(extensionDraft).forEach(({ extension, value }) => {
+                formStudio?.setExtensionValue(extension, value)
+              })
+              setExtensionDraft({})
               onChange(componentPropsState)
             }}
             className="btn btn-primary"

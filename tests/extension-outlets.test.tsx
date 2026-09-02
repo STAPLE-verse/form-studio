@@ -86,6 +86,8 @@ function TestFormControls({
 function TestFieldControls({
   extension,
   field,
+  value,
+  setValue,
   diagnostics,
 }: FieldExtensionControlProps<TestExtensionValue>) {
   return (
@@ -95,9 +97,16 @@ function TestFieldControls({
         {(field.fieldSchema as { title?: string }).title}
       </span>
       <span data-field-compatibility={extension.id}>{field.compatibility?.kind ?? "editable"}</span>
+      <output data-field-value={extension.id}>{JSON.stringify(value ?? null)}</output>
       <span data-field-diagnostics={extension.id}>
         {diagnostics.map((diagnostic) => diagnostic.code).join(",")}
       </span>
+      <button
+        type="button"
+        onClick={() => setValue({ status: "invalid", revision: (value?.revision ?? 0) + 1 })}
+      >
+        Invalidate field {extension.id}
+      </button>
     </section>
   )
 }
@@ -399,7 +408,15 @@ describe("Phase 2 extension diagnostics and commit validation", () => {
     render(
       <FormStudioProvider extensions={[first, second]}>
         <ValidationHarness extensionId={first.id} />
-        <OpenCardModal />
+        <CompatibilityCard
+          name="name"
+          compatibility={{
+            kind: "readOnly",
+            code: "FS_UNKNOWN_FIELD_READ_ONLY",
+            message: "Test read-only field",
+          }}
+          fieldPointer="/properties/name"
+        />
         <FormStudioDiagnostics />
       </FormStudioProvider>
     )
@@ -428,6 +445,81 @@ describe("Phase 2 extension diagnostics and commit validation", () => {
     )
     expect(document.querySelector('[data-field-diagnostics="test.first"]')?.textContent).toBe(
       "TEST.FIRST_INVALID"
+    )
+  })
+
+  test("CardModal stages field extension edits and commits them only on Save", () => {
+    const extension = createTestExtension("test.staged", "Staged")
+
+    function ValueProbe() {
+      const { getExtensionValue } = useFormStudio()
+      return (
+        <output data-testid="committed-value">
+          {JSON.stringify(getExtensionValue(extension) ?? null)}
+        </output>
+      )
+    }
+
+    render(
+      <FormStudioProvider
+        extensions={[extension]}
+        initialExtensionValues={{ [extension.id]: validValue }}
+      >
+        <ValueProbe />
+        <OpenCardModal />
+      </FormStudioProvider>
+    )
+
+    expect(screen.getByTestId("committed-value").textContent).toBe(JSON.stringify(validValue))
+
+    fireEvent.click(screen.getByText(`Invalidate field ${extension.id}`))
+    expect(document.querySelector(`[data-field-value="${extension.id}"]`)?.textContent).toBe(
+      JSON.stringify({ status: "invalid", revision: 1 })
+    )
+    // Draft-only so far: nothing committed to live context, and diagnostics
+    // are withheld rather than describe a value they were never run against.
+    expect(screen.getByTestId("committed-value").textContent).toBe(JSON.stringify(validValue))
+    expect(document.querySelector(`[data-field-diagnostics="${extension.id}"]`)?.textContent).toBe(
+      ""
+    )
+
+    fireEvent.click(screen.getByText("Save"))
+    expect(screen.getByTestId("committed-value").textContent).toBe(
+      JSON.stringify({ status: "invalid", revision: 1 })
+    )
+  })
+
+  test("CardModal discards field extension edits on Cancel", () => {
+    const extension = createTestExtension("test.discarded", "Discarded")
+
+    function ValueProbe() {
+      const { getExtensionValue } = useFormStudio()
+      return (
+        <output data-testid="committed-value">
+          {JSON.stringify(getExtensionValue(extension) ?? null)}
+        </output>
+      )
+    }
+
+    render(
+      <FormStudioProvider
+        extensions={[extension]}
+        initialExtensionValues={{ [extension.id]: validValue }}
+      >
+        <ValueProbe />
+        <OpenCardModal />
+      </FormStudioProvider>
+    )
+
+    fireEvent.click(screen.getByText(`Invalidate field ${extension.id}`))
+    expect(document.querySelector(`[data-field-value="${extension.id}"]`)?.textContent).toBe(
+      JSON.stringify({ status: "invalid", revision: 1 })
+    )
+
+    fireEvent.click(screen.getByText("Cancel"))
+    expect(screen.getByTestId("committed-value").textContent).toBe(JSON.stringify(validValue))
+    expect(document.querySelector(`[data-field-value="${extension.id}"]`)?.textContent).toBe(
+      JSON.stringify(validValue)
     )
   })
 

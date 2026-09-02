@@ -1,6 +1,7 @@
 import React from "react"
 import type { SemanticV1Component } from "@staple-verse/marker-template-runtime"
 import RemoveSemanticComponentControl from "./RemoveSemanticComponentControl"
+import Tooltip from "../Tooltip"
 
 /**
  * Form-level Semantic V1 settings (§5.1): the optional root class IRI, shown
@@ -41,9 +42,16 @@ export default function SemanticRootClassInput({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h5 data-test="semantic-root-class-label" className="font-semibold">
-          Semantic root class (optional)
-        </h5>
+        <div className="flex items-center gap-2">
+          <h5 data-test="semantic-root-class-label" className="font-semibold">
+            Semantic root class (optional)
+          </h5>
+          <Tooltip
+            id="semantic_root_class_tooltip"
+            type="help"
+            text="What kind of thing this whole form describes, for example a Person or a Research Project. Leave this blank if you don't need to connect your data to other systems yet."
+          />
+        </div>
         {semantics !== undefined && (
           <RemoveSemanticComponentControl onRemove={() => onSemanticsChange(undefined)} />
         )}

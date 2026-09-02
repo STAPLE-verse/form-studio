@@ -44,12 +44,25 @@ export function FormExtensionOutlet({
   )
 }
 
+/**
+ * Lets a staged Save/Cancel host (e.g. CardModal) intercept a field
+ * extension's reads/writes instead of binding straight to the live
+ * FormStudioContext. Absent, outlets bind directly to context — the
+ * live/unstaged behavior every other host (e.g. CompatibilityCard) keeps.
+ */
+export interface FieldExtensionValueOverride {
+  getValue: <TValue>(extension: FormStudioExtension<TValue>) => TValue | undefined
+  setValue: <TValue>(extension: FormStudioExtension<TValue>, value: TValue | undefined) => void
+}
+
 export function FieldExtensionOutlet({
   fieldPointer,
   compatibility,
+  valueOverride,
 }: {
   fieldPointer: string
   compatibility?: FieldCompatibility
+  valueOverride?: FieldExtensionValueOverride
 }) {
   const context = useOptionalFormStudio()
   if (!context || context.extensions.length === 0) return null
@@ -71,7 +84,8 @@ export function FieldExtensionOutlet({
           context,
           extension,
           context.state.schema,
-          context.state.uiSchema
+          context.state.uiSchema,
+          valueOverride
         )
         const props: FieldExtensionControlProps<any> = {
           ...baseProps,
@@ -133,17 +147,24 @@ function createControlProps(
   context: NonNullable<ReturnType<typeof useOptionalFormStudio>>,
   extension: FormStudioExtension<any>,
   schema: object,
-  uiSchema: object
+  uiSchema: object,
+  valueOverride?: FieldExtensionValueOverride
 ): FormExtensionControlProps<any> {
   return {
     extension,
     schema,
     uiSchema,
-    value: context.getExtensionValue(extension),
-    setValue: (value) => context.setExtensionValue(extension, value),
-    diagnostics: context.extensionDiagnostics.filter(
-      (diagnostic) => diagnostic.source === extension.id
-    ),
+    value: valueOverride ? valueOverride.getValue(extension) : context.getExtensionValue(extension),
+    setValue: (value) =>
+      valueOverride
+        ? valueOverride.setValue(extension, value)
+        : context.setExtensionValue(extension, value),
+    // A staged host hasn't committed its draft yet, so debounced diagnostics
+    // computed against live context state don't describe it — omit them
+    // rather than show feedback for a value the user isn't looking at.
+    diagnostics: valueOverride
+      ? []
+      : context.extensionDiagnostics.filter((diagnostic) => diagnostic.source === extension.id),
   }
 }
 

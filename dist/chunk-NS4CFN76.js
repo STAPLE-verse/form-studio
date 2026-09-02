@@ -195,7 +195,7 @@ function validatorFailureDiagnostic(source, sourceLabel, error) {
     sourceLabel,
     code: "FS_EXTENSION_VALIDATION_FAILED",
     stage: "validation",
-    message: error instanceof Error ? error.message : "Extension validation failed",
+    message: error instanceof Error ? error.message : "Validation failed unexpectedly",
     severity: "error",
     blocksCommit: true
   };
@@ -358,4 +358,4 @@ export {
   useOptionalFormStudio,
   useSyncedJsonDocument
 };
-//# sourceMappingURL=chunk-CTI3H5C4.js.map
+//# sourceMappingURL=chunk-NS4CFN76.js.map
