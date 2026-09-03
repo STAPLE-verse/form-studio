@@ -438,7 +438,7 @@ function RemoveSemanticComponentControl({
     return /* @__PURE__ */ jsxs2(
       "div",
       {
-        className: `alert alert-warning py-2 text-sm items-center ${className ?? ""}`,
+        className: `alert alert-warning py-2 text-sm items-center w-full ${className ?? ""}`,
         role: "alert",
         children: [
           /* @__PURE__ */ jsx2("span", { children: "Remove the entire semantic component? This cannot be undone." }),
@@ -496,7 +496,7 @@ function SemanticDocument({
       className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full",
       "data-json-editor-document": "semantics",
       children: [
-        /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between mb-2", children: [
+        /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between mb-2 flex-wrap gap-2", children: [
           /* @__PURE__ */ jsx3("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider", children: "Semantics" }),
           semantics !== void 0 && /* @__PURE__ */ jsx3(RemoveSemanticComponentControl, { onRemove: () => setSemantics(void 0) })
         ] }),
@@ -568,7 +568,7 @@ function SemanticRootClassInput({
     onSemanticsChange({ ...semantics, root: { classIri: value } });
   };
   return /* @__PURE__ */ jsxs4("div", { children: [
-    /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between mb-2", children: [
+    /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between mb-2 flex-wrap gap-2", children: [
       /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx4("h5", { "data-test": "semantic-root-class-label", className: "font-semibold", children: "Semantic root class (optional)" }),
         /* @__PURE__ */ jsx4(

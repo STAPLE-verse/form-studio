@@ -120,7 +120,7 @@ export default function FormBuilder({
       </div>
       {(!mods || mods.showFormHead !== false) && (
         <div
-          className="formHead border border-base-300 rounded-xl bg-base-300 shadow-sm p-4"
+          className="formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4"
           data-test="form-head"
         >
           <div>

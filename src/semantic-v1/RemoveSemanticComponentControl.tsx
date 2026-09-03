@@ -20,7 +20,7 @@ export default function RemoveSemanticComponentControl({
   if (confirming) {
     return (
       <div
-        className={`alert alert-warning py-2 text-sm items-center ${className ?? ""}`}
+        className={`alert alert-warning py-2 text-sm items-center w-full ${className ?? ""}`}
         role="alert"
       >
         <span>Remove the entire semantic component? This cannot be undone.</span>

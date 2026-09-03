@@ -28,7 +28,7 @@ export default function SemanticDocument({
       className="flex-1 min-w-0 flex flex-col h-[500px] lg:h-full"
       data-json-editor-document="semantics"
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
         <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider">
           Semantics
         </h4>

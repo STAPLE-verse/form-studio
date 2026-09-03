@@ -8427,13 +8427,13 @@ function addSectionObj(parameters) {
     name: `${DEFAULT_INPUT_NAME}${i2}`,
     required: false,
     dataOptions: {
-      title: `New Input ${i2}`,
+      title: `New Section ${i2}`,
       type: "object",
       default: ""
     },
     uiOptions: {},
     propType: "section",
-    schema: { title: `New Input ${i2}`, type: "object" },
+    schema: { title: `New Section ${i2}`, type: "object" },
     uischema: {},
     neighborNames: []
   };
@@ -10019,7 +10019,8 @@ function CardGeneralParameterInputs({
 }
 
 // src/Add.tsx
-import { useState as useState9, useEffect, useRef } from "react";
+import { useState as useState9, useEffect, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { PlusIcon as PlusIcon3 } from "@heroicons/react/24/outline";
 import { Fragment, jsx as jsx18, jsxs as jsxs14 } from "react/jsx-runtime";
 function Add({
@@ -10030,10 +10031,13 @@ function Add({
 }) {
   const [popoverOpen, setPopoverOpen] = useState9(false);
   const [createChoice, setCreateChoice] = useState9("card");
+  const [popoverPos, setPopoverPos] = useState9({ top: 0, left: 0 });
   const containerRef = useRef(null);
+  const popoverRef = useRef(null);
   useEffect(() => {
     function handleClickOutside(event) {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      const target = event.target;
+      if (containerRef.current && !containerRef.current.contains(target) && popoverRef.current && !popoverRef.current.contains(target)) {
         setPopoverOpen(false);
       }
     }
@@ -10044,55 +10048,75 @@ function Add({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popoverOpen]);
+  useLayoutEffect(() => {
+    if (!popoverOpen || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const popoverWidth = 256;
+    setPopoverPos({
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.left + window.scrollX + rect.width / 2 - popoverWidth / 2
+    });
+  }, [popoverOpen]);
   if (hidden) return /* @__PURE__ */ jsx18(Fragment, {});
   return /* @__PURE__ */ jsxs14("div", { ref: containerRef, className: "relative flex flex-col items-center mt-4 w-full", children: [
     /* @__PURE__ */ jsx18(
       "div",
       {
-        className: "group w-full py-2 flex justify-center cursor-pointer border-2 border-dashed border-base-300 hover:border-primary hover:bg-primary/5 rounded-lg transition-all",
+        className: "group w-full py-2 flex justify-center cursor-pointer border-2 border-dashed border-base-content/40 bg-base-300 hover:border-primary hover:bg-primary/5 rounded-lg transition-all",
         onClick: () => setPopoverOpen(!popoverOpen),
         title: tooltipDescription || "Add a new item or section",
-        children: /* @__PURE__ */ jsx18(PlusIcon3, { className: "h-6 w-6 text-base-content/50 group-hover:text-primary transition-colors" })
+        children: /* @__PURE__ */ jsx18(PlusIcon3, { className: "h-6 w-6 text-base-content/70 group-hover:text-primary transition-colors" })
       }
     ),
-    popoverOpen && /* @__PURE__ */ jsxs14("div", { className: "absolute top-12 z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300", children: [
-      /* @__PURE__ */ jsx18("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
-      /* @__PURE__ */ jsx18(
-        FBRadioGroup,
+    popoverOpen && createPortal(
+      /* @__PURE__ */ jsxs14(
+        "div",
         {
-          className: "choose-create text-sm",
-          defaultValue: createChoice,
-          horizontal: false,
-          options: [
-            {
-              value: "card",
-              label: labels?.addElementLabel ?? "Item"
-            },
-            {
-              value: "section",
-              label: labels?.addSectionLabel ?? "Section"
-            }
-          ],
-          onChange: (selection) => {
-            setCreateChoice(selection);
-          }
+          ref: popoverRef,
+          style: { position: "absolute", top: popoverPos.top, left: popoverPos.left },
+          className: "z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300",
+          children: [
+            /* @__PURE__ */ jsx18("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
+            /* @__PURE__ */ jsx18(
+              FBRadioGroup,
+              {
+                className: "choose-create text-sm",
+                defaultValue: createChoice,
+                horizontal: false,
+                options: [
+                  {
+                    value: "card",
+                    label: labels?.addElementLabel ?? "Item"
+                  },
+                  {
+                    value: "section",
+                    label: labels?.addSectionLabel ?? "Section"
+                  }
+                ],
+                onChange: (selection) => {
+                  setCreateChoice(selection);
+                }
+              }
+            ),
+            /* @__PURE__ */ jsxs14("div", { className: "flex justify-between mt-4", children: [
+              /* @__PURE__ */ jsx18("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-secondary", children: "Cancel" }),
+              /* @__PURE__ */ jsx18(
+                "button",
+                {
+                  onClick: () => {
+                    addElem(createChoice);
+                    setPopoverOpen(false);
+                  },
+                  className: "btn btn-sm btn-primary",
+                  children: "Create"
+                }
+              )
+            ] })
+          ]
         }
       ),
-      /* @__PURE__ */ jsxs14("div", { className: "flex justify-between mt-4", children: [
-        /* @__PURE__ */ jsx18("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-outline btn-secondary", children: "Cancel" }),
-        /* @__PURE__ */ jsx18(
-          "button",
-          {
-            onClick: () => {
-              addElem(createChoice);
-              setPopoverOpen(false);
-            },
-            className: "btn btn-sm btn-primary",
-            children: "Create"
-          }
-        )
-      ] })
-    ] })
+      document.body
+    )
   ] });
 }
 
@@ -10562,7 +10586,7 @@ function Section({
         isOpen: cardOpen,
         toggleCollapse: () => setCardOpen(!cardOpen),
         title: /* @__PURE__ */ jsxs17("div", { className: "flex justify-between items-center w-full", children: [
-          /* @__PURE__ */ jsxs17("span", { onClick: () => setCardOpen(!cardOpen), className: "text-xl font-bold cursor-pointer select-none", children: [
+          /* @__PURE__ */ jsxs17("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
             schemaData.title || keyName,
             " ",
             parent2 ? /* @__PURE__ */ jsx21(
@@ -11681,8 +11705,8 @@ var DEFAULT_FORM_INPUTS = {
 var defaultFormInputs_default = DEFAULT_FORM_INPUTS;
 
 // src/controlAppearance.ts
-var controlAppearanceClass = "border border-primary bg-primary/10 transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
-var builderControlAppearanceClass = "[&_.input]:border [&_.input:not(.input-error)]:border-primary [&_.input]:bg-primary/10 [&_.input]:transition-shadow [&_.input:focus]:border-primary [&_.input:focus]:outline-none [&_.input:focus]:ring-2 [&_.input:focus]:ring-primary/40 [&_.input:focus]:ring-offset-1 [&_.input:focus]:ring-offset-base-100 [&_.textarea]:border [&_.textarea]:border-primary [&_.textarea]:bg-primary/10 [&_.textarea]:transition-shadow [&_.textarea:focus]:border-primary [&_.textarea:focus]:outline-none [&_.textarea:focus]:ring-2 [&_.textarea:focus]:ring-primary/40 [&_.textarea:focus]:ring-offset-1 [&_.textarea:focus]:ring-offset-base-100 [&_.select]:border [&_.select]:border-primary [&_.select]:bg-primary/10 [&_.select]:transition-shadow [&_.select:focus]:border-primary [&_.select:focus]:outline-none [&_.select:focus]:ring-2 [&_.select:focus]:ring-primary/40 [&_.select:focus]:ring-offset-1 [&_.select:focus]:ring-offset-base-100";
+var controlAppearanceClass = "border border-primary bg-base-300 transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+var builderControlAppearanceClass = "[&_.input]:border [&_.input:not(.input-error)]:border-primary [&_.input]:bg-base-300 [&_.input]:transition-shadow [&_.input:focus]:border-primary [&_.input:focus]:outline-none [&_.input:focus]:ring-2 [&_.input:focus]:ring-primary/40 [&_.input:focus]:ring-offset-1 [&_.input:focus]:ring-offset-base-100 [&_.textarea]:border [&_.textarea]:border-primary [&_.textarea]:bg-base-300 [&_.textarea]:transition-shadow [&_.textarea:focus]:border-primary [&_.textarea:focus]:outline-none [&_.textarea:focus]:ring-2 [&_.textarea:focus]:ring-primary/40 [&_.textarea:focus]:ring-offset-1 [&_.textarea:focus]:ring-offset-base-100 [&_.select]:border [&_.select]:border-primary [&_.select]:bg-base-300 [&_.select]:transition-shadow [&_.select:focus]:border-primary [&_.select:focus]:outline-none [&_.select:focus]:ring-2 [&_.select:focus]:ring-primary/40 [&_.select:focus]:ring-offset-1 [&_.select:focus]:ring-offset-base-100";
 
 // src/FormBuilder.tsx
 import { jsx as jsx28, jsxs as jsxs23 } from "react/jsx-runtime";

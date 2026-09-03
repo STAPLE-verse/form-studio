@@ -313,7 +313,7 @@ test("Form Studio compatibility coordinates match the recorded current stack", a
   const readVersion = async (packagePath: string) =>
     JSON.parse(await readFile(path.join(process.cwd(), packagePath), "utf8")).version
 
-  assert.equal(await readVersion("package.json"), "0.2.0-rc.1")
+  assert.equal(await readVersion("package.json"), "0.2.0-rc.2")
   assert.equal(await readVersion("node_modules/@rjsf/core/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/@rjsf/validator-ajv8/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/ajv/package.json"), "8.20.0")
@@ -620,7 +620,7 @@ test("RJSF preview styles single-line, multiline, and nested object fields consi
   assert.match(markup, /<label class="[^"]*mb-1[^"]*block[^"]*"[^>]*>Title/)
   assert.match(
     markup,
-    /<input[^>]*class="[^"]*input-bordered[^"]*w-full[^"]*border-primary[^"]*bg-primary\/10[^"]*focus:ring-2[^"]*"/
+    /<input[^>]*class="[^"]*input-bordered[^"]*w-full[^"]*border-primary[^"]*bg-base-300[^"]*focus:ring-2[^"]*"/
   )
   for (const [id, type] of [
     ["root_website", "url"],
@@ -630,13 +630,13 @@ test("RJSF preview styles single-line, multiline, and nested object fields consi
     assert.match(
       markup,
       new RegExp(
-        `<input id="${id}"[^>]*class="[^"]*input-bordered[^"]*border-primary[^"]*bg-primary/10[^"]*"[^>]*type="${type}"`
+        `<input id="${id}"[^>]*class="[^"]*input-bordered[^"]*border-primary[^"]*bg-base-300[^"]*"[^>]*type="${type}"`
       )
     )
   }
   assert.match(
     markup,
-    /<textarea[^>]*class="[^"]*textarea-bordered[^"]*w-full[^"]*border-primary[^"]*bg-primary\/10[^"]*focus:ring-2[^"]*"/
+    /<textarea[^>]*class="[^"]*textarea-bordered[^"]*w-full[^"]*border-primary[^"]*bg-base-300[^"]*focus:ring-2[^"]*"/
   )
   assert.match(markup, /placeholder="Enter a multiline description"/)
 })
@@ -658,19 +658,19 @@ test("exported JSON Schema renderer owns the themed RJSF integration without stu
   )
 
   assert.match(markup, /<input[^>]*type="url"/)
-  assert.match(markup, /class="[^"]*input-bordered[^"]*bg-primary\/10[^"]*"/)
+  assert.match(markup, /class="[^"]*input-bordered[^"]*bg-base-300[^"]*"/)
   assert.match(markup, /<select[^>]*class="[^"]*select-primary[^"]*"/)
   assert.doesNotMatch(markup, /type="submit"/)
 })
 
 test("Visual Builder and Live Preview share control surface and focus treatments", () => {
   assert.match(controlAppearanceClass, /border border-primary/)
-  assert.match(controlAppearanceClass, /bg-primary\/10/)
+  assert.match(controlAppearanceClass, /bg-base-300/)
   assert.match(controlAppearanceClass, /focus:ring-2 focus:ring-primary\/40/)
 
   for (const control of ["input", "textarea", "select"]) {
     assert.match(builderControlAppearanceClass, new RegExp(`\\[&_\\.${control}\\]:border`))
-    assert.match(builderControlAppearanceClass, new RegExp(`\\[&_\\.${control}\\]:bg-primary/10`))
+    assert.match(builderControlAppearanceClass, new RegExp(`\\[&_\\.${control}\\]:bg-base-300`))
     assert.match(
       builderControlAppearanceClass,
       new RegExp(`\\[&_\\.${control}:focus\\]:ring-primary/40`)
@@ -714,7 +714,7 @@ test("RJSF preview uses DaisyUI controls for every choice presentation", () => {
 
   assert.match(
     markup,
-    /<select[^>]*class="[^"]*select-bordered[^"]*select-primary[^"]*bg-primary\/10[^"]*"/
+    /<select[^>]*class="[^"]*select-bordered[^"]*select-primary[^"]*bg-base-300[^"]*"/
   )
   assert.match(markup, /<input[^>]*type="radio"[^>]*class="[^"]*radio radio-primary[^"]*"/)
   assert.match(
