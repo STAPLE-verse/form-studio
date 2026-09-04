@@ -11,7 +11,7 @@ Add the package to your app's `package.json`:
 ```json
 {
   "dependencies": {
-    "@staple-verse/form-studio": "github:STAPLE-verse/form-studio#v0.1.0"
+    "@staple-verse/form-studio": "github:STAPLE-verse/form-studio#v0.2.0-rc.1"
   }
 }
 ```
@@ -81,22 +81,128 @@ export default function Page() {
       initialSchema={{}}
       initialUiSchema={{}}
       onSave={async (state) => {
-        // persist state.schema, state.uiSchema, state.formData
+        // persist state.schema, state.uiSchema, state.extensionValues, state.formData
       }}
     />
   )
 }
 ```
 
+For rendering a schema without the studio state provider, use the canonical context-free
+renderer. Form Studio owns the matching RJSF, AJV validator, and DaisyUI theme internally:
+
+```tsx
+import { JsonSchemaForm } from "@staple-verse/form-studio"
+
+export default function MetadataForm({ schema, uiSchema, formData, save }) {
+  return (
+    <JsonSchemaForm
+      schema={schema}
+      uiSchema={uiSchema}
+      formData={formData}
+      onSubmit={({ formData }) => save(formData)}
+    />
+  )
+}
+```
+
+### Provider-scoped extension state
+
+Extension registration is fixed for a provider's lifetime. Define descriptors
+and the ordered registration array outside render, then use the typed context
+helpers or descriptor accessor for values:
+
+```tsx
+import {
+  FormStudioProvider,
+  defineFormStudioExtension,
+  useFormStudio,
+} from "@staple-verse/form-studio"
+
+const notesExtension = defineFormStudioExtension<{ note: string }>({
+  id: "example.notes",
+  label: "Notes",
+  validate: () => [],
+})
+const extensions = [notesExtension]
+
+function NotesControl() {
+  const { state, setExtensionValue } = useFormStudio()
+  const value = notesExtension.getValue(state)
+
+  return (
+    <input
+      value={value?.note ?? ""}
+      onChange={(event) => setExtensionValue(notesExtension, { note: event.target.value })}
+    />
+  )
+}
+
+export function Example() {
+  return (
+    <FormStudioProvider
+      extensions={extensions}
+      initialExtensionValues={{ [notesExtension.id]: { note: "Initial" } }}
+    >
+      <NotesControl />
+    </FormStudioProvider>
+  )
+}
+```
+
+Changing registration requires remounting the provider. `undefined` removes
+an extension value; it is distinct from an invalid or empty object. Registered
+slot components contribute form controls, field controls, and JSON documents
+through the ordinary `FormBuilder` and `JsonEditor` composition. The provider
+exposes debounced `extensionDiagnostics` for live feedback and a synchronous
+`validateForCommit()` result for persistence guards.
+
+Semantic V1 is implemented as the first registered extension under
+`src/semantic-v1`. It exports `semanticV1Extension`, `getSemanticV1Value`, and
+`useSemanticV1Value` through the independently built `./semantic-v1` package
+subpath. Permanent packaging checks keep the base dependency graph free of the
+marker runtime and exercise packed React 18, React 19, and STAPLE consumers.
+
+The Semantic-aware turnkey composition uses the same generic lifecycle:
+
+```tsx
+import { FormStudio } from "@staple-verse/form-studio"
+import { semanticV1Extension } from "@staple-verse/form-studio/semantic-v1"
+
+const extensions = [semanticV1Extension]
+
+<FormStudio
+  extensions={extensions}
+  initialExtensionValues={{ [semanticV1Extension.id]: semantics }}
+  onDiagnosticsChange={(diagnostics) => {
+    // Debounced diagnostics from every registered extension.
+  }}
+  onSave={async (state) => {
+    const semantics = semanticV1Extension.getValue(state)
+    // Persist only after FormStudio's synchronous commit guard succeeds.
+  }}
+/>
+```
+
+The old `initialSemantics`, `state.semantics`, `setSemantics`, direct
+`FormBuilder` semantic props, and `onSemanticValidationChange` APIs are removed
+for the coordinated breaking prerelease; they are not maintained as aliases.
+
 ### Exports
 
-- `FormStudio` — full studio with provider, tabs, and save UI
-- `FormStudioUI` — studio UI without the provider (use with `FormStudioProvider`)
+- `FormStudio` — full generic studio; accepts `extensions` and `initialExtensionValues`
+- `FormStudioUI` — provider-connected generic studio UI using `validateForCommit()`
 - `FormBuilder` — visual schema builder only
 - `FormPreview` — live RJSF preview
+- `JsonSchemaForm` — canonical context-free JSON Schema renderer and validator
 - `JsonEditor` — Monaco JSON editor
 - `FormStudioProvider`, `useFormStudio` — shared state context
 - `FormStudioState`, `FormStudioProviderProps` — shared integration types
+- `defineFormStudioExtension`, `getFormStudioExtensionValue` — typed extension helpers
+- `FormStudioExtension`, `FormStudioDiagnostic` — generic extension contracts
+- `FormStudioDiagnostics` — grouped diagnostics for registered extensions
+- `FormExtensionControlProps`, `FieldExtensionControlProps`, `ExtensionDocumentProps` — slot props
+- `JsonSchemaFormProps`, `JsonSchemaFormEvent`, `JsonSchemaFormValidationError` — renderer API types
 - All types from `./types`
 
 ## Development
@@ -105,11 +211,16 @@ export default function Page() {
 npm install
 npm run build      # bundle the ESM library and declarations into dist/
 npm run typecheck  # type-check without emitting
+npm test           # capability, registry/integration, and package-boundary checks
 ```
 
-The build creates a single ESM entry point with bundled internal modules. Runtime and peer
-dependencies remain external, so consuming applications provide and bundle them normally.
-The output includes a `"use client"` directive for compatibility with Next.js App Router.
+The build creates independent base and `semantic-v1` ESM entry points with shared internal
+chunks. Runtime and peer dependencies remain external, so consuming applications provide and
+bundle them normally. Both public entries include a `"use client"` directive for compatibility
+with Next.js App Router.
+
+Release verification also includes `npm run test:packed-consumers`,
+`npm run test:staple:packed`, and `npm run test:clean-install`.
 
 `dist/` is committed, so after making changes, run `npm run build` and commit the updated
 output alongside your source changes. CI fails the build if `dist/` is out of date.

@@ -12,12 +12,15 @@ const external = [
 ]
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: {
+    index: "src/index.ts",
+    "semantic-v1": "src/semantic-v1/index.ts",
+  },
   format: ["esm"],
   target: "es2020",
   platform: "neutral",
   bundle: true,
-  splitting: false,
+  splitting: true,
   clean: true,
   sourcemap: true,
   dts: true,

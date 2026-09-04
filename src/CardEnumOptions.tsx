@@ -51,7 +51,7 @@ export default function CardEnumOptions({
               names
             )
           }}
-          className="input input-primary input-bordered focus:outline-secondary w-full"
+          className="input input-primary input-bordered input-sm w-full"
         />
         <input
           value={name || ""}
@@ -66,7 +66,7 @@ export default function CardEnumOptions({
                 ...names.slice(index + 1),
               ])
           }}
-          className="input input-primary input-bordered focus:outline-secondary w-full"
+          className="input input-primary input-bordered input-sm w-full"
           style={{ display: showNames ? "initial" : "none" }}
         />
         <span

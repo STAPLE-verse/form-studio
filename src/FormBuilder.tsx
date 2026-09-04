@@ -10,6 +10,7 @@ import {
   parse,
   stringify,
   checkForUnsupportedFeatures,
+  generateElementPropsFromSchemas,
   generateElementComponentsFromSchemas,
   addCardObj,
   addSectionObj,
@@ -20,6 +21,8 @@ import {
 } from "./utils"
 import DEFAULT_FORM_INPUTS from "./defaults/defaultFormInputs"
 import type { Mods, InitParameters, AddFormObjectParametersType } from "./types"
+import { builderControlAppearanceClass } from "./controlAppearance"
+import { FormExtensionOutlet } from "./extensions/outlets"
 
 
 export default function FormBuilder({
@@ -44,22 +47,34 @@ export default function FormBuilder({
     Object.assign({}, DEFAULT_FORM_INPUTS, (mods && mods.customFormInputs) || {}),
     mods && mods.deactivatedFormInputs
   )
+  const categoryHash = generateCategoryHash(allFormInputs)
 
-  const unsupportedFeatures = checkForUnsupportedFeatures(
-    schemaData,
-    uiSchemaData,
-    allFormInputs
-  ).filter(
-    (msg) =>
-      !msg.includes("Object Property: _stapleSchema") &&
-      !msg.includes("Property Parameter: readOnly in _stapleSchema") &&
-      !msg.includes("UI Widget: hidden for _stapleSchema") &&
-      !msg.includes("UI schema property: _stapleSchema") &&
-      !msg.includes("allOf")
+  const compatibilityDiagnostics = generateElementPropsFromSchemas({
+    schema: schemaData,
+    uischema: uiSchemaData,
+    definitionData: schemaData.definitions,
+    definitionUi: uiSchemaData.definitions,
+    categoryHash,
+  }).flatMap((element) => {
+    if (!element.compatibility || element.compatibility.kind === "editable") return []
+    const pointer = `/properties/${element.name.replace(/~/g, "~0").replace(/\//g, "~1")}`
+    return [`[${element.compatibility.code}] ${pointer}: ${element.compatibility.message}`]
+  })
+
+  const unsupportedFeatures = Array.from(
+    new Set([
+      ...checkForUnsupportedFeatures(schemaData, uiSchemaData, allFormInputs).filter(
+        (msg) =>
+          !msg.includes("Object Property: _stapleSchema") &&
+          !msg.includes("Property Parameter: readOnly in _stapleSchema") &&
+          !msg.includes("UI Widget: hidden for _stapleSchema") &&
+          !msg.includes("UI schema property: _stapleSchema")
+      ),
+      ...compatibilityDiagnostics,
+    ])
   )
 
   const [cardOpenState, setCardOpenState] = React.useState<Record<string, boolean>>({})
-  const categoryHash = generateCategoryHash(allFormInputs)
 
   const isFirstRender = React.useRef(true)
 
@@ -88,7 +103,7 @@ export default function FormBuilder({
 
   return (
     <div
-      className={`formBuilder [&_.input]:bg-base-300 [&_.textarea]:bg-base-300 [&_.select]:bg-base-300 ${className || ""}`}
+      className={`formBuilder ${builderControlAppearanceClass} ${className || ""}`}
     >
       <div
         className="alert alert-warning mb-4 flex-col items-start"
@@ -96,7 +111,7 @@ export default function FormBuilder({
           display: unsupportedFeatures.length === 0 ? "none" : "flex",
         }}
       >
-        <h5 className="font-bold">Unsupported Features:</h5>
+        <h5 className="font-bold">Compatibility diagnostics:</h5>
         <ul className="list-disc pl-5">
           {unsupportedFeatures.map((message, index) => (
             <li key={index}>{message}</li>
@@ -105,7 +120,7 @@ export default function FormBuilder({
       </div>
       {(!mods || mods.showFormHead !== false) && (
         <div
-          className="formHead border border-base-300 rounded-xl bg-base-300 shadow-sm p-4"
+          className="formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4"
           data-test="form-head"
         >
           <div>
@@ -127,7 +142,7 @@ export default function FormBuilder({
                   uiSchema
                 )
               }}
-              className="input input-primary input-bordered focus:outline-secondary w-full form-title mb-4"
+              className="input input-primary input-bordered w-full form-title mb-4"
             />
           </div>
           <div>
@@ -151,6 +166,7 @@ export default function FormBuilder({
           </div>
         </div>
       )}
+      <FormExtensionOutlet schema={schemaData} uiSchema={uiSchemaData} />
       <div className="form-body formBody mt-6">
         <DragDropContext
           onDragEnd={(result) =>
@@ -180,6 +196,7 @@ export default function FormBuilder({
                   definitionData: schemaData.definitions,
                   definitionUi: uiSchemaData.definitions,
                   path: "root",
+                  fieldPointer: "",
                   cardOpenState,
                   setCardOpenState,
                   allFormInputs,
@@ -189,7 +206,12 @@ export default function FormBuilder({
                   Section,
                 }).map((element: any, index) => (
                   // @ts-ignore: suppress key error, can't change key assignment
-                  <Draggable key={element.key} draggableId={element.key} index={index}>
+                  <Draggable
+                    key={element.key}
+                    draggableId={element.key}
+                    index={index}
+                    isDragDisabled={element.props.compatibility !== undefined}
+                  >
                     {(providedDraggable, snapshot) => (
                       <div
                         ref={providedDraggable.innerRef}

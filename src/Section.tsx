@@ -37,6 +37,7 @@ export default function Section({
   onDependentsChange,
   onDelete,
   path,
+  fieldPointer,
   definitionData,
   definitionUi,
   hideKey,
@@ -56,7 +57,9 @@ export default function Section({
   const unsupportedFeatures = checkForUnsupportedFeatures(
     schema || {},
     uischema || {},
-    allFormInputs
+    allFormInputs,
+    definitionData,
+    definitionUi
   )
   const schemaData = schema || {}
   const [cardOpenState, setCardOpenState] = React.useState<Record<string, boolean>>({})
@@ -119,7 +122,7 @@ export default function Section({
               <div className={`${sectionEntryClass} section-reference`}>
                 <h5 className={sectionLabelClass}>Reference Section</h5>
                 <select
-                  className={`select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content focus:outline-secondary`}
+                  className={`select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content`}
                   value={reference}
                   onChange={(e) => {
                     onChange(schema, uischema, e.target.value)
@@ -168,7 +171,7 @@ export default function Section({
                       onNameChange(name)
                     }
                   }}
-                  className={`input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
+                  className={`input input-primary input-bordered ${sectionControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
                   readOnly={hideKey}
                 />
                 {keyError && (
@@ -207,7 +210,7 @@ export default function Section({
                     uischema
                   )
                 }
-                className={`input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text`}
+                className={`input input-primary input-bordered ${sectionControlClass} card-text`}
               />
             </div>
             <div className={sectionEntryClass} data-test="section-description">
@@ -237,7 +240,7 @@ export default function Section({
                 display: unsupportedFeatures.length === 0 ? "none" : "flex",
               }}
             >
-              <h5 className="font-bold">Unsupported Features:</h5>
+              <h5 className="font-bold">Compatibility diagnostics:</h5>
               <ul className="list-disc pl-5">
                 {unsupportedFeatures.map((message) => (
                   <li key={`${elementId}_${message}`}>{message}</li>
@@ -270,6 +273,7 @@ export default function Section({
                       uiSchemaData: uischema,
                       onChange,
                       path,
+                      fieldPointer,
                       definitionData,
                       definitionUi,
                       cardOpenState,
@@ -281,7 +285,12 @@ export default function Section({
                       Section,
                     }).map((element: any, index) => (
                       // @ts-ignore: suppress key error, can't change key assignment
-                      <Draggable key={element.key} draggableId={element.key} index={index}>
+                      <Draggable
+                        key={element.key}
+                        draggableId={element.key}
+                        index={index}
+                        isDragDisabled={element.props.compatibility !== undefined}
+                      >
                         {(providedDraggable, snapshot) => (
                           <div
                             ref={providedDraggable.innerRef}
@@ -350,6 +359,7 @@ export default function Section({
             type: "object",
             "ui:column": uischema["ui:column"] ?? "",
             "ui:options": uischema["ui:options"] ?? "",
+            fieldPointer,
           }}
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}

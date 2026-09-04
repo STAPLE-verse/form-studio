@@ -1,24 +1,84 @@
 "use client"
 
-import React, { createContext, useContext, useState, ReactNode } from "react"
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react"
+import type {
+  FormStudioDiagnostic,
+  FormStudioExtension,
+  FormStudioValidationResult,
+} from "./extensions/types"
+import { getFormStudioExtensionValue } from "./extensions/types"
+import {
+  assertRegisteredFormStudioExtension,
+  assertStableFormStudioExtensionRegistry,
+  createFormStudioExtensionRegistry,
+  createInitialExtensionValues,
+  setRegisteredExtensionValue,
+  type AnyFormStudioExtension,
+  type FormStudioExtensionRegistry,
+} from "./extensions/registry"
+import {
+  useDebouncedExtensionDiagnostics,
+  validateRegisteredExtensions,
+} from "./extensions/validation"
 
 export interface FormStudioState {
   schema: object
   uiSchema: object
+  /** JSON-serializable values for the provider's registered extensions. */
+  extensionValues: Record<string, unknown>
   formData: object
 }
 
-interface FormStudioContextType {
+/**
+ * Single source of truth for "did the authored (non-preview) part of the
+ * state change" — used for the panel error-boundary reset key and the
+ * autosave/dirty-state comparisons. Keeping base and registered extension
+ * values here prevents recovery and dirty-state paths from drifting as
+ * authored documents are added.
+ */
+export function computeStateFingerprint(
+  state: Pick<FormStudioState, "schema" | "uiSchema" | "extensionValues">
+): string {
+  return JSON.stringify({
+    schema: state.schema,
+    uiSchema: state.uiSchema,
+    extensionValues: state.extensionValues,
+  })
+}
+
+export interface FormStudioContextValue {
   state: FormStudioState
+  /** Stable registration order captured when the provider mounts. */
+  extensions: readonly AnyFormStudioExtension[]
   setSchema: (newSchema: object) => void
   setUiSchema: (newUiSchema: object) => void
   setFormData: (newFormData: object) => void
-  updateState: (newState: Partial<FormStudioState>) => void
+  updateState: (newState: Partial<Omit<FormStudioState, "extensionValues">>) => void
+  getExtensionValue: <TValue>(extension: FormStudioExtension<TValue>) => TValue | undefined
+  setExtensionValue: <TValue>(
+    extension: FormStudioExtension<TValue>,
+    value: TValue | undefined
+  ) => void
+  /** Debounced, derived diagnostics in stable registry order. */
+  extensionDiagnostics: FormStudioDiagnostic[]
+  /** Fresh synchronous validation against the current provider state. */
+  validateForCommit: () => FormStudioValidationResult
 }
 
-const FormStudioContext = createContext<FormStudioContextType | undefined>(undefined)
+const FormStudioContext = createContext<FormStudioContextValue | undefined>(undefined)
 
 export interface FormStudioProviderProps {
+  /** Registration is fixed for this provider's lifetime; remount to change it. */
+  extensions?: readonly AnyFormStudioExtension[]
+  /** Values whose keys match registered extension IDs. Undefined means absent. */
+  initialExtensionValues?: Readonly<Record<string, unknown>>
   initialSchema?: object | string
   initialUiSchema?: object | string
   initialFormData?: object
@@ -26,11 +86,21 @@ export interface FormStudioProviderProps {
 }
 
 export function FormStudioProvider({
+  extensions = [],
+  initialExtensionValues = {},
   initialSchema = {},
   initialUiSchema = {},
   initialFormData = {},
   children,
-}: FormStudioProviderProps) {
+}: FormStudioProviderProps): ReactElement {
+  const registryRef = useRef<FormStudioExtensionRegistry | undefined>(undefined)
+  if (!registryRef.current) {
+    registryRef.current = createFormStudioExtensionRegistry(extensions)
+  } else {
+    assertStableFormStudioExtensionRegistry(registryRef.current, extensions)
+  }
+  const registry = registryRef.current
+
   const parseJSON = (data: any) => {
     if (typeof data === "string") {
       try {
@@ -42,11 +112,12 @@ export function FormStudioProvider({
     return data || {}
   }
 
-  const [state, setState] = useState<FormStudioState>({
+  const [state, setState] = useState<FormStudioState>(() => ({
     schema: parseJSON(initialSchema),
     uiSchema: parseJSON(initialUiSchema),
+    extensionValues: createInitialExtensionValues(registry, initialExtensionValues),
     formData: initialFormData,
-  })
+  }))
 
   const setSchema = (newSchema: object) => {
     setState((prev) => ({ ...prev, schema: newSchema }))
@@ -60,18 +131,57 @@ export function FormStudioProvider({
     setState((prev) => ({ ...prev, formData: newFormData }))
   }
 
-  const updateState = (newState: Partial<FormStudioState>) => {
+  const updateState = (newState: Partial<Omit<FormStudioState, "extensionValues">>) => {
     setState((prev) => ({ ...prev, ...newState }))
   }
+
+  const getExtensionValue = <TValue,>(
+    extension: FormStudioExtension<TValue>
+  ): TValue | undefined => {
+    assertRegisteredFormStudioExtension(registry, extension)
+    return getFormStudioExtensionValue(state, extension)
+  }
+
+  const setExtensionValue = <TValue,>(
+    extension: FormStudioExtension<TValue>,
+    value: TValue | undefined
+  ) => {
+    setState((prev) => {
+      const extensionValues = setRegisteredExtensionValue(
+        registry,
+        prev.extensionValues,
+        extension,
+        value
+      )
+      if (extensionValues[extension.id] === prev.extensionValues[extension.id]) {
+        const previousHasValue = Object.prototype.hasOwnProperty.call(
+          prev.extensionValues,
+          extension.id
+        )
+        const nextHasValue = Object.prototype.hasOwnProperty.call(extensionValues, extension.id)
+        if (previousHasValue === nextHasValue) return prev
+      }
+      return { ...prev, extensionValues }
+    })
+  }
+
+  const extensionDiagnostics = useDebouncedExtensionDiagnostics(registry, state)
+  const validateForCommit = (): FormStudioValidationResult =>
+    validateRegisteredExtensions(registry, state)
 
   return (
     <FormStudioContext.Provider
       value={{
         state,
+        extensions: registry.extensions,
         setSchema,
         setUiSchema,
         setFormData,
         updateState,
+        getExtensionValue,
+        setExtensionValue,
+        extensionDiagnostics,
+        validateForCommit,
       }}
     >
       {children}
@@ -85,4 +195,9 @@ export function useFormStudio() {
     throw new Error("useFormStudio must be used within a FormStudioProvider")
   }
   return context
+}
+
+/** Internal optional lookup used by provider-optional FormBuilder outlets. */
+export function useOptionalFormStudio(): FormStudioContextValue | undefined {
+  return useContext(FormStudioContext)
 }

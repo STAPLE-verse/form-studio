@@ -1,104 +1,29 @@
 "use client";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-};
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-
-// src/FormStudioContext.tsx
-import { createContext, useContext, useState as useState14 } from "react";
-import { jsx as jsx27 } from "react/jsx-runtime";
-function FormStudioProvider({
-  initialSchema = {},
-  initialUiSchema = {},
-  initialFormData = {},
-  children
-}) {
-  const parseJSON = (data) => {
-    if (typeof data === "string") {
-      try {
-        return JSON.parse(data);
-      } catch (e2) {
-        return {};
-      }
-    }
-    return data || {};
-  };
-  const [state, setState] = useState14({
-    schema: parseJSON(initialSchema),
-    uiSchema: parseJSON(initialUiSchema),
-    formData: initialFormData
-  });
-  const setSchema = (newSchema) => {
-    setState((prev) => ({ ...prev, schema: newSchema }));
-  };
-  const setUiSchema = (newUiSchema) => {
-    setState((prev) => ({ ...prev, uiSchema: newUiSchema }));
-  };
-  const setFormData = (newFormData) => {
-    setState((prev) => ({ ...prev, formData: newFormData }));
-  };
-  const updateState = (newState) => {
-    setState((prev) => ({ ...prev, ...newState }));
-  };
-  return /* @__PURE__ */ jsx27(
-    FormStudioContext.Provider,
-    {
-      value: {
-        state,
-        setSchema,
-        setUiSchema,
-        setFormData,
-        updateState
-      },
-      children
-    }
-  );
-}
-function useFormStudio() {
-  const context = useContext(FormStudioContext);
-  if (!context) {
-    throw new Error("useFormStudio must be used within a FormStudioProvider");
-  }
-  return context;
-}
-var FormStudioContext;
-var init_FormStudioContext = __esm({
-  "src/FormStudioContext.tsx"() {
-    "use strict";
-    "use client";
-    FormStudioContext = createContext(void 0);
-  }
-});
+import {
+  Tooltip,
+  fieldClass,
+  fieldControlClass,
+  fieldLabelClass,
+  fieldStackClass
+} from "./chunk-XRLOQBER.js";
+import {
+  FieldExtensionOutlet,
+  FormExtensionOutlet,
+  JsonEditor
+} from "./chunk-LXAUWV33.js";
+import {
+  DEBOUNCE_MS,
+  FormStudioProvider,
+  __commonJS,
+  __publicField,
+  __toESM,
+  computeStateFingerprint,
+  createDebouncer,
+  defineFormStudioExtension,
+  getFormStudioExtensionValue,
+  useFormStudio,
+  useOptionalFormStudio
+} from "./chunk-NS4CFN76.js";
 
 // node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
@@ -109,28 +34,27 @@ var require_utils = __commonJS({
     var isHexPair = RegExp.prototype.test.bind(/^[\da-f]{2}$/iu);
     var isUnreserved = RegExp.prototype.test.bind(/^[\da-z\-._~]$/iu);
     var isPathCharacter = RegExp.prototype.test.bind(/^[\da-z\-._~!$&'()*+,;=:@/]$/iu);
-    var isQueryFragmentCharacter = RegExp.prototype.test.bind(/^[\da-z\-._~!$&'()*+,;=:@/?]$/iu);
     function stringArrayToHexStripped(input) {
       let acc = "";
       let code = 0;
-      let i = 0;
-      for (i = 0; i < input.length; i++) {
-        code = input[i].charCodeAt(0);
+      let i2 = 0;
+      for (i2 = 0; i2 < input.length; i2++) {
+        code = input[i2].charCodeAt(0);
         if (code === 48) {
           continue;
         }
         if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
           return "";
         }
-        acc += input[i];
+        acc += input[i2];
         break;
       }
-      for (i += 1; i < input.length; i++) {
-        code = input[i].charCodeAt(0);
+      for (i2 += 1; i2 < input.length; i2++) {
+        code = input[i2].charCodeAt(0);
         if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
           return "";
         }
-        acc += input[i];
+        acc += input[i2];
       }
       return acc;
     }
@@ -160,8 +84,8 @@ var require_utils = __commonJS({
       let endipv6Encountered = false;
       let endIpv6 = false;
       let consume = consumeHextets;
-      for (let i = 0; i < input.length; i++) {
-        const cursor = input[i];
+      for (let i2 = 0; i2 < input.length; i2++) {
+        const cursor = input[i2];
         if (cursor === "[" || cursor === "]") {
           continue;
         }
@@ -176,7 +100,7 @@ var require_utils = __commonJS({
             output.error = true;
             break;
           }
-          if (i > 0 && input[i - 1] === ":") {
+          if (i2 > 0 && input[i2 - 1] === ":") {
             endipv6Encountered = true;
           }
           address.push(":");
@@ -222,8 +146,8 @@ var require_utils = __commonJS({
     }
     function findToken(str, token) {
       let ind = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === token) ind++;
+      for (let i2 = 0; i2 < str.length; i2++) {
+        if (str[i2] === token) ind++;
       }
       return ind;
     }
@@ -252,7 +176,7 @@ var require_utils = __commonJS({
               continue;
             }
           } else if (input[0] === "/") {
-            if (input[1] === ".") {
+            if (input[1] === "." || input[1] === "/") {
               output.push("/");
               break;
             }
@@ -315,9 +239,9 @@ var require_utils = __commonJS({
         return input;
       }
       let output = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
+      for (let i2 = 0; i2 < input.length; i2++) {
+        if (input[i2] === "%" && i2 + 2 < input.length) {
+          const hex = input.slice(i2 + 1, i2 + 3);
           if (isHexPair(hex)) {
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
@@ -326,39 +250,19 @@ var require_utils = __commonJS({
             } else {
               output += "%" + normalizedHex;
             }
-            i += 2;
+            i2 += 2;
             continue;
           }
         }
-        output += input[i];
+        output += input[i2];
       }
       return output;
     }
-    var BYTE_HEX = new Array(256);
-    {
-      const HEX_DIGITS = "0123456789ABCDEF";
-      for (let i = 0; i < 256; i++) {
-        BYTE_HEX[i] = "%" + HEX_DIGITS[i >> 4] + HEX_DIGITS[i & 15];
-      }
-    }
-    function isEscapeSafe(cp) {
-      return cp >= 48 && cp <= 57 || cp >= 65 && cp <= 90 || cp >= 97 && cp <= 122 || cp === 42 || cp === 43 || cp === 45 || cp === 46 || cp === 47 || cp === 64 || cp === 95;
-    }
-    function percentEncodeNonAscii(cp) {
-      if (cp < 2048) {
-        return BYTE_HEX[192 | cp >> 6] + BYTE_HEX[128 | cp & 63];
-      }
-      if (cp < 65536) {
-        return BYTE_HEX[224 | cp >> 12] + BYTE_HEX[128 | cp >> 6 & 63] + BYTE_HEX[128 | cp & 63];
-      }
-      return BYTE_HEX[240 | cp >> 18] + BYTE_HEX[128 | cp >> 12 & 63] + BYTE_HEX[128 | cp >> 6 & 63] + BYTE_HEX[128 | cp & 63];
-    }
     function normalizePathEncoding(input) {
       let output = "";
-      for (let i = 0; i < input.length; i++) {
-        const ch = input[i];
-        if (ch === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
+      for (let i2 = 0; i2 < input.length; i2++) {
+        if (input[i2] === "%" && i2 + 2 < input.length) {
+          const hex = input.slice(i2 + 1, i2 + 3);
           if (isHexPair(hex)) {
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
@@ -367,102 +271,30 @@ var require_utils = __commonJS({
             } else {
               output += "%" + normalizedHex;
             }
-            i += 2;
+            i2 += 2;
             continue;
           }
         }
-        if (isPathCharacter(ch)) {
-          output += ch;
+        if (isPathCharacter(input[i2])) {
+          output += input[i2];
         } else {
-          const code = input.charCodeAt(i);
-          if (code < 128) {
-            output += isEscapeSafe(code) ? ch : BYTE_HEX[code];
-          } else if (code < 55296 || code > 57343) {
-            output += percentEncodeNonAscii(code);
-          } else if (code <= 56319 && i + 1 < input.length) {
-            const low = input.charCodeAt(i + 1);
-            if (low >= 56320 && low <= 57343) {
-              output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
-              i++;
-            } else {
-              output += percentEncodeNonAscii(65533);
-            }
-          } else {
-            output += percentEncodeNonAscii(65533);
-          }
-        }
-      }
-      return output;
-    }
-    function normalizeQueryFragmentEncoding(input) {
-      let output = "";
-      for (let i = 0; i < input.length; i++) {
-        const ch = input[i];
-        if (ch === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
-          if (isHexPair(hex)) {
-            const normalizedHex = hex.toUpperCase();
-            const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
-            if (isUnreserved(decoded)) {
-              output += decoded;
-            } else {
-              output += "%" + normalizedHex;
-            }
-            i += 2;
-            continue;
-          }
-        }
-        if (isQueryFragmentCharacter(ch)) {
-          output += ch;
-        } else {
-          const code = input.charCodeAt(i);
-          if (code < 128) {
-            output += isEscapeSafe(code) ? ch : BYTE_HEX[code];
-          } else if (code < 55296 || code > 57343) {
-            output += percentEncodeNonAscii(code);
-          } else if (code <= 56319 && i + 1 < input.length) {
-            const low = input.charCodeAt(i + 1);
-            if (low >= 56320 && low <= 57343) {
-              output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
-              i++;
-            } else {
-              output += percentEncodeNonAscii(65533);
-            }
-          } else {
-            output += percentEncodeNonAscii(65533);
-          }
+          output += escape(input[i2]);
         }
       }
       return output;
     }
     function escapePreservingEscapes(input) {
       let output = "";
-      for (let i = 0; i < input.length; i++) {
-        const ch = input[i];
-        if (ch === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
+      for (let i2 = 0; i2 < input.length; i2++) {
+        if (input[i2] === "%" && i2 + 2 < input.length) {
+          const hex = input.slice(i2 + 1, i2 + 3);
           if (isHexPair(hex)) {
             output += "%" + hex.toUpperCase();
-            i += 2;
+            i2 += 2;
             continue;
           }
         }
-        const code = input.charCodeAt(i);
-        if (code < 128) {
-          output += isEscapeSafe(code) ? ch : BYTE_HEX[code];
-        } else if (code < 55296 || code > 57343) {
-          output += percentEncodeNonAscii(code);
-        } else if (code <= 56319 && i + 1 < input.length) {
-          const low = input.charCodeAt(i + 1);
-          if (low >= 56320 && low <= 57343) {
-            output += percentEncodeNonAscii(65536 + (code - 55296 << 10) + (low - 56320));
-            i++;
-          } else {
-            output += percentEncodeNonAscii(65533);
-          }
-        } else {
-          output += percentEncodeNonAscii(65533);
-        }
+        output += escape(input[i2]);
       }
       return output;
     }
@@ -496,7 +328,6 @@ var require_utils = __commonJS({
       reescapeHostDelimiters,
       normalizePercentEncoding,
       normalizePathEncoding,
-      normalizeQueryFragmentEncoding,
       escapePreservingEscapes,
       removeDotSegments,
       isIPv4,
@@ -721,7 +552,7 @@ var require_schemes = __commonJS({
 var require_fast_uri = __commonJS({
   "node_modules/fast-uri/index.js"(exports2, module2) {
     "use strict";
-    var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, normalizeQueryFragmentEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
+    var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
     function normalize(uri, options) {
       if (typeof uri === "string") {
@@ -735,12 +566,7 @@ var require_fast_uri = __commonJS({
     }
     function resolve(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
-      const { parsed: baseParsed, malformedAuthorityOrPort: baseMalformed } = parseWithStatus(baseURI, schemelessOptions);
-      const { parsed: relativeParsed, malformedAuthorityOrPort: relativeMalformed } = parseWithStatus(relativeURI, schemelessOptions);
-      if (baseMalformed || relativeMalformed) {
-        throw new Error(baseParsed.error || relativeParsed.error || "URI is malformed.");
-      }
-      const resolved = resolveComponent(baseParsed, relativeParsed, schemelessOptions, true);
+      const resolved = resolveComponent(parse2(baseURI, schemelessOptions), parse2(relativeURI, schemelessOptions), schemelessOptions, true);
       schemelessOptions.skipEscape = true;
       return serialize(resolved, schemelessOptions);
     }
@@ -847,14 +673,14 @@ var require_fast_uri = __commonJS({
         }
       }
       if (component.path !== void 0) {
-        let s = component.path;
+        let s2 = component.path;
         if (!options.absolutePath && (!schemeHandler || !schemeHandler.absolutePath)) {
-          s = removeDotSegments(s);
+          s2 = removeDotSegments(s2);
         }
-        if (authority === void 0 && s[0] === "/" && s[1] === "/") {
-          s = "/%2F" + s.slice(2);
+        if (authority === void 0 && s2[0] === "/" && s2[1] === "/") {
+          s2 = "/%2F" + s2.slice(2);
         }
-        uriTokens.push(s);
+        uriTokens.push(s2);
       }
       if (component.query !== void 0) {
         uriTokens.push("?", component.query);
@@ -865,8 +691,6 @@ var require_fast_uri = __commonJS({
       return uriTokens.join("");
     }
     var URI_PARSE = /^(?:([^#/:?]+):)?(?:\/\/((?:([^#/?@]*)@)?(\[[^#/?\]]+\]|[^#/:?]*)(?::(\d*))?))?([^#?]*)(?:\?([^#]*))?(?:#((?:.|[\n\r])*))?/u;
-    var AUTHORITY_PREFIX = /^(?:[^#/:?]+:)?\/\/([^/?#]*)/;
-    var AUTHORITY_INTRODUCER_REGION = /^(?:[^#/:?]+:)?([/\\\t\n\r]*)/;
     function getParseError(parsed, matches) {
       if (matches[2] !== void 0 && parsed.path && parsed.path[0] !== "/") {
         return 'URI path must start with "/" when authority is present.';
@@ -896,28 +720,9 @@ var require_fast_uri = __commonJS({
           uri = "//" + uri;
         }
       }
-      const authorityMatch = uri.match(AUTHORITY_PREFIX);
-      if (authorityMatch !== null && authorityMatch[1].indexOf("\\") !== -1) {
-        parsed.error = "URI authority must not contain a literal backslash.";
-        malformedAuthorityOrPort = true;
-      }
-      const introducerMatch = uri.match(AUTHORITY_INTRODUCER_REGION);
-      if (introducerMatch !== null) {
-        const region = introducerMatch[1];
-        const normalizedRegion = region.replace(/[\t\n\r]/g, "");
-        if (normalizedRegion.length >= 2) {
-          if (normalizedRegion.slice(0, 2) !== "//") {
-            parsed.error = parsed.error || "URI authority must not contain a literal backslash.";
-            malformedAuthorityOrPort = true;
-          } else if (region.length !== normalizedRegion.length) {
-            parsed.error = parsed.error || "URI authority introducer must not contain whitespace.";
-            malformedAuthorityOrPort = true;
-          }
-        }
-      }
       const matches = uri.match(URI_PARSE);
       if (matches) {
-        parsed.scheme = matches[1] === void 0 ? void 0 : matches[1].toLowerCase();
+        parsed.scheme = matches[1];
         parsed.userinfo = matches[3];
         parsed.host = matches[4];
         parsed.port = parseInt(matches[5], 10);
@@ -959,8 +764,8 @@ var require_fast_uri = __commonJS({
           if (parsed.host && (options.domainHost || schemeHandler && schemeHandler.domainHost) && isIP === false && nonSimpleDomain(parsed.host)) {
             try {
               parsed.host = new URL("http://" + parsed.host).hostname;
-            } catch (e2) {
-              parsed.error = parsed.error || "Host's domain name can not be converted to ASCII: " + e2;
+            } catch (e) {
+              parsed.error = parsed.error || "Host's domain name can not be converted to ASCII: " + e;
             }
           }
         }
@@ -976,11 +781,12 @@ var require_fast_uri = __commonJS({
           if (parsed.path) {
             parsed.path = normalizePathEncoding(parsed.path);
           }
-          if (parsed.query) {
-            parsed.query = normalizeQueryFragmentEncoding(parsed.query);
-          }
           if (parsed.fragment) {
-            parsed.fragment = normalizeQueryFragmentEncoding(parsed.fragment);
+            try {
+              parsed.fragment = encodeURI(decodeURIComponent(parsed.fragment));
+            } catch {
+              parsed.error = parsed.error || "URI malformed";
+            }
           }
         }
         if (schemeHandler && schemeHandler.parse) {
@@ -1124,62 +930,62 @@ var require_jsonpointer = __commonJS({
 var require_react_is_production_min = __commonJS({
   "node_modules/react-is/cjs/react-is.production.min.js"(exports2) {
     "use strict";
-    var b = /* @__PURE__ */ Symbol.for("react.element");
-    var c = /* @__PURE__ */ Symbol.for("react.portal");
+    var b2 = /* @__PURE__ */ Symbol.for("react.element");
+    var c2 = /* @__PURE__ */ Symbol.for("react.portal");
     var d = /* @__PURE__ */ Symbol.for("react.fragment");
-    var e2 = /* @__PURE__ */ Symbol.for("react.strict_mode");
+    var e = /* @__PURE__ */ Symbol.for("react.strict_mode");
     var f = /* @__PURE__ */ Symbol.for("react.profiler");
-    var g2 = /* @__PURE__ */ Symbol.for("react.provider");
+    var g = /* @__PURE__ */ Symbol.for("react.provider");
     var h2 = /* @__PURE__ */ Symbol.for("react.context");
     var k = /* @__PURE__ */ Symbol.for("react.server_context");
-    var l2 = /* @__PURE__ */ Symbol.for("react.forward_ref");
+    var l = /* @__PURE__ */ Symbol.for("react.forward_ref");
     var m = /* @__PURE__ */ Symbol.for("react.suspense");
     var n = /* @__PURE__ */ Symbol.for("react.suspense_list");
     var p2 = /* @__PURE__ */ Symbol.for("react.memo");
     var q2 = /* @__PURE__ */ Symbol.for("react.lazy");
     var t = /* @__PURE__ */ Symbol.for("react.offscreen");
-    var u2;
-    u2 = /* @__PURE__ */ Symbol.for("react.module.reference");
-    function v2(a) {
-      if ("object" === typeof a && null !== a) {
-        var r2 = a.$$typeof;
-        switch (r2) {
-          case b:
-            switch (a = a.type, a) {
+    var u;
+    u = /* @__PURE__ */ Symbol.for("react.module.reference");
+    function v3(a2) {
+      if ("object" === typeof a2 && null !== a2) {
+        var r = a2.$$typeof;
+        switch (r) {
+          case b2:
+            switch (a2 = a2.type, a2) {
               case d:
               case f:
-              case e2:
+              case e:
               case m:
               case n:
-                return a;
+                return a2;
               default:
-                switch (a = a && a.$$typeof, a) {
+                switch (a2 = a2 && a2.$$typeof, a2) {
                   case k:
                   case h2:
-                  case l2:
+                  case l:
                   case q2:
                   case p2:
-                  case g2:
-                    return a;
+                  case g:
+                    return a2;
                   default:
-                    return r2;
+                    return r;
                 }
             }
-          case c:
-            return r2;
+          case c2:
+            return r;
         }
       }
     }
     exports2.ContextConsumer = h2;
-    exports2.ContextProvider = g2;
-    exports2.Element = b;
-    exports2.ForwardRef = l2;
+    exports2.ContextProvider = g;
+    exports2.Element = b2;
+    exports2.ForwardRef = l;
     exports2.Fragment = d;
     exports2.Lazy = q2;
     exports2.Memo = p2;
-    exports2.Portal = c;
+    exports2.Portal = c2;
     exports2.Profiler = f;
-    exports2.StrictMode = e2;
+    exports2.StrictMode = e;
     exports2.Suspense = m;
     exports2.SuspenseList = n;
     exports2.isAsyncMode = function() {
@@ -1188,46 +994,46 @@ var require_react_is_production_min = __commonJS({
     exports2.isConcurrentMode = function() {
       return false;
     };
-    exports2.isContextConsumer = function(a) {
-      return v2(a) === h2;
+    exports2.isContextConsumer = function(a2) {
+      return v3(a2) === h2;
     };
-    exports2.isContextProvider = function(a) {
-      return v2(a) === g2;
+    exports2.isContextProvider = function(a2) {
+      return v3(a2) === g;
     };
-    exports2.isElement = function(a) {
-      return "object" === typeof a && null !== a && a.$$typeof === b;
+    exports2.isElement = function(a2) {
+      return "object" === typeof a2 && null !== a2 && a2.$$typeof === b2;
     };
-    exports2.isForwardRef = function(a) {
-      return v2(a) === l2;
+    exports2.isForwardRef = function(a2) {
+      return v3(a2) === l;
     };
-    exports2.isFragment = function(a) {
-      return v2(a) === d;
+    exports2.isFragment = function(a2) {
+      return v3(a2) === d;
     };
-    exports2.isLazy = function(a) {
-      return v2(a) === q2;
+    exports2.isLazy = function(a2) {
+      return v3(a2) === q2;
     };
-    exports2.isMemo = function(a) {
-      return v2(a) === p2;
+    exports2.isMemo = function(a2) {
+      return v3(a2) === p2;
     };
-    exports2.isPortal = function(a) {
-      return v2(a) === c;
+    exports2.isPortal = function(a2) {
+      return v3(a2) === c2;
     };
-    exports2.isProfiler = function(a) {
-      return v2(a) === f;
+    exports2.isProfiler = function(a2) {
+      return v3(a2) === f;
     };
-    exports2.isStrictMode = function(a) {
-      return v2(a) === e2;
+    exports2.isStrictMode = function(a2) {
+      return v3(a2) === e;
     };
-    exports2.isSuspense = function(a) {
-      return v2(a) === m;
+    exports2.isSuspense = function(a2) {
+      return v3(a2) === m;
     };
-    exports2.isSuspenseList = function(a) {
-      return v2(a) === n;
+    exports2.isSuspenseList = function(a2) {
+      return v3(a2) === n;
     };
-    exports2.isValidElementType = function(a) {
-      return "string" === typeof a || "function" === typeof a || a === d || a === f || a === e2 || a === m || a === n || a === t || "object" === typeof a && null !== a && (a.$$typeof === q2 || a.$$typeof === p2 || a.$$typeof === g2 || a.$$typeof === h2 || a.$$typeof === l2 || a.$$typeof === u2 || void 0 !== a.getModuleId) ? true : false;
+    exports2.isValidElementType = function(a2) {
+      return "string" === typeof a2 || "function" === typeof a2 || a2 === d || a2 === f || a2 === e || a2 === m || a2 === n || a2 === t || "object" === typeof a2 && null !== a2 && (a2.$$typeof === q2 || a2.$$typeof === p2 || a2.$$typeof === g || a2.$$typeof === h2 || a2.$$typeof === l || a2.$$typeof === u || void 0 !== a2.getModuleId) ? true : false;
     };
-    exports2.typeOf = v2;
+    exports2.typeOf = v3;
   }
 });
 
@@ -1436,11 +1242,11 @@ var require_code = __commonJS({
     exports2._CodeOrName = _CodeOrName;
     exports2.IDENTIFIER = /^[a-z$_][a-z$_0-9]*$/i;
     var Name = class extends _CodeOrName {
-      constructor(s) {
+      constructor(s2) {
         super();
-        if (!exports2.IDENTIFIER.test(s))
+        if (!exports2.IDENTIFIER.test(s2))
           throw new Error("CodeGen: name must be a valid identifier");
-        this.str = s;
+        this.str = s2;
       }
       toString() {
         return this.str;
@@ -1469,37 +1275,37 @@ var require_code = __commonJS({
       }
       get str() {
         var _a;
-        return (_a = this._str) !== null && _a !== void 0 ? _a : this._str = this._items.reduce((s, c) => `${s}${c}`, "");
+        return (_a = this._str) !== null && _a !== void 0 ? _a : this._str = this._items.reduce((s2, c2) => `${s2}${c2}`, "");
       }
       get names() {
         var _a;
-        return (_a = this._names) !== null && _a !== void 0 ? _a : this._names = this._items.reduce((names, c) => {
-          if (c instanceof Name)
-            names[c.str] = (names[c.str] || 0) + 1;
+        return (_a = this._names) !== null && _a !== void 0 ? _a : this._names = this._items.reduce((names, c2) => {
+          if (c2 instanceof Name)
+            names[c2.str] = (names[c2.str] || 0) + 1;
           return names;
         }, {});
       }
     };
     exports2._Code = _Code;
     exports2.nil = new _Code("");
-    function _(strs, ...args) {
+    function _2(strs, ...args) {
       const code = [strs[0]];
-      let i = 0;
-      while (i < args.length) {
-        addCodeArg(code, args[i]);
-        code.push(strs[++i]);
+      let i2 = 0;
+      while (i2 < args.length) {
+        addCodeArg(code, args[i2]);
+        code.push(strs[++i2]);
       }
       return new _Code(code);
     }
-    exports2._ = _;
+    exports2._ = _2;
     var plus = new _Code("+");
     function str(strs, ...args) {
       const expr = [safeStringify(strs[0])];
-      let i = 0;
-      while (i < args.length) {
+      let i2 = 0;
+      while (i2 < args.length) {
         expr.push(plus);
-        addCodeArg(expr, args[i]);
-        expr.push(plus, safeStringify(strs[++i]));
+        addCodeArg(expr, args[i2]);
+        expr.push(plus, safeStringify(strs[++i2]));
       }
       optimize(expr);
       return new _Code(expr);
@@ -1515,35 +1321,35 @@ var require_code = __commonJS({
     }
     exports2.addCodeArg = addCodeArg;
     function optimize(expr) {
-      let i = 1;
-      while (i < expr.length - 1) {
-        if (expr[i] === plus) {
-          const res = mergeExprItems(expr[i - 1], expr[i + 1]);
+      let i2 = 1;
+      while (i2 < expr.length - 1) {
+        if (expr[i2] === plus) {
+          const res = mergeExprItems(expr[i2 - 1], expr[i2 + 1]);
           if (res !== void 0) {
-            expr.splice(i - 1, 3, res);
+            expr.splice(i2 - 1, 3, res);
             continue;
           }
-          expr[i++] = "+";
+          expr[i2++] = "+";
         }
-        i++;
+        i2++;
       }
     }
-    function mergeExprItems(a, b) {
-      if (b === '""')
-        return a;
-      if (a === '""')
-        return b;
-      if (typeof a == "string") {
-        if (b instanceof Name || a[a.length - 1] !== '"')
+    function mergeExprItems(a2, b2) {
+      if (b2 === '""')
+        return a2;
+      if (a2 === '""')
+        return b2;
+      if (typeof a2 == "string") {
+        if (b2 instanceof Name || a2[a2.length - 1] !== '"')
           return;
-        if (typeof b != "string")
-          return `${a.slice(0, -1)}${b}"`;
-        if (b[0] === '"')
-          return a.slice(0, -1) + b.slice(1);
+        if (typeof b2 != "string")
+          return `${a2.slice(0, -1)}${b2}"`;
+        if (b2[0] === '"')
+          return a2.slice(0, -1) + b2.slice(1);
         return;
       }
-      if (typeof b == "string" && b[0] === '"' && !(a instanceof Name))
-        return `"${a}${b.slice(1)}`;
+      if (typeof b2 == "string" && b2[0] === '"' && !(a2 instanceof Name))
+        return `"${a2}${b2.slice(1)}`;
       return;
     }
     function strConcat(c1, c2) {
@@ -1562,7 +1368,7 @@ var require_code = __commonJS({
     }
     exports2.safeStringify = safeStringify;
     function getProperty(key) {
-      return typeof key == "string" && exports2.IDENTIFIER.test(key) ? new _Code(`.${key}`) : _`[${key}]`;
+      return typeof key == "string" && exports2.IDENTIFIER.test(key) ? new _Code(`.${key}`) : _2`[${key}]`;
     }
     exports2.getProperty = getProperty;
     function getEsmExportName(key) {
@@ -1668,9 +1474,9 @@ var require_scope = __commonJS({
           vs = this._values[prefix] = /* @__PURE__ */ new Map();
         }
         vs.set(valueKey, name);
-        const s = this._scope[prefix] || (this._scope[prefix] = []);
-        const itemIndex = s.length;
-        s[itemIndex] = value.ref;
+        const s2 = this._scope[prefix] || (this._scope[prefix] = []);
+        const itemIndex = s2.length;
+        s2[itemIndex] = value.ref;
         name.setValue(value, { property: prefix, itemIndex });
         return name;
       }
@@ -1705,12 +1511,12 @@ var require_scope = __commonJS({
             if (nameSet.has(name))
               return;
             nameSet.set(name, UsedValueState.Started);
-            let c = valueCode(name);
-            if (c) {
+            let c2 = valueCode(name);
+            if (c2) {
               const def = this.opts.es5 ? exports2.varKinds.var : exports2.varKinds.const;
-              code = (0, code_1._)`${code}${def} ${name} = ${c};${this.opts._n}`;
-            } else if (c = getCode === null || getCode === void 0 ? void 0 : getCode(name)) {
-              code = (0, code_1._)`${code}${c}${this.opts._n}`;
+              code = (0, code_1._)`${code}${def} ${name} = ${c2};${this.opts._n}`;
+            } else if (c2 = getCode === null || getCode === void 0 ? void 0 : getCode(name)) {
+              code = (0, code_1._)`${code}${c2}${this.opts._n}`;
             } else {
               throw new ValueError(name);
             }
@@ -1905,27 +1711,27 @@ var require_codegen = __commonJS({
       }
       optimizeNodes() {
         const { nodes } = this;
-        let i = nodes.length;
-        while (i--) {
-          const n = nodes[i].optimizeNodes();
+        let i2 = nodes.length;
+        while (i2--) {
+          const n = nodes[i2].optimizeNodes();
           if (Array.isArray(n))
-            nodes.splice(i, 1, ...n);
+            nodes.splice(i2, 1, ...n);
           else if (n)
-            nodes[i] = n;
+            nodes[i2] = n;
           else
-            nodes.splice(i, 1);
+            nodes.splice(i2, 1);
         }
         return nodes.length > 0 ? this : void 0;
       }
       optimizeNames(names, constants) {
         const { nodes } = this;
-        let i = nodes.length;
-        while (i--) {
-          const n = nodes[i];
+        let i2 = nodes.length;
+        while (i2--) {
+          const n = nodes[i2];
           if (n.optimizeNames(names, constants))
             continue;
           subtractNames(names, n.names);
-          nodes.splice(i, 1);
+          nodes.splice(i2, 1);
         }
         return nodes.length > 0 ? this : void 0;
       }
@@ -1959,17 +1765,17 @@ var require_codegen = __commonJS({
         const cond = this.condition;
         if (cond === true)
           return this.nodes;
-        let e2 = this.else;
-        if (e2) {
-          const ns = e2.optimizeNodes();
-          e2 = this.else = Array.isArray(ns) ? new Else(ns) : ns;
+        let e = this.else;
+        if (e) {
+          const ns = e.optimizeNodes();
+          e = this.else = Array.isArray(ns) ? new Else(ns) : ns;
         }
-        if (e2) {
+        if (e) {
           if (cond === false)
-            return e2 instanceof _If ? e2 : e2.nodes;
+            return e instanceof _If ? e : e.nodes;
           if (this.nodes.length)
             return this;
-          return new _If(not(cond), e2 instanceof _If ? [e2] : e2.nodes);
+          return new _If(not(cond), e instanceof _If ? [e] : e.nodes);
         }
         if (cond === false || !this.nodes.length)
           return void 0;
@@ -2186,11 +1992,11 @@ var require_codegen = __commonJS({
         return this._leafNode(new AssignOp(lhs, exports2.operators.ADD, rhs));
       }
       // appends passed SafeExpr to code or executes Block
-      code(c) {
-        if (typeof c == "function")
-          c();
-        else if (c !== code_1.nil)
-          this._leafNode(new AnyCode(c));
+      code(c2) {
+        if (typeof c2 == "function")
+          c2();
+        else if (c2 !== code_1.nil)
+          this._leafNode(new AnyCode(c2));
         return this;
       }
       // returns code for object literal for the passed argument list of key-value pairs
@@ -2252,8 +2058,8 @@ var require_codegen = __commonJS({
         const name = this._scope.toName(nameOrPrefix);
         if (this.opts.es5) {
           const arr = iterable instanceof code_1.Name ? iterable : this.var("_arr", iterable);
-          return this.forRange("_i", 0, (0, code_1._)`${arr}.length`, (i) => {
-            this.var(name, (0, code_1._)`${arr}[${i}]`);
+          return this.forRange("_i", 0, (0, code_1._)`${arr}.length`, (i2) => {
+            this.var(name, (0, code_1._)`${arr}[${i2}]`);
             forBody(name);
           });
         }
@@ -2397,24 +2203,24 @@ var require_codegen = __commonJS({
         return replaceName(expr);
       if (!canOptimize(expr))
         return expr;
-      return new code_1._Code(expr._items.reduce((items, c) => {
-        if (c instanceof code_1.Name)
-          c = replaceName(c);
-        if (c instanceof code_1._Code)
-          items.push(...c._items);
+      return new code_1._Code(expr._items.reduce((items, c2) => {
+        if (c2 instanceof code_1.Name)
+          c2 = replaceName(c2);
+        if (c2 instanceof code_1._Code)
+          items.push(...c2._items);
         else
-          items.push(c);
+          items.push(c2);
         return items;
       }, []));
       function replaceName(n) {
-        const c = constants[n.str];
-        if (c === void 0 || names[n.str] !== 1)
+        const c2 = constants[n.str];
+        if (c2 === void 0 || names[n.str] !== 1)
           return n;
         delete names[n.str];
-        return c;
+        return c2;
       }
-      function canOptimize(e2) {
-        return e2 instanceof code_1._Code && e2._items.some((c) => c instanceof code_1.Name && names[c.str] === 1 && constants[c.str] !== void 0);
+      function canOptimize(e) {
+        return e instanceof code_1._Code && e._items.some((c2) => c2 instanceof code_1.Name && names[c2.str] === 1 && constants[c2.str] !== void 0);
       }
     }
     function subtractNames(names, from) {
@@ -2695,8 +2501,8 @@ var require_errors = __commonJS({
       if (errsCount === void 0)
         throw new Error("ajv implementation error");
       const err = gen.name("err");
-      gen.forRange("i", errsCount, names_1.default.errors, (i) => {
-        gen.const(err, (0, codegen_1._)`${names_1.default.vErrors}[${i}]`);
+      gen.forRange("i", errsCount, names_1.default.errors, (i2) => {
+        gen.const(err, (0, codegen_1._)`${names_1.default.vErrors}[${i2}]`);
         gen.if((0, codegen_1._)`${err}.instancePath === undefined`, () => gen.assign((0, codegen_1._)`${err}.instancePath`, (0, codegen_1.strConcat)(names_1.default.instancePath, it.errorPath)));
         gen.assign((0, codegen_1._)`${err}.schemaPath`, (0, codegen_1.str)`${it.errSchemaPath}/${keyword}`);
         if (it.opts.verbose) {
@@ -2720,7 +2526,7 @@ var require_errors = __commonJS({
         gen.return(false);
       }
     }
-    var E = {
+    var E2 = {
       keyword: new codegen_1.Name("keyword"),
       schemaPath: new codegen_1.Name("schemaPath"),
       // also used in JTD errors
@@ -2754,20 +2560,20 @@ var require_errors = __commonJS({
       if (schemaPath) {
         schPath = (0, codegen_1.str)`${schPath}${(0, util_1.getErrorPath)(schemaPath, util_1.Type.Str)}`;
       }
-      return [E.schemaPath, schPath];
+      return [E2.schemaPath, schPath];
     }
     function extraErrorProps(cxt, { params, message }, keyValues) {
       const { keyword, data, schemaValue, it } = cxt;
       const { opts, propertyName, topSchemaRef, schemaPath } = it;
-      keyValues.push([E.keyword, keyword], [E.params, typeof params == "function" ? params(cxt) : params || (0, codegen_1._)`{}`]);
+      keyValues.push([E2.keyword, keyword], [E2.params, typeof params == "function" ? params(cxt) : params || (0, codegen_1._)`{}`]);
       if (opts.messages) {
-        keyValues.push([E.message, typeof message == "function" ? message(cxt) : message]);
+        keyValues.push([E2.message, typeof message == "function" ? message(cxt) : message]);
       }
       if (opts.verbose) {
-        keyValues.push([E.schema, schemaValue], [E.parentSchema, (0, codegen_1._)`${topSchemaRef}${schemaPath}`], [names_1.default.data, data]);
+        keyValues.push([E2.schema, schemaValue], [E2.parentSchema, (0, codegen_1._)`${topSchemaRef}${schemaPath}`], [names_1.default.data, data]);
       }
       if (propertyName)
-        keyValues.push([E.propertyName, propertyName]);
+        keyValues.push([E2.propertyName, propertyName]);
     }
   }
 });
@@ -3076,7 +2882,7 @@ var require_defaults = __commonJS({
           assignDefault(it, key, properties[key].default);
         }
       } else if (ty === "array" && Array.isArray(items)) {
-        items.forEach((sch, i) => assignDefault(it, i, sch.default));
+        items.forEach((sch, i2) => assignDefault(it, i2, sch.default));
       }
     }
     exports2.assignDefaults = assignDefaults;
@@ -3171,13 +2977,13 @@ var require_code2 = __commonJS({
     exports2.callValidateCode = callValidateCode;
     var newRegExp = (0, codegen_1._)`new RegExp`;
     function usePattern({ gen, it: { opts } }, pattern) {
-      const u2 = opts.unicodeRegExp ? "u" : "";
+      const u = opts.unicodeRegExp ? "u" : "";
       const { regExp } = opts.code;
-      const rx = regExp(pattern, u2);
+      const rx = regExp(pattern, u);
       return gen.scopeValue("pattern", {
         key: rx.toString(),
         ref: rx,
-        code: (0, codegen_1._)`${regExp.code === "new RegExp" ? newRegExp : (0, util_2.useFunc)(gen, regExp)}(${pattern}, ${u2})`
+        code: (0, codegen_1._)`${regExp.code === "new RegExp" ? newRegExp : (0, util_2.useFunc)(gen, regExp)}(${pattern}, ${u})`
       });
     }
     exports2.usePattern = usePattern;
@@ -3194,10 +3000,10 @@ var require_code2 = __commonJS({
       return valid;
       function validateItems(notValid) {
         const len = gen.const("len", (0, codegen_1._)`${data}.length`);
-        gen.forRange("i", 0, len, (i) => {
+        gen.forRange("i", 0, len, (i2) => {
           cxt.subschema({
             keyword,
-            dataProp: i,
+            dataProp: i2,
             dataPropType: util_1.Type.Num
           }, valid);
           gen.if((0, codegen_1.not)(valid), notValid);
@@ -3214,10 +3020,10 @@ var require_code2 = __commonJS({
         return;
       const valid = gen.let("valid", false);
       const schValid = gen.name("_valid");
-      gen.block(() => schema.forEach((_sch, i) => {
+      gen.block(() => schema.forEach((_sch, i2) => {
         const schCxt = cxt.subschema({
           keyword,
-          schemaProp: i,
+          schemaProp: i2,
           compositeRule: true
         }, schValid);
         gen.assign(valid, (0, codegen_1._)`${valid} || ${schValid}`);
@@ -3282,7 +3088,7 @@ var require_keyword = __commonJS({
       }
       function validateAsync() {
         const ruleErrs = gen.let("ruleErrs", null);
-        gen.try(() => assignValid((0, codegen_1._)`await `), (e2) => gen.assign(valid, false).if((0, codegen_1._)`${e2} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_1._)`${e2}.errors`), () => gen.throw(e2)));
+        gen.try(() => assignValid((0, codegen_1._)`await `), (e) => gen.assign(valid, false).if((0, codegen_1._)`${e} instanceof ${it.ValidationError}`, () => gen.assign(ruleErrs, (0, codegen_1._)`${e}.errors`), () => gen.throw(e)));
         return ruleErrs;
       }
       function validateSync() {
@@ -3436,33 +3242,33 @@ var require_subschema = __commonJS({
 var require_fast_deep_equal = __commonJS({
   "node_modules/fast-deep-equal/index.js"(exports2, module2) {
     "use strict";
-    module2.exports = function equal(a, b) {
-      if (a === b) return true;
-      if (a && b && typeof a == "object" && typeof b == "object") {
-        if (a.constructor !== b.constructor) return false;
-        var length, i, keys3;
-        if (Array.isArray(a)) {
-          length = a.length;
-          if (length != b.length) return false;
-          for (i = length; i-- !== 0; )
-            if (!equal(a[i], b[i])) return false;
+    module2.exports = function equal(a2, b2) {
+      if (a2 === b2) return true;
+      if (a2 && b2 && typeof a2 == "object" && typeof b2 == "object") {
+        if (a2.constructor !== b2.constructor) return false;
+        var length, i2, keys3;
+        if (Array.isArray(a2)) {
+          length = a2.length;
+          if (length != b2.length) return false;
+          for (i2 = length; i2-- !== 0; )
+            if (!equal(a2[i2], b2[i2])) return false;
           return true;
         }
-        if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
-        if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
-        if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
-        keys3 = Object.keys(a);
+        if (a2.constructor === RegExp) return a2.source === b2.source && a2.flags === b2.flags;
+        if (a2.valueOf !== Object.prototype.valueOf) return a2.valueOf() === b2.valueOf();
+        if (a2.toString !== Object.prototype.toString) return a2.toString() === b2.toString();
+        keys3 = Object.keys(a2);
         length = keys3.length;
-        if (length !== Object.keys(b).length) return false;
-        for (i = length; i-- !== 0; )
-          if (!Object.prototype.hasOwnProperty.call(b, keys3[i])) return false;
-        for (i = length; i-- !== 0; ) {
-          var key = keys3[i];
-          if (!equal(a[key], b[key])) return false;
+        if (length !== Object.keys(b2).length) return false;
+        for (i2 = length; i2-- !== 0; )
+          if (!Object.prototype.hasOwnProperty.call(b2, keys3[i2])) return false;
+        for (i2 = length; i2-- !== 0; ) {
+          var key = keys3[i2];
+          if (!equal(a2[key], b2[key])) return false;
         }
         return true;
       }
-      return a !== a && b !== b;
+      return a2 !== a2 && b2 !== b2;
     };
   }
 });
@@ -3534,8 +3340,8 @@ var require_json_schema_traverse = __commonJS({
           var sch = schema[key];
           if (Array.isArray(sch)) {
             if (key in traverse.arrayKeywords) {
-              for (var i = 0; i < sch.length; i++)
-                _traverse(opts, pre, post, sch[i], jsonPtr + "/" + key + "/" + i, rootSchema, jsonPtr, key, schema, i);
+              for (var i2 = 0; i2 < sch.length; i2++)
+                _traverse(opts, pre, post, sch[i2], jsonPtr + "/" + key + "/" + i2, rootSchema, jsonPtr, key, schema, i2);
             }
           } else if (key in traverse.propsKeywords) {
             if (sch && typeof sch == "object") {
@@ -3659,7 +3465,7 @@ var require_resolve = __commonJS({
       const pathPrefix = getFullPath(uriResolver, schId, false);
       const localRefs = {};
       const schemaRefs = /* @__PURE__ */ new Set();
-      traverse(schema, { allKeys: true }, (sch, jsonPtr, _, parentJsonPtr) => {
+      traverse(schema, { allKeys: true }, (sch, jsonPtr, _2, parentJsonPtr) => {
         if (parentJsonPtr === void 0)
           return;
         const fullPath = pathPrefix + jsonPtr;
@@ -4359,12 +4165,12 @@ var require_compile = __commonJS({
         }
         sch.validate = validate;
         return sch;
-      } catch (e2) {
+      } catch (e) {
         delete sch.validate;
         delete sch.validateName;
         if (sourceCode)
           this.logger.error("Error compiling schema, function code:", sourceCode);
-        throw e2;
+        throw e;
       } finally {
         this._compilations.delete(sch);
       }
@@ -4495,847 +4301,12 @@ var require_data = __commonJS({
   }
 });
 
-// node_modules/ajv/node_modules/fast-uri/lib/utils.js
-var require_utils2 = __commonJS({
-  "node_modules/ajv/node_modules/fast-uri/lib/utils.js"(exports2, module2) {
-    "use strict";
-    var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
-    var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
-    var isHexPair = RegExp.prototype.test.bind(/^[\da-f]{2}$/iu);
-    var isUnreserved = RegExp.prototype.test.bind(/^[\da-z\-._~]$/iu);
-    var isPathCharacter = RegExp.prototype.test.bind(/^[\da-z\-._~!$&'()*+,;=:@/]$/iu);
-    function stringArrayToHexStripped(input) {
-      let acc = "";
-      let code = 0;
-      let i = 0;
-      for (i = 0; i < input.length; i++) {
-        code = input[i].charCodeAt(0);
-        if (code === 48) {
-          continue;
-        }
-        if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
-          return "";
-        }
-        acc += input[i];
-        break;
-      }
-      for (i += 1; i < input.length; i++) {
-        code = input[i].charCodeAt(0);
-        if (!(code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102)) {
-          return "";
-        }
-        acc += input[i];
-      }
-      return acc;
-    }
-    var nonSimpleDomain = RegExp.prototype.test.bind(/[^!"$&'()*+,\-.;=_`a-z{}~]/u);
-    function consumeIsZone(buffer) {
-      buffer.length = 0;
-      return true;
-    }
-    function consumeHextets(buffer, address, output) {
-      if (buffer.length) {
-        const hex = stringArrayToHexStripped(buffer);
-        if (hex !== "") {
-          address.push(hex);
-        } else {
-          output.error = true;
-          return false;
-        }
-        buffer.length = 0;
-      }
-      return true;
-    }
-    function getIPV6(input) {
-      let tokenCount = 0;
-      const output = { error: false, address: "", zone: "" };
-      const address = [];
-      const buffer = [];
-      let endipv6Encountered = false;
-      let endIpv6 = false;
-      let consume = consumeHextets;
-      for (let i = 0; i < input.length; i++) {
-        const cursor = input[i];
-        if (cursor === "[" || cursor === "]") {
-          continue;
-        }
-        if (cursor === ":") {
-          if (endipv6Encountered === true) {
-            endIpv6 = true;
-          }
-          if (!consume(buffer, address, output)) {
-            break;
-          }
-          if (++tokenCount > 7) {
-            output.error = true;
-            break;
-          }
-          if (i > 0 && input[i - 1] === ":") {
-            endipv6Encountered = true;
-          }
-          address.push(":");
-          continue;
-        } else if (cursor === "%") {
-          if (!consume(buffer, address, output)) {
-            break;
-          }
-          consume = consumeIsZone;
-        } else {
-          buffer.push(cursor);
-          continue;
-        }
-      }
-      if (buffer.length) {
-        if (consume === consumeIsZone) {
-          output.zone = buffer.join("");
-        } else if (endIpv6) {
-          address.push(buffer.join(""));
-        } else {
-          address.push(stringArrayToHexStripped(buffer));
-        }
-      }
-      output.address = address.join("");
-      return output;
-    }
-    function normalizeIPv6(host) {
-      if (findToken(host, ":") < 2) {
-        return { host, isIPV6: false };
-      }
-      const ipv6 = getIPV6(host);
-      if (!ipv6.error) {
-        let newHost = ipv6.address;
-        let escapedHost = ipv6.address;
-        if (ipv6.zone) {
-          newHost += "%" + ipv6.zone;
-          escapedHost += "%25" + ipv6.zone;
-        }
-        return { host: newHost, isIPV6: true, escapedHost };
-      } else {
-        return { host, isIPV6: false };
-      }
-    }
-    function findToken(str, token) {
-      let ind = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === token) ind++;
-      }
-      return ind;
-    }
-    function removeDotSegments(path) {
-      let input = path;
-      const output = [];
-      let nextSlash = -1;
-      let len = 0;
-      while (len = input.length) {
-        if (len === 1) {
-          if (input === ".") {
-            break;
-          } else if (input === "/") {
-            output.push("/");
-            break;
-          } else {
-            output.push(input);
-            break;
-          }
-        } else if (len === 2) {
-          if (input[0] === ".") {
-            if (input[1] === ".") {
-              break;
-            } else if (input[1] === "/") {
-              input = input.slice(2);
-              continue;
-            }
-          } else if (input[0] === "/") {
-            if (input[1] === "." || input[1] === "/") {
-              output.push("/");
-              break;
-            }
-          }
-        } else if (len === 3) {
-          if (input === "/..") {
-            if (output.length !== 0) {
-              output.pop();
-            }
-            output.push("/");
-            break;
-          }
-        }
-        if (input[0] === ".") {
-          if (input[1] === ".") {
-            if (input[2] === "/") {
-              input = input.slice(3);
-              continue;
-            }
-          } else if (input[1] === "/") {
-            input = input.slice(2);
-            continue;
-          }
-        } else if (input[0] === "/") {
-          if (input[1] === ".") {
-            if (input[2] === "/") {
-              input = input.slice(2);
-              continue;
-            } else if (input[2] === ".") {
-              if (input[3] === "/") {
-                input = input.slice(3);
-                if (output.length !== 0) {
-                  output.pop();
-                }
-                continue;
-              }
-            }
-          }
-        }
-        if ((nextSlash = input.indexOf("/", 1)) === -1) {
-          output.push(input);
-          break;
-        } else {
-          output.push(input.slice(0, nextSlash));
-          input = input.slice(nextSlash);
-        }
-      }
-      return output.join("");
-    }
-    var HOST_DELIMS = { "@": "%40", "/": "%2F", "?": "%3F", "#": "%23", ":": "%3A" };
-    var HOST_DELIM_RE = /[@/?#:]/g;
-    var HOST_DELIM_NO_COLON_RE = /[@/?#]/g;
-    function reescapeHostDelimiters(host, isIP) {
-      const re = isIP ? HOST_DELIM_NO_COLON_RE : HOST_DELIM_RE;
-      re.lastIndex = 0;
-      return host.replace(re, (ch) => HOST_DELIMS[ch]);
-    }
-    function normalizePercentEncoding(input, decodeUnreserved = false) {
-      if (input.indexOf("%") === -1) {
-        return input;
-      }
-      let output = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
-          if (isHexPair(hex)) {
-            const normalizedHex = hex.toUpperCase();
-            const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
-            if (decodeUnreserved && isUnreserved(decoded)) {
-              output += decoded;
-            } else {
-              output += "%" + normalizedHex;
-            }
-            i += 2;
-            continue;
-          }
-        }
-        output += input[i];
-      }
-      return output;
-    }
-    function normalizePathEncoding(input) {
-      let output = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
-          if (isHexPair(hex)) {
-            const normalizedHex = hex.toUpperCase();
-            const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
-            if (decoded !== "." && isUnreserved(decoded)) {
-              output += decoded;
-            } else {
-              output += "%" + normalizedHex;
-            }
-            i += 2;
-            continue;
-          }
-        }
-        if (isPathCharacter(input[i])) {
-          output += input[i];
-        } else {
-          output += escape(input[i]);
-        }
-      }
-      return output;
-    }
-    function escapePreservingEscapes(input) {
-      let output = "";
-      for (let i = 0; i < input.length; i++) {
-        if (input[i] === "%" && i + 2 < input.length) {
-          const hex = input.slice(i + 1, i + 3);
-          if (isHexPair(hex)) {
-            output += "%" + hex.toUpperCase();
-            i += 2;
-            continue;
-          }
-        }
-        output += escape(input[i]);
-      }
-      return output;
-    }
-    function recomposeAuthority(component) {
-      const uriTokens = [];
-      if (component.userinfo !== void 0) {
-        uriTokens.push(component.userinfo);
-        uriTokens.push("@");
-      }
-      if (component.host !== void 0) {
-        let host = unescape(component.host);
-        if (!isIPv4(host)) {
-          const ipV6res = normalizeIPv6(host);
-          if (ipV6res.isIPV6 === true) {
-            host = `[${ipV6res.escapedHost}]`;
-          } else {
-            host = reescapeHostDelimiters(host, false);
-          }
-        }
-        uriTokens.push(host);
-      }
-      if (typeof component.port === "number" || typeof component.port === "string") {
-        uriTokens.push(":");
-        uriTokens.push(String(component.port));
-      }
-      return uriTokens.length ? uriTokens.join("") : void 0;
-    }
-    module2.exports = {
-      nonSimpleDomain,
-      recomposeAuthority,
-      reescapeHostDelimiters,
-      normalizePercentEncoding,
-      normalizePathEncoding,
-      escapePreservingEscapes,
-      removeDotSegments,
-      isIPv4,
-      isUUID,
-      normalizeIPv6,
-      stringArrayToHexStripped
-    };
-  }
-});
-
-// node_modules/ajv/node_modules/fast-uri/lib/schemes.js
-var require_schemes2 = __commonJS({
-  "node_modules/ajv/node_modules/fast-uri/lib/schemes.js"(exports2, module2) {
-    "use strict";
-    var { isUUID } = require_utils2();
-    var URN_REG = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu;
-    var supportedSchemeNames = (
-      /** @type {const} */
-      [
-        "http",
-        "https",
-        "ws",
-        "wss",
-        "urn",
-        "urn:uuid"
-      ]
-    );
-    function isValidSchemeName(name) {
-      return supportedSchemeNames.indexOf(
-        /** @type {*} */
-        name
-      ) !== -1;
-    }
-    function wsIsSecure(wsComponent) {
-      if (wsComponent.secure === true) {
-        return true;
-      } else if (wsComponent.secure === false) {
-        return false;
-      } else if (wsComponent.scheme) {
-        return wsComponent.scheme.length === 3 && (wsComponent.scheme[0] === "w" || wsComponent.scheme[0] === "W") && (wsComponent.scheme[1] === "s" || wsComponent.scheme[1] === "S") && (wsComponent.scheme[2] === "s" || wsComponent.scheme[2] === "S");
-      } else {
-        return false;
-      }
-    }
-    function httpParse(component) {
-      if (!component.host) {
-        component.error = component.error || "HTTP URIs must have a host.";
-      }
-      return component;
-    }
-    function httpSerialize(component) {
-      const secure = String(component.scheme).toLowerCase() === "https";
-      if (component.port === (secure ? 443 : 80) || component.port === "") {
-        component.port = void 0;
-      }
-      if (!component.path) {
-        component.path = "/";
-      }
-      return component;
-    }
-    function wsParse(wsComponent) {
-      wsComponent.secure = wsIsSecure(wsComponent);
-      wsComponent.resourceName = (wsComponent.path || "/") + (wsComponent.query ? "?" + wsComponent.query : "");
-      wsComponent.path = void 0;
-      wsComponent.query = void 0;
-      return wsComponent;
-    }
-    function wsSerialize(wsComponent) {
-      if (wsComponent.port === (wsIsSecure(wsComponent) ? 443 : 80) || wsComponent.port === "") {
-        wsComponent.port = void 0;
-      }
-      if (typeof wsComponent.secure === "boolean") {
-        wsComponent.scheme = wsComponent.secure ? "wss" : "ws";
-        wsComponent.secure = void 0;
-      }
-      if (wsComponent.resourceName) {
-        const [path, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path && path !== "/" ? path : void 0;
-        wsComponent.query = query;
-        wsComponent.resourceName = void 0;
-      }
-      wsComponent.fragment = void 0;
-      return wsComponent;
-    }
-    function urnParse(urnComponent, options) {
-      if (!urnComponent.path) {
-        urnComponent.error = "URN can not be parsed";
-        return urnComponent;
-      }
-      const matches = urnComponent.path.match(URN_REG);
-      if (matches) {
-        const scheme = options.scheme || urnComponent.scheme || "urn";
-        urnComponent.nid = matches[1].toLowerCase();
-        urnComponent.nss = matches[2];
-        const urnScheme = `${scheme}:${options.nid || urnComponent.nid}`;
-        const schemeHandler = getSchemeHandler(urnScheme);
-        urnComponent.path = void 0;
-        if (schemeHandler) {
-          urnComponent = schemeHandler.parse(urnComponent, options);
-        }
-      } else {
-        urnComponent.error = urnComponent.error || "URN can not be parsed.";
-      }
-      return urnComponent;
-    }
-    function urnSerialize(urnComponent, options) {
-      if (urnComponent.nid === void 0) {
-        throw new Error("URN without nid cannot be serialized");
-      }
-      const scheme = options.scheme || urnComponent.scheme || "urn";
-      const nid = urnComponent.nid.toLowerCase();
-      const urnScheme = `${scheme}:${options.nid || nid}`;
-      const schemeHandler = getSchemeHandler(urnScheme);
-      if (schemeHandler) {
-        urnComponent = schemeHandler.serialize(urnComponent, options);
-      }
-      const uriComponent = urnComponent;
-      const nss = urnComponent.nss;
-      uriComponent.path = `${nid || options.nid}:${nss}`;
-      options.skipEscape = true;
-      return uriComponent;
-    }
-    function urnuuidParse(urnComponent, options) {
-      const uuidComponent = urnComponent;
-      uuidComponent.uuid = uuidComponent.nss;
-      uuidComponent.nss = void 0;
-      if (!options.tolerant && (!uuidComponent.uuid || !isUUID(uuidComponent.uuid))) {
-        uuidComponent.error = uuidComponent.error || "UUID is not valid.";
-      }
-      return uuidComponent;
-    }
-    function urnuuidSerialize(uuidComponent) {
-      const urnComponent = uuidComponent;
-      urnComponent.nss = (uuidComponent.uuid || "").toLowerCase();
-      return urnComponent;
-    }
-    var http = (
-      /** @type {SchemeHandler} */
-      {
-        scheme: "http",
-        domainHost: true,
-        parse: httpParse,
-        serialize: httpSerialize
-      }
-    );
-    var https = (
-      /** @type {SchemeHandler} */
-      {
-        scheme: "https",
-        domainHost: http.domainHost,
-        parse: httpParse,
-        serialize: httpSerialize
-      }
-    );
-    var ws = (
-      /** @type {SchemeHandler} */
-      {
-        scheme: "ws",
-        domainHost: true,
-        parse: wsParse,
-        serialize: wsSerialize
-      }
-    );
-    var wss = (
-      /** @type {SchemeHandler} */
-      {
-        scheme: "wss",
-        domainHost: ws.domainHost,
-        parse: ws.parse,
-        serialize: ws.serialize
-      }
-    );
-    var urn = (
-      /** @type {SchemeHandler} */
-      {
-        scheme: "urn",
-        parse: urnParse,
-        serialize: urnSerialize,
-        skipNormalize: true
-      }
-    );
-    var urnuuid = (
-      /** @type {SchemeHandler} */
-      {
-        scheme: "urn:uuid",
-        parse: urnuuidParse,
-        serialize: urnuuidSerialize,
-        skipNormalize: true
-      }
-    );
-    var SCHEMES = (
-      /** @type {Record<SchemeName, SchemeHandler>} */
-      {
-        http,
-        https,
-        ws,
-        wss,
-        urn,
-        "urn:uuid": urnuuid
-      }
-    );
-    Object.setPrototypeOf(SCHEMES, null);
-    function getSchemeHandler(scheme) {
-      return scheme && (SCHEMES[
-        /** @type {SchemeName} */
-        scheme
-      ] || SCHEMES[
-        /** @type {SchemeName} */
-        scheme.toLowerCase()
-      ]) || void 0;
-    }
-    module2.exports = {
-      wsIsSecure,
-      SCHEMES,
-      isValidSchemeName,
-      getSchemeHandler
-    };
-  }
-});
-
-// node_modules/ajv/node_modules/fast-uri/index.js
-var require_fast_uri2 = __commonJS({
-  "node_modules/ajv/node_modules/fast-uri/index.js"(exports2, module2) {
-    "use strict";
-    var { normalizeIPv6, removeDotSegments, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, escapePreservingEscapes, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils2();
-    var { SCHEMES, getSchemeHandler } = require_schemes2();
-    function normalize(uri, options) {
-      if (typeof uri === "string") {
-        uri = /** @type {T} */
-        normalizeString(uri, options);
-      } else if (typeof uri === "object") {
-        uri = /** @type {T} */
-        parse2(serialize(uri, options), options);
-      }
-      return uri;
-    }
-    function resolve(baseURI, relativeURI, options) {
-      const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
-      const { parsed: baseParsed, malformedAuthorityOrPort: baseMalformed } = parseWithStatus(baseURI, schemelessOptions);
-      const { parsed: relativeParsed, malformedAuthorityOrPort: relativeMalformed } = parseWithStatus(relativeURI, schemelessOptions);
-      if (baseMalformed || relativeMalformed) {
-        throw new Error(baseParsed.error || relativeParsed.error || "URI is malformed.");
-      }
-      const resolved = resolveComponent(baseParsed, relativeParsed, schemelessOptions, true);
-      schemelessOptions.skipEscape = true;
-      return serialize(resolved, schemelessOptions);
-    }
-    function resolveComponent(base, relative, options, skipNormalization) {
-      const target = {};
-      if (!skipNormalization) {
-        base = parse2(serialize(base, options), options);
-        relative = parse2(serialize(relative, options), options);
-      }
-      options = options || {};
-      if (!options.tolerant && relative.scheme) {
-        target.scheme = relative.scheme;
-        target.userinfo = relative.userinfo;
-        target.host = relative.host;
-        target.port = relative.port;
-        target.path = removeDotSegments(relative.path || "");
-        target.query = relative.query;
-      } else {
-        if (relative.userinfo !== void 0 || relative.host !== void 0 || relative.port !== void 0) {
-          target.userinfo = relative.userinfo;
-          target.host = relative.host;
-          target.port = relative.port;
-          target.path = removeDotSegments(relative.path || "");
-          target.query = relative.query;
-        } else {
-          if (!relative.path) {
-            target.path = base.path;
-            if (relative.query !== void 0) {
-              target.query = relative.query;
-            } else {
-              target.query = base.query;
-            }
-          } else {
-            if (relative.path[0] === "/") {
-              target.path = removeDotSegments(relative.path);
-            } else {
-              if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative.path;
-              } else if (!base.path) {
-                target.path = relative.path;
-              } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative.path;
-              }
-              target.path = removeDotSegments(target.path);
-            }
-            target.query = relative.query;
-          }
-          target.userinfo = base.userinfo;
-          target.host = base.host;
-          target.port = base.port;
-        }
-        target.scheme = base.scheme;
-      }
-      target.fragment = relative.fragment;
-      return target;
-    }
-    function equal(uriA, uriB, options) {
-      const normalizedA = normalizeComparableURI(uriA, options);
-      const normalizedB = normalizeComparableURI(uriB, options);
-      return normalizedA !== void 0 && normalizedB !== void 0 && normalizedA.toLowerCase() === normalizedB.toLowerCase();
-    }
-    function serialize(cmpts, opts) {
-      const component = {
-        host: cmpts.host,
-        scheme: cmpts.scheme,
-        userinfo: cmpts.userinfo,
-        port: cmpts.port,
-        path: cmpts.path,
-        query: cmpts.query,
-        nid: cmpts.nid,
-        nss: cmpts.nss,
-        uuid: cmpts.uuid,
-        fragment: cmpts.fragment,
-        reference: cmpts.reference,
-        resourceName: cmpts.resourceName,
-        secure: cmpts.secure,
-        error: ""
-      };
-      const options = Object.assign({}, opts);
-      const uriTokens = [];
-      const schemeHandler = getSchemeHandler(options.scheme || component.scheme);
-      if (schemeHandler && schemeHandler.serialize) schemeHandler.serialize(component, options);
-      if (component.path !== void 0) {
-        if (!options.skipEscape) {
-          component.path = escapePreservingEscapes(component.path);
-          if (component.scheme !== void 0) {
-            component.path = component.path.split("%3A").join(":");
-          }
-        } else {
-          component.path = normalizePercentEncoding(component.path);
-        }
-      }
-      if (options.reference !== "suffix" && component.scheme) {
-        uriTokens.push(component.scheme, ":");
-      }
-      const authority = recomposeAuthority(component);
-      if (authority !== void 0) {
-        if (options.reference !== "suffix") {
-          uriTokens.push("//");
-        }
-        uriTokens.push(authority);
-        if (component.path && component.path[0] !== "/") {
-          uriTokens.push("/");
-        }
-      }
-      if (component.path !== void 0) {
-        let s = component.path;
-        if (!options.absolutePath && (!schemeHandler || !schemeHandler.absolutePath)) {
-          s = removeDotSegments(s);
-        }
-        if (authority === void 0 && s[0] === "/" && s[1] === "/") {
-          s = "/%2F" + s.slice(2);
-        }
-        uriTokens.push(s);
-      }
-      if (component.query !== void 0) {
-        uriTokens.push("?", component.query);
-      }
-      if (component.fragment !== void 0) {
-        uriTokens.push("#", component.fragment);
-      }
-      return uriTokens.join("");
-    }
-    var URI_PARSE = /^(?:([^#/:?]+):)?(?:\/\/((?:([^#/?@]*)@)?(\[[^#/?\]]+\]|[^#/:?]*)(?::(\d*))?))?([^#?]*)(?:\?([^#]*))?(?:#((?:.|[\n\r])*))?/u;
-    var AUTHORITY_PREFIX = /^(?:[^#/:?]+:)?\/\/([^/?#]*)/;
-    var AUTHORITY_INTRODUCER_REGION = /^(?:[^#/:?]+:)?([/\\\t\n\r]*)/;
-    function getParseError(parsed, matches) {
-      if (matches[2] !== void 0 && parsed.path && parsed.path[0] !== "/") {
-        return 'URI path must start with "/" when authority is present.';
-      }
-      if (typeof parsed.port === "number" && (parsed.port < 0 || parsed.port > 65535)) {
-        return "URI port is malformed.";
-      }
-      return void 0;
-    }
-    function parseWithStatus(uri, opts) {
-      const options = Object.assign({}, opts);
-      const parsed = {
-        scheme: void 0,
-        userinfo: void 0,
-        host: "",
-        port: void 0,
-        path: "",
-        query: void 0,
-        fragment: void 0
-      };
-      let malformedAuthorityOrPort = false;
-      let isIP = false;
-      if (options.reference === "suffix") {
-        if (options.scheme) {
-          uri = options.scheme + ":" + uri;
-        } else {
-          uri = "//" + uri;
-        }
-      }
-      const authorityMatch = uri.match(AUTHORITY_PREFIX);
-      if (authorityMatch !== null && authorityMatch[1].indexOf("\\") !== -1) {
-        parsed.error = "URI authority must not contain a literal backslash.";
-        malformedAuthorityOrPort = true;
-      }
-      const introducerMatch = uri.match(AUTHORITY_INTRODUCER_REGION);
-      if (introducerMatch !== null) {
-        const region = introducerMatch[1];
-        const normalizedRegion = region.replace(/[\t\n\r]/g, "");
-        if (normalizedRegion.length >= 2) {
-          if (normalizedRegion.slice(0, 2) !== "//") {
-            parsed.error = parsed.error || "URI authority must not contain a literal backslash.";
-            malformedAuthorityOrPort = true;
-          } else if (region.length !== normalizedRegion.length) {
-            parsed.error = parsed.error || "URI authority introducer must not contain whitespace.";
-            malformedAuthorityOrPort = true;
-          }
-        }
-      }
-      const matches = uri.match(URI_PARSE);
-      if (matches) {
-        parsed.scheme = matches[1];
-        parsed.userinfo = matches[3];
-        parsed.host = matches[4];
-        parsed.port = parseInt(matches[5], 10);
-        parsed.path = matches[6] || "";
-        parsed.query = matches[7];
-        parsed.fragment = matches[8];
-        if (isNaN(parsed.port)) {
-          parsed.port = matches[5];
-        }
-        const parseError = getParseError(parsed, matches);
-        if (parseError !== void 0) {
-          parsed.error = parsed.error || parseError;
-          malformedAuthorityOrPort = true;
-        }
-        if (parsed.host) {
-          const ipv4result = isIPv4(parsed.host);
-          if (ipv4result === false) {
-            const ipv6result = normalizeIPv6(parsed.host);
-            parsed.host = ipv6result.host.toLowerCase();
-            isIP = ipv6result.isIPV6;
-          } else {
-            isIP = true;
-          }
-        }
-        if (parsed.scheme === void 0 && parsed.userinfo === void 0 && parsed.host === void 0 && parsed.port === void 0 && parsed.query === void 0 && !parsed.path) {
-          parsed.reference = "same-document";
-        } else if (parsed.scheme === void 0) {
-          parsed.reference = "relative";
-        } else if (parsed.fragment === void 0) {
-          parsed.reference = "absolute";
-        } else {
-          parsed.reference = "uri";
-        }
-        if (options.reference && options.reference !== "suffix" && options.reference !== parsed.reference) {
-          parsed.error = parsed.error || "URI is not a " + options.reference + " reference.";
-        }
-        const schemeHandler = getSchemeHandler(options.scheme || parsed.scheme);
-        if (!options.unicodeSupport && (!schemeHandler || !schemeHandler.unicodeSupport)) {
-          if (parsed.host && (options.domainHost || schemeHandler && schemeHandler.domainHost) && isIP === false && nonSimpleDomain(parsed.host)) {
-            try {
-              parsed.host = new URL("http://" + parsed.host).hostname;
-            } catch (e2) {
-              parsed.error = parsed.error || "Host's domain name can not be converted to ASCII: " + e2;
-            }
-          }
-        }
-        if (!schemeHandler || schemeHandler && !schemeHandler.skipNormalize) {
-          if (uri.indexOf("%") !== -1) {
-            if (parsed.scheme !== void 0) {
-              parsed.scheme = unescape(parsed.scheme);
-            }
-            if (parsed.host !== void 0) {
-              parsed.host = reescapeHostDelimiters(unescape(parsed.host), isIP);
-            }
-          }
-          if (parsed.path) {
-            parsed.path = normalizePathEncoding(parsed.path);
-          }
-          if (parsed.fragment) {
-            try {
-              parsed.fragment = encodeURI(decodeURIComponent(parsed.fragment));
-            } catch {
-              parsed.error = parsed.error || "URI malformed";
-            }
-          }
-        }
-        if (schemeHandler && schemeHandler.parse) {
-          schemeHandler.parse(parsed, options);
-        }
-      } else {
-        parsed.error = parsed.error || "URI can not be parsed.";
-      }
-      return { parsed, malformedAuthorityOrPort };
-    }
-    function parse2(uri, opts) {
-      return parseWithStatus(uri, opts).parsed;
-    }
-    function normalizeString(uri, opts) {
-      return normalizeStringWithStatus(uri, opts).normalized;
-    }
-    function normalizeStringWithStatus(uri, opts) {
-      const { parsed, malformedAuthorityOrPort } = parseWithStatus(uri, opts);
-      return {
-        normalized: malformedAuthorityOrPort ? uri : serialize(parsed, opts),
-        malformedAuthorityOrPort
-      };
-    }
-    function normalizeComparableURI(uri, opts) {
-      if (typeof uri === "string") {
-        const { normalized, malformedAuthorityOrPort } = normalizeStringWithStatus(uri, opts);
-        return malformedAuthorityOrPort ? void 0 : normalized;
-      }
-      if (typeof uri === "object") {
-        return serialize(uri, opts);
-      }
-    }
-    var fastUri = {
-      SCHEMES,
-      normalize,
-      resolve,
-      resolveComponent,
-      equal,
-      serialize,
-      parse: parse2
-    };
-    module2.exports = fastUri;
-    module2.exports.default = fastUri;
-    module2.exports.fastUri = fastUri;
-  }
-});
-
 // node_modules/ajv/dist/runtime/uri.js
 var require_uri = __commonJS({
   "node_modules/ajv/dist/runtime/uri.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var uri = require_fast_uri2();
+    var uri = require_fast_uri();
     uri.code = 'require("ajv/dist/runtime/uri").default';
     exports2.default = uri;
   }
@@ -5422,18 +4393,18 @@ var require_core = __commonJS({
     };
     var MAX_EXPRESSION = 200;
     function requiredOptions(o2) {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
-      const s = o2.strict;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _02;
+      const s2 = o2.strict;
       const _optz = (_a = o2.code) === null || _a === void 0 ? void 0 : _a.optimize;
       const optimize = _optz === true || _optz === void 0 ? 1 : _optz || 0;
       const regExp = (_c = (_b = o2.code) === null || _b === void 0 ? void 0 : _b.regExp) !== null && _c !== void 0 ? _c : defaultRegExp;
       const uriResolver = (_d = o2.uriResolver) !== null && _d !== void 0 ? _d : uri_1.default;
       return {
-        strictSchema: (_f = (_e = o2.strictSchema) !== null && _e !== void 0 ? _e : s) !== null && _f !== void 0 ? _f : true,
-        strictNumbers: (_h = (_g = o2.strictNumbers) !== null && _g !== void 0 ? _g : s) !== null && _h !== void 0 ? _h : true,
-        strictTypes: (_k = (_j = o2.strictTypes) !== null && _j !== void 0 ? _j : s) !== null && _k !== void 0 ? _k : "log",
-        strictTuples: (_m = (_l = o2.strictTuples) !== null && _l !== void 0 ? _l : s) !== null && _m !== void 0 ? _m : "log",
-        strictRequired: (_p = (_o = o2.strictRequired) !== null && _o !== void 0 ? _o : s) !== null && _p !== void 0 ? _p : false,
+        strictSchema: (_f = (_e = o2.strictSchema) !== null && _e !== void 0 ? _e : s2) !== null && _f !== void 0 ? _f : true,
+        strictNumbers: (_h = (_g = o2.strictNumbers) !== null && _g !== void 0 ? _g : s2) !== null && _h !== void 0 ? _h : true,
+        strictTypes: (_k = (_j = o2.strictTypes) !== null && _j !== void 0 ? _j : s2) !== null && _k !== void 0 ? _k : "log",
+        strictTuples: (_m = (_l = o2.strictTuples) !== null && _l !== void 0 ? _l : s2) !== null && _m !== void 0 ? _m : "log",
+        strictRequired: (_p = (_o = o2.strictRequired) !== null && _o !== void 0 ? _o : s2) !== null && _p !== void 0 ? _p : false,
         code: o2.code ? { ...o2.code, optimize, regExp } : { optimize, regExp },
         loopRequired: (_q = o2.loopRequired) !== null && _q !== void 0 ? _q : MAX_EXPRESSION,
         loopEnum: (_r = o2.loopEnum) !== null && _r !== void 0 ? _r : MAX_EXPRESSION,
@@ -5445,7 +4416,7 @@ var require_core = __commonJS({
         validateSchema: (_x = o2.validateSchema) !== null && _x !== void 0 ? _x : true,
         validateFormats: (_y = o2.validateFormats) !== null && _y !== void 0 ? _y : true,
         unicodeRegExp: (_z = o2.unicodeRegExp) !== null && _z !== void 0 ? _z : true,
-        int32range: (_0 = o2.int32range) !== null && _0 !== void 0 ? _0 : true,
+        int32range: (_02 = o2.int32range) !== null && _02 !== void 0 ? _02 : true,
         uriResolver
       };
     }
@@ -5497,17 +4468,17 @@ var require_core = __commonJS({
         return this.opts.defaultMeta = typeof meta == "object" ? meta[schemaId] || meta : void 0;
       }
       validate(schemaKeyRef, data) {
-        let v2;
+        let v3;
         if (typeof schemaKeyRef == "string") {
-          v2 = this.getSchema(schemaKeyRef);
-          if (!v2)
+          v3 = this.getSchema(schemaKeyRef);
+          if (!v3)
             throw new Error(`no schema with key or ref "${schemaKeyRef}"`);
         } else {
-          v2 = this.compile(schemaKeyRef);
+          v3 = this.compile(schemaKeyRef);
         }
-        const valid = v2(data);
-        if (!("$async" in v2))
-          this.errors = v2.errors;
+        const valid = v3(data);
+        if (!("$async" in v3))
+          this.errors = v3.errors;
         return valid;
       }
       compile(schema, _meta) {
@@ -5533,11 +4504,11 @@ var require_core = __commonJS({
         async function _compileAsync(sch) {
           try {
             return this._compileSchemaEnv(sch);
-          } catch (e2) {
-            if (!(e2 instanceof ref_error_1.default))
-              throw e2;
-            checkLoaded.call(this, e2);
-            await loadMissingSchema.call(this, e2.missingSchema);
+          } catch (e) {
+            if (!(e instanceof ref_error_1.default))
+              throw e;
+            checkLoaded.call(this, e);
+            await loadMissingSchema.call(this, e.missingSchema);
             return _compileAsync.call(this, sch);
           }
         }
@@ -5717,9 +4688,9 @@ var require_core = __commonJS({
         delete RULES.keywords[keyword];
         delete RULES.all[keyword];
         for (const group of RULES.rules) {
-          const i = group.rules.findIndex((rule) => rule.keyword === keyword);
-          if (i >= 0)
-            group.rules.splice(i, 1);
+          const i2 = group.rules.findIndex((rule) => rule.keyword === keyword);
+          if (i2 >= 0)
+            group.rules.splice(i2, 1);
         }
         return this;
       }
@@ -5733,7 +4704,7 @@ var require_core = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e2) => `${dataVar}${e2.instancePath} ${e2.message}`).reduce((text, msg) => text + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text, msg) => text + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -5927,9 +4898,9 @@ var require_core = __commonJS({
       (_a = definition.implements) === null || _a === void 0 ? void 0 : _a.forEach((kwd) => this.addKeyword(kwd));
     }
     function addBeforeRule(ruleGroup, rule, before) {
-      const i = ruleGroup.rules.findIndex((_rule) => _rule.keyword === before);
-      if (i >= 0) {
-        ruleGroup.rules.splice(i, 0, rule);
+      const i2 = ruleGroup.rules.findIndex((_rule) => _rule.keyword === before);
+      if (i2 >= 0) {
+        ruleGroup.rules.splice(i2, 0, rule);
       } else {
         ruleGroup.rules.push(rule);
         this.logger.warn(`rule ${before} is not defined`);
@@ -6001,8 +4972,8 @@ var require_ref = __commonJS({
           return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root2, root2.$async);
         }
         function callValidate(sch) {
-          const v2 = getValidate(cxt, sch);
-          callRef(cxt, v2, sch, sch.$async);
+          const v3 = getValidate(cxt, sch);
+          callRef(cxt, v3, sch, sch.$async);
         }
         function inlineRefSchema(sch) {
           const schName = gen.scopeValue("schema", opts.code.source === true ? { ref: sch, code: (0, codegen_1.stringify)(sch) } : { ref: sch });
@@ -6024,7 +4995,7 @@ var require_ref = __commonJS({
       return sch.validate ? gen.scopeValue("validate", { ref: sch.validate }) : (0, codegen_1._)`${gen.scopeValue("wrapper", { ref: sch })}.validate`;
     }
     exports2.getValidate = getValidate;
-    function callRef(cxt, v2, sch, $async) {
+    function callRef(cxt, v3, sch, $async) {
       const { gen, it } = cxt;
       const { allErrors, schemaEnv: env, opts } = it;
       const passCxt = opts.passContext ? names_1.default.this : codegen_1.nil;
@@ -6037,20 +5008,20 @@ var require_ref = __commonJS({
           throw new Error("async schema referenced by sync schema");
         const valid = gen.let("valid");
         gen.try(() => {
-          gen.code((0, codegen_1._)`await ${(0, code_1.callValidateCode)(cxt, v2, passCxt)}`);
-          addEvaluatedFrom(v2);
+          gen.code((0, codegen_1._)`await ${(0, code_1.callValidateCode)(cxt, v3, passCxt)}`);
+          addEvaluatedFrom(v3);
           if (!allErrors)
             gen.assign(valid, true);
-        }, (e2) => {
-          gen.if((0, codegen_1._)`!(${e2} instanceof ${it.ValidationError})`, () => gen.throw(e2));
-          addErrorsFrom(e2);
+        }, (e) => {
+          gen.if((0, codegen_1._)`!(${e} instanceof ${it.ValidationError})`, () => gen.throw(e));
+          addErrorsFrom(e);
           if (!allErrors)
             gen.assign(valid, false);
         });
         cxt.ok(valid);
       }
       function callSyncRef() {
-        cxt.result((0, code_1.callValidateCode)(cxt, v2, passCxt), () => addEvaluatedFrom(v2), () => addErrorsFrom(v2));
+        cxt.result((0, code_1.callValidateCode)(cxt, v3, passCxt), () => addEvaluatedFrom(v3), () => addErrorsFrom(v3));
       }
       function addErrorsFrom(source) {
         const errs = (0, codegen_1._)`${source}.errors`;
@@ -6248,12 +5219,12 @@ var require_pattern = __commonJS({
       error,
       code(cxt) {
         const { gen, data, $data, schema, schemaCode, it } = cxt;
-        const u2 = it.opts.unicodeRegExp ? "u" : "";
+        const u = it.opts.unicodeRegExp ? "u" : "";
         if ($data) {
           const { regExp } = it.opts.code;
           const regExpCode = regExp.code === "new RegExp" ? (0, codegen_1._)`new RegExp` : (0, util_1.useFunc)(gen, regExp);
           const valid = gen.let("valid");
-          gen.try(() => gen.assign(valid, (0, codegen_1._)`${regExpCode}(${schemaCode}, ${u2}).test(${data})`), () => gen.assign(valid, false));
+          gen.try(() => gen.assign(valid, (0, codegen_1._)`${regExpCode}(${schemaCode}, ${u}).test(${data})`), () => gen.assign(valid, false));
           cxt.fail$data((0, codegen_1._)`!${valid}`);
         } else {
           const regExp = (0, code_1.usePattern)(cxt, schema);
@@ -6426,8 +5397,8 @@ var require_uniqueItems = __commonJS({
     var util_1 = require_util();
     var equal_1 = require_equal();
     var error = {
-      message: ({ params: { i, j } }) => (0, codegen_1.str)`must NOT have duplicate items (items ## ${j} and ${i} are identical)`,
-      params: ({ params: { i, j } }) => (0, codegen_1._)`{i: ${i}, j: ${j}}`
+      message: ({ params: { i: i2, j } }) => (0, codegen_1.str)`must NOT have duplicate items (items ## ${j} and ${i2} are identical)`,
+      params: ({ params: { i: i2, j } }) => (0, codegen_1._)`{i: ${i2}, j: ${j}}`
     };
     var def = {
       keyword: "uniqueItems",
@@ -6444,21 +5415,21 @@ var require_uniqueItems = __commonJS({
         cxt.block$data(valid, validateUniqueItems, (0, codegen_1._)`${schemaCode} === false`);
         cxt.ok(valid);
         function validateUniqueItems() {
-          const i = gen.let("i", (0, codegen_1._)`${data}.length`);
+          const i2 = gen.let("i", (0, codegen_1._)`${data}.length`);
           const j = gen.let("j");
-          cxt.setParams({ i, j });
+          cxt.setParams({ i: i2, j });
           gen.assign(valid, true);
-          gen.if((0, codegen_1._)`${i} > 1`, () => (canOptimize() ? loopN : loopN2)(i, j));
+          gen.if((0, codegen_1._)`${i2} > 1`, () => (canOptimize() ? loopN : loopN2)(i2, j));
         }
         function canOptimize() {
           return itemTypes.length > 0 && !itemTypes.some((t) => t === "object" || t === "array");
         }
-        function loopN(i, j) {
+        function loopN(i2, j) {
           const item = gen.name("item");
           const wrongType = (0, dataType_1.checkDataTypes)(itemTypes, item, it.opts.strictNumbers, dataType_1.DataType.Wrong);
           const indices = gen.const("indices", (0, codegen_1._)`{}`);
-          gen.for((0, codegen_1._)`;${i}--;`, () => {
-            gen.let(item, (0, codegen_1._)`${data}[${i}]`);
+          gen.for((0, codegen_1._)`;${i2}--;`, () => {
+            gen.let(item, (0, codegen_1._)`${data}[${i2}]`);
             gen.if(wrongType, (0, codegen_1._)`continue`);
             if (itemTypes.length > 1)
               gen.if((0, codegen_1._)`typeof ${item} == "string"`, (0, codegen_1._)`${item} += "_"`);
@@ -6466,13 +5437,13 @@ var require_uniqueItems = __commonJS({
               gen.assign(j, (0, codegen_1._)`${indices}[${item}]`);
               cxt.error();
               gen.assign(valid, false).break();
-            }).code((0, codegen_1._)`${indices}[${item}] = ${i}`);
+            }).code((0, codegen_1._)`${indices}[${item}] = ${i2}`);
           });
         }
-        function loopN2(i, j) {
+        function loopN2(i2, j) {
           const eql = (0, util_1.useFunc)(gen, equal_1.default);
           const outer = gen.name("outer");
-          gen.label(outer).for((0, codegen_1._)`;${i}--;`, () => gen.for((0, codegen_1._)`${j} = ${i}; ${j}--;`, () => gen.if((0, codegen_1._)`${eql}(${data}[${i}], ${data}[${j}])`, () => {
+          gen.label(outer).for((0, codegen_1._)`;${i2}--;`, () => gen.for((0, codegen_1._)`${j} = ${i2}; ${j}--;`, () => gen.if((0, codegen_1._)`${eql}(${data}[${i2}], ${data}[${j}])`, () => {
             cxt.error();
             gen.assign(valid, false).break(outer);
           })));
@@ -6544,16 +5515,16 @@ var require_enum = __commonJS({
           if (!Array.isArray(schema))
             throw new Error("ajv implementation error");
           const vSchema = gen.const("vSchema", schemaCode);
-          valid = (0, codegen_1.or)(...schema.map((_x, i) => equalCode(vSchema, i)));
+          valid = (0, codegen_1.or)(...schema.map((_x, i2) => equalCode(vSchema, i2)));
         }
         cxt.pass(valid);
         function loopEnum() {
           gen.assign(valid, false);
-          gen.forOf("v", schemaCode, (v2) => gen.if((0, codegen_1._)`${getEql()}(${data}, ${v2})`, () => gen.assign(valid, true).break()));
+          gen.forOf("v", schemaCode, (v3) => gen.if((0, codegen_1._)`${getEql()}(${data}, ${v3})`, () => gen.assign(valid, true).break()));
         }
-        function equalCode(vSchema, i) {
-          const sch = schema[i];
-          return typeof sch === "object" && sch !== null ? (0, codegen_1._)`${getEql()}(${data}, ${vSchema}[${i}])` : (0, codegen_1._)`${data} === ${sch}`;
+        function equalCode(vSchema, i2) {
+          const sch = schema[i2];
+          return typeof sch === "object" && sch !== null ? (0, codegen_1._)`${getEql()}(${data}, ${vSchema}[${i2}])` : (0, codegen_1._)`${data} === ${sch}`;
         }
       }
     };
@@ -6640,8 +5611,8 @@ var require_additionalItems = __commonJS({
         cxt.ok(valid);
       }
       function validateItems(valid) {
-        gen.forRange("i", items.length, len, (i) => {
-          cxt.subschema({ keyword, dataProp: i, dataPropType: util_1.Type.Num }, valid);
+        gen.forRange("i", items.length, len, (i2) => {
+          cxt.subschema({ keyword, dataProp: i2, dataPropType: util_1.Type.Num }, valid);
           if (!it.allErrors)
             gen.if((0, codegen_1.not)(valid), () => gen.break());
         });
@@ -6684,22 +5655,22 @@ var require_items = __commonJS({
       }
       const valid = gen.name("valid");
       const len = gen.const("len", (0, codegen_1._)`${data}.length`);
-      schArr.forEach((sch, i) => {
+      schArr.forEach((sch, i2) => {
         if ((0, util_1.alwaysValidSchema)(it, sch))
           return;
-        gen.if((0, codegen_1._)`${len} > ${i}`, () => cxt.subschema({
+        gen.if((0, codegen_1._)`${len} > ${i2}`, () => cxt.subschema({
           keyword,
-          schemaProp: i,
-          dataProp: i
+          schemaProp: i2,
+          dataProp: i2
         }, valid));
         cxt.ok(valid);
       });
       function checkStrictTuple(sch) {
         const { opts, errSchemaPath } = it;
-        const l2 = schArr.length;
-        const fullTuple = l2 === sch.minItems && (l2 === sch.maxItems || sch[extraItems] === false);
+        const l = schArr.length;
+        const fullTuple = l === sch.minItems && (l === sch.maxItems || sch[extraItems] === false);
         if (opts.strictTuples && !fullTuple) {
-          const msg = `"${keyword}" is ${l2}-tuple, but minItems or maxItems/${extraItems} are not specified or different at path "${errSchemaPath}"`;
+          const msg = `"${keyword}" is ${l}-tuple, but minItems or maxItems/${extraItems} are not specified or different at path "${errSchemaPath}"`;
           (0, util_1.checkStrictMode)(it, msg, opts.strictTuples);
         }
       }
@@ -6827,10 +5798,10 @@ var require_contains = __commonJS({
           validateItems(schValid, () => gen.if(schValid, () => checkLimits(count)));
         }
         function validateItems(_valid, block) {
-          gen.forRange("i", 0, len, (i) => {
+          gen.forRange("i", 0, len, (i2) => {
             cxt.subschema({
               keyword: "contains",
-              dataProp: i,
+              dataProp: i2,
               dataPropType: util_1.Type.Num,
               compositeRule: true
             }, _valid);
@@ -7308,23 +6279,23 @@ var require_oneOf = __commonJS({
         gen.block(validateOneOf);
         cxt.result(valid, () => cxt.reset(), () => cxt.error(true));
         function validateOneOf() {
-          schArr.forEach((sch, i) => {
+          schArr.forEach((sch, i2) => {
             let schCxt;
             if ((0, util_1.alwaysValidSchema)(it, sch)) {
               gen.var(schValid, true);
             } else {
               schCxt = cxt.subschema({
                 keyword: "oneOf",
-                schemaProp: i,
+                schemaProp: i2,
                 compositeRule: true
               }, schValid);
             }
-            if (i > 0) {
-              gen.if((0, codegen_1._)`${schValid} && ${valid}`).assign(valid, false).assign(passing, (0, codegen_1._)`[${passing}, ${i}]`).else();
+            if (i2 > 0) {
+              gen.if((0, codegen_1._)`${schValid} && ${valid}`).assign(valid, false).assign(passing, (0, codegen_1._)`[${passing}, ${i2}]`).else();
             }
             gen.if(schValid, () => {
               gen.assign(valid, true);
-              gen.assign(passing, i);
+              gen.assign(passing, i2);
               if (schCxt)
                 cxt.mergeEvaluated(schCxt, codegen_1.Name);
             });
@@ -7350,10 +6321,10 @@ var require_allOf = __commonJS({
         if (!Array.isArray(schema))
           throw new Error("ajv implementation error");
         const valid = gen.name("valid");
-        schema.forEach((sch, i) => {
+        schema.forEach((sch, i2) => {
           if ((0, util_1.alwaysValidSchema)(it, sch))
             return;
-          const schCxt = cxt.subschema({ keyword: "allOf", schemaProp: i }, valid);
+          const schCxt = cxt.subschema({ keyword: "allOf", schemaProp: i2 }, valid);
           cxt.ok(valid);
           cxt.mergeEvaluated(schCxt);
         });
@@ -7716,8 +6687,8 @@ var require_discriminator = __commonJS({
           const oneOfMapping = {};
           const topRequired = hasRequired(parentSchema);
           let tagRequired = true;
-          for (let i = 0; i < oneOf.length; i++) {
-            let sch = oneOf[i];
+          for (let i2 = 0; i2 < oneOf.length; i2++) {
+            let sch = oneOf[i2];
             if ((sch === null || sch === void 0 ? void 0 : sch.$ref) && !(0, util_1.schemaHasRulesButRef)(sch, it.self.RULES)) {
               const ref = sch.$ref;
               sch = compile_1.resolveRef.call(it.self, it.schemaEnv.root, it.baseId, ref);
@@ -7731,7 +6702,7 @@ var require_discriminator = __commonJS({
               throw new Error(`discriminator: oneOf subschemas (or referenced schemas) must have "properties/${tagName}"`);
             }
             tagRequired = tagRequired && (topRequired || hasRequired(sch));
-            addMappings(propSch, i);
+            addMappings(propSch, i2);
           }
           if (!tagRequired)
             throw new Error(`discriminator: "${tagName}" must be required`);
@@ -7739,22 +6710,22 @@ var require_discriminator = __commonJS({
           function hasRequired({ required }) {
             return Array.isArray(required) && required.includes(tagName);
           }
-          function addMappings(sch, i) {
+          function addMappings(sch, i2) {
             if (sch.const) {
-              addMapping(sch.const, i);
+              addMapping(sch.const, i2);
             } else if (sch.enum) {
               for (const tagValue of sch.enum) {
-                addMapping(tagValue, i);
+                addMapping(tagValue, i2);
               }
             } else {
               throw new Error(`discriminator: "properties/${tagName}" must have "const" or "enum"`);
             }
           }
-          function addMapping(tagValue, i) {
+          function addMapping(tagValue, i2) {
             if (typeof tagValue != "string" || tagValue in oneOfMapping) {
               throw new Error(`discriminator: "${tagName}" values must be unique strings`);
             }
-            oneOfMapping[tagValue] = i;
+            oneOfMapping[tagValue] = i2;
           }
         }
       }
@@ -7935,7 +6906,7 @@ var require_ajv = __commonJS({
     var Ajv2 = class extends core_1.default {
       _addVocabularies() {
         super._addVocabularies();
-        draft7_1.default.forEach((v2) => this.addVocabulary(v2));
+        draft7_1.default.forEach((v3) => this.addVocabulary(v3));
         if (this.opts.discriminator)
           this.addKeyword(discriminator_1.default);
       }
@@ -8150,7 +7121,7 @@ var require_formats = __commonJS({
       try {
         new RegExp(str);
         return true;
-      } catch (e2) {
+      } catch (e) {
         return false;
       }
     }
@@ -8268,117 +7239,6 @@ var require_dist = __commonJS({
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.default = formatsPlugin;
-  }
-});
-
-// src/JsonEditor.tsx
-var JsonEditor_exports = {};
-__export(JsonEditor_exports, {
-  default: () => JsonEditor
-});
-import { useState as useState23 } from "react";
-import Editor from "@monaco-editor/react";
-import { jsx as jsx30, jsxs as jsxs23 } from "react/jsx-runtime";
-function JsonEditor() {
-  const { state, setSchema, setUiSchema } = useFormStudio();
-  const [localSchema, setLocalSchema] = useState23(() => JSON.stringify(state.schema, null, 2));
-  const [localUiSchema, setLocalUiSchema] = useState23(() => JSON.stringify(state.uiSchema, null, 2));
-  const [prevSchema, setPrevSchema] = useState23(state.schema);
-  const [prevUiSchema, setPrevUiSchema] = useState23(state.uiSchema);
-  if (state.schema !== prevSchema) {
-    setPrevSchema(state.schema);
-    try {
-      const parsedLocal = JSON.parse(localSchema);
-      if (JSON.stringify(parsedLocal) !== JSON.stringify(state.schema)) {
-        setLocalSchema(JSON.stringify(state.schema, null, 2));
-      }
-    } catch (e2) {
-      if (JSON.stringify(state.schema) !== "{}") {
-        setLocalSchema(JSON.stringify(state.schema, null, 2));
-      }
-    }
-  }
-  if (state.uiSchema !== prevUiSchema) {
-    setPrevUiSchema(state.uiSchema);
-    try {
-      const parsedLocal = JSON.parse(localUiSchema);
-      if (JSON.stringify(parsedLocal) !== JSON.stringify(state.uiSchema)) {
-        setLocalUiSchema(JSON.stringify(state.uiSchema, null, 2));
-      }
-    } catch (e2) {
-      if (JSON.stringify(state.uiSchema) !== "{}") {
-        setLocalUiSchema(JSON.stringify(state.uiSchema, null, 2));
-      }
-    }
-  }
-  const handleSchemaChange = (value) => {
-    const val = value || "";
-    setLocalSchema(val);
-    try {
-      const parsed = JSON.parse(val);
-      setSchema(parsed);
-    } catch {
-    }
-  };
-  const handleUiSchemaChange = (value) => {
-    const val = value || "";
-    setLocalUiSchema(val);
-    try {
-      const parsed = JSON.parse(val);
-      setUiSchema(parsed);
-    } catch {
-    }
-  };
-  return /* @__PURE__ */ jsx30("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs23("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
-    /* @__PURE__ */ jsxs23("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx30("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
-      /* @__PURE__ */ jsx30("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx30(
-        Editor,
-        {
-          height: "100%",
-          language: "json",
-          theme: "vs-dark",
-          value: localSchema,
-          onChange: handleSchemaChange,
-          options: {
-            readOnly: false,
-            minimap: { enabled: false },
-            fontSize: 14,
-            wordWrap: "on",
-            formatOnPaste: true,
-            scrollBeyondLastLine: false
-          }
-        }
-      ) })
-    ] }),
-    /* @__PURE__ */ jsxs23("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx30("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
-      /* @__PURE__ */ jsx30("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx30(
-        Editor,
-        {
-          height: "100%",
-          language: "json",
-          theme: "vs-dark",
-          value: localUiSchema,
-          onChange: handleUiSchemaChange,
-          options: {
-            readOnly: false,
-            minimap: { enabled: false },
-            fontSize: 14,
-            wordWrap: "on",
-            formatOnPaste: true,
-            scrollBeyondLastLine: false
-          }
-        }
-      ) })
-    ] })
-  ] }) });
-}
-var init_JsonEditor = __esm({
-  "src/JsonEditor.tsx"() {
-    "use strict";
-    "use client";
-    init_FormStudioContext();
   }
 });
 
@@ -8547,27 +7407,165 @@ function FBRadioGroup(props) {
   )) });
 }
 
-// src/Tooltip.tsx
-import { InformationCircleIcon, StarIcon } from "@heroicons/react/24/outline";
-import { jsx as jsx5 } from "react/jsx-runtime";
-var typeMap = {
-  alert: StarIcon,
-  help: InformationCircleIcon
-};
-function Tooltip({
-  text,
-  type,
-  id
-}) {
-  const Icon = typeMap[type];
-  return /* @__PURE__ */ jsx5("span", { className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs", "data-tip": text, id, children: /* @__PURE__ */ jsx5(Icon, { className: "h-4 w-4 inline stroke-2 stroke-info" }) });
-}
-
 // src/dependencies/DependencyWarning.tsx
 import React3, { useState as useState2 } from "react";
 
+// src/FieldAuthoringControls.tsx
+import { jsx as jsx5 } from "react/jsx-runtime";
+function FieldAuthoringControls({
+  fieldPointer,
+  compatibility,
+  valueOverride
+}) {
+  return /* @__PURE__ */ jsx5(
+    FieldExtensionOutlet,
+    {
+      fieldPointer,
+      compatibility,
+      valueOverride
+    }
+  );
+}
+
+// src/CompatibilityCard.tsx
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
+function CompatibilityCard({
+  name,
+  title,
+  compatibility,
+  fieldPointer
+}) {
+  const isMigration = compatibility.kind === "migration";
+  const pointer = `/properties/${name.replace(/~/g, "~0").replace(/\//g, "~1")}`;
+  return /* @__PURE__ */ jsxs4(
+    "div",
+    {
+      className: `card-container border rounded-xl shadow-sm p-4 ${isMigration ? "border-warning/50 bg-warning/10" : "border-base-300 bg-base-200"}`,
+      "data-compatibility-kind": compatibility.kind,
+      "data-compatibility-code": compatibility.code,
+      children: [
+        /* @__PURE__ */ jsxs4("div", { className: "flex flex-wrap items-center justify-between gap-2", children: [
+          /* @__PURE__ */ jsx6("h4", { className: "text-lg font-bold", children: title || name }),
+          /* @__PURE__ */ jsx6("span", { className: `badge ${isMigration ? "badge-warning" : "badge-ghost"}`, children: isMigration ? "Migration required" : "Read-only" })
+        ] }),
+        /* @__PURE__ */ jsx6("p", { className: "mt-3 text-sm", children: compatibility.message }),
+        /* @__PURE__ */ jsx6("p", { className: "mt-2 font-mono text-xs text-base-content/60", children: pointer }),
+        /* @__PURE__ */ jsx6("p", { className: "mt-3 text-sm text-base-content/70", children: "Visual controls are disabled to avoid reinterpreting this field. Use the JSON Editor to inspect or change it." }),
+        fieldPointer !== void 0 && /* @__PURE__ */ jsx6("div", { className: "mt-4 pt-4 border-t border-base-300", children: /* @__PURE__ */ jsx6(FieldAuthoringControls, { fieldPointer, compatibility }) })
+      ]
+    }
+  );
+}
+
+// src/localReferences.ts
+function cloneJsonValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneJsonValue(item));
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+    );
+  }
+  return value;
+}
+function decodePointerToken(token) {
+  if (/~(?:[^01]|$)/.test(token)) return void 0;
+  return token.replace(/~1/g, "/").replace(/~0/g, "~");
+}
+function getLocalDefinitionName(reference) {
+  if (!reference.startsWith("#")) return void 0;
+  let pointer;
+  try {
+    pointer = decodeURIComponent(reference.slice(1));
+  } catch {
+    return void 0;
+  }
+  const path = pointer.split("/");
+  if (path.length !== 3 || path[0] !== "" || path[1] !== "definitions") {
+    return void 0;
+  }
+  return decodePointerToken(path[2]);
+}
+function resolveLocalDefinitionReference({
+  schema,
+  uiSchema = {},
+  definitions = {},
+  definitionUi = {}
+}) {
+  const sourceSchema = cloneJsonValue(schema);
+  const sourceUiSchema = cloneJsonValue(uiSchema);
+  const reference = typeof schema.$ref === "string" ? schema.$ref : "";
+  const unresolved = (status, currentReference = reference) => ({
+    status,
+    reference: currentReference,
+    schema: sourceSchema,
+    uiSchema: sourceUiSchema
+  });
+  if (!reference) return unresolved("unresolved");
+  if (!reference.startsWith("#")) return unresolved("external");
+  const resolve = (currentSchema, currentUiSchema, seenReferences) => {
+    const currentReference = typeof currentSchema.$ref === "string" ? currentSchema.$ref : "";
+    if (!currentReference) {
+      return {
+        status: "resolved",
+        reference,
+        schema: cloneJsonValue(currentSchema),
+        uiSchema: cloneJsonValue(currentUiSchema)
+      };
+    }
+    if (!currentReference.startsWith("#")) {
+      return unresolved("external", currentReference);
+    }
+    const definitionName = getLocalDefinitionName(currentReference);
+    if (definitionName === void 0) {
+      return unresolved("unsupportedLocal", currentReference);
+    }
+    if (seenReferences.has(currentReference)) {
+      return unresolved("cycle", currentReference);
+    }
+    const definition = definitions[definitionName];
+    if (!definition || typeof definition !== "object" || Array.isArray(definition)) {
+      return unresolved("unresolved", currentReference);
+    }
+    const nextSeenReferences = new Set(seenReferences);
+    nextSeenReferences.add(currentReference);
+    const definedUiSchema = definitionUi[definitionName] && typeof definitionUi[definitionName] === "object" ? definitionUi[definitionName] : {};
+    let resolvedDefinition = cloneJsonValue(definition);
+    let resolvedDefinitionUi = cloneJsonValue(definedUiSchema);
+    if (typeof definition.$ref === "string") {
+      const nestedResolution = resolve(definition, definedUiSchema, nextSeenReferences);
+      if (nestedResolution.status !== "resolved") return nestedResolution;
+      resolvedDefinition = nestedResolution.schema;
+      resolvedDefinitionUi = nestedResolution.uiSchema;
+    }
+    return {
+      status: "resolved",
+      reference,
+      definitionName,
+      schema: {
+        ...resolvedDefinition,
+        ...cloneJsonValue(currentSchema)
+      },
+      uiSchema: {
+        ...resolvedDefinitionUi,
+        ...cloneJsonValue(currentUiSchema)
+      }
+    };
+  };
+  return resolve(schema, uiSchema, /* @__PURE__ */ new Set());
+}
+
+// src/fieldPointer.ts
+function escapeJsonPointerToken(token) {
+  return token.replace(/~/g, "~0").replace(/\//g, "~1");
+}
+function buildChildFieldPointer(parentFieldPointer, name) {
+  return `${parentFieldPointer}/properties/${escapeJsonPointerToken(name)}`;
+}
+
 // src/utils.tsx
-import { jsx as jsx6 } from "react/jsx-runtime";
+import { jsx as jsx7 } from "react/jsx-runtime";
 function parse(text) {
   if (!text) return {};
   return JSON.parse(text);
@@ -8619,15 +7617,107 @@ function generateCategoryHash(allFormInputs) {
   });
   return categoryHash;
 }
-function getCardCategory(cardProps, categoryHash) {
-  const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${cardProps.uiOptions["ui:widget"] || ""};field:${cardProps.uiOptions["ui:field"] || ""};format:${cardProps.dataOptions.format || ""};$ref:${cardProps.$ref !== void 0 ? "true" : "false"};enum:${cardProps.dataOptions.enum ? "true" : "false"}`;
-  const category = categoryHash[currentHash];
-  if (!category) {
-    if (cardProps.$ref) return "ref";
-    console.error(`No match for card': ${currentHash} among set`);
-    return "shortAnswer";
+function classifyCard(cardProps, categoryHash) {
+  const { dataOptions, uiOptions } = cardProps;
+  const widget = uiOptions["ui:widget"];
+  if (cardProps.referenceResolution && cardProps.referenceResolution !== "resolved") {
+    const diagnostics = {
+      cycle: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_CYCLE_READ_ONLY",
+        message: "Recursive local references are preserved but cannot be expanded visually."
+      },
+      external: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_EXTERNAL_READ_ONLY",
+        message: "External references are preserved but cannot be edited visually."
+      },
+      unresolved: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNRESOLVED_READ_ONLY",
+        message: "This reference does not resolve to an available local definition."
+      },
+      unsupportedLocal: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY",
+        message: "This local reference is preserved, but Form Studio only edits references under #/definitions."
+      }
+    };
+    return diagnostics[cardProps.referenceResolution];
   }
-  return category;
+  if (dataOptions.oneOf !== void 0) {
+    return {
+      kind: "readOnly",
+      code: "FS_ONE_OF_READ_ONLY",
+      message: "Standalone oneOf fields are preserved but cannot be edited visually."
+    };
+  }
+  if (dataOptions.anyOf !== void 0 || dataOptions.allOf !== void 0 || dataOptions.not !== void 0) {
+    return {
+      kind: "readOnly",
+      code: "FS_COMPOSITION_READ_ONLY",
+      message: "Composed field schemas are preserved but cannot be edited visually."
+    };
+  }
+  if (dataOptions.readOnly === true || widget === "hidden") {
+    return {
+      kind: "readOnly",
+      code: "FS_HIDDEN_READ_ONLY",
+      message: "Hidden or read-only fields cannot be edited in the visual builder."
+    };
+  }
+  if (dataOptions.format === "textarea") {
+    return {
+      kind: "migration",
+      code: "FS_TEXTAREA_MIGRATION",
+      message: 'The legacy format "textarea" is not standard JSON Schema. To migrate it, remove "format" from this field and set ui:widget "textarea" at the same path in the UI schema.'
+    };
+  }
+  const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${widget || ""};field:${cardProps.uiOptions["ui:field"] || ""};format:${cardProps.dataOptions.format || ""};$ref:${cardProps.$ref !== void 0 ? "true" : "false"};enum:${cardProps.dataOptions.enum ? "true" : "false"}`;
+  const category = categoryHash[currentHash];
+  if (dataOptions.type === "array") {
+    if (category && category !== "stringArray") {
+      return { kind: "editable", category };
+    }
+    if (category === "stringArray" && !Array.isArray(dataOptions.items) && dataOptions.items?.type === "string" && !["oneOf", "anyOf", "allOf", "not", "$ref"].some(
+      (keyword) => Object.prototype.hasOwnProperty.call(dataOptions.items, keyword)
+    )) {
+      return { kind: "editable", category };
+    }
+    if (dataOptions.items?.type === "object") {
+      return {
+        kind: "readOnly",
+        code: "FS_OBJECT_ARRAY_READ_ONLY",
+        message: "Arrays of objects are preserved but cannot be edited visually."
+      };
+    }
+    if (dataOptions.items?.type === "string") {
+      return {
+        kind: "readOnly",
+        code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+        message: "This string item schema is composed or referenced and cannot be edited visually."
+      };
+    }
+    if (["number", "integer", "boolean"].includes(dataOptions.items?.type)) {
+      return {
+        kind: "readOnly",
+        code: "FS_SCALAR_ARRAY_READ_ONLY",
+        message: "Only arrays of strings can currently be edited visually; this field is read-only."
+      };
+    }
+    return {
+      kind: "readOnly",
+      code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+      message: "This array shape cannot be edited visually."
+    };
+  }
+  if (category) return { kind: "editable", category };
+  if (cardProps.$ref !== void 0) return { kind: "editable", category: "ref" };
+  return {
+    kind: "readOnly",
+    code: "FS_UNKNOWN_FIELD_READ_ONLY",
+    message: "This field uses a schema or UI construct Form Studio does not recognize."
+  };
 }
 var supportedPropertyParameters = /* @__PURE__ */ new Set([
   "title",
@@ -8651,13 +7741,13 @@ var supportedPropertyParameters = /* @__PURE__ */ new Set([
   "$ref",
   "minItems",
   "maxItems",
+  "uniqueItems",
   "enumNames",
   "dependencies",
   "$id",
   "$schema",
   "meta",
-  "additionalProperties",
-  "ontologyId"
+  "additionalProperties"
 ]);
 var supportedUiParameters = /* @__PURE__ */ new Set([
   "ui:order",
@@ -8671,12 +7761,14 @@ var supportedUiParameters = /* @__PURE__ */ new Set([
   "items",
   "definitions"
 ]);
-function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, supportedFields, supportedOptions) {
+function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, supportedFields, supportedOptions, definitionData, definitionUi) {
   const unsupportedFeatures = [];
   if (schema && typeof schema === "object") {
     Object.keys(schema).forEach((property2) => {
       if (!supportedPropertyParameters.has(property2) && property2 !== "properties") {
-        unsupportedFeatures.push(`Unrecognized Object Property: ${property2}`);
+        unsupportedFeatures.push(
+          property2 === "allOf" ? "Conditional rules at /allOf are not visually editable." : `Unrecognized Object Property: ${property2}`
+        );
       }
     });
   }
@@ -8714,6 +7806,13 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
   }
   if (schema.properties) {
     Object.entries(schema.properties).forEach(([parameter, element]) => {
+      const referenceResolution = element && typeof element === "object" && typeof element.$ref === "string" ? resolveLocalDefinitionReference({
+        schema: element,
+        uiSchema: uischema?.[parameter],
+        definitions: definitionData,
+        definitionUi
+      }) : void 0;
+      const inspectedElement = referenceResolution?.status === "resolved" ? referenceResolution.schema : element;
       if (element && typeof element === "object" && element.type && element.type !== "object") {
         if (!["array", "string", "integer", "number", "boolean"].includes(element.type)) {
           unsupportedFeatures.push(`Unrecognized type: ${element.type} in ${parameter}`);
@@ -8730,7 +7829,7 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
           }
         });
       }
-      if (uischema && uischema[parameter] && element && (!element.type || element.type !== "object")) {
+      if (uischema && uischema[parameter] && inspectedElement && (!referenceResolution || referenceResolution.status === "resolved") && (!inspectedElement.type || inspectedElement.type !== "object")) {
         Object.keys(uischema[parameter]).forEach((uiProp) => {
           if (!supportedUiParameters.has(uiProp)) {
             unsupportedFeatures.push(`UI Property: ${uiProp} for ${parameter}`);
@@ -8754,7 +7853,7 @@ function checkObjectForUnsupportedFeatures(schema, uischema, supportedWidgets, s
   }
   return unsupportedFeatures;
 }
-function checkForUnsupportedFeatures(schema, uischema, allFormInputs) {
+function checkForUnsupportedFeatures(schema, uischema, allFormInputs, definitionData = schema.definitions || {}, definitionUi = uischema.definitions || {}) {
   const unsupportedFeatures = [];
   const widgets2 = [];
   const fields2 = [];
@@ -8782,7 +7881,9 @@ function checkForUnsupportedFeatures(schema, uischema, allFormInputs) {
         uischema,
         supportedWidgets,
         supportedFields,
-        supportedOptions
+        supportedOptions,
+        definitionData,
+        definitionUi
       )
     );
   } else {
@@ -8795,24 +7896,25 @@ function generateDependencyElement(name, dataProps, uiProperties, requiredNames,
     ...uiProperties
   };
   const newElement = {};
-  let elementDetails = dataProps && typeof dataProps === "object" ? dataProps : {};
+  let elementDetails = dataProps && typeof dataProps === "object" ? { ...dataProps } : {};
+  let referenceResolution;
   if (elementDetails.$ref !== void 0 && definitionData) {
-    const pathArr = typeof elementDetails.$ref === "string" ? elementDetails.$ref.split("/") : [];
-    if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]] && useDefinitionDetails === true) {
-      elementDetails = {
-        ...elementDetails,
-        ...definitionData[pathArr[2]]
-      };
+    const resolution = resolveLocalDefinitionReference({
+      schema: elementDetails,
+      uiSchema: uiProps,
+      definitions: definitionData,
+      definitionUi
+    });
+    referenceResolution = resolution.status;
+    if (resolution.status === "resolved") {
+      if (useDefinitionDetails) elementDetails = resolution.schema;
+      uiProps = resolution.uiSchema;
     }
-    const definedUiProps = (definitionUi || {})[pathArr[2]];
-    uiProps = {
-      ...definedUiProps || {},
-      ...uiProps
-    };
   }
   newElement.name = name;
   newElement.required = requiredNames.includes(name);
   newElement.$ref = typeof elementDetails.$ref === "string" ? elementDetails.$ref : void 0;
+  newElement.referenceResolution = referenceResolution;
   if (elementDetails.type && elementDetails.type === "object") {
     newElement.schema = elementDetails;
     newElement.uischema = uiProps || {};
@@ -8826,7 +7928,10 @@ function generateDependencyElement(name, dataProps, uiProperties, requiredNames,
         newElement.uiOptions[`ui:*${uiKey}`] = newElement.uiOptions[uiKey];
       }
     });
-    newElement.dataOptions.category = getCardCategory(newElement, categoryHash);
+    newElement.compatibility = classifyCard(newElement, categoryHash);
+    if (newElement.compatibility.kind === "editable") {
+      newElement.dataOptions.category = newElement.compatibility.category;
+    }
     newElement.propType = "card";
   }
   return newElement;
@@ -8838,41 +7943,45 @@ function generateElementPropsFromSchemas(parameters) {
   const requiredNames = schema.required ? schema.required : [];
   Object.entries(schema.properties).forEach(([parameter, element]) => {
     const newElement = {};
-    let elementDetails = element && typeof element === "object" ? element : {};
+    let elementDetails = element && typeof element === "object" ? { ...element } : {};
+    let elementUiOptions = {
+      ...uischema[parameter] || {}
+    };
+    let referenceResolution;
     if (elementDetails?.$ref !== void 0 && definitionData) {
-      if (elementDetails.$ref && !elementDetails.$ref.startsWith("#/definitions")) {
-        throw new Error(`Invalid definition, not at '#/definitions': ${elementDetails.$ref}`);
+      const resolution = resolveLocalDefinitionReference({
+        schema: elementDetails,
+        uiSchema: elementUiOptions,
+        definitions: definitionData,
+        definitionUi
+      });
+      referenceResolution = resolution.status;
+      if (resolution.status === "resolved") {
+        elementDetails = resolution.schema;
+        elementUiOptions = resolution.uiSchema;
       }
-      const pathArr = elementDetails.$ref !== void 0 ? elementDetails.$ref.split("/") : [];
-      if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]]) {
-        elementDetails = {
-          ...definitionData[pathArr[2]],
-          ...elementDetails
-        };
-      }
-      const definedUiProps = (definitionUi || {})[pathArr[2]];
-      uischema[parameter] = {
-        ...definedUiProps || {},
-        ...uischema[parameter]
-      };
     }
     newElement.name = parameter;
     newElement.required = requiredNames.includes(parameter);
     newElement.$ref = elementDetails.$ref;
+    newElement.referenceResolution = referenceResolution;
     newElement.dataOptions = elementDetails;
     if (elementDetails.type && elementDetails.type === "object") {
       newElement.schema = elementDetails;
-      newElement.uischema = uischema[parameter] || {};
+      newElement.uischema = elementUiOptions;
       newElement.propType = "section";
     } else {
-      newElement.uiOptions = uischema[parameter] || {};
+      newElement.uiOptions = elementUiOptions;
       const reservedKeys = Object.keys(newElement.dataOptions);
       Object.keys(newElement.uiOptions).forEach((uiKey) => {
         if (reservedKeys.includes(uiKey)) {
           newElement.uiOptions[`ui:*${uiKey}`] = newElement.uiOptions[uiKey];
         }
       });
-      newElement.dataOptions.category = getCardCategory(newElement, categoryHash);
+      newElement.compatibility = classifyCard(newElement, categoryHash);
+      if (newElement.compatibility.kind === "editable") {
+        newElement.dataOptions.category = newElement.compatibility.category;
+      }
       newElement.propType = "card";
     }
     elementDict[newElement.name] = newElement;
@@ -9011,7 +8120,8 @@ function generateSchemaElementFromElement(element) {
           "path",
           "definitionData",
           "definitionUi",
-          "allFormInputs"
+          "allFormInputs",
+          "fieldPointer"
         ].includes(key) && element.dataOptions[key] !== "" && !(nullableNumberParameters.has(key) && element.dataOptions[key] === null))
           prop[key] = element.dataOptions[key];
       });
@@ -9096,9 +8206,9 @@ function generateUiSchemaFromElementProps(elementArr, definitionUi) {
   elementArr.forEach((element) => {
     uiOrder.push(element.name);
     if (element.$ref !== void 0) {
-      const pathArr = typeof element.$ref === "string" ? element.$ref.split("/") : [];
-      if (definitions && definitions[pathArr[2]]) {
-        uiSchema[element.name] = definitions[pathArr[2]];
+      const definitionName = getLocalDefinitionName(element.$ref);
+      if (definitionName !== void 0 && definitions && definitions[definitionName]) {
+        uiSchema[element.name] = definitions[definitionName];
       }
     }
     if (element.propType === "card" && element.uiOptions) {
@@ -9120,13 +8230,133 @@ function generateUiSchemaFromElementProps(elementArr, definitionUi) {
 function getCardParameterInputComponentForType(category, allFormInputs) {
   return allFormInputs[category] && allFormInputs[category].modalBody || (() => null);
 }
-function updateSchemas(elementArr, parameters) {
-  const { schema, uischema, onChange, definitionUi } = parameters;
-  const newSchema = Object.assign({ ...schema }, generateSchemaFromElementProps(elementArr));
-  const newUiSchema = generateUiSchemaFromElementProps(elementArr, definitionUi);
-  if (uischema.definitions) {
-    newUiSchema.definitions = uischema.definitions;
+function isJsonObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function cloneJsonValue2(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneJsonValue2(item));
   }
+  if (isJsonObject(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue2(child)])
+    );
+  }
+  return value;
+}
+function jsonValuesEqual(left, right) {
+  if (Object.is(left, right)) return true;
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return Array.isArray(left) && Array.isArray(right) && left.length === right.length && left.every((value, index) => jsonValuesEqual(value, right[index]));
+  }
+  if (!isJsonObject(left) || !isJsonObject(right)) return false;
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  return leftKeys.length === rightKeys.length && leftKeys.every(
+    (key) => Object.prototype.hasOwnProperty.call(right, key) && jsonValuesEqual(left[key], right[key])
+  );
+}
+function mergeUiOrder(originalOrder, baselineOrder, nextOrder) {
+  if (!Array.isArray(originalOrder)) return cloneJsonValue2(nextOrder);
+  const visuallyOwnedNames = /* @__PURE__ */ new Set([...baselineOrder, ...nextOrder]);
+  const explicitVisualNames = new Set(
+    originalOrder.filter(
+      (name) => typeof name === "string" && visuallyOwnedNames.has(name)
+    )
+  );
+  const wildcardNames = baselineOrder.filter((name) => !explicitVisualNames.has(name));
+  const expandedOriginalOrder = originalOrder.flatMap(
+    (name) => name === "*" ? wildcardNames : [name]
+  );
+  const mergedOrder = [];
+  let nextVisualIndex = 0;
+  expandedOriginalOrder.forEach((name) => {
+    if (typeof name === "string" && visuallyOwnedNames.has(name)) {
+      if (nextVisualIndex < nextOrder.length) {
+        mergedOrder.push(nextOrder[nextVisualIndex]);
+        nextVisualIndex += 1;
+      }
+    } else {
+      mergedOrder.push(name);
+    }
+  });
+  mergedOrder.push(...nextOrder.slice(nextVisualIndex));
+  return mergedOrder;
+}
+function applyVisualChanges(original, baselineGenerated, nextGenerated, key) {
+  if (jsonValuesEqual(baselineGenerated, nextGenerated)) {
+    return cloneJsonValue2(original);
+  }
+  if (key === "ui:order" && Array.isArray(baselineGenerated) && Array.isArray(nextGenerated)) {
+    return mergeUiOrder(original, baselineGenerated, nextGenerated);
+  }
+  if (Array.isArray(original) && Array.isArray(baselineGenerated) && Array.isArray(nextGenerated) && baselineGenerated.length === nextGenerated.length) {
+    return nextGenerated.map(
+      (nextValue, index) => applyVisualChanges(original[index], baselineGenerated[index], nextValue)
+    );
+  }
+  if (isJsonObject(baselineGenerated) && isJsonObject(nextGenerated)) {
+    const merged = isJsonObject(original) ? cloneJsonValue2(original) : {};
+    const generatedKeys = /* @__PURE__ */ new Set([
+      ...Object.keys(baselineGenerated),
+      ...Object.keys(nextGenerated)
+    ]);
+    generatedKeys.forEach((generatedKey) => {
+      const existedBefore = Object.prototype.hasOwnProperty.call(baselineGenerated, generatedKey);
+      const existsNext = Object.prototype.hasOwnProperty.call(nextGenerated, generatedKey);
+      if (!existsNext) {
+        if (existedBefore) delete merged[generatedKey];
+        return;
+      }
+      if (!existedBefore) {
+        merged[generatedKey] = cloneJsonValue2(nextGenerated[generatedKey]);
+        return;
+      }
+      if (jsonValuesEqual(baselineGenerated[generatedKey], nextGenerated[generatedKey])) {
+        return;
+      }
+      merged[generatedKey] = applyVisualChanges(
+        isJsonObject(original) ? original[generatedKey] : void 0,
+        baselineGenerated[generatedKey],
+        nextGenerated[generatedKey],
+        generatedKey
+      );
+    });
+    return merged;
+  }
+  return cloneJsonValue2(nextGenerated);
+}
+function updateSchemas(elementArr, parameters) {
+  const {
+    schema,
+    uischema,
+    onChange,
+    definitionData,
+    definitionUi,
+    categoryHash
+  } = parameters;
+  const baselineSchema = cloneJsonValue2(schema);
+  const baselineUiSchema = cloneJsonValue2(uischema);
+  const baselineElements = generateElementPropsFromSchemas({
+    schema: baselineSchema,
+    uischema: baselineUiSchema,
+    definitionData: definitionData || baselineSchema.definitions,
+    definitionUi: definitionUi || baselineUiSchema.definitions,
+    categoryHash
+  });
+  const baselineGeneratedSchema = generateSchemaFromElementProps(baselineElements);
+  const nextGeneratedSchema = generateSchemaFromElementProps(elementArr);
+  const newSchema = applyVisualChanges(schema, baselineGeneratedSchema, nextGeneratedSchema);
+  const baselineGeneratedUiSchema = generateUiSchemaFromElementProps(
+    baselineElements,
+    definitionUi
+  );
+  const nextGeneratedUiSchema = generateUiSchemaFromElementProps(elementArr, definitionUi);
+  const newUiSchema = applyVisualChanges(
+    uischema,
+    baselineGeneratedUiSchema,
+    nextGeneratedUiSchema
+  );
   newSchema.type = "object";
   onChange(newSchema, newUiSchema);
 }
@@ -9156,10 +8386,10 @@ function addCardObj(parameters) {
     definitionUi,
     categoryHash
   });
-  const i = getIdFromElementsBlock(newElementObjArr);
-  const dataOptions = getNewElementDefaultDataOptions(i, mods);
+  const i2 = getIdFromElementsBlock(newElementObjArr);
+  const dataOptions = getNewElementDefaultDataOptions(i2, mods);
   const newElement = {
-    name: `${DEFAULT_INPUT_NAME}${i}`,
+    name: `${DEFAULT_INPUT_NAME}${i2}`,
     required: false,
     dataOptions,
     uiOptions: mods && mods.newElementDefaultUiSchema || {},
@@ -9179,6 +8409,7 @@ function addCardObj(parameters) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange
   });
 }
@@ -9191,18 +8422,18 @@ function addSectionObj(parameters) {
     definitionUi,
     categoryHash
   });
-  const i = getIdFromElementsBlock(newElementObjArr);
+  const i2 = getIdFromElementsBlock(newElementObjArr);
   const newElement = {
-    name: `${DEFAULT_INPUT_NAME}${i}`,
+    name: `${DEFAULT_INPUT_NAME}${i2}`,
     required: false,
     dataOptions: {
-      title: `New Section ${i}`,
+      title: `New Section ${i2}`,
       type: "object",
       default: ""
     },
     uiOptions: {},
     propType: "section",
-    schema: { title: `New Section ${i}`, type: "object" },
+    schema: { title: `New Section ${i2}`, type: "object" },
     uischema: {},
     neighborNames: []
   };
@@ -9217,6 +8448,7 @@ function addSectionObj(parameters) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange
   });
 }
@@ -9229,6 +8461,7 @@ function generateElementComponentsFromSchemas(parameters) {
     definitionUi,
     hideKey,
     path,
+    fieldPointer = "",
     cardOpenState,
     setCardOpenState,
     allFormInputs,
@@ -9260,12 +8493,26 @@ function generateElementComponentsFromSchemas(parameters) {
       categoryHash
     };
     const expanded = cardOpenState[elementKey] || false;
+    const childFieldPointer = buildChildFieldPointer(fieldPointer, elementProp.name);
     if (elementProp.propType === "card") {
+      const compatibility = elementProp.compatibility;
+      if (compatibility && compatibility.kind !== "editable") {
+        return /* @__PURE__ */ jsx7(
+          CompatibilityCard,
+          {
+            name: elementProp.name,
+            title: elementProp.dataOptions.title,
+            compatibility,
+            fieldPointer: childFieldPointer
+          },
+          elementKey
+        );
+      }
       const TypeSpecificParameters = getCardParameterInputComponentForType(
-        elementProp.dataOptions.category || "string",
+        compatibility?.category || elementProp.dataOptions.category,
         allFormInputs
       );
-      return /* @__PURE__ */ jsx6(
+      return /* @__PURE__ */ jsx7(
         Card2,
         {
           componentProps: Object.assign(
@@ -9274,6 +8521,7 @@ function generateElementComponentsFromSchemas(parameters) {
               required: elementPropArr[index].required,
               hideKey,
               path: `${path}_${elementPropArr[index].name}`,
+              fieldPointer: childFieldPointer,
               definitionData,
               definitionUi,
               neighborNames: elementPropArr[index].neighborNames,
@@ -9308,7 +8556,8 @@ function generateElementComponentsFromSchemas(parameters) {
                 "neighborNames",
                 "dependents",
                 "dependent",
-                "parent"
+                "parent",
+                "fieldPointer"
               ].includes(propName)) {
                 newDataProps[propName] = newCardObj[propName];
               }
@@ -9339,6 +8588,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9359,6 +8609,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9383,6 +8634,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9407,6 +8659,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9439,7 +8692,7 @@ function generateElementComponentsFromSchemas(parameters) {
         index,
         categoryHash
       };
-      return /* @__PURE__ */ jsx6(
+      return /* @__PURE__ */ jsx7(
         Section2,
         {
           schema: elementProp.schema,
@@ -9470,6 +8723,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9492,6 +8746,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9513,6 +8768,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9534,7 +8790,8 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               onChange,
               definitionData,
-              definitionUi
+              definitionUi,
+              categoryHash
             });
           },
           onDelete: () => {
@@ -9554,6 +8811,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9578,6 +8836,7 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
@@ -9602,12 +8861,14 @@ function generateElementComponentsFromSchemas(parameters) {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange
             });
           },
           name: elementProp.name,
           required: elementProp.required,
           path: `${path}_${elementProp.name}`,
+          fieldPointer: childFieldPointer,
           definitionData: definitionData || {},
           definitionUi: definitionUi || {},
           hideKey,
@@ -9629,7 +8890,7 @@ function generateElementComponentsFromSchemas(parameters) {
         elementKey
       );
     } else {
-      return /* @__PURE__ */ jsx6("div", { children: /* @__PURE__ */ jsx6("h2", { children: " Error parsing element " }) }, elementKey);
+      return /* @__PURE__ */ jsx7("div", { children: /* @__PURE__ */ jsx7("h2", { children: " Error parsing element " }) }, elementKey);
     }
   });
   return elementList;
@@ -9656,6 +8917,7 @@ function onDragEnd(result, details) {
     uischema,
     definitionData: definitionData || {},
     definitionUi: definitionUi || {},
+    categoryHash,
     onChange
   });
 }
@@ -9668,7 +8930,7 @@ function subtractArray(array1, array2) {
     }),
     {}
   );
-  return array1.filter((v2) => !keys3[v2]);
+  return array1.filter((v3) => !keys3[v3]);
 }
 function excludeKeys(obj, keys3) {
   if (!keys3) return { ...obj };
@@ -9684,13 +8946,13 @@ function excludeKeys(obj, keys3) {
     {}
   );
 }
-function getNewElementDefaultDataOptions(i, mods) {
+function getNewElementDefaultDataOptions(i2, mods) {
   if (mods && mods.newElementDefaultDataOptions !== void 0) {
-    const title = `${mods.newElementDefaultDataOptions.title} ${i}`;
+    const title = `${mods.newElementDefaultDataOptions.title} ${i2}`;
     return { ...mods.newElementDefaultDataOptions, ...{ title } };
   } else {
     return {
-      title: `New Input ${i}`,
+      title: `New Input ${i2}`,
       type: "string",
       default: ""
     };
@@ -9732,7 +8994,7 @@ function getRandomId() {
 var DROPPABLE_TYPE = "rjsfb";
 
 // src/dependencies/DependencyWarning.tsx
-import { jsx as jsx7, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
 function DependencyWarning({
   parameters
 }) {
@@ -9749,11 +9011,11 @@ function DependencyWarning({
         if (!definedVals.has(val)) undefinedVals.push(val);
       });
     if (undefinedVals.length === 0) return null;
-    return /* @__PURE__ */ jsxs4(React3.Fragment, { children: [
-      /* @__PURE__ */ jsxs4("p", { children: [
+    return /* @__PURE__ */ jsxs5(React3.Fragment, { children: [
+      /* @__PURE__ */ jsxs5("p", { children: [
         "Warning! The following values do not have associated dependency values:",
         " ",
-        /* @__PURE__ */ jsx7(
+        /* @__PURE__ */ jsx8(
           Tooltip,
           {
             id: `${elementId}_valuewarning`,
@@ -9762,7 +9024,7 @@ function DependencyWarning({
           }
         )
       ] }),
-      /* @__PURE__ */ jsx7("ul", { children: undefinedVals.map((val, index) => /* @__PURE__ */ jsx7("li", { children: val }, index)) })
+      /* @__PURE__ */ jsx8("ul", { children: undefinedVals.map((val, index) => /* @__PURE__ */ jsx8("li", { children: val }, index)) })
     ] });
   }
   return null;
@@ -9775,15 +9037,7 @@ import { XMarkIcon as XMarkIcon4 } from "@heroicons/react/24/outline";
 // src/dependencies/CardSelector.tsx
 import React4, { useState as useState3 } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
-// src/fieldLayout.ts
-var fieldStackClass = "flex flex-col gap-4";
-var fieldClass = "flex w-full min-w-0 flex-col gap-2 pb-1";
-var fieldLabelClass = "text-[18px] font-bold leading-6";
-var fieldControlClass = "w-full";
-
-// src/dependencies/CardSelector.tsx
-import { jsx as jsx8, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
 function CardSelector({
   possibleChoices,
   chosenChoices,
@@ -9791,10 +9045,10 @@ function CardSelector({
   placeholder
 }) {
   const [elementId] = useState3(getRandomId());
-  return /* @__PURE__ */ jsxs5(React4.Fragment, { children: [
-    /* @__PURE__ */ jsx8("ul", { className: "flex flex-col gap-1", children: chosenChoices.map((chosenChoice, index) => /* @__PURE__ */ jsxs5("li", { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsx8("span", { className: "min-w-0 break-words", children: chosenChoice }),
-      /* @__PURE__ */ jsx8(
+  return /* @__PURE__ */ jsxs6(React4.Fragment, { children: [
+    /* @__PURE__ */ jsx9("ul", { className: "flex flex-col gap-1", children: chosenChoices.map((chosenChoice, index) => /* @__PURE__ */ jsxs6("li", { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsx9("span", { className: "min-w-0 break-words", children: chosenChoice }),
+      /* @__PURE__ */ jsx9(
         XMarkIcon,
         {
           className: "h-5 w-5 shrink-0 cursor-pointer stroke-warning hover:stroke-error transition-colors",
@@ -9802,19 +9056,19 @@ function CardSelector({
         }
       )
     ] }, `${elementId}_neighbor_${index}`)) }),
-    /* @__PURE__ */ jsxs5(
+    /* @__PURE__ */ jsxs6(
       "select",
       {
         value: "",
-        onChange: (e2) => {
-          if (e2.target.value) {
-            onChange([...chosenChoices, e2.target.value]);
+        onChange: (e) => {
+          if (e.target.value) {
+            onChange([...chosenChoices, e.target.value]);
           }
         },
-        className: `select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`,
+        className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
         children: [
-          /* @__PURE__ */ jsx8("option", { value: "", disabled: true, children: placeholder }),
-          possibleChoices.filter((choice) => !chosenChoices.includes(choice)).map((choice) => /* @__PURE__ */ jsx8("option", { value: choice, children: choice }, choice))
+          /* @__PURE__ */ jsx9("option", { value: "", disabled: true, children: placeholder }),
+          possibleChoices.filter((choice) => !chosenChoices.includes(choice)).map((choice) => /* @__PURE__ */ jsx9("option", { value: choice, children: choice }, choice))
         ]
       }
     )
@@ -9827,7 +9081,7 @@ import { useState as useState4 } from "react";
 // src/CardEnumOptions.tsx
 import React5 from "react";
 import { XMarkIcon as XMarkIcon2, PlusIcon } from "@heroicons/react/24/outline";
-import { jsx as jsx9, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 function CardEnumOptions({
   initialValues,
   names,
@@ -9840,8 +9094,8 @@ function CardEnumOptions({
     if (names && index < names.length) name = names[index] ?? "";
     return (
       //@ts-ignore
-      /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-2 mb-2", children: [
-        /* @__PURE__ */ jsx9(
+      /* @__PURE__ */ jsxs7("div", { className: "flex items-center gap-2 mb-2", children: [
+        /* @__PURE__ */ jsx10(
           "input",
           {
             value: value === void 0 || value === null ? "" : value,
@@ -9867,11 +9121,11 @@ function CardEnumOptions({
                 names
               );
             },
-            className: "input input-primary input-bordered focus:outline-secondary w-full"
+            className: "input input-primary input-bordered input-sm w-full"
           },
           `val-${index}`
         ),
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           "input",
           {
             value: name || "",
@@ -9885,12 +9139,12 @@ function CardEnumOptions({
                   ...names.slice(index + 1)
                 ]);
             },
-            className: "input input-primary input-bordered focus:outline-secondary w-full",
+            className: "input input-primary input-bordered input-sm w-full",
             style: { display: showNames ? "initial" : "none" }
           },
           `name-${index}`
         ),
-        /* @__PURE__ */ jsx9(
+        /* @__PURE__ */ jsx10(
           "span",
           {
             className: "cursor-pointer",
@@ -9900,15 +9154,15 @@ function CardEnumOptions({
                 names ? [...names.slice(0, index), ...names.slice(index + 1)] : void 0
               );
             },
-            children: /* @__PURE__ */ jsx9(XMarkIcon2, { className: "h-5 w-5 stroke-warning hover:stroke-error transition-colors" })
+            children: /* @__PURE__ */ jsx10(XMarkIcon2, { className: "h-5 w-5 stroke-warning hover:stroke-error transition-colors" })
           }
         )
       ] }, index)
     );
   });
-  return /* @__PURE__ */ jsxs6(React5.Fragment, { children: [
+  return /* @__PURE__ */ jsxs7(React5.Fragment, { children: [
     possibleValues,
-    /* @__PURE__ */ jsx9(
+    /* @__PURE__ */ jsx10(
       "span",
       {
         className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs mt-2 inline-flex cursor-pointer",
@@ -9919,7 +9173,7 @@ function CardEnumOptions({
             names ? [...names, ""] : void 0
           );
         },
-        children: /* @__PURE__ */ jsx9(
+        children: /* @__PURE__ */ jsx10(
           PlusIcon,
           {
             className: "h-6 w-6 stroke-secondary transition-colors hover:stroke-primary",
@@ -9933,7 +9187,7 @@ function CardEnumOptions({
 
 // src/dependencies/ValueSelector.tsx
 import { XMarkIcon as XMarkIcon3, PlusIcon as PlusIcon2 } from "@heroicons/react/24/outline";
-import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
 function ValueSelector({
   possibility,
   onChange,
@@ -9947,7 +9201,7 @@ function ValueSelector({
     if (parentEnums) {
       const enumType = typeof parentEnums[0] === "number" ? "number" : "string";
       if (enumType === "string")
-        return /* @__PURE__ */ jsx10(
+        return /* @__PURE__ */ jsx11(
           CardSelector,
           {
             possibleChoices: parentEnums.map((val) => `${val}`),
@@ -9957,7 +9211,7 @@ function ValueSelector({
           }
         );
       if (enumType === "number")
-        return /* @__PURE__ */ jsx10(
+        return /* @__PURE__ */ jsx11(
           CardSelector,
           {
             possibleChoices: parentEnums.map((val) => `${val}`),
@@ -9973,7 +9227,7 @@ function ValueSelector({
         );
     }
     if (parentType === "boolean") {
-      return /* @__PURE__ */ jsx10(
+      return /* @__PURE__ */ jsx11(
         FBCheckbox_default,
         {
           onChangeValue: () => {
@@ -9999,7 +9253,7 @@ function ValueSelector({
       const getInput = (val, index, key) => {
         switch (typeof val) {
           case "string":
-            return /* @__PURE__ */ jsx10(
+            return /* @__PURE__ */ jsx11(
               "input",
               {
                 value: val || "",
@@ -10024,7 +9278,7 @@ function ValueSelector({
             );
             break;
           case "number":
-            return /* @__PURE__ */ jsx10(
+            return /* @__PURE__ */ jsx11(
               "input",
               {
                 value: val || "",
@@ -10049,7 +9303,7 @@ function ValueSelector({
             );
             break;
           case "object":
-            return /* @__PURE__ */ jsx10(
+            return /* @__PURE__ */ jsx11(
               "textarea",
               {
                 value: JSON.stringify(val) || "",
@@ -10079,19 +9333,19 @@ function ValueSelector({
             break;
         }
       };
-      return /* @__PURE__ */ jsxs7("div", { children: [
-        enumArr.map((combination, index) => /* @__PURE__ */ jsxs7("li", { children: [
+      return /* @__PURE__ */ jsxs8("div", { children: [
+        enumArr.map((combination, index) => /* @__PURE__ */ jsxs8("li", { children: [
           Object.keys(combination).map((key) => {
             const val = combination[key] ?? "";
-            return /* @__PURE__ */ jsxs7("div", { children: [
-              /* @__PURE__ */ jsxs7("h5", { children: [
+            return /* @__PURE__ */ jsxs8("div", { children: [
+              /* @__PURE__ */ jsxs8("h5", { children: [
                 key,
                 ":"
               ] }),
               getInput(val, index, key)
             ] }, key);
           }),
-          /* @__PURE__ */ jsx10(
+          /* @__PURE__ */ jsx11(
             XMarkIcon3,
             {
               className: "h-5 w-5 stroke-warning hover:stroke-error cursor-pointer mt-2",
@@ -10104,7 +9358,7 @@ function ValueSelector({
             }
           )
         ] }, `${elementId}_possibleValue${index}`)),
-        /* @__PURE__ */ jsx10("div", { className: "flex justify-start", children: /* @__PURE__ */ jsx10(
+        /* @__PURE__ */ jsx11("div", { className: "flex justify-start", children: /* @__PURE__ */ jsx11(
           PlusIcon2,
           {
             className: "h-6 w-6 stroke-2 stroke-secondary hover:stroke-primary transition-colors cursor-pointer mt-4",
@@ -10131,7 +9385,7 @@ function ValueSelector({
         ) })
       ] });
     }
-    return /* @__PURE__ */ jsx10(
+    return /* @__PURE__ */ jsx11(
       CardEnumOptions,
       {
         initialValues: possibility.value.enum,
@@ -10141,12 +9395,12 @@ function ValueSelector({
       }
     );
   } else {
-    return /* @__PURE__ */ jsx10("h5", { children: " Appear if defined " });
+    return /* @__PURE__ */ jsx11("h5", { children: " Appear if defined " });
   }
 }
 
 // src/dependencies/DependencyPossibility.tsx
-import { jsx as jsx11, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
 function DependencyPossibility({
   possibility,
   neighborNames,
@@ -10158,11 +9412,11 @@ function DependencyPossibility({
   parentSchema
 }) {
   const [elementId] = useState5(getRandomId());
-  return /* @__PURE__ */ jsxs8("div", { className: `form-dependency-condition relative rounded-box border border-primary p-4 ${fieldStackClass}`, children: [
-    /* @__PURE__ */ jsxs8("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs8("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+  return /* @__PURE__ */ jsxs9("div", { className: `form-dependency-condition relative rounded-box border border-primary p-4 ${fieldStackClass}`, children: [
+    /* @__PURE__ */ jsxs9("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs9("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
         "Display the following:",
-        /* @__PURE__ */ jsx11(
+        /* @__PURE__ */ jsx12(
           Tooltip,
           {
             id: `${elementId}_bulk`,
@@ -10171,7 +9425,7 @@ function DependencyPossibility({
           }
         )
       ] }),
-      /* @__PURE__ */ jsx11(
+      /* @__PURE__ */ jsx12(
         CardSelector,
         {
           possibleChoices: neighborNames.filter((name) => name !== parentName) || [],
@@ -10181,14 +9435,14 @@ function DependencyPossibility({
         }
       )
     ] }),
-    /* @__PURE__ */ jsxs8("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs8("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs9("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs9("div", { className: fieldLabelClass, children: [
         'If "',
         parentName,
         '" has ',
         possibility.value ? "the value:" : "a value."
       ] }),
-      /* @__PURE__ */ jsx11("div", { style: { display: possibility.value ? "block" : "none" }, children: /* @__PURE__ */ jsx11(
+      /* @__PURE__ */ jsx12("div", { style: { display: possibility.value ? "block" : "none" }, children: /* @__PURE__ */ jsx12(
         ValueSelector,
         {
           possibility,
@@ -10200,12 +9454,12 @@ function DependencyPossibility({
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsx11("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsx11("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer", "data-tip": "Delete this dependency", children: /* @__PURE__ */ jsx11(XMarkIcon4, { className: "h-6 w-6 stroke-warning hover:stroke-error transition-colors", strokeWidth: 2, onClick: () => onDelete() }) }) })
+    /* @__PURE__ */ jsx12("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsx12("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer", "data-tip": "Delete this dependency", children: /* @__PURE__ */ jsx12(XMarkIcon4, { className: "h-6 w-6 stroke-warning hover:stroke-error transition-colors", strokeWidth: 2, onClick: () => onDelete() }) }) })
   ] });
 }
 
 // src/dependencies/DependencyField.tsx
-import { jsx as jsx12, jsxs as jsxs9 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
 function checkIfValueBasedDependency(dependents) {
   let valueBased = true;
   if (dependents && Array.isArray(dependents) && dependents.length > 0) {
@@ -10225,10 +9479,10 @@ function DependencyField({
 }) {
   const [elementId] = useState6(getRandomId());
   const valueBased = checkIfValueBasedDependency(parameters.dependents || []);
-  return /* @__PURE__ */ jsxs9("div", { className: `form-dependency dependencyField ${fieldClass}`, children: [
-    /* @__PURE__ */ jsxs9("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+  return /* @__PURE__ */ jsxs10("div", { className: `form-dependency dependencyField ${fieldClass}`, children: [
+    /* @__PURE__ */ jsxs10("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
       "Dependencies",
-      /* @__PURE__ */ jsx12(
+      /* @__PURE__ */ jsx13(
         Tooltip,
         {
           id: `${elementId}_dependent`,
@@ -10237,7 +9491,7 @@ function DependencyField({
         }
       )
     ] }),
-    !!parameters.dependents && parameters.dependents.length > 0 && /* @__PURE__ */ jsx12(React8.Fragment, { children: /* @__PURE__ */ jsx12(
+    !!parameters.dependents && parameters.dependents.length > 0 && /* @__PURE__ */ jsx13(React8.Fragment, { children: /* @__PURE__ */ jsx13(
       FBRadioGroup,
       {
         defaultValue: valueBased ? "value" : "definition",
@@ -10249,9 +9503,9 @@ function DependencyField({
           },
           {
             value: "value",
-            label: /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-2", children: [
+            label: /* @__PURE__ */ jsxs10("div", { className: "flex items-center gap-2", children: [
               "Specific value",
-              /* @__PURE__ */ jsx12(
+              /* @__PURE__ */ jsx13(
                 Tooltip,
                 {
                   id: `${elementId}_valuebased`,
@@ -10288,9 +9542,9 @@ function DependencyField({
         }
       }
     ) }),
-    /* @__PURE__ */ jsx12(DependencyWarning, { parameters }),
-    /* @__PURE__ */ jsxs9("div", { className: "form-dependency-conditions flex flex-col gap-4", children: [
-      parameters.dependents ? parameters.dependents.map((possibility, index) => /* @__PURE__ */ jsx12(
+    /* @__PURE__ */ jsx13(DependencyWarning, { parameters }),
+    /* @__PURE__ */ jsxs10("div", { className: "form-dependency-conditions flex flex-col gap-4", children: [
+      parameters.dependents ? parameters.dependents.map((possibility, index) => /* @__PURE__ */ jsx13(
         DependencyPossibility,
         {
           possibility,
@@ -10320,13 +9574,13 @@ function DependencyField({
         },
         `${elementId}_possibility${index}`
       )) : "",
-      /* @__PURE__ */ jsx12(
+      /* @__PURE__ */ jsx13(
         "span",
         {
           className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs inline-flex self-start cursor-pointer",
           "data-tip": "Add another dependency relation linking this element and other form elements",
           id: `${elementId}_adddependency`,
-          children: /* @__PURE__ */ jsx12(
+          children: /* @__PURE__ */ jsx13(
             PlusCircleIcon,
             {
               className: "h-8 w-8 stroke-secondary stroke-2 fill-base-100 hover:stroke-primary transition-colors mt-2",
@@ -10350,7 +9604,7 @@ function DependencyField({
 }
 
 // src/CardModal.tsx
-import { jsx as jsx13, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx14, jsxs as jsxs11 } from "react/jsx-runtime";
 var CardModal = ({
   componentProps,
   onChange,
@@ -10359,13 +9613,20 @@ var CardModal = ({
   TypeSpecificParameters
 }) => {
   const [componentPropsState, setComponentProps] = useState7(componentProps);
+  const [extensionDraft, setExtensionDraft] = useState7({});
   const [prevComponentProps, setPrevComponentProps] = useState7(componentProps);
   if (componentProps !== prevComponentProps) {
     setPrevComponentProps(componentProps);
     setComponentProps(componentProps);
+    setExtensionDraft({});
   }
+  const formStudio = useOptionalFormStudio();
+  const extensionValueOverride = formStudio ? {
+    getValue: (extension) => Object.prototype.hasOwnProperty.call(extensionDraft, extension.id) ? extensionDraft[extension.id].value : formStudio.getExtensionValue(extension),
+    setValue: (extension, value) => setExtensionDraft((prev) => ({ ...prev, [extension.id]: { extension, value } }))
+  } : void 0;
   if (!isOpen) return null;
-  return /* @__PURE__ */ jsxs10(
+  return /* @__PURE__ */ jsxs11(
     "dialog",
     {
       className: `modal ${isOpen ? "modal-open" : ""}`,
@@ -10375,14 +9636,14 @@ var CardModal = ({
       onMouseDown: (event) => event.stopPropagation(),
       onTouchStart: (event) => event.stopPropagation(),
       children: [
-        /* @__PURE__ */ jsxs10("div", { className: "modal-box flex max-h-[calc(100vh-4rem)] w-11/12 max-w-3xl flex-col overflow-hidden", children: [
-          /* @__PURE__ */ jsx13("div", { style: { display: componentProps.hideKey ? "none" : "initial" }, className: "mb-4 shrink-0 border-b border-base-200 pb-2", children: /* @__PURE__ */ jsx13("h3", { className: "text-xl font-bold", children: "Additional Settings" }) }),
-          /* @__PURE__ */ jsxs10(
+        /* @__PURE__ */ jsxs11("div", { className: "modal-box flex max-h-[calc(100vh-4rem)] w-11/12 max-w-3xl flex-col overflow-hidden", children: [
+          /* @__PURE__ */ jsx14("div", { style: { display: componentProps.hideKey ? "none" : "initial" }, className: "mb-4 shrink-0 border-b border-base-200 pb-2", children: /* @__PURE__ */ jsx14("h3", { className: "text-xl font-bold", children: "Additional Settings" }) }),
+          /* @__PURE__ */ jsxs11(
             "div",
             {
               className: `min-h-0 flex-1 overflow-y-auto px-1.5 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${fieldStackClass}`,
               children: [
-                /* @__PURE__ */ jsx13(
+                /* @__PURE__ */ jsx14(
                   TypeSpecificParameters,
                   {
                     parameters: componentPropsState,
@@ -10394,16 +9655,16 @@ var CardModal = ({
                     }
                   }
                 ),
-                /* @__PURE__ */ jsxs10("div", { className: fieldClass, children: [
-                  /* @__PURE__ */ jsxs10("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+                /* @__PURE__ */ jsxs11("div", { className: fieldClass, children: [
+                  /* @__PURE__ */ jsxs11("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
                     "Column Size",
-                    /* @__PURE__ */ jsx13(
+                    /* @__PURE__ */ jsx14(
                       "a",
                       {
                         href: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Basic_Concepts_of_Grid_Layout",
                         target: "_blank",
                         rel: "noopener noreferrer",
-                        children: /* @__PURE__ */ jsx13(
+                        children: /* @__PURE__ */ jsx14(
                           Tooltip,
                           {
                             id: "column_size_tooltip",
@@ -10414,7 +9675,7 @@ var CardModal = ({
                       }
                     )
                   ] }),
-                  /* @__PURE__ */ jsx13(
+                  /* @__PURE__ */ jsx14(
                     "input",
                     {
                       value: componentPropsState["ui:column"] ? componentPropsState["ui:column"] : "",
@@ -10427,12 +9688,12 @@ var CardModal = ({
                           "ui:column": ev.target.value
                         });
                       },
-                      className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+                      className: `input input-primary input-bordered input-sm ${fieldControlClass}`
                     },
                     "ui:column"
                   )
                 ] }),
-                /* @__PURE__ */ jsx13(
+                /* @__PURE__ */ jsx14(
                   DependencyField,
                   {
                     parameters: componentPropsState,
@@ -10443,27 +9704,39 @@ var CardModal = ({
                       });
                     }
                   }
+                ),
+                componentPropsState.fieldPointer !== void 0 && /* @__PURE__ */ jsx14(
+                  FieldAuthoringControls,
+                  {
+                    fieldPointer: componentPropsState.fieldPointer,
+                    valueOverride: extensionValueOverride
+                  }
                 )
               ]
             }
           ),
-          /* @__PURE__ */ jsxs10("div", { className: "modal-action shrink-0", children: [
-            /* @__PURE__ */ jsx13(
+          /* @__PURE__ */ jsxs11("div", { className: "modal-action shrink-0", children: [
+            /* @__PURE__ */ jsx14(
               "button",
               {
                 onClick: () => {
                   onClose();
                   setComponentProps(componentProps);
+                  setExtensionDraft({});
                 },
                 className: "btn btn-ghost",
                 children: "Cancel"
               }
             ),
-            /* @__PURE__ */ jsx13(
+            /* @__PURE__ */ jsx14(
               "button",
               {
                 onClick: () => {
                   onClose();
+                  Object.values(extensionDraft).forEach(({ extension, value }) => {
+                    formStudio?.setExtensionValue(extension, value);
+                  });
+                  setExtensionDraft({});
                   onChange(componentPropsState);
                 },
                 className: "btn btn-primary",
@@ -10472,7 +9745,7 @@ var CardModal = ({
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsx13("form", { method: "dialog", className: "modal-backdrop", children: /* @__PURE__ */ jsx13("button", { onClick: () => onClose(), children: "close" }) })
+        /* @__PURE__ */ jsx14("form", { method: "dialog", className: "modal-backdrop", children: /* @__PURE__ */ jsx14("button", { onClick: () => onClose(), children: "close" }) })
       ]
     }
   );
@@ -10483,7 +9756,7 @@ var CardModal_default = CardModal;
 import React9 from "react";
 
 // src/GeneralParameterInputs.tsx
-import { jsx as jsx14 } from "react/jsx-runtime";
+import { jsx as jsx15 } from "react/jsx-runtime";
 var GeneralParameterInputs = ({
   category,
   parameters,
@@ -10492,7 +9765,7 @@ var GeneralParameterInputs = ({
   allFormInputs
 }) => {
   const CardBody = getCardBody(category, allFormInputs);
-  return /* @__PURE__ */ jsx14("div", { className: "flex flex-col gap-2 pb-2 [&>h5]:text-[18px] [&>h5]:font-bold [&>h5]:leading-6 [&>input]:mt-0 [&>select]:mt-0 [&>textarea]:mt-0", children: /* @__PURE__ */ jsx14(CardBody, { parameters, onChange, mods: mods || {} }) });
+  return /* @__PURE__ */ jsx15("div", { className: "flex flex-col gap-2 pb-2 [&>h5]:text-[18px] [&>h5]:font-bold [&>h5]:leading-6 [&>input]:mt-0 [&>select]:mt-0 [&>textarea]:mt-0", children: /* @__PURE__ */ jsx15(CardBody, { parameters, onChange, mods: mods || {} }) });
 };
 var GeneralParameterInputs_default = GeneralParameterInputs;
 
@@ -10501,16 +9774,16 @@ import { useState as useState8 } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-import { jsx as jsx15, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx16, jsxs as jsxs12 } from "react/jsx-runtime";
 function MarkdownDescriptionInput({
   value,
   onChange
 }) {
   const [mode, setMode] = useState8("edit");
-  return /* @__PURE__ */ jsxs11("div", { className: "form-description-wrapper", children: [
-    /* @__PURE__ */ jsxs11("div", { className: "form-desc-toolbar flex items-center gap-2 mb-3", children: [
-      /* @__PURE__ */ jsxs11("div", { className: "join", children: [
-        /* @__PURE__ */ jsx15(
+  return /* @__PURE__ */ jsxs12("div", { className: "form-description-wrapper", children: [
+    /* @__PURE__ */ jsxs12("div", { className: "form-desc-toolbar flex items-center gap-2 mb-3", children: [
+      /* @__PURE__ */ jsxs12("div", { className: "join", children: [
+        /* @__PURE__ */ jsx16(
           "button",
           {
             type: "button",
@@ -10519,7 +9792,7 @@ function MarkdownDescriptionInput({
             children: "Edit"
           }
         ),
-        /* @__PURE__ */ jsx15(
+        /* @__PURE__ */ jsx16(
           "button",
           {
             type: "button",
@@ -10529,23 +9802,23 @@ function MarkdownDescriptionInput({
           }
         )
       ] }),
-      /* @__PURE__ */ jsx15("span", { className: "text-sm opacity-60 italic", children: "Supports Markdown" })
+      /* @__PURE__ */ jsx16("span", { className: "text-sm opacity-60 italic", children: "Supports Markdown" })
     ] }),
-    mode === "edit" ? /* @__PURE__ */ jsx15(
+    mode === "edit" ? /* @__PURE__ */ jsx16(
       "textarea",
       {
         value,
         placeholder: "Description",
         rows: 4,
-        className: "textarea textarea-primary textarea-bordered focus:outline-secondary w-full form-description",
+        className: "textarea textarea-primary textarea-bordered w-full form-description",
         onChange: (ev) => onChange(ev.target.value)
       }
-    ) : /* @__PURE__ */ jsx15("div", { className: "markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered focus:outline-secondary w-full h-auto min-h-[6rem]", children: value ? /* @__PURE__ */ jsx15(ReactMarkdown, { remarkPlugins: [remarkGfm, remarkBreaks], children: value }) : /* @__PURE__ */ jsx15("span", { className: "text-base-content/40 italic", children: "Nothing to preview yet\u2026" }) })
+    ) : /* @__PURE__ */ jsx16("div", { className: "markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered w-full h-auto min-h-[6rem]", children: value ? /* @__PURE__ */ jsx16(ReactMarkdown, { remarkPlugins: [remarkGfm, remarkBreaks], children: value }) : /* @__PURE__ */ jsx16("span", { className: "text-base-content/40 italic", children: "Nothing to preview yet\u2026" }) })
   ] });
 }
 
 // src/CardGeneralParameterInputs.tsx
-import { jsx as jsx16, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
 var entryRowClass = `card-entry-row ${fieldStackClass}`;
 var entryClass = `card-entry ${fieldClass}`;
 var entryLabelClass = fieldLabelClass;
@@ -10568,7 +9841,7 @@ function CardGeneralParameterInputs({
   const objectNameLabel = fetchLabel("objectNameLabel", "Variable Name");
   const displayNameLabel = fetchLabel("displayNameLabel", "Display Name");
   const descriptionLabel = fetchLabel("descriptionLabel", "Description");
-  const inputTypeLabel = fetchLabel("inputTypeLabel", "Item Type");
+  const inputTypeLabel = fetchLabel("inputTypeLabel", "Field Type");
   const availableInputTypes = () => {
     const definitionsInSchema = parameters.definitionData && Object.keys(parameters.definitionData).length !== 0;
     let inputKeys = Object.keys(categoryMap).filter((key) => key !== "ref" || definitionsInSchema);
@@ -10586,17 +9859,17 @@ function CardGeneralParameterInputs({
       "longAnswer",
       "integer",
       "number",
-      //"array",
+      "stringArray",
       "ref"
     ];
     return groupOrder.filter((key) => inputKeys.includes(key)).map((key) => ({ value: key, label: categoryMap[key] }));
   };
-  return /* @__PURE__ */ jsxs12(React9.Fragment, { children: [
-    /* @__PURE__ */ jsxs12("div", { className: entryRowClass, children: [
-      showObjectNameInput && /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-        /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+  return /* @__PURE__ */ jsxs13(React9.Fragment, { children: [
+    /* @__PURE__ */ jsxs13("div", { className: entryRowClass, children: [
+      showObjectNameInput && /* @__PURE__ */ jsxs13("div", { className: entryClass, children: [
+        /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
           `${objectNameLabel} `,
-          /* @__PURE__ */ jsx16(
+          /* @__PURE__ */ jsx17(
             Tooltip,
             {
               text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardObjectName === "string" ? mods.tooltipDescriptions.cardObjectName : "The name of the item when you download the data",
@@ -10605,8 +9878,8 @@ function CardGeneralParameterInputs({
             }
           )
         ] }),
-        /* @__PURE__ */ jsxs12("div", { className: "form-control w-full", children: [
-          /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsxs13("div", { className: "form-control w-full", children: [
+          /* @__PURE__ */ jsx17(
             "input",
             {
               value: keyState || "",
@@ -10627,16 +9900,16 @@ function CardGeneralParameterInputs({
                   onChange({ ...parameters });
                 }
               },
-              className: `input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text ${keyError !== null ? "input-error" : ""}`
+              className: `input input-primary input-bordered ${entryControlClass} card-text ${keyError !== null ? "input-error" : ""}`
             }
           ),
-          keyError && /* @__PURE__ */ jsx16("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx16("span", { className: "label-text-alt text-error", children: keyError }) })
+          keyError && /* @__PURE__ */ jsx17("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx17("span", { className: "label-text-alt text-error", children: keyError }) })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-        /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+      /* @__PURE__ */ jsxs13("div", { className: entryClass, children: [
+        /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
           `${displayNameLabel} `,
-          /* @__PURE__ */ jsx16(
+          /* @__PURE__ */ jsx17(
             Tooltip,
             {
               text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardDisplayName === "string" ? mods.tooltipDescriptions.cardDisplayName : "The item name shown on the form",
@@ -10645,7 +9918,7 @@ function CardGeneralParameterInputs({
             }
           )
         ] }),
-        /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsx17(
           "input",
           {
             value: titleState || "",
@@ -10655,16 +9928,16 @@ function CardGeneralParameterInputs({
             onBlur: (ev) => {
               onChange({ ...parameters, title: ev.target.value });
             },
-            className: `input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`
+            className: `input input-primary input-bordered ${entryControlClass} card-text`
           }
         )
       ] })
     ] }),
-    /* @__PURE__ */ jsxs12("div", { className: `${entryRowClass} mt-4`, children: [
-      /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-        /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+    /* @__PURE__ */ jsxs13("div", { className: `${entryRowClass} mt-4`, children: [
+      /* @__PURE__ */ jsxs13("div", { className: entryClass, children: [
+        /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
           `${descriptionLabel} `,
-          /* @__PURE__ */ jsx16(
+          /* @__PURE__ */ jsx17(
             Tooltip,
             {
               text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardDescription === "string" ? mods.tooltipDescriptions.cardDescription : "This will appear as help text on the form",
@@ -10673,7 +9946,7 @@ function CardGeneralParameterInputs({
             }
           )
         ] }),
-        /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsx17(
           MarkdownDescriptionInput,
           {
             value: parameters.description || "",
@@ -10681,31 +9954,31 @@ function CardGeneralParameterInputs({
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs12(
+      /* @__PURE__ */ jsxs13(
         "div",
         {
           className: classNames(entryClass, {
             "wide-card-entry": !showObjectNameInput
           }),
           children: [
-            /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
+            /* @__PURE__ */ jsxs13("h5", { className: entryLabelClass, children: [
               `${inputTypeLabel} `,
-              /* @__PURE__ */ jsx16(
+              /* @__PURE__ */ jsx17(
                 Tooltip,
                 {
-                  text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardInputType === "string" ? mods.tooltipDescriptions.cardInputType : "The type of item displayed on the form",
+                  text: mods && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardInputType === "string" ? mods.tooltipDescriptions.cardInputType : "The form control and value type used for this field",
                   id: `${elementId}-inputinfo`,
                   type: "help"
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx16(
+            /* @__PURE__ */ jsx17(
               "select",
               {
-                className: `select select-primary select-bordered focus:outline-secondary ${entryControlClass}`,
+                className: `select select-primary select-bordered ${entryControlClass}`,
                 value: parameters.category,
-                onChange: (e2) => {
-                  const newCategory = e2.target.value;
+                onChange: (e) => {
+                  const newCategory = e.target.value;
                   const newProps = {
                     ...defaultUiProps(newCategory, allFormInputs),
                     ...defaultDataProps(newCategory, allFormInputs),
@@ -10725,14 +9998,14 @@ function CardGeneralParameterInputs({
                     category: newProps.category || newCategory
                   });
                 },
-                children: availableInputTypes().map((option) => /* @__PURE__ */ jsx16("option", { value: option.value, children: option.label }, option.value))
+                children: availableInputTypes().map((option) => /* @__PURE__ */ jsx17("option", { value: option.value, children: option.label }, option.value))
               }
             )
           ]
         }
       )
     ] }),
-    /* @__PURE__ */ jsx16("div", { className: "card-category-options mt-4 pb-1", children: /* @__PURE__ */ jsx16(
+    /* @__PURE__ */ jsx17("div", { className: "card-category-options mt-4 pb-1", children: /* @__PURE__ */ jsx17(
       GeneralParameterInputs_default,
       {
         category: parameters.category,
@@ -10741,31 +10014,7 @@ function CardGeneralParameterInputs({
         mods,
         allFormInputs
       }
-    ) }),
-    /* @__PURE__ */ jsx16("div", { className: `${entryRowClass} mt-4`, children: /* @__PURE__ */ jsxs12("div", { className: entryClass, children: [
-      /* @__PURE__ */ jsxs12("h5", { className: entryLabelClass, children: [
-        "Ontology ID (Optional)",
-        ` `,
-        /* @__PURE__ */ jsx16(
-          Tooltip,
-          {
-            text: "Bind this field to a standard ontology code (e.g., SNOMED:75367002). This drastically improves the reusability and semantic findability of your template!",
-            id: `${elementId}-ontologyinfo`,
-            type: "help"
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsx16(
-        "input",
-        {
-          value: parameters.ontologyId || "",
-          placeholder: "e.g. NCIT:C25150",
-          type: "text",
-          onChange: (ev) => onChange({ ...parameters, ontologyId: ev.target.value }),
-          className: `input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`
-        }
-      )
-    ] }) })
+    ) })
   ] });
 }
 
@@ -10773,7 +10022,7 @@ function CardGeneralParameterInputs({
 import { useState as useState9, useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { PlusIcon as PlusIcon3 } from "@heroicons/react/24/outline";
-import { Fragment, jsx as jsx17, jsxs as jsxs13 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx18, jsxs as jsxs14 } from "react/jsx-runtime";
 function Add({
   addElem,
   hidden,
@@ -10808,27 +10057,27 @@ function Add({
       left: rect.left + window.scrollX + rect.width / 2 - popoverWidth / 2
     });
   }, [popoverOpen]);
-  if (hidden) return /* @__PURE__ */ jsx17(Fragment, {});
-  return /* @__PURE__ */ jsxs13("div", { ref: containerRef, className: "relative flex flex-col items-center mt-4 w-full", children: [
-    /* @__PURE__ */ jsx17(
+  if (hidden) return /* @__PURE__ */ jsx18(Fragment, {});
+  return /* @__PURE__ */ jsxs14("div", { ref: containerRef, className: "relative flex flex-col items-center mt-4 w-full", children: [
+    /* @__PURE__ */ jsx18(
       "div",
       {
         className: "group w-full py-2 flex justify-center cursor-pointer border-2 border-dashed border-base-content/40 bg-base-300 hover:border-primary hover:bg-primary/5 rounded-lg transition-all",
         onClick: () => setPopoverOpen(!popoverOpen),
         title: tooltipDescription || "Add a new item or section",
-        children: /* @__PURE__ */ jsx17(PlusIcon3, { className: "h-6 w-6 text-base-content/70 group-hover:text-primary transition-colors" })
+        children: /* @__PURE__ */ jsx18(PlusIcon3, { className: "h-6 w-6 text-base-content/70 group-hover:text-primary transition-colors" })
       }
     ),
     popoverOpen && createPortal(
-      /* @__PURE__ */ jsxs13(
+      /* @__PURE__ */ jsxs14(
         "div",
         {
           ref: popoverRef,
           style: { position: "absolute", top: popoverPos.top, left: popoverPos.left },
           className: "z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300",
           children: [
-            /* @__PURE__ */ jsx17("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
-            /* @__PURE__ */ jsx17(
+            /* @__PURE__ */ jsx18("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
+            /* @__PURE__ */ jsx18(
               FBRadioGroup,
               {
                 className: "choose-create text-sm",
@@ -10849,9 +10098,9 @@ function Add({
                 }
               }
             ),
-            /* @__PURE__ */ jsxs13("div", { className: "flex justify-between mt-4", children: [
-              /* @__PURE__ */ jsx17("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-secondary", children: "Cancel" }),
-              /* @__PURE__ */ jsx17(
+            /* @__PURE__ */ jsxs14("div", { className: "flex justify-between mt-4", children: [
+              /* @__PURE__ */ jsx18("button", { onClick: () => setPopoverOpen(false), className: "btn btn-sm btn-secondary", children: "Cancel" }),
+              /* @__PURE__ */ jsx18(
                 "button",
                 {
                   onClick: () => {
@@ -10873,7 +10122,7 @@ function Add({
 
 // src/Card.tsx
 import { ArrowsPointingOutIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { jsx as jsx18, jsxs as jsxs14 } from "react/jsx-runtime";
+import { jsx as jsx19, jsxs as jsxs15 } from "react/jsx-runtime";
 function Card({
   componentProps,
   onChange,
@@ -10890,17 +10139,17 @@ function Card({
 }) {
   const [modalOpen, setModalOpen] = React11.useState(false);
   const [elementId] = React11.useState(getRandomId());
-  return /* @__PURE__ */ jsxs14(React11.Fragment, { children: [
-    /* @__PURE__ */ jsxs14(
+  return /* @__PURE__ */ jsxs15(React11.Fragment, { children: [
+    /* @__PURE__ */ jsxs15(
       Collapse_default,
       {
         isOpen: cardOpen,
         toggleCollapse: () => setCardOpen(!cardOpen),
-        title: /* @__PURE__ */ jsxs14("div", { className: "flex justify-between items-center w-full", children: [
-          /* @__PURE__ */ jsxs14("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
+        title: /* @__PURE__ */ jsxs15("div", { className: "flex justify-between items-center w-full", children: [
+          /* @__PURE__ */ jsxs15("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
             componentProps.title || componentProps.name,
             " ",
-            componentProps.parent ? /* @__PURE__ */ jsx18(
+            componentProps.parent ? /* @__PURE__ */ jsx19(
               Tooltip,
               {
                 text: `Depends on ${componentProps.parent}`,
@@ -10908,7 +10157,7 @@ function Card({
                 type: "alert"
               }
             ) : "",
-            componentProps.$ref !== void 0 ? /* @__PURE__ */ jsx18(
+            componentProps.$ref !== void 0 ? /* @__PURE__ */ jsx19(
               Tooltip,
               {
                 text: `Is an instance of pre-configured component ${componentProps.$ref}`,
@@ -10917,14 +10166,14 @@ function Card({
               }
             ) : ""
           ] }),
-          /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsx19(
             "span",
             {
               ...dragHandleProps ?? {},
               className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
               "data-tip": "Drag to move form item",
               id: `${elementId}_moveformcard`,
-              children: /* @__PURE__ */ jsx18(
+              children: /* @__PURE__ */ jsx19(
                 ArrowsPointingOutIcon,
                 {
                   className: "w-6 h-6 stroke-2 text-base-content/50 hover:text-base-content transition-colors",
@@ -10937,7 +10186,7 @@ function Card({
         ] }),
         className: `card-container ${componentProps.dependent ? "card-dependent" : ""} ${componentProps.$ref === void 0 ? "" : "card-reference"}`,
         children: [
-          /* @__PURE__ */ jsx18("div", { className: "cardEntries", children: /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsx19("div", { className: "cardEntries", children: /* @__PURE__ */ jsx19(
             CardGeneralParameterInputs,
             {
               parameters: componentProps,
@@ -10947,8 +10196,8 @@ function Card({
               showObjectNameInput
             }
           ) }),
-          /* @__PURE__ */ jsxs14("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
-            /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsxs15("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
+            /* @__PURE__ */ jsx19(
               FBCheckbox_default,
               {
                 onChangeValue: () => onChange({
@@ -10960,10 +10209,10 @@ function Card({
                 id: `${elementId}_required`
               }
             ),
-            /* @__PURE__ */ jsx18("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this item", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx18(PencilIcon, { className: "w-5 h-5 text-secondary hover:text-primary transition-colors", onClick: () => setModalOpen(true) }) }),
-            /* @__PURE__ */ jsx18("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete item", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx18(TrashIcon, { className: "w-5 h-5 text-warning hover:text-error transition-colors", onClick: () => onDelete && onDelete() }) })
+            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this item", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx19(PencilIcon, { className: "w-5 h-5 text-secondary hover:text-primary transition-colors", onClick: () => setModalOpen(true) }) }),
+            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete item", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx19(TrashIcon, { className: "w-5 h-5 text-warning hover:text-error transition-colors", onClick: () => onDelete && onDelete() }) })
           ] }),
-          /* @__PURE__ */ jsx18(
+          /* @__PURE__ */ jsx19(
             CardModal_default,
             {
               componentProps,
@@ -10979,7 +10228,7 @@ function Card({
       }
     ),
     mods?.components?.add && mods?.components?.add(addProperties),
-    !mods?.components?.add && addElem && /* @__PURE__ */ jsx18(
+    !mods?.components?.add && addElem && /* @__PURE__ */ jsx19(
       Add,
       {
         tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -10995,28 +10244,28 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 // src/defaults/defaultInputs.tsx
 import React12 from "react";
-import { jsx as jsx19, jsxs as jsxs15 } from "react/jsx-runtime";
-var CardDefaultParameterInputs = () => /* @__PURE__ */ jsx19("div", {});
+import { jsx as jsx20, jsxs as jsxs16 } from "react/jsx-runtime";
+var CardDefaultParameterInputs = () => /* @__PURE__ */ jsx20("div", {});
 var getInputCardBodyComponent = ({ type }) => function InputCardBodyComponent({
   parameters,
   onChange
 }) {
-  return /* @__PURE__ */ jsxs15(React12.Fragment, { children: [
-    /* @__PURE__ */ jsx19("h5", { children: "Default Value" }),
-    /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsxs16(React12.Fragment, { children: [
+    /* @__PURE__ */ jsx20("h5", { children: "Default Value" }),
+    /* @__PURE__ */ jsx20(
       "input",
       {
         value: parameters.default || "",
         placeholder: "Default",
         type,
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "input input-primary input-bordered focus:outline-secondary w-full"
+        className: "input input-primary input-bordered w-full"
       }
     )
   ] });
 };
 var Checkbox = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsx19("div", { className: "card-boolean", children: /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsx20("div", { className: "card-boolean", children: /* @__PURE__ */ jsx20(
     FBCheckbox_default,
     {
       onChangeValue: () => {
@@ -11041,9 +10290,9 @@ function MultipleChoice({
   const containsString = containsUnparsableString || enumArray.some((val) => typeof val === "string");
   const [isNumber2, setIsNumber] = React12.useState(!!enumArray.length && !containsString);
   const [elementId] = React12.useState(getRandomId());
-  return /* @__PURE__ */ jsxs15("div", { className: "card-enum", children: [
-    /* @__PURE__ */ jsx19("h5", { children: "Possible Values" }),
-    /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsxs16("div", { className: "card-enum", children: [
+    /* @__PURE__ */ jsx20("h5", { children: "Possible Values" }),
+    /* @__PURE__ */ jsx20(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11064,7 +10313,7 @@ function MultipleChoice({
         id: `${elementId}_different`
       }
     ),
-    /* @__PURE__ */ jsx19("div", { className: containsUnparsableString || !enumArray.length ? "hidden" : "", children: /* @__PURE__ */ jsx19(
+    /* @__PURE__ */ jsx20("div", { className: containsUnparsableString || !enumArray.length ? "hidden" : "", children: /* @__PURE__ */ jsx20(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11099,7 +10348,7 @@ function MultipleChoice({
         id: `${elementId}_forceNumber`
       }
     ) }),
-    /* @__PURE__ */ jsx19(
+    /* @__PURE__ */ jsx20(
       CardEnumOptions,
       {
         initialValues: enumArray,
@@ -11122,9 +10371,9 @@ function MultipleChoiceArray({
   const items = parameters.items || {};
   const enumArray = Array.isArray(items.enum) ? items.enum : [];
   const [elementId] = React12.useState(getRandomId());
-  return /* @__PURE__ */ jsxs15("div", { className: "card-enum", children: [
-    /* @__PURE__ */ jsx19("h5", { children: "Options" }),
-    /* @__PURE__ */ jsx19(
+  return /* @__PURE__ */ jsxs16("div", { className: "card-enum", children: [
+    /* @__PURE__ */ jsx20("h5", { children: "Options" }),
+    /* @__PURE__ */ jsx20(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11142,7 +10391,7 @@ function MultipleChoiceArray({
         id: `${elementId}_different`
       }
     ),
-    /* @__PURE__ */ jsx19(
+    /* @__PURE__ */ jsx20(
       CardEnumOptions,
       {
         initialValues: enumArray,
@@ -11274,7 +10523,7 @@ var defaultInputs_default = defaultInputs;
 
 // src/Section.tsx
 import { ArrowsPointingOutIcon as ArrowsPointingOutIcon2, PencilIcon as PencilIcon2, TrashIcon as TrashIcon2 } from "@heroicons/react/24/outline";
-import { jsx as jsx20, jsxs as jsxs16 } from "react/jsx-runtime";
+import { jsx as jsx21, jsxs as jsxs17 } from "react/jsx-runtime";
 var sectionHeadClass = `section-head ${fieldStackClass}`;
 var sectionEntryClass = `section-entry ${fieldClass}`;
 var sectionLabelClass = fieldLabelClass;
@@ -11290,6 +10539,7 @@ function Section({
   onDependentsChange,
   onDelete,
   path,
+  fieldPointer,
   definitionData,
   definitionUi,
   hideKey,
@@ -11309,7 +10559,9 @@ function Section({
   const unsupportedFeatures = checkForUnsupportedFeatures(
     schema || {},
     uischema || {},
-    allFormInputs
+    allFormInputs,
+    definitionData,
+    definitionUi
   );
   const schemaData = schema || {};
   const [cardOpenState, setCardOpenState] = React13.useState({});
@@ -11327,17 +10579,17 @@ function Section({
     categoryHash
   };
   const hideAddButton = schemaData.properties && Object.keys(schemaData.properties).length !== 0;
-  return /* @__PURE__ */ jsxs16(React13.Fragment, { children: [
-    /* @__PURE__ */ jsxs16(
+  return /* @__PURE__ */ jsxs17(React13.Fragment, { children: [
+    /* @__PURE__ */ jsxs17(
       Collapse_default,
       {
         isOpen: cardOpen,
         toggleCollapse: () => setCardOpen(!cardOpen),
-        title: /* @__PURE__ */ jsxs16("div", { className: "flex justify-between items-center w-full", children: [
-          /* @__PURE__ */ jsxs16("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
+        title: /* @__PURE__ */ jsxs17("div", { className: "flex justify-between items-center w-full", children: [
+          /* @__PURE__ */ jsxs17("span", { onClick: () => setCardOpen(!cardOpen), className: "text-lg font-bold cursor-pointer select-none", children: [
             schemaData.title || keyName,
             " ",
-            parent2 ? /* @__PURE__ */ jsx20(
+            parent2 ? /* @__PURE__ */ jsx21(
               Tooltip,
               {
                 text: `Depends on ${parent2}`,
@@ -11346,14 +10598,14 @@ function Section({
               }
             ) : ""
           ] }),
-          /* @__PURE__ */ jsx20(
+          /* @__PURE__ */ jsx21(
             "span",
             {
               ...dragHandleProps ?? {},
               className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
               "data-tip": "Drag to move section",
               id: `${elementId}_moveinfosection`,
-              children: /* @__PURE__ */ jsx20(
+              children: /* @__PURE__ */ jsx21(
                 ArrowsPointingOutIcon2,
                 {
                   className: "w-6 h-6 stroke-2 text-base-content/50 hover:text-base-content transition-colors",
@@ -11366,27 +10618,27 @@ function Section({
         ] }),
         className: `section-container sectionContainer ${dependent ? "section-dependent" : ""} ${reference ? "section-reference" : ""}`,
         children: [
-          /* @__PURE__ */ jsxs16("div", { className: `section-entries ${reference ? "section-reference" : ""}`, children: [
-            /* @__PURE__ */ jsxs16("div", { className: sectionHeadClass, children: [
-              reference ? /* @__PURE__ */ jsxs16("div", { className: `${sectionEntryClass} section-reference`, children: [
-                /* @__PURE__ */ jsx20("h5", { className: sectionLabelClass, children: "Reference Section" }),
-                /* @__PURE__ */ jsx20(
+          /* @__PURE__ */ jsxs17("div", { className: `section-entries ${reference ? "section-reference" : ""}`, children: [
+            /* @__PURE__ */ jsxs17("div", { className: sectionHeadClass, children: [
+              reference ? /* @__PURE__ */ jsxs17("div", { className: `${sectionEntryClass} section-reference`, children: [
+                /* @__PURE__ */ jsx21("h5", { className: sectionLabelClass, children: "Reference Section" }),
+                /* @__PURE__ */ jsx21(
                   "select",
                   {
-                    className: `select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content focus:outline-secondary`,
+                    className: `select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content`,
                     value: reference,
-                    onChange: (e2) => {
-                      onChange(schema, uischema, e2.target.value);
+                    onChange: (e) => {
+                      onChange(schema, uischema, e.target.value);
                     },
-                    children: Object.keys(definitionData).map((key) => /* @__PURE__ */ jsx20("option", { value: `#/definitions/${key}`, children: `#/definitions/${key}` }, `#/definitions/${key}`))
+                    children: Object.keys(definitionData).map((key) => /* @__PURE__ */ jsx21("option", { value: `#/definitions/${key}`, children: `#/definitions/${key}` }, `#/definitions/${key}`))
                   }
                 )
               ] }) : "",
-              /* @__PURE__ */ jsxs16("div", { className: sectionEntryClass, "data-test": "section-object-name", children: [
-                /* @__PURE__ */ jsxs16("h5", { className: sectionLabelClass, children: [
+              /* @__PURE__ */ jsxs17("div", { className: sectionEntryClass, "data-test": "section-object-name", children: [
+                /* @__PURE__ */ jsxs17("h5", { className: sectionLabelClass, children: [
                   "Section Variable Name",
                   " ",
-                  /* @__PURE__ */ jsx20(
+                  /* @__PURE__ */ jsx21(
                     Tooltip,
                     {
                       text: mods && mods.tooltipDescriptions && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardSectionObjectName === "string" ? mods.tooltipDescriptions.cardSectionObjectName : "The name in the downloaded data for this section.",
@@ -11395,8 +10647,8 @@ function Section({
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsxs16("div", { className: "form-control w-full", children: [
-                  /* @__PURE__ */ jsx20(
+                /* @__PURE__ */ jsxs17("div", { className: "form-control w-full", children: [
+                  /* @__PURE__ */ jsx21(
                     "input",
                     {
                       value: keyName || "",
@@ -11414,18 +10666,18 @@ function Section({
                           onNameChange(name);
                         }
                       },
-                      className: `input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text ${keyError !== null ? "input-error" : ""}`,
+                      className: `input input-primary input-bordered ${sectionControlClass} card-text ${keyError !== null ? "input-error" : ""}`,
                       readOnly: hideKey
                     }
                   ),
-                  keyError && /* @__PURE__ */ jsx20("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx20("span", { className: "label-text-alt text-error", children: keyError }) })
+                  keyError && /* @__PURE__ */ jsx21("div", { className: "label px-0 pb-0 pt-1", children: /* @__PURE__ */ jsx21("span", { className: "label-text-alt text-error", children: keyError }) })
                 ] })
               ] }),
-              /* @__PURE__ */ jsxs16("div", { className: sectionEntryClass, "data-test": "section-display-name", children: [
-                /* @__PURE__ */ jsxs16("h5", { className: sectionLabelClass, children: [
+              /* @__PURE__ */ jsxs17("div", { className: sectionEntryClass, "data-test": "section-display-name", children: [
+                /* @__PURE__ */ jsxs17("h5", { className: sectionLabelClass, children: [
                   "Section Display Name",
                   " ",
-                  /* @__PURE__ */ jsx20(
+                  /* @__PURE__ */ jsx21(
                     Tooltip,
                     {
                       text: mods && mods.tooltipDescriptions && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardSectionDisplayName === "string" ? mods.tooltipDescriptions.cardSectionDisplayName : "The name of the section that will be shown to contributors completing the form.",
@@ -11434,7 +10686,7 @@ function Section({
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsx20(
+                /* @__PURE__ */ jsx21(
                   "input",
                   {
                     value: schemaData.title || "",
@@ -11447,15 +10699,15 @@ function Section({
                       },
                       uischema
                     ),
-                    className: `input input-primary input-bordered focus:outline-secondary ${sectionControlClass} card-text`
+                    className: `input input-primary input-bordered ${sectionControlClass} card-text`
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs16("div", { className: sectionEntryClass, "data-test": "section-description", children: [
-                /* @__PURE__ */ jsxs16("h5", { className: sectionLabelClass, children: [
+              /* @__PURE__ */ jsxs17("div", { className: sectionEntryClass, "data-test": "section-description", children: [
+                /* @__PURE__ */ jsxs17("h5", { className: sectionLabelClass, children: [
                   "Section Description",
                   " ",
-                  /* @__PURE__ */ jsx20(
+                  /* @__PURE__ */ jsx21(
                     Tooltip,
                     {
                       text: mods && mods.tooltipDescriptions && mods.tooltipDescriptions && typeof mods.tooltipDescriptions.cardSectionDescription === "string" ? mods.tooltipDescriptions.cardSectionDescription : "A description of the section which will be visible on the form.",
@@ -11464,7 +10716,7 @@ function Section({
                     }
                   )
                 ] }),
-                /* @__PURE__ */ jsx20(
+                /* @__PURE__ */ jsx21(
                   MarkdownDescriptionInput,
                   {
                     value: schemaData.description || "",
@@ -11472,7 +10724,7 @@ function Section({
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs16(
+              /* @__PURE__ */ jsxs17(
                 "div",
                 {
                   className: "alert alert-warning mb-4 mt-4 flex-col items-start",
@@ -11480,13 +10732,13 @@ function Section({
                     display: unsupportedFeatures.length === 0 ? "none" : "flex"
                   },
                   children: [
-                    /* @__PURE__ */ jsx20("h5", { className: "font-bold", children: "Unsupported Features:" }),
-                    /* @__PURE__ */ jsx20("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message) => /* @__PURE__ */ jsx20("li", { children: message }, `${elementId}_${message}`)) })
+                    /* @__PURE__ */ jsx21("h5", { className: "font-bold", children: "Compatibility diagnostics:" }),
+                    /* @__PURE__ */ jsx21("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message) => /* @__PURE__ */ jsx21("li", { children: message }, `${elementId}_${message}`)) })
                   ]
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx20("div", { className: "section-body", children: /* @__PURE__ */ jsx20(
+            /* @__PURE__ */ jsx21("div", { className: "section-body", children: /* @__PURE__ */ jsx21(
               DragDropContext,
               {
                 onDragEnd: (result) => onDragEnd(result, {
@@ -11497,7 +10749,7 @@ function Section({
                   definitionUi,
                   categoryHash
                 }),
-                children: /* @__PURE__ */ jsx20(Droppable, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs16(
+                children: /* @__PURE__ */ jsx21(Droppable, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs17(
                   "div",
                   {
                     ref: providedDroppable.innerRef,
@@ -11509,6 +10761,7 @@ function Section({
                         uiSchemaData: uischema,
                         onChange,
                         path,
+                        fieldPointer,
                         definitionData,
                         definitionUi,
                         cardOpenState,
@@ -11520,18 +10773,27 @@ function Section({
                         Section
                       }).map((element, index) => (
                         // @ts-ignore: suppress key error, can't change key assignment
-                        /* @__PURE__ */ jsx20(Draggable, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx20(
-                          "div",
+                        /* @__PURE__ */ jsx21(
+                          Draggable,
                           {
-                            ref: providedDraggable.innerRef,
-                            ...providedDraggable.draggableProps,
-                            style: providedDraggable.draggableProps.style,
-                            className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
-                            children: React13.cloneElement(element, {
-                              dragHandleProps: providedDraggable.dragHandleProps
-                            })
-                          }
-                        ) }, element.key)
+                            draggableId: element.key,
+                            index,
+                            isDragDisabled: element.props.compatibility !== void 0,
+                            children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx21(
+                              "div",
+                              {
+                                ref: providedDraggable.innerRef,
+                                ...providedDraggable.draggableProps,
+                                style: providedDraggable.draggableProps.style,
+                                className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
+                                children: React13.cloneElement(element, {
+                                  dragHandleProps: providedDraggable.dragHandleProps
+                                })
+                              }
+                            )
+                          },
+                          element.key
+                        )
                       )),
                       providedDroppable.placeholder
                     ]
@@ -11539,9 +10801,9 @@ function Section({
                 ) })
               }
             ) }),
-            /* @__PURE__ */ jsxs16("div", { className: "section-footer", children: [
+            /* @__PURE__ */ jsxs17("div", { className: "section-footer", children: [
               !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
-              !mods?.components?.add && /* @__PURE__ */ jsx20(
+              !mods?.components?.add && /* @__PURE__ */ jsx21(
                 Add,
                 {
                   tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -11556,8 +10818,8 @@ function Section({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx20("div", { className: "section-interactions", children: /* @__PURE__ */ jsxs16("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
-              /* @__PURE__ */ jsx20(
+            /* @__PURE__ */ jsx21("div", { className: "section-interactions", children: /* @__PURE__ */ jsxs17("div", { className: "flex items-center justify-end gap-4 w-full mt-6 pt-4 border-t border-base-200", children: [
+              /* @__PURE__ */ jsx21(
                 FBCheckbox_default,
                 {
                   onChangeValue: () => onRequireToggle(),
@@ -11566,14 +10828,14 @@ function Section({
                   id: `${elementId}_required`
                 }
               ),
-              /* @__PURE__ */ jsx20("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this section", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx20(
+              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this section", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx21(
                 PencilIcon2,
                 {
                   className: "w-5 h-5 text-secondary hover:text-primary transition-colors",
                   onClick: () => setModalOpen(true)
                 }
               ) }),
-              /* @__PURE__ */ jsx20("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete section", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx20(
+              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete section", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx21(
                 TrashIcon2,
                 {
                   className: "w-5 h-5 text-warning hover:text-error transition-colors",
@@ -11582,7 +10844,7 @@ function Section({
               ) })
             ] }) })
           ] }),
-          /* @__PURE__ */ jsx20(
+          /* @__PURE__ */ jsx21(
             CardModal_default,
             {
               componentProps: {
@@ -11592,7 +10854,8 @@ function Section({
                 schema,
                 type: "object",
                 "ui:column": uischema["ui:column"] ?? "",
-                "ui:options": uischema["ui:options"] ?? ""
+                "ui:options": uischema["ui:options"] ?? "",
+                fieldPointer
               },
               isOpen: modalOpen,
               onClose: () => setModalOpen(false),
@@ -11610,7 +10873,7 @@ function Section({
       }
     ),
     mods?.components?.add && mods.components.add(parentProperties),
-    !mods?.components?.add && /* @__PURE__ */ jsx20(
+    !mods?.components?.add && /* @__PURE__ */ jsx21(
       Add,
       {
         tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -11632,20 +10895,20 @@ import React15, { useState as useState11 } from "react";
 
 // src/inputs/PlaceholderInput.tsx
 import { useState as useState10 } from "react";
-import { jsx as jsx21, jsxs as jsxs17 } from "react/jsx-runtime";
+import { jsx as jsx22, jsxs as jsxs18 } from "react/jsx-runtime";
 var PlaceholderInput = ({ parameters, onChange }) => {
   const [elementId] = useState10(getRandomId());
-  return /* @__PURE__ */ jsxs17("div", { className: fieldClass, children: [
-    /* @__PURE__ */ jsxs17("div", { className: fieldLabelClass, children: [
+  return /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
+    /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
       "Placeholder",
       " ",
-      /* @__PURE__ */ jsx21(
+      /* @__PURE__ */ jsx22(
         "a",
         {
           href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-placeholder",
           target: "_blank",
           rel: "noopener noreferrer",
-          children: /* @__PURE__ */ jsx21(
+          children: /* @__PURE__ */ jsx22(
             Tooltip,
             {
               id: `${elementId}_placeholder`,
@@ -11656,7 +10919,7 @@ var PlaceholderInput = ({ parameters, onChange }) => {
         }
       )
     ] }),
-    /* @__PURE__ */ jsx21(
+    /* @__PURE__ */ jsx22(
       "input",
       {
         value: parameters["ui:placeholder"] ? parameters["ui:placeholder"] : "",
@@ -11668,7 +10931,7 @@ var PlaceholderInput = ({ parameters, onChange }) => {
             "ui:placeholder": ev.target.value
           });
         },
-        className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+        className: `input input-primary input-bordered input-sm ${fieldControlClass}`
       },
       "placeholder"
     )
@@ -11676,7 +10939,7 @@ var PlaceholderInput = ({ parameters, onChange }) => {
 };
 
 // src/defaults/shortAnswerInputs.tsx
-import { jsx as jsx22, jsxs as jsxs18 } from "react/jsx-runtime";
+import { jsx as jsx23, jsxs as jsxs19 } from "react/jsx-runtime";
 var formatDictionary = {
   "": "None",
   email: "Email",
@@ -11698,10 +10961,10 @@ var autoDictionary = {
 };
 var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
   const [elementId] = useState11(getRandomId());
-  return /* @__PURE__ */ jsxs18("div", { className: fieldStackClass, children: [
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx22("div", { className: fieldLabelClass, children: "Minimum Length" }),
-      /* @__PURE__ */ jsx22(
+  return /* @__PURE__ */ jsxs19("div", { className: fieldStackClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Minimum Length" }),
+      /* @__PURE__ */ jsx23(
         "input",
         {
           value: parameters.minLength ? parameters.minLength : "",
@@ -11713,14 +10976,14 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
               minLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "minLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx22("div", { className: fieldLabelClass, children: "Maximum Length" }),
-      /* @__PURE__ */ jsx22(
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Maximum Length" }),
+      /* @__PURE__ */ jsx23(
         "input",
         {
           value: parameters.maxLength ? parameters.maxLength : "",
@@ -11732,22 +10995,22 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
               maxLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "maxLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
         "Regular Expression Pattern",
         " ",
-        /* @__PURE__ */ jsx22(
+        /* @__PURE__ */ jsx23(
           "a",
           {
             href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions",
             target: "_blank",
             rel: "noopener noreferrer",
-            children: /* @__PURE__ */ jsx22(
+            children: /* @__PURE__ */ jsx23(
               Tooltip,
               {
                 id: `${elementId}_regex`,
@@ -11758,7 +11021,7 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx22(
+      /* @__PURE__ */ jsx23(
         "input",
         {
           value: parameters.pattern ? parameters.pattern : "",
@@ -11770,16 +11033,16 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
               pattern: ev.target.value
             });
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "pattern"
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
         "Format",
         " ",
-        /* @__PURE__ */ jsx22(
+        /* @__PURE__ */ jsx23(
           Tooltip,
           {
             id: `${elementId}_format`,
@@ -11788,30 +11051,30 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx22(
+      /* @__PURE__ */ jsx23(
         "select",
         {
-          className: `select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`,
+          className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
           value: parameters.format || "",
-          onChange: (e2) => onChange({
+          onChange: (e) => onChange({
             ...parameters,
-            format: e2.target.value
+            format: e.target.value
           }),
-          children: Object.keys(formatDictionary).map((key) => /* @__PURE__ */ jsx22("option", { value: key, children: formatDictionary[key] }, key))
+          children: Object.keys(formatDictionary).map((key) => /* @__PURE__ */ jsx23("option", { value: key, children: formatDictionary[key] }, key))
         }
       )
     ] }),
-    /* @__PURE__ */ jsxs18("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs18("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
         "Auto Complete Category",
         " ",
-        /* @__PURE__ */ jsx22(
+        /* @__PURE__ */ jsx23(
           "a",
           {
             href: "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete",
             target: "_blank",
             rel: "noopener noreferrer",
-            children: /* @__PURE__ */ jsx22(
+            children: /* @__PURE__ */ jsx23(
               Tooltip,
               {
                 id: `${elementId}_autocomplete`,
@@ -11822,21 +11085,21 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx22(
+      /* @__PURE__ */ jsx23(
         "select",
         {
-          className: `select select-primary select-bordered focus:outline-secondary select-sm ${fieldControlClass}`,
+          className: `select select-primary select-bordered select-sm ${fieldControlClass}`,
           value: parameters["ui:autocomplete"] || "",
-          onChange: (e2) => onChange({
+          onChange: (e) => onChange({
             ...parameters,
-            "ui:autocomplete": e2.target.value
+            "ui:autocomplete": e.target.value
           }),
-          children: Object.keys(autoDictionary).map((key) => /* @__PURE__ */ jsx22("option", { value: key, children: autoDictionary[key] }, key))
+          children: Object.keys(autoDictionary).map((key) => /* @__PURE__ */ jsx23("option", { value: key, children: autoDictionary[key] }, key))
         }
       )
     ] }),
-    /* @__PURE__ */ jsx22(PlaceholderInput, { parameters, onChange }),
-    /* @__PURE__ */ jsx22("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx22(
+    /* @__PURE__ */ jsx23(PlaceholderInput, { parameters, onChange }),
+    /* @__PURE__ */ jsx23("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx23(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -11852,31 +11115,31 @@ var CardShortAnswerParameterInputs = ({ parameters, onChange }) => {
   ] });
 };
 var ShortAnswerField = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs18(React15.Fragment, { children: [
-    /* @__PURE__ */ jsx22("h5", { children: "Default Value" }),
-    /* @__PURE__ */ jsx22(
+  return /* @__PURE__ */ jsxs19(React15.Fragment, { children: [
+    /* @__PURE__ */ jsx23("h5", { children: "Default Value" }),
+    /* @__PURE__ */ jsx23(
       "input",
       {
         value: parameters.default ?? "",
         placeholder: "Default",
         type: formatTypeDictionary[parameters.format] || "text",
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "input input-primary input-bordered focus:outline-secondary w-full"
+        className: "input input-primary input-bordered w-full"
       }
     )
   ] });
 };
 var Password = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs18(React15.Fragment, { children: [
-    /* @__PURE__ */ jsx22("h5", { children: "Default Password" }),
-    /* @__PURE__ */ jsx22(
+  return /* @__PURE__ */ jsxs19(React15.Fragment, { children: [
+    /* @__PURE__ */ jsx23("h5", { children: "Default Password" }),
+    /* @__PURE__ */ jsx23(
       "input",
       {
         value: parameters.default ?? "",
         placeholder: "Default",
         type: "password",
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "input input-primary input-bordered focus:outline-secondary w-full"
+        className: "input input-primary input-bordered w-full"
       }
     )
   ] });
@@ -11920,13 +11183,13 @@ var shortAnswerInputs_default = shortAnswerInput;
 
 // src/defaults/longAnswerInputs.tsx
 import React16, { useState as useState12 } from "react";
-import { jsx as jsx23, jsxs as jsxs19 } from "react/jsx-runtime";
+import { jsx as jsx24, jsxs as jsxs20 } from "react/jsx-runtime";
 var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
   const [elementId] = useState12(getRandomId());
-  return /* @__PURE__ */ jsxs19("div", { className: fieldStackClass, children: [
-    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Minimum Length" }),
-      /* @__PURE__ */ jsx23(
+  return /* @__PURE__ */ jsxs20("div", { className: fieldStackClass, children: [
+    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Minimum Length" }),
+      /* @__PURE__ */ jsx24(
         "input",
         {
           value: parameters.minLength ? parameters.minLength : "",
@@ -11938,14 +11201,14 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
               minLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "minLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx23("div", { className: fieldLabelClass, children: "Maximum Length" }),
-      /* @__PURE__ */ jsx23(
+    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Maximum Length" }),
+      /* @__PURE__ */ jsx24(
         "input",
         {
           value: parameters.maxLength ? parameters.maxLength : "",
@@ -11957,16 +11220,16 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
               maxLength: parseInt(ev.target.value, 10)
             });
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "maxLength"
       )
     ] }),
-    /* @__PURE__ */ jsxs19("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs19("div", { className: fieldLabelClass, children: [
+    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs20("div", { className: fieldLabelClass, children: [
         "Regular Expression Pattern",
         " ",
-        /* @__PURE__ */ jsx23("a", { href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions", children: /* @__PURE__ */ jsx23(
+        /* @__PURE__ */ jsx24("a", { href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions", children: /* @__PURE__ */ jsx24(
           Tooltip,
           {
             id: `${elementId}_regex`,
@@ -11975,7 +11238,7 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
           }
         ) })
       ] }),
-      /* @__PURE__ */ jsx23(
+      /* @__PURE__ */ jsx24(
         "input",
         {
           value: parameters.pattern ? parameters.pattern : "",
@@ -11987,13 +11250,13 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
               pattern: ev.target.value
             });
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "pattern"
       )
     ] }),
-    /* @__PURE__ */ jsx23(PlaceholderInput, { parameters, onChange }),
-    /* @__PURE__ */ jsx23("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx23(
+    /* @__PURE__ */ jsx24(PlaceholderInput, { parameters, onChange }),
+    /* @__PURE__ */ jsx24("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx24(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -12009,15 +11272,15 @@ var CardLongAnswerParameterInputs = ({ parameters, onChange }) => {
   ] });
 };
 var LongAnswer = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs19(React16.Fragment, { children: [
-    /* @__PURE__ */ jsx23("h5", { children: "Default Value" }),
-    /* @__PURE__ */ jsx23(
+  return /* @__PURE__ */ jsxs20(React16.Fragment, { children: [
+    /* @__PURE__ */ jsx24("h5", { children: "Default Value" }),
+    /* @__PURE__ */ jsx24(
       "textarea",
       {
         value: parameters.default ?? "",
         placeholder: "Default",
         onChange: (ev) => onChange({ ...parameters, default: ev.target.value }),
-        className: "textarea textarea-primary textarea-bordered focus:outline-secondary w-full"
+        className: "textarea textarea-primary textarea-bordered w-full"
       }
     )
   ] });
@@ -12044,7 +11307,7 @@ var longAnswerInputs_default = longAnswerInput;
 
 // src/defaults/numberInputs.tsx
 import React17, { useState as useState13 } from "react";
-import { jsx as jsx24, jsxs as jsxs20 } from "react/jsx-runtime";
+import { jsx as jsx25, jsxs as jsxs21 } from "react/jsx-runtime";
 var hasNumberValue = (value) => typeof value === "number";
 var updateNumberParameter = (parameters, key, value, inactiveKey) => {
   const nextParameters = { ...parameters };
@@ -12058,12 +11321,12 @@ var updateNumberParameter = (parameters, key, value, inactiveKey) => {
 };
 var CardNumberParameterInputs = ({ parameters, onChange }) => {
   const [elementId] = useState13(getRandomId());
-  return /* @__PURE__ */ jsxs20("div", { className: fieldStackClass, children: [
-    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsxs20("div", { className: fieldLabelClass, children: [
+  return /* @__PURE__ */ jsxs21("div", { className: fieldStackClass, children: [
+    /* @__PURE__ */ jsxs21("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsxs21("div", { className: fieldLabelClass, children: [
         "Multiple of",
         " ",
-        /* @__PURE__ */ jsx24(
+        /* @__PURE__ */ jsx25(
           Tooltip,
           {
             id: `${elementId}_multiple`,
@@ -12072,7 +11335,7 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsx24(
+      /* @__PURE__ */ jsx25(
         "input",
         {
           value: parameters.multipleOf ? parameters.multipleOf : "",
@@ -12083,14 +11346,14 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
             if (Number.isNaN(newVal)) newVal = null;
             onChange(updateNumberParameter(parameters, "multipleOf", newVal));
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "multipleOf"
       )
     ] }),
-    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Minimum" }),
-      /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsxs21("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx25("div", { className: fieldLabelClass, children: "Minimum" }),
+      /* @__PURE__ */ jsx25(
         "input",
         {
           value: parameters.minimum ?? parameters.exclusiveMinimum ?? "",
@@ -12109,12 +11372,12 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
               );
             }
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "minimum"
       )
     ] }),
-    /* @__PURE__ */ jsx24("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsx25("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx25(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -12136,9 +11399,9 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
       },
       "exclusiveMinimum"
     ) }),
-    /* @__PURE__ */ jsxs20("div", { className: fieldClass, children: [
-      /* @__PURE__ */ jsx24("div", { className: fieldLabelClass, children: "Maximum" }),
-      /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsxs21("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx25("div", { className: fieldLabelClass, children: "Maximum" }),
+      /* @__PURE__ */ jsx25(
         "input",
         {
           value: parameters.maximum ?? parameters.exclusiveMaximum ?? "",
@@ -12157,12 +11420,12 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
               );
             }
           },
-          className: `input input-primary input-bordered focus:outline-secondary input-sm ${fieldControlClass}`
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
         },
         "maximum"
       )
     ] }),
-    /* @__PURE__ */ jsx24("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx24(
+    /* @__PURE__ */ jsx25("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx25(
       FBCheckbox_default,
       {
         onChangeValue: () => {
@@ -12187,9 +11450,9 @@ var CardNumberParameterInputs = ({ parameters, onChange }) => {
   ] });
 };
 var NumberField = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsxs20(React17.Fragment, { children: [
-    /* @__PURE__ */ jsx24("h5", { children: "Default Number" }),
-    /* @__PURE__ */ jsx24(
+  return /* @__PURE__ */ jsxs21(React17.Fragment, { children: [
+    /* @__PURE__ */ jsx25("h5", { children: "Default Number" }),
+    /* @__PURE__ */ jsx25(
       "input",
       {
         value: parameters.default ?? "",
@@ -12199,7 +11462,7 @@ var NumberField = ({ parameters, onChange }) => {
           ...parameters,
           default: parseFloat(ev.target.value)
         }),
-        className: "input input-primary input-bordered focus:outline-secondary w-full"
+        className: "input input-primary input-bordered w-full"
       }
     )
   ] });
@@ -12238,21 +11501,172 @@ var numberInputs = {
 };
 var numberInputs_default = numberInputs;
 
+// src/defaults/stringArrayInputs.tsx
+import { jsx as jsx26, jsxs as jsxs22 } from "react/jsx-runtime";
+function parseOptionalNonNegativeInteger(value) {
+  if (value === "") return void 0;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+function updateArrayIntegerConstraint(parameters, key, value) {
+  const parsed = parseOptionalNonNegativeInteger(value);
+  if (parsed === null) return parameters;
+  if (parsed !== void 0 && (key === "minItems" && typeof parameters.maxItems === "number" && parsed > parameters.maxItems || key === "maxItems" && typeof parameters.minItems === "number" && parsed < parameters.minItems)) {
+    return parameters;
+  }
+  const next = { ...parameters };
+  if (parsed === void 0) delete next[key];
+  else next[key] = parsed;
+  return next;
+}
+function updateItemConstraint(parameters, key, value) {
+  const items = { ...parameters.items || {}, type: "string" };
+  if (key === "pattern") {
+    if (value === "") delete items.pattern;
+    else items.pattern = value;
+  } else {
+    const parsed = parseOptionalNonNegativeInteger(value);
+    if (parsed === null) return parameters;
+    if (parsed !== void 0 && (key === "minLength" && typeof items.maxLength === "number" && parsed > items.maxLength || key === "maxLength" && typeof items.minLength === "number" && parsed < items.minLength)) {
+      return parameters;
+    }
+    if (parsed === void 0) delete items[key];
+    else items[key] = parsed;
+  }
+  return { ...parameters, items };
+}
+var constraintValue = (value) => typeof value === "number" ? value : "";
+var StringArrayParameterInputs = ({ parameters, onChange }) => {
+  const items = parameters.items || {};
+  return /* @__PURE__ */ jsxs22("div", { className: fieldStackClass, "data-string-array-constraints": "true", children: [
+    /* @__PURE__ */ jsxs22("div", { className: "rounded-lg border border-base-300 bg-base-200 p-3", children: [
+      /* @__PURE__ */ jsxs22("div", { className: "flex items-center justify-between gap-3", children: [
+        /* @__PURE__ */ jsx26("span", { className: "text-sm font-semibold", children: "Item type" }),
+        /* @__PURE__ */ jsx26("span", { className: "badge badge-ghost", children: "Text (string)" })
+      ] }),
+      /* @__PURE__ */ jsx26("p", { className: "mt-2 text-xs text-base-content/70", children: "The item type is fixed to keep this editor lossless. Other array shapes remain read-only." })
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Minimum items" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(parameters.minItems),
+          placeholder: "No minimum",
+          type: "number",
+          min: 0,
+          max: parameters.maxItems,
+          step: 1,
+          onChange: (event) => onChange(updateArrayIntegerConstraint(parameters, "minItems", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Maximum items" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(parameters.maxItems),
+          placeholder: "No maximum",
+          type: "number",
+          min: parameters.minItems ?? 0,
+          step: 1,
+          onChange: (event) => onChange(updateArrayIntegerConstraint(parameters, "maxItems", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsx26("div", { className: `${fieldClass} card-modal-boolean`, children: /* @__PURE__ */ jsx26(
+      FBCheckbox_default,
+      {
+        onChangeValue: () => {
+          const next = { ...parameters };
+          if (parameters.uniqueItems === true) delete next.uniqueItems;
+          else next.uniqueItems = true;
+          onChange(next);
+        },
+        isChecked: parameters.uniqueItems === true,
+        label: "Require unique items"
+      }
+    ) }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Minimum item length" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(items.minLength),
+          placeholder: "No minimum",
+          type: "number",
+          min: 0,
+          max: typeof items.maxLength === "number" ? items.maxLength : void 0,
+          step: 1,
+          onChange: (event) => onChange(updateItemConstraint(parameters, "minLength", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Maximum item length" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: constraintValue(items.maxLength),
+          placeholder: "No maximum",
+          type: "number",
+          min: typeof items.minLength === "number" ? items.minLength : 0,
+          step: 1,
+          onChange: (event) => onChange(updateItemConstraint(parameters, "maxLength", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxs22("div", { className: fieldClass, children: [
+      /* @__PURE__ */ jsx26("div", { className: fieldLabelClass, children: "Item pattern" }),
+      /* @__PURE__ */ jsx26(
+        "input",
+        {
+          value: typeof items.pattern === "string" ? items.pattern : "",
+          placeholder: "Optional regular expression",
+          type: "text",
+          onChange: (event) => onChange(updateItemConstraint(parameters, "pattern", event.target.value)),
+          className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+        }
+      )
+    ] })
+  ] });
+};
+var StringArrayField = () => null;
+var stringArrayInputs = {
+  stringArray: {
+    displayName: "List of text values",
+    matchIf: [{ types: ["array"] }],
+    defaultDataSchema: {
+      items: { type: "string" }
+    },
+    defaultUiSchema: {},
+    type: "array",
+    cardBody: StringArrayField,
+    modalBody: StringArrayParameterInputs
+  }
+};
+var stringArrayInputs_default = stringArrayInputs;
+
 // src/defaults/referenceInputs.tsx
-import { jsx as jsx25 } from "react/jsx-runtime";
+import { jsx as jsx27 } from "react/jsx-runtime";
 var CardReferenceParameterInputs = ({ parameters, onChange }) => {
-  return /* @__PURE__ */ jsx25("div", { children: /* @__PURE__ */ jsx25(PlaceholderInput, { parameters, onChange }) });
+  return /* @__PURE__ */ jsx27("div", { children: /* @__PURE__ */ jsx27(PlaceholderInput, { parameters, onChange }) });
 };
 var RefChoice = ({ parameters, onChange }) => {
   const pathArr = (parameters.$ref || "").split("/");
   const currentValueLabel = pathArr.length === 3 && pathArr[0] === "#" && pathArr[1] === "definitions" && pathArr[2] && (parameters.definitionData || {})[pathArr[2]] ? parameters.definitionData[pathArr[2]].title || parameters.$ref : parameters.$ref;
-  return /* @__PURE__ */ jsx25("div", { className: "card-select", children: /* @__PURE__ */ jsx25(
+  return /* @__PURE__ */ jsx27("div", { className: "card-select", children: /* @__PURE__ */ jsx27(
     "select",
     {
-      className: "select select-bordered w-full text-primary border-primary border-2 bg-primary-content focus:outline-secondary",
+      className: "select select-bordered w-full text-primary border-primary border-2 bg-primary-content",
       value: parameters.$ref || "",
-      onChange: (e2) => onChange({ ...parameters, $ref: e2.target.value }),
-      children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx25("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
+      onChange: (e) => onChange({ ...parameters, $ref: e.target.value }),
+      children: Object.keys(parameters.definitionData || {}).map((key) => /* @__PURE__ */ jsx27("option", { value: `#/definitions/${key}`, children: parameters.definitionData[key].title || `#/definitions/${key}` }, key))
     }
   ) });
 };
@@ -12284,13 +11698,18 @@ var DEFAULT_FORM_INPUTS = {
   ...referenceInputs_default,
   ...shortAnswerInputs_default,
   ...longAnswerInputs_default,
-  ...numberInputs_default
-  //...arrayInputs,
+  ...numberInputs_default,
+  // Deliberately separate from the disabled recursive generic array editor.
+  ...stringArrayInputs_default
 };
 var defaultFormInputs_default = DEFAULT_FORM_INPUTS;
 
+// src/controlAppearance.ts
+var controlAppearanceClass = "border border-primary bg-base-300 transition-shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+var builderControlAppearanceClass = "[&_.input]:border [&_.input:not(.input-error)]:border-primary [&_.input]:bg-base-300 [&_.input]:transition-shadow [&_.input:focus]:border-primary [&_.input:focus]:outline-none [&_.input:focus]:ring-2 [&_.input:focus]:ring-primary/40 [&_.input:focus]:ring-offset-1 [&_.input:focus]:ring-offset-base-100 [&_.textarea]:border [&_.textarea]:border-primary [&_.textarea]:bg-base-300 [&_.textarea]:transition-shadow [&_.textarea:focus]:border-primary [&_.textarea:focus]:outline-none [&_.textarea:focus]:ring-2 [&_.textarea:focus]:ring-primary/40 [&_.textarea:focus]:ring-offset-1 [&_.textarea:focus]:ring-offset-base-100 [&_.select]:border [&_.select]:border-primary [&_.select]:bg-base-300 [&_.select]:transition-shadow [&_.select:focus]:border-primary [&_.select:focus]:outline-none [&_.select:focus]:ring-2 [&_.select:focus]:ring-primary/40 [&_.select:focus]:ring-offset-1 [&_.select:focus]:ring-offset-base-100";
+
 // src/FormBuilder.tsx
-import { jsx as jsx26, jsxs as jsxs21 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs23 } from "react/jsx-runtime";
 function FormBuilder({
   schema,
   uiSchema,
@@ -12306,15 +11725,27 @@ function FormBuilder({
     Object.assign({}, defaultFormInputs_default, mods && mods.customFormInputs || {}),
     mods && mods.deactivatedFormInputs
   );
-  const unsupportedFeatures = checkForUnsupportedFeatures(
-    schemaData,
-    uiSchemaData,
-    allFormInputs
-  ).filter(
-    (msg) => !msg.includes("Object Property: _stapleSchema") && !msg.includes("Property Parameter: readOnly in _stapleSchema") && !msg.includes("UI Widget: hidden for _stapleSchema") && !msg.includes("UI schema property: _stapleSchema") && !msg.includes("allOf")
+  const categoryHash = generateCategoryHash(allFormInputs);
+  const compatibilityDiagnostics = generateElementPropsFromSchemas({
+    schema: schemaData,
+    uischema: uiSchemaData,
+    definitionData: schemaData.definitions,
+    definitionUi: uiSchemaData.definitions,
+    categoryHash
+  }).flatMap((element) => {
+    if (!element.compatibility || element.compatibility.kind === "editable") return [];
+    const pointer = `/properties/${element.name.replace(/~/g, "~0").replace(/\//g, "~1")}`;
+    return [`[${element.compatibility.code}] ${pointer}: ${element.compatibility.message}`];
+  });
+  const unsupportedFeatures = Array.from(
+    /* @__PURE__ */ new Set([
+      ...checkForUnsupportedFeatures(schemaData, uiSchemaData, allFormInputs).filter(
+        (msg) => !msg.includes("Object Property: _stapleSchema") && !msg.includes("Property Parameter: readOnly in _stapleSchema") && !msg.includes("UI Widget: hidden for _stapleSchema") && !msg.includes("UI schema property: _stapleSchema")
+      ),
+      ...compatibilityDiagnostics
+    ])
   );
   const [cardOpenState, setCardOpenState] = React18.useState({});
-  const categoryHash = generateCategoryHash(allFormInputs);
   const isFirstRender = React18.useRef(true);
   const addProperties = {
     schema: schemaData,
@@ -12335,12 +11766,12 @@ function FormBuilder({
       isFirstRender.current = false;
     }
   }, [onMount, categoryHash]);
-  return /* @__PURE__ */ jsxs21(
+  return /* @__PURE__ */ jsxs23(
     "div",
     {
-      className: `formBuilder [&_.input]:bg-base-300 [&_.textarea]:bg-base-300 [&_.select]:bg-base-300 ${className || ""}`,
+      className: `formBuilder ${builderControlAppearanceClass} ${className || ""}`,
       children: [
-        /* @__PURE__ */ jsxs21(
+        /* @__PURE__ */ jsxs23(
           "div",
           {
             className: "alert alert-warning mb-4 flex-col items-start",
@@ -12348,20 +11779,20 @@ function FormBuilder({
               display: unsupportedFeatures.length === 0 ? "none" : "flex"
             },
             children: [
-              /* @__PURE__ */ jsx26("h5", { className: "font-bold", children: "Unsupported Features:" }),
-              /* @__PURE__ */ jsx26("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx26("li", { children: message }, index)) })
+              /* @__PURE__ */ jsx28("h5", { className: "font-bold", children: "Compatibility diagnostics:" }),
+              /* @__PURE__ */ jsx28("ul", { className: "list-disc pl-5", children: unsupportedFeatures.map((message, index) => /* @__PURE__ */ jsx28("li", { children: message }, index)) })
             ]
           }
         ),
-        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs21(
+        (!mods || mods.showFormHead !== false) && /* @__PURE__ */ jsxs23(
           "div",
           {
-            className: "formHead border border-base-300 rounded-xl bg-base-300 shadow-sm p-4",
+            className: "formHead border border-base-300 rounded-xl bg-base-200 shadow-sm p-4",
             "data-test": "form-head",
             children: [
-              /* @__PURE__ */ jsxs21("div", { children: [
-                /* @__PURE__ */ jsx26("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
-                /* @__PURE__ */ jsx26(
+              /* @__PURE__ */ jsxs23("div", { children: [
+                /* @__PURE__ */ jsx28("h5", { "data-test": "form-name-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formNameLabel === "string" ? mods.labels.formNameLabel : "Form Name" }),
+                /* @__PURE__ */ jsx28(
                   "input",
                   {
                     value: schemaData.title || "",
@@ -12376,13 +11807,13 @@ function FormBuilder({
                         uiSchema
                       );
                     },
-                    className: "input input-primary input-bordered focus:outline-secondary w-full form-title mb-4"
+                    className: "input input-primary input-bordered w-full form-title mb-4"
                   }
                 )
               ] }),
-              /* @__PURE__ */ jsxs21("div", { children: [
-                /* @__PURE__ */ jsx26("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
-                /* @__PURE__ */ jsx26(
+              /* @__PURE__ */ jsxs23("div", { children: [
+                /* @__PURE__ */ jsx28("h5", { "data-test": "form-description-label", className: "font-semibold mb-2", children: mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string" ? mods.labels.formDescriptionLabel : "Form Description" }),
+                /* @__PURE__ */ jsx28(
                   MarkdownDescriptionInput,
                   {
                     value: schemaData.description || "",
@@ -12399,7 +11830,8 @@ function FormBuilder({
             ]
           }
         ),
-        /* @__PURE__ */ jsx26("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx26(
+        /* @__PURE__ */ jsx28(FormExtensionOutlet, { schema: schemaData, uiSchema: uiSchemaData }),
+        /* @__PURE__ */ jsx28("div", { className: "form-body formBody mt-6", children: /* @__PURE__ */ jsx28(
           DragDropContext2,
           {
             onDragEnd: (result) => onDragEnd(result, {
@@ -12410,7 +11842,7 @@ function FormBuilder({
               definitionUi: uiSchemaData.definitions,
               categoryHash
             }),
-            children: /* @__PURE__ */ jsx26(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs21(
+            children: /* @__PURE__ */ jsx28(Droppable2, { droppableId: "droppable", type: DROPPABLE_TYPE, children: (providedDroppable) => /* @__PURE__ */ jsxs23(
               "div",
               {
                 ref: providedDroppable.innerRef,
@@ -12424,6 +11856,7 @@ function FormBuilder({
                     definitionData: schemaData.definitions,
                     definitionUi: uiSchemaData.definitions,
                     path: "root",
+                    fieldPointer: "",
                     cardOpenState,
                     setCardOpenState,
                     allFormInputs,
@@ -12433,18 +11866,27 @@ function FormBuilder({
                     Section
                   }).map((element, index) => (
                     // @ts-ignore: suppress key error, can't change key assignment
-                    /* @__PURE__ */ jsx26(Draggable2, { draggableId: element.key, index, children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx26(
-                      "div",
+                    /* @__PURE__ */ jsx28(
+                      Draggable2,
                       {
-                        ref: providedDraggable.innerRef,
-                        ...providedDraggable.draggableProps,
-                        style: providedDraggable.draggableProps.style,
-                        className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
-                        children: React18.cloneElement(element, {
-                          dragHandleProps: providedDraggable.dragHandleProps
-                        })
-                      }
-                    ) }, element.key)
+                        draggableId: element.key,
+                        index,
+                        isDragDisabled: element.props.compatibility !== void 0,
+                        children: (providedDraggable, snapshot) => /* @__PURE__ */ jsx28(
+                          "div",
+                          {
+                            ref: providedDraggable.innerRef,
+                            ...providedDraggable.draggableProps,
+                            style: providedDraggable.draggableProps.style,
+                            className: `pb-4 ${snapshot.isDragging && !snapshot.isDropAnimating ? "opacity-60" : ""}`,
+                            children: React18.cloneElement(element, {
+                              dragHandleProps: providedDraggable.dragHandleProps
+                            })
+                          }
+                        )
+                      },
+                      element.key
+                    )
                   )),
                   providedDroppable.placeholder
                 ]
@@ -12452,9 +11894,9 @@ function FormBuilder({
             ) })
           }
         ) }),
-        /* @__PURE__ */ jsxs21("div", { className: "form-footer formFooter", children: [
+        /* @__PURE__ */ jsxs23("div", { className: "form-footer formFooter", children: [
           !hideAddButton && mods?.components?.add && mods.components.add(addProperties),
-          !mods?.components?.add && /* @__PURE__ */ jsx26(
+          !mods?.components?.add && /* @__PURE__ */ jsx28(
             Add,
             {
               tooltipDescription: ((mods || {}).tooltipDescriptions || {}).add,
@@ -12476,15 +11918,21 @@ function FormBuilder({
 }
 
 // src/FormStudio.tsx
-init_FormStudioContext();
-import { lazy, Suspense, useState as useState24, useEffect as useEffect7, useRef as useRef7 } from "react";
+import {
+  lazy,
+  Suspense,
+  useState as useState20,
+  useEffect as useEffect6,
+  useMemo as useMemo7,
+  useRef as useRef6
+} from "react";
 
 // src/FormPreview.tsx
-import React20 from "react";
+import React19 from "react";
 
 // node_modules/@rjsf/core/lib/components/Form.js
-import { jsx as _jsx64, jsxs as _jsxs24 } from "react/jsx-runtime";
-import { Component, createRef } from "react";
+import { jsx as _jsx61, jsxs as _jsxs23 } from "react/jsx-runtime";
+import { Component as Component3, createRef } from "react";
 
 // node_modules/@rjsf/utils/lib/isObject.js
 function isObject(thing) {
@@ -12508,21 +11956,6 @@ function allowAdditionalItems(schema) {
   return isObject(schema.additionalItems);
 }
 
-// node_modules/@rjsf/utils/lib/getDecimalSeparator.js
-function getDecimalSeparator(languages) {
-  var _a;
-  const locales = languages || (typeof navigator !== "undefined" ? navigator.languages : void 0);
-  if (locales) {
-    try {
-      const formatter = new Intl.NumberFormat(locales);
-      const parts = formatter.formatToParts(1.1);
-      return ((_a = parts.find((part) => part.type === "decimal")) === null || _a === void 0 ? void 0 : _a.value) || ".";
-    } catch (e2) {
-    }
-  }
-  return ".";
-}
-
 // node_modules/@rjsf/utils/lib/asNumber.js
 function asNumber(value) {
   if (value === "") {
@@ -12531,24 +11964,22 @@ function asNumber(value) {
   if (value === null) {
     return null;
   }
-  const separator = getDecimalSeparator();
-  const standardValue = typeof value === "string" && separator !== "." ? value.replace(separator, ".") : value;
-  if (/\.$/.test(standardValue)) {
+  if (/\.$/.test(value)) {
     return value;
   }
-  if (/\.0$/.test(standardValue)) {
+  if (/\.0$/.test(value)) {
     return value;
   }
-  if (/\.\d*0$/.test(standardValue)) {
+  if (/\.\d*0$/.test(value)) {
     return value;
   }
-  const n = Number(standardValue);
+  const n = Number(value);
   const valid = typeof n === "number" && !Number.isNaN(n);
   return valid ? n : value;
 }
 
 // node_modules/@rjsf/utils/lib/constants.js
-var ADDITIONAL_PROPERTY_FLAG = /* @__PURE__ */ Symbol("__additional_property");
+var ADDITIONAL_PROPERTY_FLAG = "__additional_property";
 var ADDITIONAL_PROPERTIES_KEY = "additionalProperties";
 var ALL_OF_KEY = "allOf";
 var ANY_OF_KEY = "anyOf";
@@ -12569,17 +12000,15 @@ var READONLY_KEY = "readonly";
 var REQUIRED_KEY = "required";
 var SUBMIT_BTN_OPTIONS_KEY = "submitButtonOptions";
 var REF_KEY = "$ref";
-var RJSF_REF_KEY = /* @__PURE__ */ Symbol("__rjsf_ref");
-var RJSF_REF_CYCLE_KEY = /* @__PURE__ */ Symbol("__rjsf_ref_cycle");
+var RJSF_REF_KEY = "__rjsf_ref";
 var SCHEMA_KEY = "$schema";
 var DEFAULT_ID_PREFIX = "root";
 var DEFAULT_ID_SEPARATOR = "_";
 var DISCRIMINATOR_PATH = ["discriminator", "propertyName"];
 var FORM_CONTEXT_NAME = "formContext";
 var LOOKUP_MAP_NAME = "layoutGridLookupMap";
-var RJSF_PREFIX_KEY = "__rjsf";
-var RJSF_ADDITIONAL_PROPERTIES_FLAG = `${RJSF_PREFIX_KEY}_additionalProperties`;
-var ROOT_SCHEMA_PREFIX = `${RJSF_PREFIX_KEY}_rootSchema`;
+var RJSF_ADDITIONAL_PROPERTIES_FLAG = "__rjsf_additionalProperties";
+var ROOT_SCHEMA_PREFIX = "__rjsf_rootSchema";
 var UI_FIELD_KEY = "ui:field";
 var UI_WIDGET_KEY = "ui:widget";
 var UI_OPTIONS_KEY = "ui:options";
@@ -12644,7 +12073,7 @@ function getRawTag(value) {
   try {
     value[symToStringTag] = void 0;
     var unmasked = true;
-  } catch (e2) {
+  } catch (e) {
   }
   var result = nativeObjectToString.call(value);
   if (unmasked) {
@@ -12805,11 +12234,11 @@ function toSource(func) {
   if (func != null) {
     try {
       return funcToString2.call(func);
-    } catch (e2) {
+    } catch (e) {
     }
     try {
       return func + "";
-    } catch (e2) {
+    } catch (e) {
     }
   }
   return "";
@@ -13203,26 +12632,26 @@ var get_default = get;
 var { getOwnPropertyNames, getOwnPropertySymbols } = Object;
 var { hasOwnProperty: hasOwnProperty6 } = Object.prototype;
 function combineComparators(comparatorA, comparatorB) {
-  return function isEqual2(a, b, state) {
-    return comparatorA(a, b, state) && comparatorB(a, b, state);
+  return function isEqual2(a2, b2, state) {
+    return comparatorA(a2, b2, state) && comparatorB(a2, b2, state);
   };
 }
 function createIsCircular(areItemsEqual) {
-  return function isCircular(a, b, state) {
-    if (!a || !b || typeof a !== "object" || typeof b !== "object") {
-      return areItemsEqual(a, b, state);
+  return function isCircular(a2, b2, state) {
+    if (!a2 || !b2 || typeof a2 !== "object" || typeof b2 !== "object") {
+      return areItemsEqual(a2, b2, state);
     }
     const { cache } = state;
-    const cachedA = cache.get(a);
-    const cachedB = cache.get(b);
+    const cachedA = cache.get(a2);
+    const cachedB = cache.get(b2);
     if (cachedA && cachedB) {
-      return cachedA === b && cachedB === a;
+      return cachedA === b2 && cachedB === a2;
     }
-    cache.set(a, b);
-    cache.set(b, a);
-    const result = areItemsEqual(a, b, state);
-    cache.delete(a);
-    cache.delete(b);
+    cache.set(a2, b2);
+    cache.set(b2, a2);
+    const result = areItemsEqual(a2, b2, state);
+    cache.delete(a2);
+    cache.delete(b2);
     return result;
   };
 }
@@ -13240,47 +12669,47 @@ var REACT_OWNER = "_owner";
 var { getOwnPropertyDescriptor, keys } = Object;
 var sameValueEqual = (
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  Object.is || function sameValueEqual2(a, b) {
-    return a === b ? a !== 0 || 1 / a === 1 / b : a !== a && b !== b;
+  Object.is || function sameValueEqual2(a2, b2) {
+    return a2 === b2 ? a2 !== 0 || 1 / a2 === 1 / b2 : a2 !== a2 && b2 !== b2;
   }
 );
-function strictEqual(a, b) {
-  return a === b;
+function strictEqual(a2, b2) {
+  return a2 === b2;
 }
-function areArrayBuffersEqual(a, b) {
-  return a.byteLength === b.byteLength && areTypedArraysEqual(new Uint8Array(a), new Uint8Array(b));
+function areArrayBuffersEqual(a2, b2) {
+  return a2.byteLength === b2.byteLength && areTypedArraysEqual(new Uint8Array(a2), new Uint8Array(b2));
 }
-function areArraysEqual(a, b, state) {
-  let index = a.length;
-  if (b.length !== index) {
+function areArraysEqual(a2, b2, state) {
+  let index = a2.length;
+  if (b2.length !== index) {
     return false;
   }
   while (index-- > 0) {
-    if (!state.equals(a[index], b[index], index, index, a, b, state)) {
+    if (!state.equals(a2[index], b2[index], index, index, a2, b2, state)) {
       return false;
     }
   }
   return true;
 }
-function areDataViewsEqual(a, b) {
-  return a.byteLength === b.byteLength && areTypedArraysEqual(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), new Uint8Array(b.buffer, b.byteOffset, b.byteLength));
+function areDataViewsEqual(a2, b2) {
+  return a2.byteLength === b2.byteLength && areTypedArraysEqual(new Uint8Array(a2.buffer, a2.byteOffset, a2.byteLength), new Uint8Array(b2.buffer, b2.byteOffset, b2.byteLength));
 }
-function areDatesEqual(a, b) {
-  return sameValueEqual(a.getTime(), b.getTime());
+function areDatesEqual(a2, b2) {
+  return sameValueEqual(a2.getTime(), b2.getTime());
 }
-function areErrorsEqual(a, b) {
-  return a.name === b.name && a.message === b.message && a.cause === b.cause && a.stack === b.stack;
+function areErrorsEqual(a2, b2) {
+  return a2.name === b2.name && a2.message === b2.message && a2.cause === b2.cause && a2.stack === b2.stack;
 }
-function areMapsEqual(a, b, state) {
-  const size = a.size;
-  if (size !== b.size) {
+function areMapsEqual(a2, b2, state) {
+  const size = a2.size;
+  if (size !== b2.size) {
     return false;
   }
   if (!size) {
     return true;
   }
   const matchedIndices = new Uint8Array(size);
-  const aIterable = a.entries();
+  const aIterable = a2.entries();
   let aResult;
   let bResult;
   let index = 0;
@@ -13288,7 +12717,7 @@ function areMapsEqual(a, b, state) {
     if (aResult.done) {
       break;
     }
-    const bIterable = b.entries();
+    const bIterable = b2.entries();
     let hasMatch = 0;
     let matchIndex = 0;
     while (bResult = bIterable.next()) {
@@ -13301,7 +12730,7 @@ function areMapsEqual(a, b, state) {
       }
       const aEntry = aResult.value;
       const bEntry = bResult.value;
-      if (state.equals(aEntry[0], bEntry[0], index, matchIndex, a, b, state) && state.equals(aEntry[1], bEntry[1], aEntry[0], bEntry[0], a, b, state)) {
+      if (state.equals(aEntry[0], bEntry[0], index, matchIndex, a2, b2, state) && state.equals(aEntry[1], bEntry[1], aEntry[0], bEntry[0], a2, b2, state)) {
         hasMatch = matchedIndices[matchIndex] = 1;
         break;
       }
@@ -13314,23 +12743,23 @@ function areMapsEqual(a, b, state) {
   }
   return true;
 }
-function areObjectsEqual(a, b, state) {
-  const properties = keys(a);
+function areObjectsEqual(a2, b2, state) {
+  const properties = keys(a2);
   let index = properties.length;
-  if (keys(b).length !== index) {
+  if (keys(b2).length !== index) {
     return false;
   }
   while (index-- > 0) {
-    if (!isPropertyEqual(a, b, state, properties[index])) {
+    if (!isPropertyEqual(a2, b2, state, properties[index])) {
       return false;
     }
   }
   return true;
 }
-function areObjectsEqualStrict(a, b, state) {
-  const properties = getStrictProperties(a);
+function areObjectsEqualStrict(a2, b2, state) {
+  const properties = getStrictProperties(a2);
   let index = properties.length;
-  if (getStrictProperties(b).length !== index) {
+  if (getStrictProperties(b2).length !== index) {
     return false;
   }
   let property2;
@@ -13338,47 +12767,47 @@ function areObjectsEqualStrict(a, b, state) {
   let descriptorB;
   while (index-- > 0) {
     property2 = properties[index];
-    if (!isPropertyEqual(a, b, state, property2)) {
+    if (!isPropertyEqual(a2, b2, state, property2)) {
       return false;
     }
-    descriptorA = getOwnPropertyDescriptor(a, property2);
-    descriptorB = getOwnPropertyDescriptor(b, property2);
+    descriptorA = getOwnPropertyDescriptor(a2, property2);
+    descriptorB = getOwnPropertyDescriptor(b2, property2);
     if ((descriptorA || descriptorB) && (!descriptorA || !descriptorB || descriptorA.configurable !== descriptorB.configurable || descriptorA.enumerable !== descriptorB.enumerable || descriptorA.writable !== descriptorB.writable)) {
       return false;
     }
   }
   return true;
 }
-function arePrimitiveWrappersEqual(a, b) {
-  return sameValueEqual(a.valueOf(), b.valueOf());
+function arePrimitiveWrappersEqual(a2, b2) {
+  return sameValueEqual(a2.valueOf(), b2.valueOf());
 }
-function areRegExpsEqual(a, b) {
-  return a.source === b.source && a.flags === b.flags;
+function areRegExpsEqual(a2, b2) {
+  return a2.source === b2.source && a2.flags === b2.flags;
 }
-function areSetsEqual(a, b, state) {
-  const size = a.size;
-  if (size !== b.size) {
+function areSetsEqual(a2, b2, state) {
+  const size = a2.size;
+  if (size !== b2.size) {
     return false;
   }
   if (!size) {
     return true;
   }
   const matchedIndices = new Uint8Array(size);
-  const aIterable = a.values();
+  const aIterable = a2.values();
   let aResult;
   let bResult;
   while (aResult = aIterable.next()) {
     if (aResult.done) {
       break;
     }
-    const bIterable = b.values();
+    const bIterable = b2.values();
     let hasMatch = 0;
     let matchIndex = 0;
     while (bResult = bIterable.next()) {
       if (bResult.done) {
         break;
       }
-      if (!matchedIndices[matchIndex] && state.equals(aResult.value, bResult.value, aResult.value, bResult.value, a, b, state)) {
+      if (!matchedIndices[matchIndex] && state.equals(aResult.value, bResult.value, aResult.value, bResult.value, a2, b2, state)) {
         hasMatch = matchedIndices[matchIndex] = 1;
         break;
       }
@@ -13390,87 +12819,87 @@ function areSetsEqual(a, b, state) {
   }
   return true;
 }
-function areTypedArraysEqual(a, b) {
-  let index = a.length;
-  if (b.length !== index || a.byteOffset !== b.byteOffset) {
+function areTypedArraysEqual(a2, b2) {
+  let index = a2.length;
+  if (b2.length !== index || a2.byteOffset !== b2.byteOffset) {
     return false;
   }
   while (index-- > 0) {
-    if (a[index] !== b[index]) {
+    if (a2[index] !== b2[index]) {
       return false;
     }
   }
   return true;
 }
-function areUrlsEqual(a, b) {
-  return a.hostname === b.hostname && a.pathname === b.pathname && a.protocol === b.protocol && a.port === b.port && a.hash === b.hash && a.username === b.username && a.password === b.password;
+function areUrlsEqual(a2, b2) {
+  return a2.hostname === b2.hostname && a2.pathname === b2.pathname && a2.protocol === b2.protocol && a2.port === b2.port && a2.hash === b2.hash && a2.username === b2.username && a2.password === b2.password;
 }
-function isPropertyEqual(a, b, state, property2) {
-  if ((property2 === REACT_OWNER || property2 === PREACT_OWNER || property2 === PREACT_VNODE) && (a.$$typeof || b.$$typeof)) {
+function isPropertyEqual(a2, b2, state, property2) {
+  if ((property2 === REACT_OWNER || property2 === PREACT_OWNER || property2 === PREACT_VNODE) && (a2.$$typeof || b2.$$typeof)) {
     return true;
   }
-  return hasOwn(b, property2) && state.equals(a[property2], b[property2], property2, property2, a, b, state);
+  return hasOwn(b2, property2) && state.equals(a2[property2], b2[property2], property2, property2, a2, b2, state);
 }
 var toString2 = Object.prototype.toString;
 function createEqualityComparator(config) {
   const supportedComparatorMap = createSupportedComparatorMap(config);
   const { areArraysEqual: areArraysEqual2, areDatesEqual: areDatesEqual2, areFunctionsEqual, areMapsEqual: areMapsEqual2, areNumbersEqual, areObjectsEqual: areObjectsEqual2, areRegExpsEqual: areRegExpsEqual2, areSetsEqual: areSetsEqual2, getUnsupportedCustomComparator } = config;
-  return function comparator(a, b, state) {
-    if (a === b) {
+  return function comparator(a2, b2, state) {
+    if (a2 === b2) {
       return true;
     }
-    if (a == null || b == null) {
+    if (a2 == null || b2 == null) {
       return false;
     }
-    const type = typeof a;
-    if (type !== typeof b) {
+    const type = typeof a2;
+    if (type !== typeof b2) {
       return false;
     }
     if (type !== "object") {
       if (type === "number" || type === "bigint") {
-        return areNumbersEqual(a, b, state);
+        return areNumbersEqual(a2, b2, state);
       }
       if (type === "function") {
-        return areFunctionsEqual(a, b, state);
+        return areFunctionsEqual(a2, b2, state);
       }
       return false;
     }
-    const constructor = a.constructor;
-    if (constructor !== b.constructor) {
+    const constructor = a2.constructor;
+    if (constructor !== b2.constructor) {
       return false;
     }
     if (constructor === Object) {
-      return areObjectsEqual2(a, b, state);
+      return areObjectsEqual2(a2, b2, state);
     }
     if (constructor === Array) {
-      return areArraysEqual2(a, b, state);
+      return areArraysEqual2(a2, b2, state);
     }
     if (constructor === Date) {
-      return areDatesEqual2(a, b, state);
+      return areDatesEqual2(a2, b2, state);
     }
     if (constructor === RegExp) {
-      return areRegExpsEqual2(a, b, state);
+      return areRegExpsEqual2(a2, b2, state);
     }
     if (constructor === Map) {
-      return areMapsEqual2(a, b, state);
+      return areMapsEqual2(a2, b2, state);
     }
     if (constructor === Set) {
-      return areSetsEqual2(a, b, state);
+      return areSetsEqual2(a2, b2, state);
     }
     if (constructor === Promise) {
       return false;
     }
-    if (Array.isArray(a)) {
-      return areArraysEqual2(a, b, state);
+    if (Array.isArray(a2)) {
+      return areArraysEqual2(a2, b2, state);
     }
-    const tag = toString2.call(a);
+    const tag = toString2.call(a2);
     const supportedComparator = supportedComparatorMap[tag];
     if (supportedComparator) {
-      return supportedComparator(a, b, state);
+      return supportedComparator(a2, b2, state);
     }
-    const unsupportedCustomComparator = getUnsupportedCustomComparator && getUnsupportedCustomComparator(a, b, state, tag);
+    const unsupportedCustomComparator = getUnsupportedCustomComparator && getUnsupportedCustomComparator(a2, b2, state, tag);
     if (unsupportedCustomComparator) {
-      return unsupportedCustomComparator(a, b, state);
+      return unsupportedCustomComparator(a2, b2, state);
     }
     return false;
   };
@@ -13511,15 +12940,15 @@ function createEqualityComparatorConfig({ circular, createCustomConfig, strict }
   return config;
 }
 function createInternalEqualityComparator(compare) {
-  return function(a, b, _indexOrKeyA, _indexOrKeyB, _parentA, _parentB, state) {
-    return compare(a, b, state);
+  return function(a2, b2, _indexOrKeyA, _indexOrKeyB, _parentA, _parentB, state) {
+    return compare(a2, b2, state);
   };
 }
 function createIsEqual({ circular, comparator, createState, equals, strict }) {
   if (createState) {
-    return function isEqual2(a, b) {
+    return function isEqual2(a2, b2) {
       const { cache = circular ? /* @__PURE__ */ new WeakMap() : void 0, meta } = createState();
-      return comparator(a, b, {
+      return comparator(a2, b2, {
         cache,
         equals,
         meta,
@@ -13528,8 +12957,8 @@ function createIsEqual({ circular, comparator, createState, equals, strict }) {
     };
   }
   if (circular) {
-    return function isEqual2(a, b) {
-      return comparator(a, b, {
+    return function isEqual2(a2, b2) {
+      return comparator(a2, b2, {
         cache: /* @__PURE__ */ new WeakMap(),
         equals,
         meta: void 0,
@@ -13543,8 +12972,8 @@ function createIsEqual({ circular, comparator, createState, equals, strict }) {
     meta: void 0,
     strict
   };
-  return function isEqual2(a, b) {
-    return comparator(a, b, state);
+  return function isEqual2(a2, b2) {
+    return comparator(a2, b2, state);
   };
 }
 function createSupportedComparatorMap({ areArrayBuffersEqual: areArrayBuffersEqual2, areArraysEqual: areArraysEqual2, areDataViewsEqual: areDataViewsEqual2, areDatesEqual: areDatesEqual2, areErrorsEqual: areErrorsEqual2, areFunctionsEqual, areMapsEqual: areMapsEqual2, areNumbersEqual, areObjectsEqual: areObjectsEqual2, arePrimitiveWrappersEqual: arePrimitiveWrappersEqual2, areRegExpsEqual: areRegExpsEqual2, areSetsEqual: areSetsEqual2, areTypedArraysEqual: areTypedArraysEqual2, areUrlsEqual: areUrlsEqual2 }) {
@@ -13572,11 +13001,11 @@ function createSupportedComparatorMap({ areArrayBuffersEqual: areArrayBuffersEqu
     "[object Int32Array]": areTypedArraysEqual2,
     "[object Map]": areMapsEqual2,
     "[object Number]": arePrimitiveWrappersEqual2,
-    "[object Object]": (a, b, state) => (
+    "[object Object]": (a2, b2, state) => (
       // The exception for value comparison is custom `Promise`-like class instances. These should
       // be treated the same as standard `Promise` objects, which means strict equality, and if
       // it reaches this point then that strict equality comparison has already failed.
-      typeof a.then !== "function" && typeof b.then !== "function" && areObjectsEqual2(a, b, state)
+      typeof a2.then !== "function" && typeof b2.then !== "function" && areObjectsEqual2(a2, b2, state)
     ),
     // For RegExp, the properties are not enumerable, and therefore will give false positives if
     // tested like a standard object.
@@ -13625,8 +13054,8 @@ function createCustomEqual(options = {}) {
 var deepEquals = createCustomEqual({
   circular: true,
   createCustomConfig: () => ({
-    areFunctionsEqual(_a, b) {
-      return typeof b === "function";
+    areFunctionsEqual(_a, b2) {
+      return typeof b2 === "function";
     }
   })
 });
@@ -13757,8 +13186,8 @@ var stubFalse_default = stubFalse;
 var freeExports = typeof exports == "object" && exports && !exports.nodeType && exports;
 var freeModule = freeExports && typeof module == "object" && module && !module.nodeType && module;
 var moduleExports = freeModule && freeModule.exports === freeExports;
-var Buffer2 = moduleExports ? root_default.Buffer : void 0;
-var nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0;
+var Buffer = moduleExports ? root_default.Buffer : void 0;
+var nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0;
 var isBuffer = nativeIsBuffer || stubFalse_default;
 var isBuffer_default = isBuffer;
 
@@ -13815,7 +13244,7 @@ var nodeUtil = (function() {
       return types;
     }
     return freeProcess && freeProcess.binding && freeProcess.binding("util");
-  } catch (e2) {
+  } catch (e) {
   }
 })();
 var nodeUtil_default = nodeUtil;
@@ -13929,7 +13358,7 @@ var defineProperty = (function() {
     var func = getNative_default(Object, "defineProperty");
     func({}, "", {});
     return func;
-  } catch (e2) {
+  } catch (e) {
   }
 })();
 var defineProperty_default = defineProperty;
@@ -14076,8 +13505,8 @@ var baseAssignIn_default = baseAssignIn;
 var freeExports3 = typeof exports == "object" && exports && !exports.nodeType && exports;
 var freeModule3 = freeExports3 && typeof module == "object" && module && !module.nodeType && module;
 var moduleExports3 = freeModule3 && freeModule3.exports === freeExports3;
-var Buffer3 = moduleExports3 ? root_default.Buffer : void 0;
-var allocUnsafe = Buffer3 ? Buffer3.allocUnsafe : void 0;
+var Buffer2 = moduleExports3 ? root_default.Buffer : void 0;
+var allocUnsafe = Buffer2 ? Buffer2.allocUnsafe : void 0;
 function cloneBuffer(buffer, isDeep) {
   if (isDeep) {
     return buffer.slice();
@@ -15720,7 +15149,7 @@ function getSchemaType(schema) {
 // node_modules/@rjsf/utils/lib/mergeSchemas.js
 function mergeSchemas(obj1, obj2) {
   const acc = { ...obj1 };
-  const result = Object.keys(obj2).reduce((accumulator, key) => {
+  return Object.keys(obj2).reduce((accumulator, key) => {
     const left = obj1 ? obj1[key] : {}, right = obj2[key];
     if (obj1 && key in obj1 && isObject(right)) {
       accumulator[key] = mergeSchemas(left, right);
@@ -15731,10 +15160,6 @@ function mergeSchemas(obj1, obj2) {
     }
     return accumulator;
   }, acc);
-  for (const sym of Object.getOwnPropertySymbols(obj2)) {
-    result[sym] = obj2[sym];
-  }
-  return result;
 }
 
 // node_modules/lodash-es/isNumber.js
@@ -15752,15 +15177,15 @@ function getOptionMatchingSimpleDiscriminator(formData, options, discriminatorFi
     if (value === void 0) {
       return void 0;
     }
-    for (let i = 0; i < options.length; i += 1) {
-      const option = options[i];
+    for (let i2 = 0; i2 < options.length; i2 += 1) {
+      const option = options[i2];
       const discriminator = get_default(option, [PROPERTIES_KEY, discriminatorField], {});
       if (discriminator.type !== "object" && discriminator.type !== "array") {
         if (discriminator.const === value) {
-          return i;
+          return i2;
         }
         if ((_a = discriminator.enum) === null || _a === void 0 ? void 0 : _a.includes(value)) {
-          return i;
+          return i2;
         }
       }
     }
@@ -15777,13 +15202,13 @@ function getFirstMatchingOption(validator, formData, options, rootSchema, discri
   if (isNumber_default(simpleDiscriminatorMatch)) {
     return simpleDiscriminatorMatch;
   }
-  for (let i = 0; i < options.length; i += 1) {
-    const option = options[i];
+  for (let i2 = 0; i2 < options.length; i2 += 1) {
+    const option = options[i2];
     if (discriminatorField && has_default(option, [PROPERTIES_KEY, discriminatorField])) {
       const value = get_default(formData, discriminatorField);
       const discriminator = get_default(option, [PROPERTIES_KEY, discriminatorField], {});
       if (validator.isValid(discriminator, value, rootSchema)) {
-        return i;
+        return i2;
       }
     } else if (option[PROPERTIES_KEY]) {
       const requiresAnyOf = {
@@ -15806,10 +15231,10 @@ function getFirstMatchingOption(validator, formData, options, rootSchema, discri
       }
       delete augmentedSchema.required;
       if (validator.isValid(augmentedSchema, formData, rootSchema)) {
-        return i;
+        return i2;
       }
     } else if (validator.isValid(option, formData, rootSchema)) {
-      return i;
+      return i2;
     }
   }
   return 0;
@@ -15877,10 +15302,10 @@ function isAllowAnySchema(def) {
 }
 
 // node_modules/@x0k/json-schema-merge/dist/lib/ord.js
-function ascComparator(a, b) {
-  if (a < b)
+function ascComparator(a2, b2) {
+  if (a2 < b2)
     return -1;
-  if (a > b)
+  if (a2 > b2)
     return 1;
   return 0;
 }
@@ -15902,24 +15327,24 @@ function union2(larger, smaller) {
     sl = ll;
   }
   const data = new Set(larger);
-  for (let i = 0; i < sl; i++) {
-    data.add(smaller[i]);
+  for (let i2 = 0; i2 < sl; i2++) {
+    data.add(smaller[i2]);
   }
   return Array.from(data);
 }
-function intersection(a, b) {
+function intersection(a2, b2) {
   const result = [];
-  if (a.length === 0 || b.length === 0) {
+  if (a2.length === 0 || b2.length === 0) {
     return result;
   }
-  if (a.length > b.length) {
-    const tmp = a;
-    a = b;
-    b = tmp;
+  if (a2.length > b2.length) {
+    const tmp = a2;
+    a2 = b2;
+    b2 = tmp;
   }
-  const setB = new Set(b);
-  for (let i = 0; i < a.length && setB.size > 0; i++) {
-    const val = a[i];
+  const setB = new Set(b2);
+  for (let i2 = 0; i2 < a2.length && setB.size > 0; i2++) {
+    const val = a2[i2];
     if (setB.delete(val)) {
       result.push(val);
     }
@@ -15930,14 +15355,14 @@ function isArrayEmpty(arr) {
   return arr.length === 0;
 }
 function createArrayComparator(compare) {
-  return (a, b) => {
-    const d = a.length - b.length;
+  return (a2, b2) => {
+    const d = a2.length - b2.length;
     if (d !== 0) {
       return d;
     }
-    for (let i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) {
-        const d2 = compare(a[i], b[i]);
+    for (let i2 = 0; i2 < a2.length; i2++) {
+      if (a2[i2] !== b2[i2]) {
+        const d2 = compare(a2[i2], b2[i2]);
         if (d2 !== 0) {
           return d2;
         }
@@ -15955,8 +15380,8 @@ function createDeduplicator(compare, { threshold = 12 } = {}) {
     if (al <= threshold) {
       const result = [];
       let rl = 0;
-      outer: for (let i = 0; i < al; i++) {
-        const item = arr[i];
+      outer: for (let i2 = 0; i2 < al; i2++) {
+        const item = arr[i2];
         for (let j = 0; j < rl; j++) {
           if (compare(item, result[j]) === 0) {
             continue outer;
@@ -15980,34 +15405,34 @@ function createDeduplicator(compare, { threshold = 12 } = {}) {
   };
 }
 function createIntersector(compare) {
-  return (a, b) => {
+  return (a2, b2) => {
     const result = [];
-    let al = a.length;
-    let bl = b.length;
+    let al = a2.length;
+    let bl = b2.length;
     if (al === 0 || bl === 0) {
       return result;
     }
     if (al > bl) {
-      const tmpArr = a;
-      a = b;
-      b = tmpArr;
+      const tmpArr = a2;
+      a2 = b2;
+      b2 = tmpArr;
       const tmpL = al;
       al = bl;
       bl = tmpL;
     }
-    const aSorted = [...a].sort(compare);
-    const bSorted = [...b].sort(compare);
-    let i = 0, j = 0;
-    while (i < al && j < bl) {
-      const cmp = compare(aSorted[i], bSorted[j]);
+    const aSorted = [...a2].sort(compare);
+    const bSorted = [...b2].sort(compare);
+    let i2 = 0, j = 0;
+    while (i2 < al && j < bl) {
+      const cmp = compare(aSorted[i2], bSorted[j]);
       if (cmp === 0) {
-        if (result.length === 0 || compare(result[result.length - 1], aSorted[i]) !== 0) {
-          result.push(aSorted[i]);
+        if (result.length === 0 || compare(result[result.length - 1], aSorted[i2]) !== 0) {
+          result.push(aSorted[i2]);
         }
-        i++;
+        i2++;
         j++;
       } else if (cmp < 0) {
-        i++;
+        i2++;
       } else {
         j++;
       }
@@ -16031,17 +15456,17 @@ var weakMemoize = memoize2;
 
 // node_modules/@x0k/json-schema-merge/dist/lib/json-schema/compare/compare.js
 var zero = () => 0;
-var isUndefined = (v2) => v2 === void 0;
+var isUndefined = (v3) => v3 === void 0;
 var isSchemaPrimitiveExceptNull = (value) => typeof value !== "object";
 var PRIMITIVE_TYPE_ORDER = {
   boolean: 0,
   number: 1,
   string: 2
 };
-function compareSchemaPrimitive(a, b) {
-  const ta = typeof a;
-  const tb = typeof b;
-  return ta === tb ? ascComparator(a, b) : PRIMITIVE_TYPE_ORDER[ta] - PRIMITIVE_TYPE_ORDER[tb];
+function compareSchemaPrimitive(a2, b2) {
+  const ta = typeof a2;
+  const tb = typeof b2;
+  return ta === tb ? ascComparator(a2, b2) : PRIMITIVE_TYPE_ORDER[ta] - PRIMITIVE_TYPE_ORDER[tb];
 }
 function insertUniqueValues(mutableTarget, mutableSource) {
   const tl = mutableTarget.length;
@@ -16056,9 +15481,9 @@ function insertUniqueValues(mutableTarget, mutableSource) {
     mutableSource = t;
   }
   const seen = new Set(mutableTarget);
-  const l2 = mutableSource.length;
-  for (let i = 0; i < l2; i++) {
-    const key = mutableSource[i];
+  const l = mutableSource.length;
+  for (let i2 = 0; i2 < l; i2++) {
+    const key = mutableSource[i2];
     if (!seen.has(key)) {
       mutableTarget.push(key);
     }
@@ -16066,39 +15491,39 @@ function insertUniqueValues(mutableTarget, mutableSource) {
   return mutableTarget;
 }
 function createCmpMatcher(isEmpty2, compare, compareEmpty = zero) {
-  return (a, b) => {
-    if (isEmpty2(a)) {
-      if (isEmpty2(b)) {
-        return compareEmpty(a, b);
+  return (a2, b2) => {
+    if (isEmpty2(a2)) {
+      if (isEmpty2(b2)) {
+        return compareEmpty(a2, b2);
       }
       return -1;
     }
-    if (isEmpty2(b)) {
+    if (isEmpty2(b2)) {
       return 1;
     }
-    return compare(a, b);
+    return compare(a2, b2);
   };
 }
 function createOptionalComparator(compare) {
   return createCmpMatcher(isUndefined, compare);
 }
 function createNarrowingOptionalComparator(isEmpty2, compare) {
-  return createCmpMatcher((v2) => v2 === void 0 || isEmpty2(v2), compare);
+  return createCmpMatcher((v3) => v3 === void 0 || isEmpty2(v3), compare);
 }
 function createArrayOrItemComparator(compare, compareArray) {
   return createCmpMatcher(Array.isArray, compare, compareArray);
 }
 var compareOptionalSameTypeSchemaPrimitives = createOptionalComparator(ascComparator);
-var compareNumbersWithZeroDefault = createNarrowingOptionalComparator((v2) => v2 === 0, (a, b) => a - b);
+var compareNumbersWithZeroDefault = createNarrowingOptionalComparator((v3) => v3 === 0, (a2, b2) => a2 - b2);
 function createComparator({ deduplicationCache = /* @__PURE__ */ new WeakMap(), sortedKeysCache = /* @__PURE__ */ new WeakMap() } = {}) {
   const getSortedKeys = weakMemoize(sortedKeysCache, (obj) => Object.keys(obj).sort());
   function createRecordsComparator(compare) {
-    return (a, b) => {
-      const aKeys = getSortedKeys(a);
-      const bKeys = getSortedKeys(b);
-      const l2 = Math.min(aKeys.length, bKeys.length);
-      for (let i = 0; i < l2; i++) {
-        const cmp = ascComparator(aKeys[i], bKeys[i]);
+    return (a2, b2) => {
+      const aKeys = getSortedKeys(a2);
+      const bKeys = getSortedKeys(b2);
+      const l = Math.min(aKeys.length, bKeys.length);
+      for (let i2 = 0; i2 < l; i2++) {
+        const cmp = ascComparator(aKeys[i2], bKeys[i2]);
         if (cmp !== 0) {
           return cmp;
         }
@@ -16106,9 +15531,9 @@ function createComparator({ deduplicationCache = /* @__PURE__ */ new WeakMap(), 
       if (aKeys.length !== bKeys.length) {
         return aKeys.length - bKeys.length;
       }
-      for (let i = 0; i < l2; i++) {
-        const key = aKeys[i];
-        const cmp = compare(a[key], b[key]);
+      for (let i2 = 0; i2 < l; i2++) {
+        const key = aKeys[i2];
+        const cmp = compare(a2[key], b2[key]);
         if (cmp !== 0) {
           return cmp;
         }
@@ -16123,46 +15548,46 @@ function createComparator({ deduplicationCache = /* @__PURE__ */ new WeakMap(), 
       // NOTE: Always sort output
       createDeduplicator(compare, { threshold: 0 })
     );
-    return (a, b) => cmp(deduplicate(a), deduplicate(b));
+    return (a2, b2) => cmp(deduplicate(a2), deduplicate(b2));
   }
   const compareArrayOfSameTypePrimitivesWithDeduplication = createArrayComparatorWithDeduplication(ascComparator);
-  function compareSchemaDefinitions2(a, b) {
-    if (isSchemaObject(a)) {
-      if (isSchemaObject(b)) {
-        const aKeys = Object.keys(a);
-        const bKeys = Object.keys(b);
+  function compareSchemaDefinitions2(a2, b2) {
+    if (isSchemaObject(a2)) {
+      if (isSchemaObject(b2)) {
+        const aKeys = Object.keys(a2);
+        const bKeys = Object.keys(b2);
         const allKeys = insertUniqueValues(aKeys, bKeys);
-        const l2 = allKeys.length;
-        for (let i = 0; i < l2; i++) {
-          const key = allKeys[i];
-          if (a[key] === b[key]) {
+        const l = allKeys.length;
+        for (let i2 = 0; i2 < l; i2++) {
+          const key = allKeys[i2];
+          if (a2[key] === b2[key]) {
             continue;
           }
           const cmp = COMPARATORS[key] ?? compareOptionalSchemaValues;
-          const d = cmp(a[key], b[key]);
+          const d = cmp(a2[key], b2[key]);
           if (d !== 0) {
             return d;
           }
         }
         return 0;
       }
-      return b === true && isRecordEmpty(a) ? 0 : 1;
+      return b2 === true && isRecordEmpty(a2) ? 0 : 1;
     }
-    if (isSchemaObject(b)) {
-      return a === true && isRecordEmpty(b) ? 0 : -1;
+    if (isSchemaObject(b2)) {
+      return a2 === true && isRecordEmpty(b2) ? 0 : -1;
     }
-    return ascComparator(a, b);
+    return ascComparator(a2, b2);
   }
   const compareOptionalSchemaValues = createOptionalComparator(compareSchemaValues2);
   const compareNonNullSchemaValue = createCmpMatcher(isSchemaPrimitiveExceptNull, createArrayOrItemComparator(createRecordsComparator(compareOptionalSchemaValues), createArrayComparator(compareSchemaValues2)), compareSchemaPrimitive);
-  function compareSchemaValues2(a, b) {
-    if (a === null) {
+  function compareSchemaValues2(a2, b2) {
+    if (a2 === null) {
       return -1;
     }
-    if (b === null) {
+    if (b2 === null) {
       return 1;
     }
-    return compareNonNullSchemaValue(a, b);
+    return compareNonNullSchemaValue(a2, b2);
   }
   const compareOptionalSchemaDefinitions = createOptionalComparator(compareSchemaDefinitions2);
   const compareRecordOfOptionalSchemasWithEmptyRecordDefault = createNarrowingOptionalComparator(isRecordEmpty, createRecordsComparator(compareOptionalSchemaDefinitions));
@@ -16200,21 +15625,21 @@ function createComparator({ deduplicationCache = /* @__PURE__ */ new WeakMap(), 
     then: compareOptionalSchemaDefinitions,
     title: compareOptionalSameTypeSchemaPrimitives,
     writeOnly: compareOptionalSameTypeSchemaPrimitives,
-    uniqueItems: createNarrowingOptionalComparator((v2) => v2 === false, zero),
+    uniqueItems: createNarrowingOptionalComparator((v3) => v3 === false, zero),
     minLength: compareNumbersWithZeroDefault,
     minItems: compareNumbersWithZeroDefault,
     minProperties: compareNumbersWithZeroDefault,
     required: createNarrowingOptionalComparator(isArrayEmpty, compareArrayOfSameTypePrimitivesWithDeduplication),
     enum: createNarrowingOptionalComparator(isArrayEmpty, createArrayComparatorWithDeduplication(compareSchemaValues2)),
-    type: createOptionalComparator((a, b) => {
-      const isAArr = Array.isArray(a);
-      const isBArr = Array.isArray(b);
+    type: createOptionalComparator((a2, b2) => {
+      const isAArr = Array.isArray(a2);
+      const isBArr = Array.isArray(b2);
       if (!isAArr && !isBArr) {
-        return ascComparator(a, b);
+        return ascComparator(a2, b2);
       }
-      return compareArrayOfSameTypePrimitivesWithDeduplication(isAArr ? a : [a], isBArr ? b : [b]);
+      return compareArrayOfSameTypePrimitivesWithDeduplication(isAArr ? a2 : [a2], isBArr ? b2 : [b2]);
     }),
-    items: createNarrowingOptionalComparator((v2) => !Array.isArray(v2) && isAllowAnySchema(v2), createArrayOrItemComparator(compareSchemaDefinitions2, createArrayComparator(compareSchemaDefinitions2))),
+    items: createNarrowingOptionalComparator((v3) => !Array.isArray(v3) && isAllowAnySchema(v3), createArrayOrItemComparator(compareSchemaDefinitions2, createArrayComparator(compareSchemaDefinitions2))),
     anyOf: compareOptionalArrayOfSchemasWithDeduplication,
     allOf: compareOptionalArrayOfSchemasWithDeduplication,
     oneOf: compareOptionalArrayOfSchemasWithDeduplication,
@@ -16231,42 +15656,42 @@ function createComparator({ deduplicationCache = /* @__PURE__ */ new WeakMap(), 
 }
 
 // node_modules/@x0k/json-schema-merge/dist/lib/function.js
-function identity2(v2) {
-  return v2;
+function identity2(v3) {
+  return v3;
 }
 
 // node_modules/@x0k/json-schema-merge/dist/lib/math.js
-var gcd = (a, b) => a ? gcd(b % a, a) : b;
-var lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
+var gcd = (a2, b2) => a2 ? gcd(b2 % a2, a2) : b2;
+var lcm = (a2, b2) => Math.abs(a2 * b2) / gcd(a2, b2);
 
 // node_modules/@x0k/json-schema-merge/dist/lib/json-schema/merge/patterns.js
-function simplePatternsMerger(a, b) {
-  return a === b ? a : `(?=.*(?:${a}))(?=.*(?:${b}))`;
+function simplePatternsMerger(a2, b2) {
+  return a2 === b2 ? a2 : `(?=.*(?:${a2}))(?=.*(?:${b2}))`;
 }
 
 // node_modules/@x0k/json-schema-merge/dist/lib/json-schema/merge/merge.js
-function createPairCombinations(l2, r2, action) {
-  const ll = l2.length;
-  const rl = r2.length;
+function createPairCombinations(l, r, action) {
+  const ll = l.length;
+  const rl = r.length;
   if (ll > 0 && rl > 0) {
-    for (let i = 0; i < ll; i++) {
-      const lv = l2[i];
+    for (let i2 = 0; i2 < ll; i2++) {
+      const lv = l[i2];
       for (let j = 0; j < rl; j++) {
-        action(lv, r2[j]);
+        action(lv, r[j]);
       }
     }
   }
 }
-function mergeBooleans(l2, r2) {
-  return l2 || r2;
+function mergeBooleans(l, r) {
+  return l || r;
 }
 function createRecordsMerge(merge2) {
   return (left, right) => {
     const target = { ...left };
     const keys3 = Object.keys(right);
-    const l2 = keys3.length;
-    for (let i = 0; i < l2; i++) {
-      const key = keys3[i];
+    const l = keys3.length;
+    for (let i2 = 0; i2 < l; i2++) {
+      const key = keys3[i2];
       target[key] = left[key] === void 0 ? right[key] : merge2(left[key], right[key]);
     }
     return target;
@@ -16295,10 +15720,10 @@ var PROPERTIES_ASSIGNER_KEYS = [
 ];
 function compilePatterns(patterns) {
   const keys3 = Object.keys(patterns);
-  const l2 = keys3.length;
+  const l = keys3.length;
   const result = [];
-  for (let i = 0; i < l2; i++) {
-    const source = keys3[i];
+  for (let i2 = 0; i2 < l; i2++) {
+    const source = keys3[i2];
     result.push({
       regExp: new RegExp(source),
       schema: patterns[source]
@@ -16308,17 +15733,17 @@ function compilePatterns(patterns) {
 }
 var EMPTY_PATTERNS_AND_KEYS = [[], []];
 function appendKeyConstraints(target, key, patterns) {
-  const l2 = patterns.length;
-  for (let i = 0; i < l2; i++) {
-    const p2 = patterns[i];
+  const l = patterns.length;
+  for (let i2 = 0; i2 < l; i2++) {
+    const p2 = patterns[i2];
     if (!p2.regExp.test(key)) {
       continue;
     }
-    const s = p2.schema;
-    if (s === false) {
+    const s2 = p2.schema;
+    if (s2 === false) {
       return true;
     }
-    target.push(s);
+    target.push(s2);
   }
   return false;
 }
@@ -16343,19 +15768,19 @@ function assignCondition(target, source) {
   }
   return target;
 }
-function intersectSchemaTypes(a, b) {
-  if (a === b) {
-    return a;
+function intersectSchemaTypes(a2, b2) {
+  if (a2 === b2) {
+    return a2;
   }
-  switch (a) {
+  switch (a2) {
     case "number": {
-      if (b === "integer") {
+      if (b2 === "integer") {
         return "integer";
       }
     }
     // eslint-disable-next-line no-fallthrough
     case "integer": {
-      if (b === "number") {
+      if (b2 === "number") {
         return "integer";
       }
     }
@@ -16364,20 +15789,20 @@ function intersectSchemaTypes(a, b) {
       return void 0;
   }
 }
-function check(a, b, check2) {
-  return [a, b, check2];
+function check(a2, b2, check2) {
+  return [a2, b2, check2];
 }
 function createChecksMap(checks) {
   const map = /* @__PURE__ */ new Map();
-  for (const [a, b, check2] of checks) {
+  for (const [a2, b2, check2] of checks) {
     const fn = (target) => {
       if (!check2(target)) {
-        throw new Error(`Schema keys '${a}' and '${b}' are conflicting (${a}: ${JSON.stringify(target[a])}, ${b}: ${JSON.stringify(target[b])})`);
+        throw new Error(`Schema keys '${a2}' and '${b2}' are conflicting (${a2}: ${JSON.stringify(target[a2])}, ${b2}: ${JSON.stringify(target[b2])})`);
       }
     };
     for (const k of [
-      [a, b],
-      [b, a]
+      [a2, b2],
+      [b2, a2]
     ]) {
       let arr = map.get(k[0]);
       if (arr === void 0) {
@@ -16400,17 +15825,17 @@ var DEFAULT_CHECKS = [
 ];
 function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Object.is, intersectJson = intersection, deduplicateJsonSchemaDef = identity2, defaultMerger = identity2, assigners = [], checks = DEFAULT_CHECKS, mergers } = {}) {
   function mergeArrayOfSchemaDefinitions2(schemas) {
-    const l2 = schemas.length;
+    const l = schemas.length;
     let result = schemas[0];
-    for (let i = 1; i < l2; i++) {
-      const r2 = mergeSchemaDefinitions(result, schemas[i]);
-      if (r2 === false) {
+    for (let i2 = 1; i2 < l; i2++) {
+      const r = mergeSchemaDefinitions(result, schemas[i2]);
+      if (r === false) {
         return false;
       }
-      if (isAllowAnySchema(r2)) {
+      if (isAllowAnySchema(r)) {
         continue;
       }
-      result = r2;
+      result = r;
     }
     return result;
   }
@@ -16441,20 +15866,20 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     } else if (isNotYetAllowed && oppositeAdditional !== void 0) {
       constraints.push(oppositeAdditional);
     }
-    const l2 = constraints.length;
-    if (l2 === 1) {
+    const l = constraints.length;
+    if (l === 1) {
       return constraints[0];
     }
     return mergeArrayOfSchemaDefinitions2(constraints);
   }
   function assignPatternPropertiesAndAdditionalPropertiesMerge(target, patterns, patternKeys, matchedPatterns, oppositeAdditional, isOppositeTruthy) {
-    const l2 = patternKeys.length;
-    if (l2 > 0 && oppositeAdditional !== false) {
+    const l = patternKeys.length;
+    if (l > 0 && oppositeAdditional !== false) {
       if (isOppositeTruthy) {
         Object.assign(target, patterns);
       } else {
-        for (let i = 0; i < l2; i++) {
-          const pattern = patternKeys[i];
+        for (let i2 = 0; i2 < l; i2++) {
+          const pattern = patternKeys[i2];
           if (matchedPatterns.has(pattern)) {
             continue;
           }
@@ -16483,8 +15908,8 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     const constraints = [];
     const lKeysSet = /* @__PURE__ */ new Set();
     const mappedRAdditional = isRAddTruthy ? void 0 : rAdditional;
-    for (let i = 0; i < lKeysLen; i++) {
-      const key = lKeys[i];
+    for (let i2 = 0; i2 < lKeysLen; i2++) {
+      const key = lKeys[i2];
       lKeysSet.add(key);
       const prop = createProperty(constraints, key, lProps[key], lCompiledPatterns, rProps[key], rCompiledPatterns, mappedRAdditional);
       if (prop !== void 0) {
@@ -16494,8 +15919,8 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     const rKeys = Object.keys(rProps);
     const rKeysLen = rKeys.length;
     const mappedLAdditional = isLAddTruthy ? void 0 : lAdditional;
-    for (let i = 0; i < rKeysLen; i++) {
-      const key = rKeys[i];
+    for (let i2 = 0; i2 < rKeysLen; i2++) {
+      const key = rKeys[i2];
       if (lKeysSet.has(key)) {
         continue;
       }
@@ -16529,25 +15954,25 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     const itemsArray = [];
     target.items = itemsArray;
     if (isLArr && isRArr) {
-      const [l2, additional, tail] = lItems.length < rItems.length ? [lItems.length, lAdditional, rItems] : [rItems.length, rAdditional, lItems];
-      let i = 0;
-      for (; i < l2; i++) {
-        itemsArray.push(mergeSchemaDefinitions(lItems[i], rItems[i]));
+      const [l, additional, tail] = lItems.length < rItems.length ? [lItems.length, lAdditional, rItems] : [rItems.length, rAdditional, lItems];
+      let i2 = 0;
+      for (; i2 < l; i2++) {
+        itemsArray.push(mergeSchemaDefinitions(lItems[i2], rItems[i2]));
       }
       if (additional === false) {
         target.additionalItems = false;
       } else {
         const isAdditionalTruthy = additional === void 0 || isAllowAnySchema(additional);
-        for (; i < tail.length; i++) {
-          itemsArray.push(isAdditionalTruthy ? tail[i] : mergeSchemaDefinitions(tail[i], additional));
+        for (; i2 < tail.length; i2++) {
+          itemsArray.push(isAdditionalTruthy ? tail[i2] : mergeSchemaDefinitions(tail[i2], additional));
         }
         assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "additionalItems", lAdditional !== void 0 && rAdditional !== void 0 ? mergeSchemaDefinitions(lAdditional, rAdditional) : lAdditional ?? rAdditional);
       }
     } else if (isLArr || isRArr) {
       const [arr, item, additional] = isLArr ? [lItems, rItems, lAdditional] : [rItems, lItems, rAdditional];
       assignSchemaDefinitionOrRecordOfSchemaDefinitions(target, "additionalItems", additional && mergeSchemaDefinitions(additional, item));
-      for (let i = 0; i < arr.length; i++) {
-        itemsArray.push(mergeSchemaDefinitions(arr[i], item));
+      for (let i2 = 0; i2 < arr.length; i2++) {
+        itemsArray.push(mergeSchemaDefinitions(arr[i2], item));
       }
     } else {
       delete target.additionalItems;
@@ -16555,9 +15980,9 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     }
     return target;
   };
-  const conditionAssigner = (target, l2, r2) => {
-    assignCondition(target, l2);
-    const cond = assignCondition({}, r2);
+  const conditionAssigner = (target, l, r) => {
+    assignCondition(target, l);
+    const cond = assignCondition({}, r);
     if (target.allOf === void 0) {
       target.allOf = [cond];
     } else {
@@ -16565,16 +15990,16 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     }
     return target;
   };
-  function mergeArraysOfSchemaDefinition(l2, r2) {
+  function mergeArraysOfSchemaDefinition(l, r) {
     const definitions = [];
-    createPairCombinations(l2, r2, (a, b) => {
+    createPairCombinations(l, r, (a2, b2) => {
       try {
-        definitions.push(mergeSchemaDefinitions(a, b));
+        definitions.push(mergeSchemaDefinitions(a2, b2));
       } catch {
       }
     });
     if (definitions.length === 0) {
-      throw new Error(`No valid schema combinations could be produced for "${JSON.stringify(l2)}" and "${JSON.stringify(r2)}"; the merged result is empty`);
+      throw new Error(`No valid schema combinations could be produced for "${JSON.stringify(l)}" and "${JSON.stringify(r)}"; the merged result is empty`);
     }
     return deduplicateJsonSchemaDef(definitions);
   }
@@ -16602,17 +16027,17 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     const assigners2 = /* @__PURE__ */ new Set();
     const checks2 = /* @__PURE__ */ new Set();
     const rKeys = Reflect.ownKeys(right);
-    const l2 = rKeys.length;
-    for (let i = 0; i < l2; i++) {
-      const rKey = rKeys[i];
+    const l = rKeys.length;
+    for (let i2 = 0; i2 < l; i2++) {
+      const rKey = rKeys[i2];
       const rv = right[rKey];
       if (rv === void 0) {
         continue;
       }
       const checkData = CHECKS_MAP.get(rKey);
       if (checkData !== void 0) {
-        const l3 = checkData.length;
-        for (let j = 0; j < l3; j++) {
+        const l2 = checkData.length;
+        for (let j = 0; j < l2; j++) {
           const item = checkData[j];
           if (left[item.oppositeKey] !== void 0) {
             checks2.add(item.check);
@@ -16648,46 +16073,46 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     $comment: defaultMerger,
     $defs: mergeRecordsOfSchemaDefinitions,
     definitions: mergeRecordsOfSchemaDefinitions,
-    type: (a, b) => {
-      if (a === b) {
-        return a;
+    type: (a2, b2) => {
+      if (a2 === b2) {
+        return a2;
       }
-      const isAArr = Array.isArray(a);
-      const isBArr = Array.isArray(b);
+      const isAArr = Array.isArray(a2);
+      const isBArr = Array.isArray(b2);
       if (!isAArr && !isBArr) {
-        const intersection3 = intersectSchemaTypes(a, b);
+        const intersection3 = intersectSchemaTypes(a2, b2);
         if (intersection3 !== void 0) {
           return intersection3;
         }
       } else if (isAArr || isBArr) {
-        const r2 = /* @__PURE__ */ new Set();
+        const r = /* @__PURE__ */ new Set();
         if (isAArr && isBArr) {
-          createPairCombinations(a, b, (x, y) => {
+          createPairCombinations(a2, b2, (x, y) => {
             const type = intersectSchemaTypes(x, y);
             if (type !== void 0) {
-              r2.add(type);
+              r.add(type);
             }
           });
         } else {
-          const arr = isAArr ? a : b;
-          const el = isAArr ? b : a;
-          const l2 = arr.length;
-          for (let i = 0; i < l2; i++) {
-            const intersection3 = intersectSchemaTypes(el, arr[i]);
+          const arr = isAArr ? a2 : b2;
+          const el = isAArr ? b2 : a2;
+          const l = arr.length;
+          for (let i2 = 0; i2 < l; i2++) {
+            const intersection3 = intersectSchemaTypes(el, arr[i2]);
             if (intersection3 !== void 0) {
-              r2.add(intersection3);
+              r.add(intersection3);
             }
           }
         }
-        const s = r2.size;
-        if (s === 1) {
-          return r2.values().next().value;
+        const s2 = r.size;
+        if (s2 === 1) {
+          return r.values().next().value;
         }
-        if (s > 1) {
-          return Array.from(r2);
+        if (s2 > 1) {
+          return Array.from(r);
         }
       }
-      throw new Error(`It is not possible to create an intersection of the following incompatible types: ${a.toString()}, ${b.toString()}`);
+      throw new Error(`It is not possible to create an intersection of the following incompatible types: ${a2.toString()}, ${b2.toString()}`);
     },
     default: defaultMerger,
     description: defaultMerger,
@@ -16696,51 +16121,51 @@ function createMerger({ mergePatterns = simplePatternsMerger, isSubRegExp = Obje
     format: defaultMerger,
     contentEncoding: defaultMerger,
     contentMediaType: defaultMerger,
-    not: (a, b) => {
-      const items = deduplicateJsonSchemaDef([a, b]);
+    not: (a2, b2) => {
+      const items = deduplicateJsonSchemaDef([a2, b2]);
       return items.length === 1 ? items[0] : { anyOf: items };
     },
     pattern: mergePatterns,
     readOnly: mergeBooleans,
     writeOnly: mergeBooleans,
-    enum: (a, b) => {
-      const data = intersectJson(a, b);
+    enum: (a2, b2) => {
+      const data = intersectJson(a2, b2);
       if (data.length === 0) {
-        throw new Error(`Intersection of the following enums is empty: "${JSON.stringify(a)}", "${JSON.stringify(b)}"`);
+        throw new Error(`Intersection of the following enums is empty: "${JSON.stringify(a2)}", "${JSON.stringify(b2)}"`);
       }
       return data;
     },
     anyOf: mergeArraysOfSchemaDefinition,
     oneOf: mergeArraysOfSchemaDefinition,
-    allOf: (l2, r2) => deduplicateJsonSchemaDef(l2.concat(r2)),
+    allOf: (l, r) => deduplicateJsonSchemaDef(l.concat(r)),
     propertyNames: mergeSchemaDefinitions,
     contains: mergeSchemaDefinitions,
-    dependencies: createRecordsMerge((a, b) => {
-      if (Array.isArray(a)) {
-        if (Array.isArray(b)) {
-          return union2(a, b);
+    dependencies: createRecordsMerge((a2, b2) => {
+      if (Array.isArray(a2)) {
+        if (Array.isArray(b2)) {
+          return union2(a2, b2);
         }
-        return mergeSchemaDefinitions(b, { required: a });
+        return mergeSchemaDefinitions(b2, { required: a2 });
       }
-      if (Array.isArray(b)) {
-        return mergeSchemaDefinitions(a, { required: b });
+      if (Array.isArray(b2)) {
+        return mergeSchemaDefinitions(a2, { required: b2 });
       }
-      return mergeSchemaDefinitions(a, b);
+      return mergeSchemaDefinitions(a2, b2);
     }),
-    examples: (l2, r2) => {
-      if (!Array.isArray(l2) || !Array.isArray(r2)) {
-        throw new Error(`Value of the 'examples' field should be an array, but got "${JSON.stringify(l2)}" and "${JSON.stringify(r2)}"`);
+    examples: (l, r) => {
+      if (!Array.isArray(l) || !Array.isArray(r)) {
+        throw new Error(`Value of the 'examples' field should be an array, but got "${JSON.stringify(l)}" and "${JSON.stringify(r)}"`);
       }
-      return union2(l2, r2);
+      return union2(l, r);
     },
-    multipleOf: (a, b) => {
+    multipleOf: (a2, b2) => {
       let factor = 1;
-      while (!Number.isInteger(a) || !Number.isInteger(b)) {
+      while (!Number.isInteger(a2) || !Number.isInteger(b2)) {
         factor *= 10;
-        a *= 10;
-        b *= 10;
+        a2 *= 10;
+        b2 *= 10;
       }
-      return lcm(a, b) / factor;
+      return lcm(a2, b2) / factor;
     },
     exclusiveMaximum: Math.min,
     maximum: Math.min,
@@ -16774,8 +16199,8 @@ function getAllOfSchemas(schema) {
     }
     const { allOf, ...rest } = current;
     result.push(rest);
-    for (let i = allOf.length - 1; i >= 0; i--) {
-      stack.push(allOf[i]);
+    for (let i2 = allOf.length - 1; i2 >= 0; i2--) {
+      stack.push(allOf[i2]);
     }
   }
   return result;
@@ -16796,12 +16221,6 @@ var shallowAllOfMerge_default = createShallowAllOfMerge(mergeArrayOfSchemaDefini
 function retrieveSchema(validator, schema, rootSchema = {}, rawFormData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs = false) {
   return retrieveSchemaInternal(validator, schema, rootSchema, rawFormData, void 0, void 0, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs)[0];
 }
-function normalizeBooleanSchema(schema) {
-  if (typeof schema !== "boolean") {
-    return schema;
-  }
-  return schema ? {} : { not: {} };
-}
 function resolveCondition(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
   const { if: expression, then, else: otherwise, ...resolvedSchemaLessConditional } = schema;
   const conditionValue = validator.isValid(expression, formData || {}, rootSchema);
@@ -16809,29 +16228,26 @@ function resolveCondition(validator, schema, rootSchema, expandAllBranches, recu
   let schemas = [];
   if (expandAllBranches) {
     if (then && typeof then !== "boolean") {
-      const thenSchema = then;
-      schemas = schemas.concat(retrieveSchemaInternal(validator, thenSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+      schemas = schemas.concat(retrieveSchemaInternal(validator, then, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
     }
     if (otherwise && typeof otherwise !== "boolean") {
-      const otherwiseSchema = otherwise;
-      schemas = schemas.concat(retrieveSchemaInternal(validator, otherwiseSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+      schemas = schemas.concat(retrieveSchemaInternal(validator, otherwise, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
     }
   } else {
-    const conditionalBranch = conditionValue ? then : otherwise;
-    if (conditionalBranch !== void 0) {
-      const conditionalSchema = normalizeBooleanSchema(conditionalBranch);
+    const conditionalSchema = conditionValue ? then : otherwise;
+    if (conditionalSchema && typeof conditionalSchema !== "boolean") {
       schemas = schemas.concat(retrieveSchemaInternal(validator, conditionalSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
     }
   }
   if (schemas.length) {
-    resolvedSchemas = schemas.map((s) => mergeSchemas(resolvedSchemaLessConditional, s));
+    resolvedSchemas = schemas.map((s2) => mergeSchemas(resolvedSchemaLessConditional, s2));
   }
-  return resolvedSchemas.flatMap((s) => retrieveSchemaInternal(validator, s, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+  return resolvedSchemas.flatMap((s2) => retrieveSchemaInternal(validator, s2, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
 }
 function getAllPermutationsOfXxxOf(listOfLists) {
   const allPermutations = listOfLists.reduce((permutations, list) => {
     if (list.length > 1) {
-      return list.flatMap((element) => times_default(permutations.length, (i) => [...permutations[i]].concat(element)));
+      return list.flatMap((element) => times_default(permutations.length, (i2) => [...permutations[i2]].concat(element)));
     }
     permutations.forEach((permutation) => permutation.push(list[0]));
     return permutations;
@@ -16851,7 +16267,7 @@ function resolveSchema(validator, schema, rootSchema, expandAllBranches, recurse
   }
   if (DEPENDENCIES_KEY in schema) {
     const resolvedSchemas = resolveDependencies(validator, schema, rootSchema, expandAllBranches, recurseList, formData, experimental_customMergeAllOf);
-    return resolvedSchemas.flatMap((s) => retrieveSchemaInternal(validator, s, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
+    return resolvedSchemas.flatMap((s2) => retrieveSchemaInternal(validator, s2, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
   }
   if (ALL_OF_KEY in schema && Array.isArray(schema[ALL_OF_KEY])) {
     const allOfSchemaElements = schema.allOf.map((allOfSubschema) => retrieveSchemaInternal(validator, allOfSubschema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf));
@@ -16870,7 +16286,7 @@ function resolveReference(validator, schema, rootSchema, expandAllBranches, recu
   }
   return [schema];
 }
-function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveAnyOfOrOneOfRefs, markCycleOnDetection = false) {
+function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveAnyOfOrOneOfRefs) {
   if (!isObject(schema)) {
     return schema;
   }
@@ -16879,7 +16295,7 @@ function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveA
   if (REF_KEY in resolvedSchema) {
     const { $ref, ...localSchema } = resolvedSchema;
     if (recurseList.includes($ref)) {
-      return markCycleOnDetection ? { ...resolvedSchema, [RJSF_REF_CYCLE_KEY]: true } : resolvedSchema;
+      return resolvedSchema;
     }
     recurseList.push($ref);
     const refSchema = findSchemaDefinition($ref, rootSchema, currentBaseURI);
@@ -16892,7 +16308,7 @@ function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveA
     const childrenLists = [];
     const updatedProps = transform_default(resolvedSchema[PROPERTIES_KEY], (acc, value, key) => {
       const childList = [...recurseList];
-      acc[key] = resolveAllReferences(value, rootSchema, childList, currentBaseURI, resolveAnyOfOrOneOfRefs, !resolveAnyOfOrOneOfRefs);
+      acc[key] = resolveAllReferences(value, rootSchema, childList, currentBaseURI, resolveAnyOfOrOneOfRefs);
       childrenLists.push(childList);
     }, {});
     merge_default(recurseList, uniq_default(flattenDeep_default(childrenLists)));
@@ -16901,7 +16317,6 @@ function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveA
   if (ITEMS_KEY in resolvedSchema && !Array.isArray(resolvedSchema.items) && typeof resolvedSchema.items !== "boolean") {
     resolvedSchema = {
       ...resolvedSchema,
-      // Array items are only rendered when data exists, so a $ref cycle here does NOT cause an infinite render.
       items: resolveAllReferences(resolvedSchema.items, rootSchema, recurseList, currentBaseURI, resolveAnyOfOrOneOfRefs)
     };
   }
@@ -16918,7 +16333,7 @@ function resolveAllReferences(schema, rootSchema, recurseList, baseURI, resolveA
     if (key && schemas) {
       resolvedSchema = {
         ...resolvedSchema,
-        [key]: schemas.map((s) => resolveAllReferences(s, rootSchema, recurseList, currentBaseURI, resolveAnyOfOrOneOfRefs))
+        [key]: schemas.map((s2) => resolveAllReferences(s2, rootSchema, recurseList, currentBaseURI, resolveAnyOfOrOneOfRefs))
       };
     }
   }
@@ -16938,7 +16353,7 @@ function stubExistingAdditionalProperties(validator, theSchema, rootSchema, aFor
       const matchingProperties = getMatchingPatternProperties(schema, key);
       if (!isEmpty_default(matchingProperties)) {
         schema.properties[key] = retrieveSchema(validator, { [ALL_OF_KEY]: Object.values(matchingProperties) }, rootSchema, get_default(formData, [key]), experimental_customMergeAllOf);
-        schema.properties[key][ADDITIONAL_PROPERTY_FLAG] = true;
+        set_default(schema.properties, [key, ADDITIONAL_PROPERTY_FLAG], true);
         return;
       }
     }
@@ -16946,7 +16361,7 @@ function stubExistingAdditionalProperties(validator, theSchema, rootSchema, aFor
       let additionalProperties;
       if (typeof schema.additionalProperties !== "boolean") {
         if (REF_KEY in schema.additionalProperties) {
-          additionalProperties = retrieveSchema(validator, { [REF_KEY]: get_default(schema.additionalProperties, [REF_KEY]) }, rootSchema, get_default(formData, [key]), experimental_customMergeAllOf);
+          additionalProperties = retrieveSchema(validator, { [REF_KEY]: get_default(schema.additionalProperties, [REF_KEY]) }, rootSchema, formData, experimental_customMergeAllOf);
         } else if ("type" in schema.additionalProperties) {
           additionalProperties = { ...schema.additionalProperties };
         } else if (ANY_OF_KEY in schema.additionalProperties || ONE_OF_KEY in schema.additionalProperties) {
@@ -16961,10 +16376,10 @@ function stubExistingAdditionalProperties(validator, theSchema, rootSchema, aFor
         additionalProperties = { type: guessType(get_default(formData, [key])) };
       }
       schema.properties[key] = additionalProperties;
-      schema.properties[key][ADDITIONAL_PROPERTY_FLAG] = true;
+      set_default(schema.properties, [key, ADDITIONAL_PROPERTY_FLAG], true);
     } else {
       schema.properties[key] = { type: "null" };
-      schema.properties[key][ADDITIONAL_PROPERTY_FLAG] = true;
+      set_default(schema.properties, [key, ADDITIONAL_PROPERTY_FLAG], true);
     }
   });
   return schema;
@@ -16977,9 +16392,9 @@ function retrieveSchemaInternal(validator, schema, rootSchema, rawFormData, expa
     return [{}];
   }
   const resolvedSchemas = resolveSchema(validator, schema, rootSchema, expandAllBranches, recurseList, rawFormData, experimental_customMergeAllOf, resolveAnyOfOrOneOfRefs);
-  return resolvedSchemas.flatMap((s) => {
+  return resolvedSchemas.flatMap((s2) => {
     var _a;
-    let resolvedSchema = s;
+    let resolvedSchema = s2;
     if (IF_KEY in resolvedSchema) {
       return resolveCondition(validator, resolvedSchema, rootSchema, expandAllBranches, recurseList, rawFormData, experimental_customMergeAllOf);
     }
@@ -16991,31 +16406,22 @@ function retrieveSchemaInternal(validator, schema, rootSchema, rawFormData, expa
       try {
         const withContainsSchemas = [];
         const withoutContainsSchemas = [];
-        const allOfSymbols = {};
         (_a = resolvedSchema.allOf) === null || _a === void 0 ? void 0 : _a.forEach((allOfItem) => {
           if (typeof allOfItem === "object" && allOfItem.contains) {
             withContainsSchemas.push(allOfItem);
           } else {
             withoutContainsSchemas.push(allOfItem);
-            for (const sym of Object.getOwnPropertySymbols(allOfItem)) {
-              if (!(sym in allOfSymbols)) {
-                allOfSymbols[sym] = allOfItem[sym];
-              }
-            }
           }
         });
         if (withContainsSchemas.length) {
           resolvedSchema = { ...resolvedSchema, allOf: withoutContainsSchemas };
         }
         resolvedSchema = experimental_customMergeAllOf ? experimental_customMergeAllOf(resolvedSchema) : mergeAllOf(resolvedSchema);
-        for (const sym of Object.getOwnPropertySymbols(allOfSymbols)) {
-          resolvedSchema[sym] = allOfSymbols[sym];
-        }
         if (withContainsSchemas.length) {
           resolvedSchema.allOf = withContainsSchemas;
         }
-      } catch (e2) {
-        console.warn("could not merge subschemas in allOf:\n", e2);
+      } catch (e) {
+        console.warn("could not merge subschemas in allOf:\n", e);
         const { allOf, ...resolvedSchemaWithoutAllOf } = resolvedSchema;
         return resolvedSchemaWithoutAllOf;
       }
@@ -17050,7 +16456,7 @@ function resolveAnyOrOneOfSchemas(validator, schema, rootSchema, expandAllBranch
   if (anyOrOneOf) {
     const formData = rawFormData === void 0 && expandAllBranches ? {} : rawFormData;
     const discriminator = getDiscriminatorFieldFromSchema(schema);
-    anyOrOneOf = anyOrOneOf.map((s) => resolveAllReferences(s, rootSchema, []));
+    anyOrOneOf = anyOrOneOf.map((s2) => resolveAllReferences(s2, rootSchema, []));
     const option = getFirstMatchingOption(validator, formData, anyOrOneOf, rootSchema, discriminator);
     if (expandAllBranches) {
       const relaxed = relaxOptionsForScoring(anyOrOneOf, false, rootSchema);
@@ -17064,7 +16470,7 @@ function resolveAnyOrOneOfSchemas(validator, schema, rootSchema, expandAllBranch
 function relaxOptionsForScoring(options, resolveRefs = false, rootSchema) {
   return options.map((d) => {
     if (!isObject(d)) {
-      return normalizeBooleanSchema(d);
+      return d ? {} : { not: {} };
     }
     const schema = resolveRefs && rootSchema ? resolveAllReferences(d, rootSchema, []) : d;
     return schema.additionalProperties === false ? { ...schema, additionalProperties: true } : schema;
@@ -17117,7 +16523,7 @@ function withDependentSchema(validator, schema, rootSchema, dependencyKey, depen
 }
 function withExactlyOneSubschema(validator, schema, rootSchema, dependencyKey, oneOf, expandAllBranches, recurseList, formData, experimental_customMergeAllOf) {
   const validSubschemas = oneOf.filter((subschema) => {
-    if (typeof subschema === "boolean" || !(subschema === null || subschema === void 0 ? void 0 : subschema.properties)) {
+    if (typeof subschema === "boolean" || !subschema || !subschema.properties) {
       return false;
     }
     const { [dependencyKey]: conditionPropertySchema } = subschema.properties;
@@ -17136,8 +16542,8 @@ function withExactlyOneSubschema(validator, schema, rootSchema, dependencyKey, o
     console.warn("ignoring oneOf in dependencies because there isn't exactly one subschema that is valid");
     return [schema];
   }
-  return validSubschemas.flatMap((s) => {
-    const subschema = s;
+  return validSubschemas.flatMap((s2) => {
+    const subschema = s2;
     const [dependentSubschema] = splitKeyElementFromObject(dependencyKey, subschema.properties);
     const dependentSchema = { ...subschema, properties: dependentSubschema };
     const schemas = retrieveSchemaInternal(validator, dependentSchema, rootSchema, formData, expandAllBranches, recurseList, experimental_customMergeAllOf);
@@ -17338,7 +16744,7 @@ function getClosestMatchingOption(validator, rootSchema, formData, options, sele
     return allValidIndexes[0];
   }
   if (!allValidIndexes.length) {
-    times_default(resolvedOptions.length, (i) => allValidIndexes.push(i));
+    times_default(resolvedOptions.length, (i2) => allValidIndexes.push(i2));
   }
   const scoreCount = /* @__PURE__ */ new Set();
   const { bestIndex } = allValidIndexes.reduce((scoreData, index) => {
@@ -17371,7 +16777,7 @@ function isConstant(schema) {
 
 // node_modules/@rjsf/utils/lib/isFixedItems.js
 function isFixedItems(schema) {
-  return Array.isArray(schema.items) && schema.items.every((item) => isObject(item));
+  return Array.isArray(schema.items) && schema.items.length > 0 && schema.items.every((item) => isObject(item));
 }
 
 // node_modules/lodash-es/isNil.js
@@ -17405,7 +16811,7 @@ function mergeDefaultsWithFormData(defaults, formData, mergeExtraArrayDefaults =
       const keyExistsInDefaults = isObject(defaults) && key in defaults;
       const keyExistsInFormData = key in formData;
       const keyDefault = (_a = get_default(defaults, key)) !== null && _a !== void 0 ? _a : {};
-      const defaultValueIsNestedObject = keyExistsInDefaults && isObject(keyDefault) && Object.values(keyDefault).some((v2) => isObject(v2));
+      const defaultValueIsNestedObject = keyExistsInDefaults && isObject(keyDefault) && Object.values(keyDefault).some((v3) => isObject(v3));
       const keyDefaultIsObject = keyExistsInDefaults && isObject(get_default(defaults, key));
       const keyHasFormDataObject = keyExistsInFormData && isObject(keyValue);
       if (keyDefaultIsObject && keyHasFormDataObject && !defaultValueIsNestedObject) {
@@ -17471,7 +16877,7 @@ function toConstant(schema) {
 // node_modules/@rjsf/utils/lib/optionsList.js
 function applyEnumOrder(options, order) {
   const optionsByValue = new Map(options.map((opt) => [String(opt.value), opt]));
-  const orderedKeys = new Set(order.filter((v2) => v2 !== "*").map(String));
+  const orderedKeys = new Set(order.filter((v3) => v3 !== "*").map(String));
   const rest = options.filter((opt) => !orderedKeys.has(String(opt.value)));
   return order.flatMap((entry) => {
     if (entry === "*") {
@@ -17490,8 +16896,8 @@ function optionsList(schema, uiSchema) {
       enumNames = uiEnumNames;
       enumOrder = uiEnumOrder;
     }
-    let options = schema.enum.map((value, i) => {
-      const label = Array.isArray(enumNames) ? enumNames[i] || String(value) : (enumNames === null || enumNames === void 0 ? void 0 : enumNames[String(value)]) || String(value);
+    let options = schema.enum.map((value, i2) => {
+      const label = Array.isArray(enumNames) ? enumNames[i2] || String(value) : (enumNames === null || enumNames === void 0 ? void 0 : enumNames[String(value)]) || String(value);
       return { label, value };
     });
     if (enumOrder) {
@@ -17513,8 +16919,7 @@ function optionsList(schema, uiSchema) {
     const { optionsSchemaSelector = selectorField } = getUiOptions(uiSchema);
     selectorField = optionsSchemaSelector;
   }
-  return altSchemas === null || altSchemas === void 0 ? void 0 : altSchemas.map((aSchemaDef, index) => {
-    var _a, _b, _c;
+  return altSchemas && altSchemas.map((aSchemaDef, index) => {
     const { title } = getUiOptions(altUiSchemas === null || altUiSchemas === void 0 ? void 0 : altUiSchemas[index]);
     const aSchema = aSchemaDef;
     let value;
@@ -17522,10 +16927,10 @@ function optionsList(schema, uiSchema) {
     if (selectorField) {
       const innerSchema = get_default(aSchema, [PROPERTIES_KEY, selectorField], {});
       value = get_default(innerSchema, DEFAULT_KEY, get_default(innerSchema, CONST_KEY));
-      label = (_b = (_a = label !== null && label !== void 0 ? label : innerSchema === null || innerSchema === void 0 ? void 0 : innerSchema.title) !== null && _a !== void 0 ? _a : aSchema.title) !== null && _b !== void 0 ? _b : String(value);
+      label = label || (innerSchema === null || innerSchema === void 0 ? void 0 : innerSchema.title) || aSchema.title || String(value);
     } else {
       value = toConstant(aSchema);
-      label = (_c = label !== null && label !== void 0 ? label : aSchema.title) !== null && _c !== void 0 ? _c : String(value);
+      label = label || aSchema.title || String(value);
     }
     return {
       schema: aSchema,
@@ -17615,23 +17020,18 @@ function maybeAddDefaultToObject(acc, key, computedDefault, includeUndefinedValu
   }
 }
 function computeDefaults(validator, rawSchema, computeDefaultsProps = {}) {
-  const { parentDefaults, rawFormData, rootSchema = {}, includeUndefinedValues = false, _recurseList = [], experimental_defaultFormStateBehavior, experimental_customMergeAllOf, required, shouldMergeDefaultsIntoFormData = false, initialDefaultsGenerated } = computeDefaultsProps;
+  const { parentDefaults, rawFormData, rootSchema = {}, includeUndefinedValues = false, _recurseList = [], experimental_defaultFormStateBehavior = void 0, experimental_customMergeAllOf = void 0, required, shouldMergeDefaultsIntoFormData = false, initialDefaultsGenerated } = computeDefaultsProps;
   let formData = isObject(rawFormData) ? rawFormData : {};
   const schema = isObject(rawSchema) ? rawSchema : {};
   let defaults = parentDefaults;
-  const preferParentDefaults = defaults && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.nestedDefaultsPrecedence) === "ancestorWins";
   let schemaToCompute = null;
   let experimental_dfsb_to_compute = experimental_defaultFormStateBehavior;
   let updatedRecurseList = _recurseList;
   if (schema[CONST_KEY] !== void 0 && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.constAsDefaults) !== "never" && !constIsAjvDataReference(schema)) {
     defaults = schema[CONST_KEY];
   } else if (isObject(defaults) && isObject(schema.default) && !schema[ANY_OF_KEY] && !schema[ONE_OF_KEY] && !schema[REF_KEY]) {
-    if (preferParentDefaults) {
-      defaults = mergeObjects(schema.default, defaults);
-    } else {
-      defaults = mergeObjects(defaults, schema.default);
-    }
-  } else if (DEFAULT_KEY in schema && !preferParentDefaults && !schema[ANY_OF_KEY] && !schema[ONE_OF_KEY] && !schema[REF_KEY]) {
+    defaults = mergeObjects(defaults, schema.default);
+  } else if (DEFAULT_KEY in schema && !schema[ANY_OF_KEY] && !schema[ONE_OF_KEY] && !schema[REF_KEY]) {
     defaults = schema.default;
   } else if (REF_KEY in schema) {
     const refName = schema[REF_KEY];
@@ -17653,7 +17053,7 @@ function computeDefaults(validator, rawSchema, computeDefaultsProps = {}) {
     };
     const resolvedSchema = resolveDependencies(validator, schema, rootSchema, false, [], defaultFormData, experimental_customMergeAllOf);
     [schemaToCompute] = resolvedSchema;
-  } else if (isFixedItems(schema) && !preferParentDefaults) {
+  } else if (isFixedItems(schema)) {
     defaults = schema.items.map((itemSchema, idx) => computeDefaults(validator, itemSchema, {
       rootSchema,
       includeUndefinedValues,
@@ -17719,30 +17119,20 @@ function computeDefaults(validator, rawSchema, computeDefaultsProps = {}) {
   return defaultsWithFormData;
 }
 function ensureFormDataMatchingSchema(validator, schema, rootSchema, formData, experimental_defaultFormStateBehavior, experimental_customMergeAllOf) {
-  const shouldRetrieveAllOf = (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.allOf) === "populateDefaults" && ALL_OF_KEY in schema;
-  const schemaToMatch = shouldRetrieveAllOf ? retrieveSchema(validator, schema, rootSchema, formData, experimental_customMergeAllOf) : schema;
-  const isSelectField = !isConstant(schemaToMatch) && isSelect(validator, schemaToMatch, rootSchema, experimental_customMergeAllOf);
+  const isSelectField = !isConstant(schema) && isSelect(validator, schema, rootSchema, experimental_customMergeAllOf);
   let validFormData = formData;
   if (isSelectField) {
-    const getOptionsList = optionsList(schemaToMatch);
+    const getOptionsList = optionsList(schema);
     const isValid = getOptionsList === null || getOptionsList === void 0 ? void 0 : getOptionsList.some((option) => deepEquals_default(option.value, formData));
     validFormData = isValid ? formData : void 0;
   }
-  const constTakesPrecedence = schemaToMatch[CONST_KEY] && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.constAsDefaults) === "always";
+  const constTakesPrecedence = schema[CONST_KEY] && (experimental_defaultFormStateBehavior === null || experimental_defaultFormStateBehavior === void 0 ? void 0 : experimental_defaultFormStateBehavior.constAsDefaults) === "always";
   if (constTakesPrecedence) {
-    validFormData = schemaToMatch.const;
-  } else if (isObject(validFormData) && isObject(schemaToMatch.properties)) {
-    validFormData = Object.keys(schemaToMatch.properties).reduce((acc, key) => {
-      const propertySchema = get_default(schemaToMatch, [PROPERTIES_KEY, key], {});
-      if (key in acc && (shouldRetrieveAllOf || isObject(propertySchema) && ALL_OF_KEY in propertySchema)) {
-        acc[key] = ensureFormDataMatchingSchema(validator, propertySchema, rootSchema, get_default(acc, key), experimental_defaultFormStateBehavior, experimental_customMergeAllOf);
-      }
-      return acc;
-    }, { ...validFormData });
+    validFormData = schema.const;
   }
   return validFormData;
 }
-function getObjectDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, includeUndefinedValues = false, _recurseList = [], experimental_defaultFormStateBehavior, experimental_customMergeAllOf, required, shouldMergeDefaultsIntoFormData, initialDefaultsGenerated } = {}, defaults) {
+function getObjectDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, includeUndefinedValues = false, _recurseList = [], experimental_defaultFormStateBehavior = void 0, experimental_customMergeAllOf = void 0, required, shouldMergeDefaultsIntoFormData, initialDefaultsGenerated } = {}, defaults) {
   {
     const formData = isObject(rawFormData) ? rawFormData : {};
     const schema = rawSchema;
@@ -17800,7 +17190,7 @@ function getObjectDefaults(validator, rawSchema, { rawFormData, rootSchema = {},
     return computeDefaultBasedOnSchemaTypeAndDefaults(rawSchema, objectDefaults);
   }
 }
-function getArrayDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, _recurseList = [], experimental_defaultFormStateBehavior, experimental_customMergeAllOf, required, requiredAsRoot = false, shouldMergeDefaultsIntoFormData, initialDefaultsGenerated } = {}, initialDefaults) {
+function getArrayDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, _recurseList = [], experimental_defaultFormStateBehavior = void 0, experimental_customMergeAllOf = void 0, required, requiredAsRoot = false, shouldMergeDefaultsIntoFormData, initialDefaultsGenerated } = {}, initialDefaults) {
   var _a, _b;
   let defaults = initialDefaults;
   const schema = rawSchema;
@@ -17849,17 +17239,14 @@ function getArrayDefaults(validator, rawSchema, { rawFormData, rootSchema = {}, 
       defaults = mergeDefaultsWithFormData(defaults, itemDefaults, mergeExtraDefaults);
     }
   }
-  const defaultsLength = Array.isArray(defaults) ? defaults.length : 0;
   if (neverPopulate) {
-    if (shouldMergeDefaultsIntoFormData && !required) {
-      return defaults;
-    }
     return defaults !== null && defaults !== void 0 ? defaults : emptyDefault;
   }
   if (ignoreMinItemsFlagSet && !required) {
     return defaults || void 0;
   }
   let arrayDefault;
+  const defaultsLength = Array.isArray(defaults) ? defaults.length : 0;
   if (!schema.minItems || isMultiSelect(validator, schema, rootSchema, experimental_customMergeAllOf) || computeSkipPopulate(validator, schema, rootSchema) || schema.minItems <= defaultsLength) {
     arrayDefault = defaults || !required && !requiredAsRoot ? defaults : emptyDefault;
   } else {
@@ -17916,10 +17303,9 @@ function getDefaultFormState(validator, theSchema, formData, rootSchema, include
   if (isObject(formData) || Array.isArray(formData)) {
     const { mergeDefaultsIntoFormData } = experimental_defaultFormStateBehavior || {};
     const defaultSupercedesUndefined = mergeDefaultsIntoFormData === "useDefaultIfFormDataUndefined";
-    const matchingFormData = ensureFormDataMatchingSchema(validator, schema, rootSchema !== null && rootSchema !== void 0 ? rootSchema : schema, formData, experimental_defaultFormStateBehavior, experimental_customMergeAllOf);
     const result = mergeDefaultsWithFormData(
       defaults,
-      matchingFormData,
+      formData,
       true,
       // set to true to add any additional default array entries.
       defaultSupercedesUndefined,
@@ -17958,7 +17344,7 @@ function getDisplayLabel(validator, schema, uiSchema = {}, rootSchema, globalOpt
   let displayLabel = Boolean(label);
   if (displayLabel) {
     const schemaType = getSchemaType(schema);
-    const addedByAdditionalProperty = Boolean(schema[ADDITIONAL_PROPERTY_FLAG]);
+    const addedByAdditionalProperty = get_default(schema, ADDITIONAL_PROPERTY_FLAG, false);
     if (schemaType === "array") {
       displayLabel = addedByAdditionalProperty || isMultiSelect(validator, schema, rootSchema, experimental_customMergeAllOf) || isFilesArray(validator, schema, uiSchema, rootSchema, experimental_customMergeAllOf) || isCustomWidget(uiSchema);
     }
@@ -17968,7 +17354,7 @@ function getDisplayLabel(validator, schema, uiSchema = {}, rootSchema, globalOpt
     if (schemaType === "boolean" && uiSchema && !uiSchema[UI_WIDGET_KEY]) {
       displayLabel = false;
     }
-    if (uiSchema === null || uiSchema === void 0 ? void 0 : uiSchema[UI_FIELD_KEY]) {
+    if (uiSchema && uiSchema[UI_FIELD_KEY]) {
       displayLabel = false;
     }
   }
@@ -18068,20 +17454,20 @@ function omitExtraData(validator, schema, rootSchema = {}, formData, experimenta
     const requiredSet = new Set((_a = childSchema.required) !== null && _a !== void 0 ? _a : []);
     function setProperty(key, schemaDef, value, required = false) {
       var _a2;
-      const v2 = omit2(schemaDef, value, target[key]);
-      if (!required && isObject(v2)) {
+      const v3 = omit2(schemaDef, value, target[key]);
+      if (!required && isObject(v3)) {
         let sd = isSchemaObj(schemaDef) ? schemaDef : {};
         if (sd.$ref !== void 0) {
           sd = findSchemaDefinition(sd.$ref, rootSchema);
         }
         const innerRequired = new Set((_a2 = sd.required) !== null && _a2 !== void 0 ? _a2 : []);
-        const shouldDrop = Object.entries(v2).every(([k, val]) => !innerRequired.has(k) && isValueEmpty(val));
+        const shouldDrop = Object.entries(v3).every(([k, val]) => !innerRequired.has(k) && isValueEmpty(val));
         if (shouldDrop) {
           return;
         }
       }
-      if (v2 !== void 0) {
-        target[key] = v2;
+      if (v3 !== void 0) {
+        target[key] = v3;
       }
     }
     if (properties !== void 0) {
@@ -18134,18 +17520,18 @@ function omitExtraData(validator, schema, rootSchema = {}, formData, experimenta
     const { items, additionalItems } = childSchema;
     if (items !== void 0) {
       if (Array.isArray(items)) {
-        for (let i = 0; i < items.length; i += 1) {
-          target.push(omit2(items[i], source[i]));
+        for (let i2 = 0; i2 < items.length; i2 += 1) {
+          target.push(omit2(items[i2], source[i2]));
         }
       } else {
-        for (let i = 0; i < source.length; i += 1) {
-          target.push(omit2(items, source[i]));
+        for (let i2 = 0; i2 < source.length; i2 += 1) {
+          target.push(omit2(items, source[i2]));
         }
       }
     }
     if (additionalItems) {
-      for (let i = target.length; i < source.length; i += 1) {
-        target.push(omit2(additionalItems, source[i]));
+      for (let i2 = target.length; i2 < source.length; i2 += 1) {
+        target.push(omit2(additionalItems, source[i2]));
       }
     }
     return target;
@@ -18210,12 +17596,6 @@ function omitExtraData(validator, schema, rootSchema = {}, formData, experimenta
     }
     if (allOf) {
       localSchema = doMergeAllOf(localSchema, experimental_customMergeAllOf);
-      const remainingAllOf = localSchema.allOf;
-      if (remainingAllOf) {
-        for (let i = 0; i < remainingAllOf.length; i++) {
-          target = omit2(remainingAllOf[i], source, target);
-        }
-      }
     }
     let filtered = handleAnyOf(localSchema, source, handleOneOf(localSchema.oneOf, localSchema, source, target));
     const type = getSchemaType(localSchema);
@@ -18354,7 +17734,7 @@ function sanitizeDataForNewSchema(validator, rootSchema, newSchema, oldSchema, d
           }, []);
         } else {
           const newItemEnumValues = enumValuesForSchema(newSchemaItems);
-          const filteredData = newItemEnumValues ? data.filter((item) => newItemEnumValues.some((v2) => deepEquals_default(v2, item))) : data;
+          const filteredData = newItemEnumValues ? data.filter((item) => newItemEnumValues.some((v3) => deepEquals_default(v3, item))) : data;
           newFormData = maxItems > 0 && filteredData.length > maxItems ? filteredData.slice(0, maxItems) : filteredData;
         }
       }
@@ -18400,18 +17780,18 @@ function toPathSchemaInternal(validator, schema, name, rootSchema, formData, _re
   if (ITEMS_KEY in schema && Array.isArray(formData)) {
     const { items: schemaItems, additionalItems: schemaAdditionalItems } = schema;
     if (Array.isArray(schemaItems)) {
-      formData.forEach((element, i) => {
-        if (schemaItems[i]) {
-          pathSchema[i] = toPathSchemaInternal(validator, schemaItems[i], `${name}.${i}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
+      formData.forEach((element, i2) => {
+        if (schemaItems[i2]) {
+          pathSchema[i2] = toPathSchemaInternal(validator, schemaItems[i2], `${name}.${i2}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
         } else if (schemaAdditionalItems) {
-          pathSchema[i] = toPathSchemaInternal(validator, schemaAdditionalItems, `${name}.${i}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
+          pathSchema[i2] = toPathSchemaInternal(validator, schemaAdditionalItems, `${name}.${i2}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
         } else {
-          console.warn(`Unable to generate path schema for "${name}.${i}". No schema defined for it`);
+          console.warn(`Unable to generate path schema for "${name}.${i2}". No schema defined for it`);
         }
       });
     } else {
-      formData.forEach((element, i) => {
-        pathSchema[i] = toPathSchemaInternal(validator, schemaItems, `${name}.${i}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
+      formData.forEach((element, i2) => {
+        pathSchema[i2] = toPathSchemaInternal(validator, schemaItems, `${name}.${i2}`, rootSchema, element, _recurseList, experimental_customMergeAllOf);
       });
     }
   } else if (PROPERTIES_KEY in schema) {
@@ -18446,7 +17826,7 @@ var SchemaUtils = class {
    * @param [experimental_customMergeAllOf] - Optional function that allows for custom merging of `allOf` schemas
    */
   constructor(validator, rootSchema, experimental_defaultFormStateBehavior, experimental_customMergeAllOf) {
-    if ((rootSchema === null || rootSchema === void 0 ? void 0 : rootSchema[SCHEMA_KEY]) === JSON_SCHEMA_DRAFT_2020_12) {
+    if (rootSchema && rootSchema[SCHEMA_KEY] === JSON_SCHEMA_DRAFT_2020_12) {
       this.rootSchema = makeAllReferencesAbsolute(rootSchema, get_default(rootSchema, ID_KEY, "#"));
     } else {
       this.rootSchema = rootSchema;
@@ -18676,8 +18056,8 @@ function dataURItoBlob(dataURILike) {
   try {
     const binary = atob(base64);
     const array = new Array(binary.length);
-    for (let i = 0; i < binary.length; i += 1) {
-      array[i] = binary.charCodeAt(i);
+    for (let i2 = 0; i2 < binary.length; i2 += 1) {
+      array[i2] = binary.charCodeAt(i2);
     }
     const blob = new window.Blob([new Uint8Array(array)], { type });
     return { blob, name };
@@ -18688,11 +18068,11 @@ function dataURItoBlob(dataURILike) {
 
 // node_modules/@rjsf/utils/lib/pad.js
 function pad(num, width) {
-  let s = String(num);
-  while (s.length < width) {
-    s = `0${s}`;
+  let s2 = String(num);
+  while (s2.length < width) {
+    s2 = `0${s2}`;
   }
-  return s;
+  return s2;
 }
 
 // node_modules/@rjsf/utils/lib/dateRangeOptions.js
@@ -18709,8 +18089,8 @@ function dateRangeOptions(start, stop) {
     return dateRangeOptions(stop, start).reverse();
   }
   const options = [];
-  for (let i = resolvedStart; i <= resolvedStop; i += 1) {
-    options.push({ value: i, label: pad(i, 2) });
+  for (let i2 = resolvedStart; i2 <= resolvedStop; i2 += 1) {
+    options.push({ value: i2, label: pad(i2, 2) });
   }
   return options;
 }
@@ -18750,7 +18130,7 @@ function enumOptionsValueForIndex(valueIndex, allEnumOptions = [], emptyValue) {
 function enumOptionsDeselectValue(valueIndex, selected, allEnumOptions = []) {
   const value = enumOptionsValueForIndex(valueIndex, allEnumOptions);
   if (Array.isArray(selected)) {
-    return selected.filter((v2) => !deepEquals_default(v2, value));
+    return selected.filter((v3) => !deepEquals_default(v3, value));
   }
   return deepEquals_default(value, selected) ? void 0 : selected;
 }
@@ -18792,7 +18172,7 @@ function enumOptionsSelectValue(valueIndex, selected, allEnumOptions = []) {
     const index = allEnumOptions.findIndex((opt) => value === opt.value);
     const all = allEnumOptions.map(({ value: val }) => val);
     const updated = selected.slice(0, index).concat(value, selected.slice(index));
-    return updated.sort((a, b) => Number(all.indexOf(a) > all.indexOf(b)));
+    return updated.sort((a2, b2) => Number(all.indexOf(a2) > all.indexOf(b2)));
   }
   return selected;
 }
@@ -18817,7 +18197,7 @@ function enumOptionValueDecoder(value, enumOptions, format = "indexed", emptyVal
     return enumOptionsValueForIndex(value, enumOptions, emptyValue);
   }
   if (Array.isArray(value)) {
-    return value.map((v2) => decodeSingle(v2, enumOptions, emptyValue));
+    return value.map((v3) => decodeSingle(v3, enumOptions, emptyValue));
   }
   return decodeSingle(value, enumOptions, emptyValue);
 }
@@ -19000,20 +18380,20 @@ function pickBy(object, predicate) {
 var pickBy_default = pickBy;
 
 // node_modules/@rjsf/utils/lib/getChangedFields.js
-function getChangedFields(a, b) {
-  const aIsPlainObject = isPlainObject_default(a);
-  const bIsPlainObject = isPlainObject_default(b);
-  if (a === b || !aIsPlainObject && !bIsPlainObject) {
+function getChangedFields(a2, b2) {
+  const aIsPlainObject = isPlainObject_default(a2);
+  const bIsPlainObject = isPlainObject_default(b2);
+  if (a2 === b2 || !aIsPlainObject && !bIsPlainObject) {
     return [];
   }
   if (aIsPlainObject && !bIsPlainObject) {
-    return keys_default(a);
+    return keys_default(a2);
   }
   if (!aIsPlainObject && bIsPlainObject) {
-    return keys_default(b);
+    return keys_default(b2);
   }
-  const unequalFields = keys_default(pickBy_default(a, (value, key) => !deepEquals_default(value, get_default(b, key))));
-  const diffFields = difference_default(keys_default(b), keys_default(a));
+  const unequalFields = keys_default(pickBy_default(a2, (value, key) => !deepEquals_default(value, get_default(b2, key))));
+  const diffFields = difference_default(keys_default(b2), keys_default(a2));
   return [...unequalFields, ...diffFields];
 }
 
@@ -19110,7 +18490,7 @@ var DEFAULT_OPTIONS = {
 };
 function getSubmitButtonOptions(uiSchema = {}) {
   const uiOptions = getUiOptions(uiSchema);
-  if (uiOptions === null || uiOptions === void 0 ? void 0 : uiOptions[SUBMIT_BTN_OPTIONS_KEY]) {
+  if (uiOptions && uiOptions[SUBMIT_BTN_OPTIONS_KEY]) {
     const options = uiOptions[SUBMIT_BTN_OPTIONS_KEY];
     return { ...DEFAULT_OPTIONS, ...options };
   }
@@ -19215,10 +18595,9 @@ var widgetMap = {
   }
 };
 function mergeWidgetOptions(AWidget) {
-  var _a;
   let MergedWidget = get_default(AWidget, "MergedWidget");
   if (!MergedWidget) {
-    const defaultOptions = ((_a = AWidget.defaultProps) === null || _a === void 0 ? void 0 : _a.options) || {};
+    const defaultOptions = AWidget.defaultProps && AWidget.defaultProps.options || {};
     MergedWidget = ({ options, ...props }) => _jsx(AWidget, { options: { ...defaultOptions, ...options }, ...props });
     set_default(AWidget, "MergedWidget", MergedWidget);
   }
@@ -19251,8 +18630,8 @@ function getWidget(schema, widget, registeredWidgets = {}) {
 // node_modules/@rjsf/utils/lib/hashForSchema.js
 function hashString(string) {
   let hash = 0;
-  for (let i = 0; i < string.length; i++) {
-    const chr = string.charCodeAt(i);
+  for (let i2 = 0; i2 < string.length; i2++) {
+    const chr = string.charCodeAt(i2);
     hash = (hash << 5) - hash + chr;
     hash &= hash;
   }
@@ -19270,7 +18649,7 @@ function hashObject(object) {
   return hashString(sortedJSONStringify(object));
 }
 function hashForSchema(schema) {
-  return hashString(sortedJSONStringify(schema));
+  return hashObject(schema);
 }
 
 // node_modules/@rjsf/utils/lib/hasWidget.js
@@ -19278,12 +18657,12 @@ function hasWidget(schema, widget, registeredWidgets = {}) {
   try {
     getWidget(schema, widget, registeredWidgets);
     return true;
-  } catch (e2) {
-    const err = e2;
+  } catch (e) {
+    const err = e;
     if (err.message && (err.message.startsWith("No widget") || err.message.startsWith("Unsupported widget"))) {
       return false;
     }
-    throw e2;
+    throw e;
   }
 }
 
@@ -19334,7 +18713,7 @@ function isRootSchema(registry, schemaToCompare) {
   }
   if (REF_KEY in rootSchema) {
     const resolvedSchema = schemaUtils.retrieveSchema(rootSchema);
-    return deepEquals_default(schemaToCompare, resolvedSchema);
+    return deepEquals_default(schemaToCompare, omit_default(resolvedSchema, RJSF_REF_KEY));
   }
   return false;
 }
@@ -19347,13 +18726,6 @@ function labelValue(label, hideLabel, fallback) {
 // node_modules/@rjsf/utils/lib/localToUTC.js
 function localToUTC(dateString) {
   return dateString ? new Date(dateString).toJSON() : void 0;
-}
-
-// node_modules/@rjsf/utils/lib/logUnsupportedDefaultForEnum.js
-function logUnsupportedDefaultForEnum(id, schema, enumOptions, multiple = false) {
-  if (!multiple && Array.isArray(enumOptions) && schema.default !== void 0 && enumOptionsIndexForValue(schema.default, enumOptions, multiple) === void 0) {
-    console.error(`The schema default value "${schema.default}" is not one of the values in the enum options for "${id}"`);
-  }
 }
 
 // node_modules/@rjsf/utils/lib/lookupFromFormContext.js
@@ -19440,8 +18812,8 @@ function resolveUiSchema(schema, localUiSchema, registry) {
     if (ref && schema[REF_KEY] && !schema[RJSF_REF_KEY]) {
       try {
         resolvedSchema = findSchemaDefinition(ref, registry.rootSchema);
-      } catch (e2) {
-        console.warn("could not resolve $ref in resolveUiSchema:\n", e2);
+      } catch (e) {
+        console.warn("could not resolve $ref in resolveUiSchema:\n", e);
         return result;
       }
     }
@@ -19451,12 +18823,12 @@ function resolveUiSchema(schema, localUiSchema, registry) {
         const currentUiSchemaArray = result[keyword];
         const uiSchemaArray = Array.isArray(currentUiSchemaArray) ? [...currentUiSchemaArray] : [];
         let hasExpanded = false;
-        for (let i = 0; i < schemaOptions.length; i++) {
-          const option = schemaOptions[i];
+        for (let i2 = 0; i2 < schemaOptions.length; i2++) {
+          const option = schemaOptions[i2];
           const optionRef = (_b = option === null || option === void 0 ? void 0 : option[RJSF_REF_KEY]) !== null && _b !== void 0 ? _b : option === null || option === void 0 ? void 0 : option[REF_KEY];
           if (optionRef && optionRef in definitions) {
-            const optionUiSchema = uiSchemaArray[i] || {};
-            uiSchemaArray[i] = mergeObjects(definitions[optionRef], optionUiSchema);
+            const optionUiSchema = uiSchemaArray[i2] || {};
+            uiSchemaArray[i2] = mergeObjects(definitions[optionRef], optionUiSchema);
             hasExpanded = true;
           }
         }
@@ -19471,17 +18843,16 @@ function resolveUiSchema(schema, localUiSchema, registry) {
 
 // node_modules/@rjsf/utils/lib/schemaRequiresTrueValue.js
 function schemaRequiresTrueValue(schema) {
-  var _a, _b, _c;
   if (schema.const) {
     return true;
   }
-  if (((_a = schema.enum) === null || _a === void 0 ? void 0 : _a.length) === 1 && schema.enum[0] === true) {
+  if (schema.enum && schema.enum.length === 1 && schema.enum[0] === true) {
     return true;
   }
-  if (((_b = schema.anyOf) === null || _b === void 0 ? void 0 : _b.length) === 1) {
+  if (schema.anyOf && schema.anyOf.length === 1) {
     return schemaRequiresTrueValue(schema.anyOf[0]);
   }
-  if (((_c = schema.oneOf) === null || _c === void 0 ? void 0 : _c.length) === 1) {
+  if (schema.oneOf && schema.oneOf.length === 1) {
     return schemaRequiresTrueValue(schema.oneOf[0]);
   }
   if (schema.allOf) {
@@ -19491,45 +18862,25 @@ function schemaRequiresTrueValue(schema) {
   return false;
 }
 
-// node_modules/@rjsf/utils/lib/SelectedOptionDescription.js
-import { jsx as _jsx2 } from "react/jsx-runtime";
-function SelectedOptionDescription({ hideLabel, id, multiple, options, registry, uiSchema, value }) {
-  var _a, _b;
-  if (multiple || hideLabel) {
-    return null;
-  }
-  const { label = true } = getUiOptions(uiSchema, registry.globalUiOptions);
-  if (!label) {
-    return null;
-  }
-  const option = (_a = options.enumOptions) === null || _a === void 0 ? void 0 : _a.find(({ value: enumValue }) => enumOptionsIsSelected(enumValue, value));
-  const description = (_b = option === null || option === void 0 ? void 0 : option.schema) === null || _b === void 0 ? void 0 : _b.description;
-  if (!description) {
-    return null;
-  }
-  const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
-  return _jsx2(DescriptionFieldTemplate, { id: descriptionId(id), description, schema: option.schema, uiSchema, registry });
-}
-
 // node_modules/@rjsf/utils/lib/shallowEquals.js
-function shallowEquals(a, b) {
-  if (Object.is(a, b)) {
+function shallowEquals(a2, b2) {
+  if (Object.is(a2, b2)) {
     return true;
   }
-  if (a == null || b == null) {
+  if (a2 == null || b2 == null) {
     return false;
   }
-  if (typeof a !== "object" || typeof b !== "object") {
+  if (typeof a2 !== "object" || typeof b2 !== "object") {
     return false;
   }
-  const keysA = Object.keys(a);
-  const keysB = Object.keys(b);
+  const keysA = Object.keys(a2);
+  const keysB = Object.keys(b2);
   if (keysA.length !== keysB.length) {
     return false;
   }
-  for (let i = 0; i < keysA.length; i += 1) {
-    const key = keysA[i];
-    if (!Object.hasOwn(b, key) || !Object.is(a[key], b[key])) {
+  for (let i2 = 0; i2 < keysA.length; i2 += 1) {
+    const key = keysA[i2];
+    if (!Object.hasOwn(b2, key) || !Object.is(a2[key], b2[key])) {
       return false;
     }
   }
@@ -19551,7 +18902,7 @@ function shouldRender(component, nextProps, nextState, updateStrategy = "customD
 
 // node_modules/@rjsf/utils/lib/shouldRenderOptionalField.js
 function getSchemaTypesForXxxOf(schemas) {
-  const allTypes = uniq_default(schemas.map((s) => isObject_default(s) ? getSchemaType(s) : void 0).flat().filter((t) => t !== void 0));
+  const allTypes = uniq_default(schemas.map((s2) => isObject_default(s2) ? getSchemaType(s2) : void 0).flat().filter((t) => t !== void 0));
   return allTypes.length === 1 ? allTypes[0] : allTypes;
 }
 function shouldRenderOptionalField(registry, schema, required, uiSchema) {
@@ -19660,8 +19011,8 @@ function unwrapErrorHandler(errorHandler) {
 }
 
 // node_modules/@rjsf/utils/lib/useAltDateWidgetProps.js
-import { jsx as _jsx3 } from "react/jsx-runtime";
-import { useCallback, useEffect as useEffect3, useMemo, useState as useState15 } from "react";
+import { jsx as _jsx2 } from "react/jsx-runtime";
+import { useCallback, useEffect as useEffect3, useMemo, useState as useState14 } from "react";
 function readyForChange(state) {
   return Object.values(state).every((value) => value !== -1);
 }
@@ -19670,11 +19021,11 @@ function DateElement(props) {
   const id = `${rootId}_${type}`;
   const { SelectWidget: SelectWidget2 } = registry.widgets;
   const onChange = useCallback((newValue) => select(type, newValue), [select, type]);
-  return _jsx3(SelectWidget2, { schema: { type: "integer" }, id, name, className, options: { enumOptions: dateRangeOptions(range[0], range[1]) }, placeholder: type, value, disabled, readonly, autofocus, onChange, onBlur, onFocus, registry, label: "", "aria-describedby": ariaDescribedByIds(rootId) });
+  return _jsx2(SelectWidget2, { schema: { type: "integer" }, id, name, className, options: { enumOptions: dateRangeOptions(range[0], range[1]) }, placeholder: type, value, disabled, readonly, autofocus, onChange, onBlur, onFocus, registry, label: "", "aria-describedby": ariaDescribedByIds(rootId) });
 }
 function useAltDateWidgetProps(props) {
   const { time = false, disabled = false, readonly = false, options, onChange, value } = props;
-  const [state, setState] = useState15(parseDateString(value, time));
+  const [state, setState] = useState14(parseDateString(value, time));
   useEffect3(() => {
     setState(parseDateString(value, time));
   }, [time, value]);
@@ -19723,7 +19074,7 @@ import { useCallback as useCallback2, useMemo as useMemo2 } from "react";
 function addNameToDataURL(dataURL, name) {
   return dataURL.replace(";base64", `;name=${encodeURIComponent(name)};base64`);
 }
-async function processFile(file) {
+function processFile(file) {
   const { name, size, type } = file;
   return new Promise((resolve, reject) => {
     const reader = new window.FileReader();
@@ -19749,7 +19100,7 @@ async function processFile(file) {
     reader.readAsDataURL(file);
   });
 }
-async function processFiles(files) {
+function processFiles(files) {
   return Promise.all(Array.from(files).map(processFile));
 }
 function extractFileInfo(dataURLs) {
@@ -19792,7 +19143,7 @@ function useFileWidgetProps(value, onChange, multiple = false) {
   }, [values2, multiple, onChange]);
   const handleRemove = useCallback2((index) => {
     if (multiple) {
-      const newValue = values2.filter((_, i) => i !== index);
+      const newValue = values2.filter((_2, i2) => i2 !== index);
       onChange(newValue);
     } else {
       onChange(void 0);
@@ -19874,7 +19225,6 @@ var TranslatableString;
   TranslatableString2["AddButton"] = "Add";
   TranslatableString2["AddItemButton"] = "Add Item";
   TranslatableString2["CopyButton"] = "Copy";
-  TranslatableString2["ExpandButton"] = "Expand Cycle";
   TranslatableString2["MoveDownButton"] = "Move down";
   TranslatableString2["MoveUpButton"] = "Move up";
   TranslatableString2["RemoveButton"] = "Remove";
@@ -19895,7 +19245,6 @@ var TranslatableString;
   TranslatableString2["TitleOptionPrefix"] = "%1 option %2";
   TranslatableString2["KeyLabel"] = "%1 Key";
   TranslatableString2["DeprecatedLabel"] = "%1 (deprecated)";
-  TranslatableString2["CycleDetected"] = 'Circular reference ($ref cycle) detected for field "%1". You may choose to expand to the next cycle break';
   TranslatableString2["InvalidObjectField"] = 'Invalid "%1" object field configuration: _%2_.';
   TranslatableString2["UnsupportedField"] = "Unsupported field schema.";
   TranslatableString2["UnsupportedFieldWithId"] = "Unsupported field schema for field `%1`.";
@@ -19918,8 +19267,8 @@ function unset(object, path) {
 var unset_default = unset;
 
 // node_modules/@rjsf/core/lib/components/fields/ArrayField.js
-import { jsx as _jsx4 } from "react/jsx-runtime";
-import { memo, useCallback as useCallback3, useMemo as useMemo3, useRef as useRef3, useState as useState16 } from "react";
+import { jsx as _jsx3 } from "react/jsx-runtime";
+import { memo, useCallback as useCallback3, useMemo as useMemo3, useRef as useRef3, useState as useState15 } from "react";
 function generateRowId() {
   return uniqueId_default("rjsf-array-item-");
 }
@@ -19957,8 +19306,8 @@ function computeItemUiSchema(uiSchema, item, index, formContext) {
     try {
       const result = uiSchema.items(item, index, formContext);
       return result;
-    } catch (e2) {
-      console.error(`Error executing dynamic uiSchema.items function for item at index ${index}:`, e2);
+    } catch (e) {
+      console.error(`Error executing dynamic uiSchema.items function for item at index ${index}:`, e);
       return void 0;
     }
   } else {
@@ -19986,7 +19335,7 @@ function ArrayAsMultiSelect(props) {
   const label = uiTitle ?? schema.title ?? name;
   const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
   const multiValueFieldPathId = useDeepCompareMemo(toFieldPathId("", globalFormOptions, fieldPathId, true));
-  return _jsx4(Widget, { id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, options: { ...options, enumOptions }, schema, uiSchema, registry, value: items, disabled, readonly, required, label, hideLabel: !displayLabel, placeholder, autofocus, rawErrors, htmlName: multiValueFieldPathId.name });
+  return _jsx3(Widget, { id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, options: { ...options, enumOptions }, schema, uiSchema, registry, value: items, disabled, readonly, required, label, hideLabel: !displayLabel, placeholder, autofocus, rawErrors, htmlName: multiValueFieldPathId.name });
 }
 function ArrayAsCustomWidget(props) {
   const { schema, fieldPathId, uiSchema, disabled = false, readonly = false, autofocus = false, required = false, hideError, placeholder, onBlur, onFocus, formData: items = [], registry, rawErrors, name, onSelectChange } = props;
@@ -19996,7 +19345,7 @@ function ArrayAsCustomWidget(props) {
   const label = uiTitle ?? schema.title ?? name;
   const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
   const multiValueFieldPathId = useDeepCompareMemo(toFieldPathId("", globalFormOptions, fieldPathId, true));
-  return _jsx4(Widget, { id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, options, schema, uiSchema, registry, value: items, disabled, readonly, hideError, required, label, hideLabel: !displayLabel, placeholder, autofocus, rawErrors, htmlName: multiValueFieldPathId.name });
+  return _jsx3(Widget, { id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, options, schema, uiSchema, registry, value: items, disabled, readonly, hideError, required, label, hideLabel: !displayLabel, placeholder, autofocus, rawErrors, htmlName: multiValueFieldPathId.name });
 }
 function ArrayAsFiles(props) {
   const { schema, uiSchema, fieldPathId, name, disabled = false, readonly = false, autofocus = false, required = false, onBlur, onFocus, registry, formData: items = [], rawErrors, onSelectChange } = props;
@@ -20006,7 +19355,7 @@ function ArrayAsFiles(props) {
   const label = uiTitle ?? schema.title ?? name;
   const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
   const multiValueFieldPathId = useDeepCompareMemo(toFieldPathId("", globalFormOptions, fieldPathId, true));
-  return _jsx4(Widget, { options, id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, schema, uiSchema, value: items, disabled, readonly, required, registry, autofocus, rawErrors, label, hideLabel: !displayLabel, htmlName: multiValueFieldPathId.name });
+  return _jsx3(Widget, { options, id: multiValueFieldPathId[ID_KEY], name, multiple: true, onChange: onSelectChange, onBlur, onFocus, schema, uiSchema, value: items, disabled, readonly, required, registry, autofocus, rawErrors, label, hideLabel: !displayLabel, htmlName: multiValueFieldPathId.name });
 }
 function ArrayFieldItemInner(props) {
   const { itemKey, index, name, disabled, hideError, readonly, registry, uiOptions, parentUiSchema, canAdd, canRemove = true, canMoveUp, canMoveDown, rawItemSchema, itemData, itemUiSchema, parentFieldPathId, itemErrorSchema, autofocus, onBlur, onFocus, onChange, rawErrors, totalItems, title, handleAddItem, handleCopyItem, handleRemoveItem, handleReorderItems } = props;
@@ -20043,7 +19392,7 @@ function ArrayFieldItemInner(props) {
     handleReorderItems(event, index, index + 1);
   }, [handleReorderItems, index]);
   const templateProps = {
-    children: _jsx4(ItemSchemaField, { name, title, index, schema: itemSchema, uiSchema: itemUiSchema, formData: itemData, errorSchema: itemErrorSchema, fieldPathId, required: isItemRequired(itemSchema), onChange, onBlur, onFocus, registry, disabled, readonly, hideError, autofocus, rawErrors }),
+    children: _jsx3(ItemSchemaField, { name, title, index, schema: itemSchema, uiSchema: itemUiSchema, formData: itemData, errorSchema: itemErrorSchema, fieldPathId, required: isItemRequired(itemSchema), onChange, onBlur, onFocus, registry, disabled, readonly, hideError, autofocus, rawErrors }),
     buttonsProps: {
       fieldPathId,
       disabled,
@@ -20078,7 +19427,7 @@ function ArrayFieldItemInner(props) {
     displayLabel,
     hasDescription
   };
-  return _jsx4(ArrayFieldItemTemplate2, { ...templateProps });
+  return _jsx3(ArrayFieldItemTemplate2, { ...templateProps });
 }
 var ArrayFieldItem = memo(ArrayFieldItemInner);
 function NormalArray(props) {
@@ -20096,7 +19445,7 @@ function NormalArray(props) {
   const actualFormData = hasFormData ? keyedFormData : [];
   const extraClass = renderOptionalField ? " rjsf-optional-array-field" : "";
   const childFieldPathId = props.childFieldPathId ?? fieldPathId;
-  const optionalDataControl = renderOptionalField ? _jsx4(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId }) : void 0;
+  const optionalDataControl = renderOptionalField ? _jsx3(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId }) : void 0;
   const arrayProps = {
     canAdd,
     items: actualFormData.map((keyedItem, index) => {
@@ -20135,7 +19484,7 @@ function NormalArray(props) {
         handleReorderItems,
         onChange
       };
-      return _jsx4(ArrayFieldItem, { ...itemProps }, key);
+      return _jsx3(ArrayFieldItem, { ...itemProps }, key);
     }),
     className: `rjsf-field rjsf-field-array rjsf-field-array-of-${itemsSchema.type}${extraClass}`,
     disabled,
@@ -20152,7 +19501,7 @@ function NormalArray(props) {
     optionalDataControl
   };
   const Template = getTemplate("ArrayFieldTemplate", registry, uiOptions);
-  return _jsx4(Template, { ...arrayProps });
+  return _jsx3(Template, { ...arrayProps });
 }
 function FixedArray(props) {
   const { schema, uiSchema = {}, formData, errorSchema, fieldPathId, name, title, disabled = false, readonly = false, autofocus = false, required = false, hideError = false, registry, onBlur, onFocus, rawErrors, keyedFormData, onChange, handleAddItem, handleCopyItem, handleRemoveItem, handleReorderItems } = props;
@@ -20171,7 +19520,7 @@ function FixedArray(props) {
   }
   const actualFormData = hasFormData ? keyedFormData : [];
   const extraClass = renderOptionalField ? " rjsf-optional-array-field" : "";
-  const optionalDataControl = renderOptionalField ? _jsx4(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId }) : void 0;
+  const optionalDataControl = renderOptionalField ? _jsx3(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId }) : void 0;
   const canAdd = canAddItem(registry, schema, items, uiSchema) && hasAdditionalItems && (!renderOptionalField || hasFormData);
   const arrayProps = {
     canAdd,
@@ -20225,7 +19574,7 @@ function FixedArray(props) {
         handleRemoveItem,
         handleReorderItems
       };
-      return _jsx4(ArrayFieldItem, { ...itemProps }, key);
+      return _jsx3(ArrayFieldItem, { ...itemProps }, key);
     }),
     onAddClick: handleAddItem,
     readonly,
@@ -20239,11 +19588,11 @@ function FixedArray(props) {
     optionalDataControl
   };
   const Template = getTemplate("ArrayFieldTemplate", registry, uiOptions);
-  return _jsx4(Template, { ...arrayProps });
+  return _jsx3(Template, { ...arrayProps });
 }
 function useKeyedFormData(formData = []) {
   const newHash = useMemo3(() => hashObject(formData), [formData]);
-  const [state, setState] = useState16(() => ({
+  const [state, setState] = useState15(() => ({
     formDataHash: newHash,
     keyedFormData: generateKeyedFormData(formData)
   }));
@@ -20283,11 +19632,11 @@ function ArrayField(props) {
     if (errorSchemaRef.current) {
       newErrorSchema = {};
       for (const idx of Object.keys(errorSchemaRef.current)) {
-        const i = parseInt(idx, 10);
-        if (index === void 0 || i < index) {
-          set_default(newErrorSchema, [i], errorSchemaRef.current[i]);
-        } else if (i >= index) {
-          set_default(newErrorSchema, [i + 1], errorSchemaRef.current[i]);
+        const i2 = parseInt(idx, 10);
+        if (index === void 0 || i2 < index) {
+          set_default(newErrorSchema, [i2], errorSchemaRef.current[i2]);
+        } else if (i2 >= index) {
+          set_default(newErrorSchema, [i2 + 1], errorSchemaRef.current[i2]);
         }
       }
     }
@@ -20311,11 +19660,11 @@ function ArrayField(props) {
     if (errorSchemaRef.current) {
       newErrorSchema = {};
       for (const idx of Object.keys(errorSchemaRef.current)) {
-        const i = parseInt(idx, 10);
-        if (i <= index) {
-          set_default(newErrorSchema, [i], errorSchemaRef.current[i]);
-        } else if (i > index) {
-          set_default(newErrorSchema, [i + 1], errorSchemaRef.current[i]);
+        const i2 = parseInt(idx, 10);
+        if (i2 <= index) {
+          set_default(newErrorSchema, [i2], errorSchemaRef.current[i2]);
+        } else if (i2 > index) {
+          set_default(newErrorSchema, [i2 + 1], errorSchemaRef.current[i2]);
         }
       }
     }
@@ -20339,15 +19688,15 @@ function ArrayField(props) {
     if (errorSchemaRef.current) {
       newErrorSchema = {};
       for (const idx of Object.keys(errorSchemaRef.current)) {
-        const i = parseInt(idx, 10);
-        if (i < index) {
-          set_default(newErrorSchema, [i], errorSchemaRef.current[i]);
-        } else if (i > index) {
-          set_default(newErrorSchema, [i - 1], errorSchemaRef.current[i]);
+        const i2 = parseInt(idx, 10);
+        if (i2 < index) {
+          set_default(newErrorSchema, [i2], errorSchemaRef.current[i2]);
+        } else if (i2 > index) {
+          set_default(newErrorSchema, [i2 - 1], errorSchemaRef.current[i2]);
         }
       }
     }
-    const newKeyedFormData = keyedFormDataRef.current.filter((_, i) => i !== index);
+    const newKeyedFormData = keyedFormDataRef.current.filter((_2, i2) => i2 !== index);
     onChange(updateKeyedFormData(newKeyedFormData), childFieldPathId.path, newErrorSchema);
   }, [onChange, updateKeyedFormData, childFieldPathId]);
   const handleReorderItems = useCallback3((event, index, newIndex) => {
@@ -20359,13 +19708,13 @@ function ArrayField(props) {
     if (errorSchemaRef.current) {
       newErrorSchema = {};
       for (const idx of Object.keys(errorSchemaRef.current)) {
-        const i = parseInt(idx, 10);
-        if (i === index) {
+        const i2 = parseInt(idx, 10);
+        if (i2 === index) {
           set_default(newErrorSchema, [newIndex], errorSchemaRef.current[index]);
-        } else if (i === newIndex) {
+        } else if (i2 === newIndex) {
           set_default(newErrorSchema, [index], errorSchemaRef.current[newIndex]);
         } else {
-          set_default(newErrorSchema, [idx], errorSchemaRef.current[i]);
+          set_default(newErrorSchema, [idx], errorSchemaRef.current[i2]);
         }
       }
     }
@@ -20412,29 +19761,29 @@ function ArrayField(props) {
     if (!globalFormOptions.useFallbackUiForUnsupportedType) {
       const uiOptions = getUiOptions(uiSchema);
       const UnsupportedFieldTemplate = getTemplate("UnsupportedFieldTemplate", registry, uiOptions);
-      return _jsx4(UnsupportedFieldTemplate, { schema, fieldPathId, reason: translateString(TranslatableString.MissingItems), registry });
+      return _jsx3(UnsupportedFieldTemplate, { schema, fieldPathId, reason: translateString(TranslatableString.MissingItems), registry });
     }
     const fallbackSchema = { ...schema, [ITEMS_KEY]: { type: void 0 } };
     arrayAsMultiProps.schema = fallbackSchema;
     arrayProps.schema = fallbackSchema;
   }
   if (schemaUtils.isMultiSelect(arrayAsMultiProps.schema)) {
-    return _jsx4(ArrayAsMultiSelect, { ...arrayAsMultiProps });
+    return _jsx3(ArrayAsMultiSelect, { ...arrayAsMultiProps });
   }
   if (isCustomWidget(uiSchema)) {
-    return _jsx4(ArrayAsCustomWidget, { ...arrayAsMultiProps });
+    return _jsx3(ArrayAsCustomWidget, { ...arrayAsMultiProps });
   }
   if (isFixedItems(arrayAsMultiProps.schema)) {
-    return _jsx4(FixedArray, { ...arrayProps });
+    return _jsx3(FixedArray, { ...arrayProps });
   }
   if (schemaUtils.isFilesArray(arrayAsMultiProps.schema, uiSchema)) {
-    return _jsx4(ArrayAsFiles, { ...arrayAsMultiProps });
+    return _jsx3(ArrayAsFiles, { ...arrayAsMultiProps });
   }
-  return _jsx4(NormalArray, { ...arrayProps });
+  return _jsx3(NormalArray, { ...arrayProps });
 }
 
 // node_modules/@rjsf/core/lib/components/fields/BooleanField.js
-import { jsx as _jsx5 } from "react/jsx-runtime";
+import { jsx as _jsx4 } from "react/jsx-runtime";
 import { useCallback as useCallback4 } from "react";
 function BooleanField(props) {
   const { schema, name, uiSchema, fieldPathId, formData, registry, required, disabled, readonly, hideError, autofocus, title, onChange, onFocus, onBlur, rawErrors } = props;
@@ -20468,7 +19817,7 @@ function BooleanField(props) {
     }, uiSchema);
   } else {
     const enums = schema.enum ?? [true, false];
-    if (!enumNames && enums.length === 2 && enums.every((v2) => typeof v2 === "boolean")) {
+    if (!enumNames && enums.length === 2 && enums.every((v3) => typeof v3 === "boolean")) {
       enumOptions = [
         {
           value: enums[0],
@@ -20484,30 +19833,13 @@ function BooleanField(props) {
     }
   }
   const onWidgetChange = useCallback4((value, errorSchema, id) => onChange(value, fieldPathId.path, errorSchema, id), [onChange, fieldPathId]);
-  return _jsx5(Widget, { options: { ...options, enumOptions }, schema, uiSchema, id: fieldPathId.$id, name, onChange: onWidgetChange, onFocus, onBlur, label, hideLabel: !displayLabel, value: formData, required, disabled, readonly, hideError, registry, autofocus, rawErrors, htmlName: fieldPathId.name });
+  return _jsx4(Widget, { options: { ...options, enumOptions }, schema, uiSchema, id: fieldPathId.$id, name, onChange: onWidgetChange, onFocus, onBlur, label, hideLabel: !displayLabel, value: formData, required, disabled, readonly, hideError, registry, autofocus, rawErrors, htmlName: fieldPathId.name });
 }
 var BooleanField_default = BooleanField;
 
-// node_modules/@rjsf/core/lib/components/fields/CyclicSchemaField.js
-import { jsx as _jsx6 } from "react/jsx-runtime";
-import { useState as useState17 } from "react";
-function CyclicSchemaField(props) {
-  const [expanded, setExpanded] = useState17(false);
-  const { name, registry, schema, uiSchema, fieldPathId } = props;
-  const { globalUiOptions } = registry;
-  const uiOptions = getUiOptions(uiSchema, globalUiOptions);
-  const CyclicSchemaExpandTemplate2 = getTemplate("CyclicSchemaExpandTemplate", registry, uiOptions);
-  if (!expanded) {
-    return _jsx6(CyclicSchemaExpandTemplate2, { registry, schema, uiSchema, name, fieldPathId, onExpand: () => setExpanded(true) });
-  }
-  const { fields: fields2 } = registry;
-  const { SchemaField: SchemaField2 } = fields2;
-  return _jsx6(SchemaField2, { ...props, schema: { ...schema, [RJSF_REF_CYCLE_KEY]: false } });
-}
-
 // node_modules/@rjsf/core/lib/components/fields/FallbackField.js
-import { jsx as _jsx7 } from "react/jsx-runtime";
-import { useMemo as useMemo4, useState as useState18 } from "react";
+import { jsx as _jsx5 } from "react/jsx-runtime";
+import { useMemo as useMemo4, useState as useState16 } from "react";
 function getFallbackTypeSelectionSchema(title) {
   return {
     type: "string",
@@ -20543,7 +19875,7 @@ function castToNewType(formData, newType) {
 function FallbackField(props) {
   const { id, formData, displayLabel = true, schema, name, uiSchema, required, disabled = false, readonly = false, onBlur, onFocus, registry, fieldPathId, onChange, errorSchema } = props;
   const { translateString, fields: fields2, globalFormOptions } = registry;
-  const [type, setType] = useState18(getTypeOfFormData(formData));
+  const [type, setType] = useState16(getTypeOfFormData(formData));
   const uiOptions = getUiOptions(uiSchema);
   const typeSelectorInnerFieldPathId = useDeepCompareMemo(toFieldPathId("__internal_type_selector", globalFormOptions, fieldPathId));
   const schemaTitle = translateString(TranslatableString.Type);
@@ -20557,11 +19889,11 @@ function FallbackField(props) {
   if (!globalFormOptions.useFallbackUiForUnsupportedType) {
     const { reason = translateString(TranslatableString.UnknownFieldType, [String(schema.type)]) } = props;
     const UnsupportedFieldTemplate = getTemplate("UnsupportedFieldTemplate", registry, uiOptions);
-    return _jsx7(UnsupportedFieldTemplate, { schema, fieldPathId, reason, registry });
+    return _jsx5(UnsupportedFieldTemplate, { schema, fieldPathId, reason, registry });
   }
   const FallbackFieldTemplate2 = getTemplate("FallbackFieldTemplate", registry, uiOptions);
   const { SchemaField: SchemaField2 } = fields2;
-  return _jsx7(FallbackFieldTemplate2, { schema, registry, typeSelector: _jsx7(SchemaField2, { fieldPathId: typeSelectorInnerFieldPathId, name: `${name}__fallback_type`, schema: typesOptionSchema, formData: type, onChange: onTypeChange, onBlur, onFocus, registry, hideLabel: !displayLabel, disabled, readonly, required }, formData ? hashObject(formData) : "__empty__"), schemaField: _jsx7(SchemaField2, { ...props, schema: {
+  return _jsx5(FallbackFieldTemplate2, { schema, registry, typeSelector: _jsx5(SchemaField2, { fieldPathId: typeSelectorInnerFieldPathId, name: `${name}__fallback_type`, schema: typesOptionSchema, formData: type, onChange: onTypeChange, onBlur, onFocus, registry, hideLabel: !displayLabel, disabled, readonly, required }, formData ? hashObject(formData) : "__empty__"), schemaField: _jsx5(SchemaField2, { ...props, schema: {
     type,
     title: translateString(TranslatableString.Value),
     ...type === "object" && { additionalProperties: true }
@@ -20570,7 +19902,7 @@ function FallbackField(props) {
 
 // node_modules/@rjsf/core/lib/components/fields/LayoutGridField.js
 import { createElement as _createElement } from "react";
-import { jsx as _jsx8 } from "react/jsx-runtime";
+import { jsx as _jsx6 } from "react/jsx-runtime";
 
 // node_modules/lodash-es/_baseValues.js
 function baseValues(object, props) {
@@ -20850,7 +20182,7 @@ function computeUIComponentPropsFromGridSchema(registry, gridSchema) {
     }
     UIComponent = getCustomRenderComponent(render, registry);
     if (!innerName && UIComponent) {
-      rendered = _jsx8(UIComponent, { ...innerProps, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.uiComponent });
+      rendered = _jsx6(UIComponent, { ...innerProps, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.uiComponent });
     }
   }
   return { name, UIComponent, uiProps, rendered };
@@ -20869,7 +20201,7 @@ function LayoutGridCondition(props) {
   const { operator, field = "", value } = gridProps;
   const fieldData = get_default(formData, field, null);
   if (conditionMatches(operator, fieldData, value)) {
-    return _jsx8(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children });
+    return _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children });
   }
   return null;
 }
@@ -20879,7 +20211,7 @@ function LayoutGridCol(props) {
   const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.COLUMN, registry);
   const uiOptions = getUiOptions(uiSchema);
   const GridTemplate2 = getTemplate("GridTemplate", registry, uiOptions);
-  return _jsx8(GridTemplate2, { column: true, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.col, ...gridProps, children: _jsx8(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children }) });
+  return _jsx6(GridTemplate2, { column: true, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.col, ...gridProps, children: _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children }) });
 }
 function LayoutGridColumns(props) {
   const { layoutGridSchema, ...layoutGridFieldProps } = props;
@@ -20887,7 +20219,7 @@ function LayoutGridColumns(props) {
   const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.COLUMNS, registry);
   const uiOptions = getUiOptions(uiSchema);
   const GridTemplate2 = getTemplate("GridTemplate", registry, uiOptions);
-  return children.map((child) => _jsx8(GridTemplate2, { column: true, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.col, ...gridProps, children: _jsx8(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: [child] }) }, `column-${hashObject(child)}`));
+  return children.map((child) => _jsx6(GridTemplate2, { column: true, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.col, ...gridProps, children: _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: [child] }) }, `column-${hashObject(child)}`));
 }
 function LayoutGridRow(props) {
   const { layoutGridSchema, ...layoutGridFieldProps } = props;
@@ -20895,7 +20227,7 @@ function LayoutGridRow(props) {
   const { children, gridProps } = findChildrenAndProps(layoutGridSchema, GridType.ROW, registry);
   const uiOptions = getUiOptions(uiSchema);
   const GridTemplate2 = getTemplate("GridTemplate", registry, uiOptions);
-  return _jsx8(GridTemplate2, { ...gridProps, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.row, children: _jsx8(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children }) });
+  return _jsx6(GridTemplate2, { ...gridProps, "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.row, children: _jsx6(LayoutGridFieldChildren, { ...layoutGridFieldProps, childrenLayoutGridSchemaId: children }) });
 }
 function LayoutGridFieldComponent(props) {
   const {
@@ -20926,10 +20258,10 @@ function LayoutGridFieldComponent(props) {
   if (schema) {
     const Field = optionsInfo?.hasDiscriminator ? LayoutMultiSchemaField2 : SchemaField2;
     const { fieldUiSchema, uiReadonly } = computeFieldUiSchema(name, uiProps, uiSchema, isReadonly, readonly);
-    return _jsx8(Field, { "data-testid": optionsInfo?.hasDiscriminator ? LAYOUT_GRID_FIELD_TEST_IDS.layoutMultiSchemaField : LAYOUT_GRID_FIELD_TEST_IDS.field, ...otherProps, name, required: isRequired2, readonly: uiReadonly, schema, uiSchema: fieldUiSchema, errorSchema: get_default(errorSchema, name), fieldPathId: memoFieldPathId, formData: get_default(formData, name), onChange, onBlur, onFocus, options: optionsInfo?.options, registry });
+    return _jsx6(Field, { "data-testid": optionsInfo?.hasDiscriminator ? LAYOUT_GRID_FIELD_TEST_IDS.layoutMultiSchemaField : LAYOUT_GRID_FIELD_TEST_IDS.field, ...otherProps, name, required: isRequired2, readonly: uiReadonly, schema, uiSchema: fieldUiSchema, errorSchema: get_default(errorSchema, name), fieldPathId: memoFieldPathId, formData: get_default(formData, name), onChange, onBlur, onFocus, options: optionsInfo?.options, registry });
   }
   if (UIComponent) {
-    return _jsx8(UIComponent, { "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.uiComponent, ...otherProps, name, required: isRequired2, formData, readOnly: !!isReadonly || readonly, errorSchema, uiSchema, schema: initialSchema, fieldPathId, onBlur, onFocus, registry, ...uiProps });
+    return _jsx6(UIComponent, { "data-testid": LAYOUT_GRID_FIELD_TEST_IDS.uiComponent, ...otherProps, name, required: isRequired2, formData, readOnly: !!isReadonly || readonly, errorSchema, uiSchema, schema: initialSchema, fieldPathId, onBlur, onFocus, registry, ...uiProps });
   }
   return null;
 }
@@ -20942,24 +20274,24 @@ function LayoutGridField(props) {
   }
   if (isObject_default(layoutGridSchema)) {
     if (GridType.ROW in layoutGridSchema) {
-      return _jsx8(LayoutGridRow, { ...props, layoutGridSchema });
+      return _jsx6(LayoutGridRow, { ...props, layoutGridSchema });
     }
     if (GridType.COLUMN in layoutGridSchema) {
-      return _jsx8(LayoutGridCol, { ...props, layoutGridSchema });
+      return _jsx6(LayoutGridCol, { ...props, layoutGridSchema });
     }
     if (GridType.COLUMNS in layoutGridSchema) {
-      return _jsx8(LayoutGridColumns, { ...props, layoutGridSchema });
+      return _jsx6(LayoutGridColumns, { ...props, layoutGridSchema });
     }
     if (GridType.CONDITION in layoutGridSchema) {
-      return _jsx8(LayoutGridCondition, { ...props, layoutGridSchema });
+      return _jsx6(LayoutGridCondition, { ...props, layoutGridSchema });
     }
   }
-  return _jsx8(LayoutGridFieldComponent, { ...props, gridSchema: layoutGridSchema });
+  return _jsx6(LayoutGridFieldComponent, { ...props, gridSchema: layoutGridSchema });
 }
 LayoutGridField.TEST_IDS = LAYOUT_GRID_FIELD_TEST_IDS;
 
 // node_modules/@rjsf/core/lib/components/fields/LayoutHeaderField.js
-import { jsx as _jsx9 } from "react/jsx-runtime";
+import { jsx as _jsx7 } from "react/jsx-runtime";
 function LayoutHeaderField(props) {
   const { fieldPathId, title, schema, uiSchema, required, registry, name } = props;
   const options = getUiOptions(uiSchema, registry.globalUiOptions);
@@ -20970,12 +20302,12 @@ function LayoutHeaderField(props) {
     return null;
   }
   const TitleFieldTemplate = getTemplate("TitleFieldTemplate", registry, options);
-  return _jsx9(TitleFieldTemplate, { id: titleId(fieldPathId), title: fieldTitle, required, schema, uiSchema, registry });
+  return _jsx7(TitleFieldTemplate, { id: titleId(fieldPathId), title: fieldTitle, required, schema, uiSchema, registry });
 }
 
 // node_modules/@rjsf/core/lib/components/fields/LayoutMultiSchemaField.js
-import { jsx as _jsx10 } from "react/jsx-runtime";
-import { useState as useState19, useEffect as useEffect4 } from "react";
+import { jsx as _jsx8 } from "react/jsx-runtime";
+import { useState as useState17, useEffect as useEffect4 } from "react";
 function getSelectedOption(options, selectorField, value) {
   const defaultValue = "!@#!@$@#$!@$#";
   const schemaOptions = options.map(({ schema }) => schema);
@@ -21002,7 +20334,7 @@ function computeEnumOptions(schema, options, schemaUtils, uiSchema, formData) {
 function LayoutMultiSchemaField(props) {
   const { name, baseType, disabled = false, formData, fieldPathId, onBlur, onChange, options, onFocus, registry, uiSchema, schema, autofocus, readonly, required, errorSchema, hideError = false } = props;
   const { widgets: widgets2, schemaUtils, globalUiOptions } = registry;
-  const [enumOptions, setEnumOptions] = useState19(computeEnumOptions(schema, options, schemaUtils, uiSchema, formData));
+  const [enumOptions, setEnumOptions] = useState17(computeEnumOptions(schema, options, schemaUtils, uiSchema, formData));
   const id = get_default(fieldPathId, ID_KEY);
   const discriminator = getDiscriminatorFieldFromSchema(schema);
   const FieldErrorTemplate2 = getTemplate("FieldErrorTemplate", registry, options);
@@ -21043,53 +20375,40 @@ function LayoutMultiSchemaField(props) {
     onChange(newFormData, fieldPathId.path, void 0, id);
   };
   const widgetOptions = { enumOptions, ...uiOptions };
-  const errors = !hideFieldError && rawErrors.length > 0 ? _jsx10(FieldErrorTemplate2, { fieldPathId, schema, errors: rawErrors, registry }) : void 0;
-  return _jsx10(FieldTemplate2, { fieldPathId, id, schema, label: (title || schema.title) ?? "", disabled: disabled || Array.isArray(enumOptions) && isEmpty_default(enumOptions), uiSchema, required, readonly: !!readonly, registry, displayLabel, errors, onChange, onKeyRename: noop_default, onKeyRenameBlur: noop_default, onRemoveProperty: noop_default, children: _jsx10(Widget, { id, name, schema, label: (title || schema.title) ?? "", disabled: disabled || Array.isArray(enumOptions) && isEmpty_default(enumOptions), uiSchema, autofocus, readonly, required, registry, multiple: false, rawErrors, hideError: hideFieldError, hideLabel: !displayLabel, errorSchema: fieldErrorSchema, placeholder, onChange: onOptionChange, onBlur, onFocus, value: selectedOption, options: widgetOptions, htmlName: fieldPathId.name }) });
+  const errors = !hideFieldError && rawErrors.length > 0 ? _jsx8(FieldErrorTemplate2, { fieldPathId, schema, errors: rawErrors, registry }) : void 0;
+  return _jsx8(FieldTemplate2, { fieldPathId, id, schema, label: (title || schema.title) ?? "", disabled: disabled || Array.isArray(enumOptions) && isEmpty_default(enumOptions), uiSchema, required, readonly: !!readonly, registry, displayLabel, errors, onChange, onKeyRename: noop_default, onKeyRenameBlur: noop_default, onRemoveProperty: noop_default, children: _jsx8(Widget, { id, name, schema, label: (title || schema.title) ?? "", disabled: disabled || Array.isArray(enumOptions) && isEmpty_default(enumOptions), uiSchema, autofocus, readonly, required, registry, multiple: false, rawErrors, hideError: hideFieldError, hideLabel: !displayLabel, errorSchema: fieldErrorSchema, placeholder, onChange: onOptionChange, onBlur, onFocus, value: selectedOption, options: widgetOptions, htmlName: fieldPathId.name }) });
 }
 
 // node_modules/@rjsf/core/lib/components/fields/MultiSchemaField.js
-import { jsx as _jsx11 } from "react/jsx-runtime";
-import { useCallback as useCallback5, useEffect as useEffect5, useMemo as useMemo5, useRef as useRef4, useState as useState20 } from "react";
-function AnyOfField(props) {
-  const { name, disabled = false, errorSchema = {}, formData, fieldPathId, onBlur, onChange, onFocus, options, readonly, registry, required = false, schema, uiSchema } = props;
-  const { schemaUtils } = registry;
-  const formDataHash = hashObject(formData ?? null);
-  const retrievedOptions = useMemo5(
-    () => options.map((opt) => schemaUtils.retrieveSchema(opt, formData)),
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- formDataHash is the value-stable proxy for formData
-    [options, schemaUtils, formDataHash]
-  );
-  const [selectedOption, setSelectedOption] = useState20(() => {
-    const discriminator = getDiscriminatorFieldFromSchema(schema);
-    return schemaUtils.getClosestMatchingOption(formData, retrievedOptions, 0, discriminator);
-  });
-  const skipNextOptionRecalculation = useRef4(false);
-  const prevFormDataRef = useRef4(formData);
-  const prevFieldIdRef = useRef4(fieldPathId.$id);
-  useEffect5(() => {
-    const prevFormData = prevFormDataRef.current;
-    const prevFieldId = prevFieldIdRef.current;
-    prevFormDataRef.current = formData;
-    prevFieldIdRef.current = fieldPathId.$id;
-    if (!deepEquals_default(formData, prevFormData) && fieldPathId.$id === prevFieldId) {
-      if (skipNextOptionRecalculation.current) {
-        skipNextOptionRecalculation.current = false;
-        return;
-      }
-      const discriminator = getDiscriminatorFieldFromSchema(schema);
-      const matchingOption = schemaUtils.getClosestMatchingOption(formData, retrievedOptions, selectedOption, discriminator);
-      if (matchingOption !== selectedOption) {
-        setSelectedOption(matchingOption);
-      }
-    }
-  });
-  const fieldId = `${fieldPathId.$id}${schema.oneOf ? "__oneof_select" : "__anyof_select"}`;
-  const onOptionChange = useCallback5(
-    (option2) => {
+import { jsx as _jsx9 } from "react/jsx-runtime";
+import { Component } from "react";
+var AnyOfField = class extends Component {
+  /** Constructs an `AnyOfField` with the given `props` to initialize the initially selected option in state
+   *
+   * @param props - The `FieldProps` for this template
+   */
+  constructor(props) {
+    super(props);
+    /** Flag to skip the formData-change-driven option recalculation when the user just selected an option.
+     * Set to true in the setState callback of onOptionChange (after onChange is called), consumed and reset in
+     * componentDidUpdate. This prevents the matching-option recalculation from overriding a user's explicit choice
+     * when getDefaultFormState populates undefined properties that make deepEquals see a false formData change.
+     */
+    __publicField(this, "skipNextOptionRecalculation", false);
+    /** Callback handler to remember what the currently selected option is. In addition to that the `formData` is updated
+     * to remove properties that are not part of the newly selected option schema, and then the updated data is passed to
+     * the `onChange` handler.
+     *
+     * @param option - The new option value being selected
+     */
+    __publicField(this, "onOptionChange", (option) => {
+      const { selectedOption, retrievedOptions } = this.state;
+      const { disabled = false, formData, onChange, readonly = false, registry, fieldPathId } = this.props;
       if (disabled || readonly) {
         return;
       }
-      const intOption = option2 !== void 0 ? parseInt(option2, 10) : -1;
+      const { schemaUtils } = registry;
+      const intOption = option !== void 0 ? parseInt(option, 10) : -1;
       if (intOption === selectedOption) {
         return;
       }
@@ -21099,74 +20418,124 @@ function AnyOfField(props) {
       if (newOption) {
         newFormData = schemaUtils.getDefaultFormState(newOption, newFormData, "excludeObjectChildren");
       }
-      setSelectedOption(intOption);
-      skipNextOptionRecalculation.current = true;
-      onChange(newFormData, fieldPathId.path, void 0, fieldId);
-    },
-    // setSelectedOption is stable (guaranteed by useState); skipNextOptionRecalculation is a ref
-    [selectedOption, retrievedOptions, disabled, readonly, schemaUtils, formData, fieldPathId, onChange, fieldId]
-  );
-  const { widgets: widgets2, fields: fields2, translateString, globalUiOptions } = registry;
-  const { SchemaField: SchemaFieldComponent } = fields2;
-  const MultiSchemaFieldTemplate2 = getTemplate("MultiSchemaFieldTemplate", registry, globalUiOptions);
-  const isOptionalRender = shouldRenderOptionalField(registry, schema, required, uiSchema);
-  const hasFormData = isFormDataAvailable(formData);
-  const { widget = "select", placeholder, autofocus, autocomplete, title = schema.title, ...uiOptions } = getUiOptions(uiSchema, globalUiOptions);
-  const Widget = getWidget({ type: "number" }, widget, widgets2);
-  const rawErrors = get_default(errorSchema, ERRORS_KEY, []);
-  const fieldErrorSchema = omit_default(errorSchema, [ERRORS_KEY]);
-  const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
-  const option = selectedOption >= 0 ? retrievedOptions[selectedOption] || null : null;
-  let optionSchema;
-  if (option) {
-    const { required: schemaRequired, type: schemaType } = schema;
-    const parentProps = {};
-    if (schemaRequired) {
-      parentProps.required = schemaRequired;
-    }
-    if (schemaType !== void 0 && !("type" in option)) {
-      parentProps.type = schemaType;
-    }
-    optionSchema = Object.keys(parentProps).length > 0 ? mergeSchemas(parentProps, option) : option;
-  }
-  let optionsUiSchema = [];
-  if (ONE_OF_KEY in schema && uiSchema && ONE_OF_KEY in uiSchema) {
-    if (Array.isArray(uiSchema[ONE_OF_KEY])) {
-      optionsUiSchema = uiSchema[ONE_OF_KEY];
-    } else {
-      console.warn(`uiSchema.oneOf is not an array for "${title || name}"`);
-    }
-  } else if (ANY_OF_KEY in schema && uiSchema && ANY_OF_KEY in uiSchema) {
-    if (Array.isArray(uiSchema[ANY_OF_KEY])) {
-      optionsUiSchema = uiSchema[ANY_OF_KEY];
-    } else {
-      console.warn(`uiSchema.anyOf is not an array for "${title || name}"`);
-    }
-  }
-  let optionUiSchema = uiSchema;
-  if (selectedOption >= 0 && optionsUiSchema.length > selectedOption) {
-    optionUiSchema = optionsUiSchema[selectedOption];
-  }
-  const translateEnum = title ? TranslatableString.TitleOptionPrefix : TranslatableString.OptionPrefix;
-  const translateParams = title ? [title] : [];
-  const enumOptions = retrievedOptions.map((opt, index) => {
-    const { title: uiTitle = opt.title } = getUiOptions(optionsUiSchema[index]);
-    return {
-      label: uiTitle || translateString(translateEnum, translateParams.concat(String(index + 1))),
-      value: index
+      this.setState({ selectedOption: intOption }, () => {
+        this.skipNextOptionRecalculation = true;
+        onChange(newFormData, fieldPathId.path, void 0, this.getFieldId());
+      });
+    });
+    const { formData, options, registry: { schemaUtils } } = this.props;
+    const retrievedOptions = options.map((opt) => schemaUtils.retrieveSchema(opt, formData));
+    this.state = {
+      retrievedOptions,
+      selectedOption: this.getMatchingOption(0, formData, retrievedOptions)
     };
-  });
-  const selector = !isOptionalRender || hasFormData ? _jsx11(Widget, { id: fieldId, name: `${name}${schema.oneOf ? "__oneof_select" : "__anyof_select"}`, schema: { type: "number", default: 0 }, onChange: onOptionChange, onBlur, onFocus, disabled: disabled || isEmpty_default(enumOptions), multiple: false, rawErrors, errorSchema: fieldErrorSchema, value: selectedOption >= 0 ? selectedOption : void 0, options: { enumOptions, ...uiOptions }, registry, placeholder, autocomplete, autofocus, label: title ?? name, hideLabel: !displayLabel, readonly }) : void 0;
-  const optionsSchemaField = optionSchema && optionSchema.type !== "null" && _jsx11(SchemaFieldComponent, { ...props, schema: optionSchema, uiSchema: optionUiSchema }) || null;
-  return _jsx11(MultiSchemaFieldTemplate2, { schema, registry, uiSchema, selector, optionSchemaField: optionsSchemaField });
-}
+  }
+  /** React lifecycle method that is called when the props and/or state for this component is updated. It recomputes the
+   * currently selected option based on the overall `formData`
+   *
+   * @param prevProps - The previous `FieldProps` for this template
+   * @param prevState - The previous `AnyOfFieldState` for this template
+   */
+  componentDidUpdate(prevProps, prevState) {
+    const { formData, options, fieldPathId } = this.props;
+    const { selectedOption } = this.state;
+    let newState = this.state;
+    if (!deepEquals_default(prevProps.options, options)) {
+      const { registry: { schemaUtils } } = this.props;
+      const retrievedOptions = options.map((opt) => schemaUtils.retrieveSchema(opt, formData));
+      newState = { selectedOption, retrievedOptions };
+    }
+    if (!deepEquals_default(formData, prevProps.formData) && fieldPathId.$id === prevProps.fieldPathId.$id) {
+      if (this.skipNextOptionRecalculation) {
+        this.skipNextOptionRecalculation = false;
+      } else {
+        const { retrievedOptions } = newState;
+        const matchingOption = this.getMatchingOption(selectedOption, formData, retrievedOptions);
+        if (prevState && matchingOption !== selectedOption) {
+          newState = { selectedOption: matchingOption, retrievedOptions };
+        }
+      }
+    }
+    if (newState !== this.state) {
+      this.setState(newState);
+    }
+  }
+  /** Determines the best matching option for the given `formData` and `options`.
+   *
+   * @param formData - The new formData
+   * @param options - The list of options to choose from
+   * @return - The index of the `option` that best matches the `formData`
+   */
+  getMatchingOption(selectedOption, formData, options) {
+    const { schema, registry: { schemaUtils } } = this.props;
+    const discriminator = getDiscriminatorFieldFromSchema(schema);
+    const option = schemaUtils.getClosestMatchingOption(formData, options, selectedOption, discriminator);
+    return option;
+  }
+  getFieldId() {
+    const { fieldPathId, schema } = this.props;
+    return `${fieldPathId.$id}${schema.oneOf ? "__oneof_select" : "__anyof_select"}`;
+  }
+  /** Renders the `AnyOfField` selector along with a `SchemaField` for the value of the `formData`
+   */
+  render() {
+    const { name, disabled = false, errorSchema = {}, formData, onBlur, onFocus, readonly, required = false, registry, schema, uiSchema } = this.props;
+    const { widgets: widgets2, fields: fields2, translateString, globalUiOptions, schemaUtils } = registry;
+    const { SchemaField: SchemaFieldComponent } = fields2;
+    const MultiSchemaFieldTemplate2 = getTemplate("MultiSchemaFieldTemplate", registry, globalUiOptions);
+    const isOptionalRender = shouldRenderOptionalField(registry, schema, required, uiSchema);
+    const hasFormData = isFormDataAvailable(formData);
+    const { selectedOption, retrievedOptions } = this.state;
+    const { widget = "select", placeholder, autofocus, autocomplete, title = schema.title, ...uiOptions } = getUiOptions(uiSchema, globalUiOptions);
+    const Widget = getWidget({ type: "number" }, widget, widgets2);
+    const rawErrors = get_default(errorSchema, ERRORS_KEY, []);
+    const fieldErrorSchema = omit_default(errorSchema, [ERRORS_KEY]);
+    const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
+    const option = selectedOption >= 0 ? retrievedOptions[selectedOption] || null : null;
+    let optionSchema;
+    if (option) {
+      const { required: schemaRequired } = schema;
+      optionSchema = schemaRequired ? mergeSchemas({ required: schemaRequired }, option) : option;
+    }
+    let optionsUiSchema = [];
+    if (ONE_OF_KEY in schema && uiSchema && ONE_OF_KEY in uiSchema) {
+      if (Array.isArray(uiSchema[ONE_OF_KEY])) {
+        optionsUiSchema = uiSchema[ONE_OF_KEY];
+      } else {
+        console.warn(`uiSchema.oneOf is not an array for "${title || name}"`);
+      }
+    } else if (ANY_OF_KEY in schema && uiSchema && ANY_OF_KEY in uiSchema) {
+      if (Array.isArray(uiSchema[ANY_OF_KEY])) {
+        optionsUiSchema = uiSchema[ANY_OF_KEY];
+      } else {
+        console.warn(`uiSchema.anyOf is not an array for "${title || name}"`);
+      }
+    }
+    let optionUiSchema = uiSchema;
+    if (selectedOption >= 0 && optionsUiSchema.length > selectedOption) {
+      optionUiSchema = optionsUiSchema[selectedOption];
+    }
+    const translateEnum = title ? TranslatableString.TitleOptionPrefix : TranslatableString.OptionPrefix;
+    const translateParams = title ? [title] : [];
+    const enumOptions = retrievedOptions.map((opt, index) => {
+      const { title: uiTitle = opt.title } = getUiOptions(optionsUiSchema[index]);
+      return {
+        label: uiTitle || translateString(translateEnum, translateParams.concat(String(index + 1))),
+        value: index
+      };
+    });
+    const selector = !isOptionalRender || hasFormData ? _jsx9(Widget, { id: this.getFieldId(), name: `${name}${schema.oneOf ? "__oneof_select" : "__anyof_select"}`, schema: { type: "number", default: 0 }, onChange: this.onOptionChange, onBlur, onFocus, disabled: disabled || isEmpty_default(enumOptions), multiple: false, rawErrors, errorSchema: fieldErrorSchema, value: selectedOption >= 0 ? selectedOption : void 0, options: { enumOptions, ...uiOptions }, registry, placeholder, autocomplete, autofocus, label: title ?? name, hideLabel: !displayLabel, readonly }) : void 0;
+    const optionsSchemaField = optionSchema && optionSchema.type !== "null" && _jsx9(SchemaFieldComponent, { ...this.props, schema: optionSchema, uiSchema: optionUiSchema }) || null;
+    return _jsx9(MultiSchemaFieldTemplate2, { schema, registry, uiSchema, selector, optionSchemaField: optionsSchemaField });
+  }
+};
 var MultiSchemaField_default = AnyOfField;
 
 // node_modules/@rjsf/core/lib/components/fields/NullField.js
-import { useEffect as useEffect6 } from "react";
+import { useEffect as useEffect5 } from "react";
 function NullField(props) {
   const { formData, onChange, fieldPathId } = props;
-  useEffect6(() => {
+  useEffect5(() => {
     if (formData === void 0) {
       onChange(null, fieldPathId.path);
     }
@@ -21176,51 +20545,37 @@ function NullField(props) {
 var NullField_default = NullField;
 
 // node_modules/@rjsf/core/lib/components/fields/NumberField.js
-import { jsx as _jsx12 } from "react/jsx-runtime";
-import { useState as useState21, useCallback as useCallback6 } from "react";
+import { jsx as _jsx10 } from "react/jsx-runtime";
+import { useState as useState18, useCallback as useCallback5 } from "react";
 var trailingCharMatcherWithPrefix = /\.([0-9]*0)*$/;
 var trailingCharMatcher = /[0.]0*$/;
 function NumberField2(props) {
   const { registry, onChange, formData, value: initialValue } = props;
-  const [lastValue, setLastValue] = useState21(initialValue);
+  const [lastValue, setLastValue] = useState18(initialValue);
   const { StringField: StringField2 } = registry.fields;
-  const separator = getDecimalSeparator();
-  const escapedSeparator = separator === "." ? "\\." : separator;
   let value = formData;
-  const handleChange = useCallback6((newValue, path, errorSchema, id) => {
+  const handleChange = useCallback5((newValue, path, errorSchema, id) => {
     setLastValue(newValue);
-    const standardValue = typeof newValue === "string" ? newValue.replace(separator, ".") : newValue;
-    const normalizedValue = `${standardValue}`.startsWith(".") ? `0${standardValue}` : standardValue;
-    const processed = typeof normalizedValue === "string" && trailingCharMatcherWithPrefix.exec(normalizedValue) ? asNumber(normalizedValue.replace(trailingCharMatcher, "")) : asNumber(normalizedValue);
+    const normalizedValue = `${newValue}`.startsWith(".") ? `0${newValue}` : newValue;
+    const processed = typeof normalizedValue === "string" && normalizedValue.match(trailingCharMatcherWithPrefix) ? asNumber(normalizedValue.replace(trailingCharMatcher, "")) : asNumber(normalizedValue);
     onChange(processed, path, errorSchema, id);
-  }, [onChange, separator]);
+  }, [onChange]);
   if (typeof lastValue === "string" && typeof value === "number") {
-    const re = new RegExp(`^(${String(value).replace(".", escapedSeparator)})?${escapedSeparator}?0*$`);
+    const re = new RegExp(`^(${String(value).replace(".", "\\.")})?\\.?0*$`);
     if (lastValue.match(re)) {
       value = lastValue;
     }
   }
-  let displayValue = value;
-  if (typeof value === "number" && separator !== ".") {
-    const { schema, uiSchema } = props;
-    const { schemaUtils } = registry;
-    const enumOptions = schemaUtils.isSelect(schema) ? optionsList(schema, uiSchema) : void 0;
-    const defaultWidget = enumOptions ? "select" : "text";
-    const { widget = defaultWidget } = getUiOptions(uiSchema);
-    if (widget !== "radio" && widget !== "select" && widget !== "hidden") {
-      displayValue = String(value).replace(".", separator);
-    }
-  }
-  return _jsx12(StringField2, { ...props, formData: displayValue, onChange: handleChange });
+  return _jsx10(StringField2, { ...props, formData: value, onChange: handleChange });
 }
 var NumberField_default = NumberField2;
 
 // node_modules/@rjsf/core/lib/components/fields/ObjectField.js
-import { jsx as _jsx13, jsxs as _jsxs } from "react/jsx-runtime";
-import { memo as memo2, useCallback as useCallback7, useMemo as useMemo7, useRef as useRef6, useState as useState22 } from "react";
+import { jsx as _jsx11, jsxs as _jsxs } from "react/jsx-runtime";
+import { memo as memo2, useCallback as useCallback6, useMemo as useMemo6, useRef as useRef5, useState as useState19 } from "react";
 
 // node_modules/markdown-to-jsx/dist/react.js
-import * as i0 from "react";
+import * as c0 from "react";
 
 // node_modules/markdown-to-jsx/dist/entities.generated.js
 var q = { af: "\u2061", applyfunction: "\u2061", ic: "\u2063", invisiblecomma: "\u2063", invisibletimes: "\u2062", it: "\u2062", lrm: "\u200E", negativemediumspace: "\u200B", negativethickspace: "\u200B", negativethinspace: "\u200B", negativeverythinspace: "\u200B", nobreak: "\u2060", rlm: "\u200F", shy: "\xAD", zerowidthspace: "\u200B", zwj: "\u200D", zwnj: "\u200C", downbreve: "\u0311", tdot: "\u20DB", tripledot: "\u20DB", dotdot: "\u20DC", tab: "	", newline: `
@@ -21230,69 +20585,65 @@ function v(j) {
 }
 
 // node_modules/markdown-to-jsx/dist/react.js
-var I = 32;
-var w = 9;
-var v5 = 13;
-var g = 10;
-var Z0 = 96;
-var b0 = 126;
+var v2 = 32;
+var b = 9;
+var _5 = 13;
+var E = 10;
+var $0 = 96;
+var N0 = 126;
 var A0 = 91;
-var W5 = 94;
-var l = 62;
-var V5 = 35;
-var M9 = 37;
+var U5 = 94;
+var o = 62;
+var Y5 = 35;
+var G9 = 37;
 var p = 45;
-var K5 = 61;
-var T0 = 92;
-var P0 = 42;
-var O0 = 95;
-var Y0 = 60;
-var k9 = 64;
-var J5 = 93;
-var c0 = 33;
-var O9 = 38;
-var m0 = 58;
-var D9 = 70;
-var L5 = 102;
-var A9 = 104;
-var C5 = 119;
-var s5 = 116;
-var x9 = 112;
-var Y$ = 115;
-var c$ = 160;
-var l$ = 12;
-var r$ = 44;
-var j9 = 59;
-var t5 = 63;
-var Q5 = 46;
-var j0 = 47;
-var f5 = 39;
-var T5 = 34;
-var y5 = 43;
-var E0 = 124;
-var S5 = 123;
-var E9 = 125;
-var z5 = 40;
-var F5 = 41;
-var o$ = 78;
-var i$ = 110;
-var a$ = 79;
-var n$ = 111;
-var V$ = 120;
-var K$ = 88;
-var g9 = 30;
-var r = 48;
-var o = 57;
+var G5 = 61;
+var y0 = 92;
+var _0 = 42;
+var H0 = 95;
+var G0 = 60;
+var j9 = 64;
+var K5 = 93;
+var p0 = 33;
+var K9 = 38;
+var f0 = 58;
+var J9 = 70;
+var I5 = 102;
+var X9 = 104;
+var k5 = 119;
+var h5 = 116;
+var _9 = 112;
+var f9 = 115;
+var W$ = 160;
+var z$ = 12;
+var H$ = 44;
+var U9 = 59;
+var a5 = 63;
+var s0 = 46;
+var M0 = 47;
+var S5 = 39;
+var v5 = 34;
+var N5 = 43;
+var k0 = 124;
+var L5 = 123;
+var I9 = 125;
+var F5 = 40;
+var q5 = 41;
+var O$ = 120;
+var B$ = 88;
+var v9 = 30;
+var i = 48;
+var a = 57;
 var h = 65;
-var u = 90;
-var V0 = 97;
-var q0 = 122;
-var U9 = 128;
-var U5 = 32;
-var I6 = { blockQuote: 0, breakLine: 1, breakThematic: 2, codeBlock: 3, codeInline: 4, footnote: 5, footnoteReference: 6, frontmatter: 7, gfmTask: 8, heading: 9, htmlBlock: 10, htmlComment: 11, htmlSelfClosing: 12, image: 13, link: 14, orderedList: 15, paragraph: 16, ref: 17, refCollection: 18, table: 19, text: 20, textFormatted: 21, unorderedList: 22 };
-var B = I6;
-function X4($) {
-  if (!t$($, "---")) return null;
+var c = 90;
+var K0 = 97;
+var W0 = 122;
+var n5 = 128;
+var J5 = 32;
+var k4 = { blockQuote: 0, breakLine: 1, breakThematic: 2, codeBlock: 3, codeInline: 4, footnote: 5, footnoteReference: 6, frontmatter: 7, gfmTask: 8, heading: 9, htmlBlock: 10, htmlComment: 11, htmlSelfClosing: 12, image: 13, link: 14, orderedList: 15, paragraph: 16, ref: 17, refCollection: 18, table: 19, text: 20, textFormatted: 21, unorderedList: 22 };
+var _ = k4;
+function I$($) {
+  if (!A$($, "---")) return null;
   let Q = 3;
   for (; Q < $.length && ($[Q] === " " || $[Q] === "	"); ) Q++;
   if (Q < $.length && $[Q] === "\r" && Q++, Q >= $.length || $[Q] !== `
@@ -21300,1313 +20651,1176 @@ function X4($) {
   Q++;
   let Z = false;
   for (; Q < $.length; ) {
-    let X = Q;
+    let V = Q;
     for (; Q < $.length && $[Q] !== `
 ` && $[Q] !== "\r"; ) Q++;
     if (Q >= $.length) break;
     let Y = Q;
     if ($[Q] === "\r" && Q++, Q < $.length && $[Q] === `
-` && Q++, t$($, "---", X)) return { endPos: Q, hasValidYaml: Z };
+` && Q++, A$($, "---", V)) return { endPos: Q, hasValidYaml: Z };
     if (!Z) {
-      let V = L6($, X, Y);
-      if (V < Y) {
-        let K = $.charCodeAt(V);
-        if (K >= V0 && K <= q0 || K >= h && K <= u || K >= r && K <= o || K === O0) {
-          for (V++; V < Y && (K = $.charCodeAt(V), K >= V0 && K <= q0 || K >= h && K <= u || K >= r && K <= o || K === O0 || K === p || K === Q5); ) V++;
-          V < Y && $.charCodeAt(V) === m0 && (V++, V >= Y ? Z = true : (K = $.charCodeAt(V), (K === I || K === w) && (Z = true)));
+      let G = x4($, V, Y);
+      if (G < Y) {
+        let K = $.charCodeAt(G);
+        if (K >= K0 && K <= W0 || K >= h && K <= c || K >= i && K <= a || K === H0) {
+          for (G++; G < Y && (K = $.charCodeAt(G), K >= K0 && K <= W0 || K >= h && K <= c || K >= i && K <= a || K === H0 || K === p || K === s0); ) G++;
+          G < Y && $.charCodeAt(G) === f0 && (G++, G >= Y ? Z = true : (K = $.charCodeAt(G), (K === v2 || K === b) && (Z = true)));
         }
       }
     }
   }
   return null;
 }
-var P6 = /&([a-zA-Z0-9]+|#[0-9]{1,7}|#x[0-9a-fA-F]{1,6});/gi;
-var w6 = { class: "className", for: "htmlFor", allowfullscreen: "allowFullScreen", allowtransparency: "allowTransparency", autocomplete: "autoComplete", autofocus: "autoFocus", autoplay: "autoPlay", cellpadding: "cellPadding", cellspacing: "cellSpacing", charset: "charSet", classid: "classId", colspan: "colSpan", contenteditable: "contentEditable", contextmenu: "contextMenu", crossorigin: "crossOrigin", enctype: "encType", formaction: "formAction", formenctype: "formEncType", formmethod: "formMethod", formnovalidate: "formNoValidate", formtarget: "formTarget", frameborder: "frameBorder", hreflang: "hrefLang", inputmode: "inputMode", keyparams: "keyParams", keytype: "keyType", marginheight: "marginHeight", marginwidth: "marginWidth", maxlength: "maxLength", mediagroup: "mediaGroup", minlength: "minLength", novalidate: "noValidate", radiogroup: "radioGroup", readonly: "readOnly", rowspan: "rowSpan", spellcheck: "spellCheck", srcdoc: "srcDoc", srclang: "srcLang", srcset: "srcSet", tabindex: "tabIndex", usemap: "useMap", viewbox: "viewBox" };
-var R6 = {};
-function U$($) {
-  if (!$) return R6;
+var L4 = /&([a-zA-Z0-9]+|#[0-9]{1,7}|#x[0-9a-fA-F]{1,6});/gi;
+var E4 = { class: "className", for: "htmlFor", allowfullscreen: "allowFullScreen", allowtransparency: "allowTransparency", autocomplete: "autoComplete", autofocus: "autoFocus", autoplay: "autoPlay", cellpadding: "cellPadding", cellspacing: "cellSpacing", charset: "charSet", classid: "classId", colspan: "colSpan", contenteditable: "contentEditable", contextmenu: "contextMenu", crossorigin: "crossOrigin", enctype: "encType", formaction: "formAction", formenctype: "formEncType", formmethod: "formMethod", formnovalidate: "formNoValidate", formtarget: "formTarget", frameborder: "frameBorder", hreflang: "hrefLang", inputmode: "inputMode", keyparams: "keyParams", keytype: "keyType", marginheight: "marginHeight", marginwidth: "marginWidth", maxlength: "maxLength", mediagroup: "mediaGroup", minlength: "minLength", novalidate: "noValidate", radiogroup: "radioGroup", readonly: "readOnly", rowspan: "rowSpan", spellcheck: "spellCheck", srcdoc: "srcDoc", srclang: "srcLang", srcset: "srcSet", tabindex: "tabIndex", usemap: "useMap", viewbox: "viewBox" };
+var g4 = {};
+function t0($) {
+  if (!$) return g4;
   var Q = {};
   for (var Z in $) {
-    var X = Z.toLowerCase(), Y = w6[X];
+    var V = Z.toLowerCase(), Y = E4[V];
     if (Y) Q[Y] = $[Z];
     else {
-      var V = Z.indexOf(":");
-      V === -1 ? Q[Z] = $[Z] : Q[Z.slice(0, V) + Z[V + 1].toUpperCase() + Z.slice(V + 2)] = $[Z];
+      var G = Z.indexOf(":");
+      G !== -1 ? Q[Z.slice(0, G) + Z[G + 1].toUpperCase() + Z.slice(G + 2)] = $[Z] : Q[Z] = $[Z];
     }
   }
   return Q;
 }
-var Y4 = /(\n|^[-*]\s|^#|^ {2,}|^-{2,}|^>\s|^<(div|p|h[1-6]|ul|ol|li|blockquote|pre|table|thead|tbody|tr|td|th|dl|dt|dd|hr|address|article|aside|details|dialog|figure|figcaption|footer|form|header|main|menu|nav|section|summary|textarea|fieldset|legend|center|dir|hgroup|marquee|search|output|template)\b)/i;
-function I5($) {
-  return $.indexOf("&") === -1 ? $ : $.replace(P6, (Q, Z) => {
-    var X = v(Z);
-    if (X) return X;
+var v$ = /(\n|^[-*]\s|^#|^ {2,}|^-{2,}|^>\s|^<(div|p|h[1-6]|ul|ol|li|blockquote|pre|table|thead|tbody|tr|td|th|dl|dt|dd|hr|address|article|aside|details|dialog|figure|figcaption|footer|form|header|main|menu|nav|section|summary|textarea|fieldset|legend|center|dir|hgroup|marquee|search|output|template)\b)/i;
+function s5($) {
+  return $.indexOf("&") === -1 ? $ : $.replace(L4, (Q, Z) => {
+    var V = v(Z);
+    if (V) return V;
     if (Z[0] === "#") {
-      var Y = Z[1] === "x" || Z[1] === "X" ? Number.parseInt(Z.slice(2), 16) : Number.parseInt(Z.slice(1), 10);
+      var Y = Z[1] === "x" || Z[1] === "X" ? parseInt(Z.slice(2), 16) : parseInt(Z.slice(1), 10);
       return Y === 0 || Y >= 55296 && Y <= 57343 || Y > 1114111 ? "\uFFFD" : Y <= 65535 ? String.fromCharCode(Y) : String.fromCharCode(55296 + (Y - 65536 >> 10), 56320 + (Y - 65536 & 1023));
     }
     return Q;
   });
 }
-var s$ = /(javascript|vbscript|data(?!:image)):/i;
-function H5($) {
-  if (s$.test($)) return null;
+var D$ = /(javascript|vbscript|data(?!:image)):/i;
+function c5($) {
+  if (D$.test($)) return null;
   if ($.indexOf("%") === -1) return $;
   try {
     let Q = decodeURIComponent($).replace(/[^A-Za-z0-9/:]/g, "");
-    if (s$.test(Q)) return null;
+    if (D$.test(Q)) return null;
   } catch {
     return null;
   }
   return $;
 }
-var o0 = {};
-var t0;
-var g0;
-for (t0 = [192, 193, 194, 195, 196, 197, 224, 225, 226, 227, 228, 229, 230, 198], g0 = 0; g0 < t0.length; g0++) o0[t0[g0]] = "a";
-for (o0[231] = o0[199] = "c", o0[240] = o0[208] = "d", t0 = [200, 201, 202, 203, 233, 232, 234, 235], g0 = 0; g0 < t0.length; g0++) o0[t0[g0]] = "e";
-for (t0 = [207, 239, 206, 238, 205, 237, 204, 236], g0 = 0; g0 < t0.length; g0++) o0[t0[g0]] = "i";
-for (o0[209] = o0[241] = "n", t0 = [248, 216, 339, 338, 213, 245, 212, 244, 211, 243, 210, 242], g0 = 0; g0 < t0.length; g0++) o0[t0[g0]] = "o";
-for (t0 = [220, 252, 219, 251, 218, 250, 217, 249], g0 = 0; g0 < t0.length; g0++) o0[t0[g0]] = "u";
-o0[376] = o0[255] = o0[221] = o0[253] = "y";
-function N5($) {
-  for (var Q = "", Z = -1, X = $.length, Y = 0; Y < X; Y++) {
-    var V = $.charCodeAt(Y);
-    if (V >= V0 && V <= q0 || V >= r && V <= o) {
+var d0 = {};
+var o0;
+var E0;
+for (o0 = [192, 193, 194, 195, 196, 197, 224, 225, 226, 227, 228, 229, 230, 198], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "a";
+for (d0[231] = d0[199] = "c", d0[240] = d0[208] = "d", o0 = [200, 201, 202, 203, 233, 232, 234, 235], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "e";
+for (o0 = [207, 239, 206, 238, 205, 237, 204, 236], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "i";
+for (d0[209] = d0[241] = "n", o0 = [248, 216, 339, 338, 213, 245, 212, 244, 211, 243, 210, 242], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "o";
+for (o0 = [220, 252, 219, 251, 218, 250, 217, 249], E0 = 0; E0 < o0.length; E0++) d0[o0[E0]] = "u";
+d0[376] = d0[255] = d0[221] = d0[253] = "y";
+function C0($) {
+  for (var Q = "", Z = -1, V = $.length, Y = 0; Y < V; Y++) {
+    var G = $.charCodeAt(Y);
+    if (G >= K0 && G <= W0 || G >= i && G <= a) {
       Z < 0 && (Z = Y);
       continue;
     }
-    if (V >= h && V <= u) {
-      Z >= 0 && (Q += $.slice(Z, Y), Z = -1), Q += String.fromCharCode(V + U5);
+    if (G >= h && G <= c) {
+      Z >= 0 && (Q += $.slice(Z, Y), Z = -1), Q += String.fromCharCode(G + J5);
       continue;
     }
-    if (V === I || V === p) {
+    if (G === v2 || G === p) {
       Z >= 0 && (Q += $.slice(Z, Y), Z = -1), Q += "-";
       continue;
     }
     Z >= 0 && (Q += $.slice(Z, Y), Z = -1);
-    var K = o0[V];
+    var K = d0[G];
     K && (Q += K);
   }
   return Z >= 0 && (Q += $.slice(Z)), Q;
 }
-function t$($, Q, Z) {
+function A$($, Q, Z) {
   return $.startsWith(Q, Z);
 }
-var e$ = /* @__PURE__ */ new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr", "circle", "ellipse", "line", "path", "polygon", "polyline", "rect", "use", "stop", "animate", "set"]);
-function Q9($) {
+var M$ = /* @__PURE__ */ new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr", "circle", "ellipse", "line", "path", "polygon", "polyline", "rect", "use", "stop", "animate", "set"]);
+function l5($) {
   let Q = $.toLowerCase();
-  if (e$.has(Q)) return true;
+  if (M$.has(Q)) return true;
   let Z = Q.indexOf(":");
-  return Z !== -1 ? (Q = Q.slice(Z + 1), e$.has(Q)) : false;
+  return Z !== -1 ? (Q = Q.slice(Z + 1), M$.has(Q)) : false;
 }
-var h5 = 1;
-var $4 = 2;
-var $9 = 4;
-var Z4 = 8;
-var b6 = 16;
-var M5 = 32;
-var k5 = 64;
-var V4 = (() => {
+var E5 = 1;
+var j$ = 2;
+var p5 = 4;
+var _$ = 8;
+var T4 = 16;
+var W5 = 32;
+var P5 = 64;
+var N$ = (function() {
   var $ = new Uint8Array(128), Q;
-  for ($[w] = h5, $[g] = h5 | $4, $[l$] = h5, $[v5] = h5 | $4, $[I] = h5, Q = c0; Q <= j0; Q++) $[Q] = $9;
-  for (Q = m0; Q <= k9; Q++) $[Q] = $9;
-  for (Q = A0; Q <= Z0; Q++) $[Q] = $9;
-  for (Q = S5; Q <= b0; Q++) $[Q] = $9;
-  for (Q = r; Q <= o; Q++) $[Q] = b6;
-  for (Q = h; Q <= u; Q++) $[Q] = Z4;
-  for (Q = V0; Q <= q0; Q++) $[Q] = Z4;
+  for ($[b] = E5, $[E] = E5 | j$, $[z$] = E5, $[_5] = E5 | j$, $[v2] = E5, Q = p0; Q <= M0; Q++) $[Q] = p5;
+  for (Q = f0; Q <= j9; Q++) $[Q] = p5;
+  for (Q = A0; Q <= $0; Q++) $[Q] = p5;
+  for (Q = L5; Q <= N0; Q++) $[Q] = p5;
+  for (Q = i; Q <= a; Q++) $[Q] = T4;
+  for (Q = h; Q <= c; Q++) $[Q] = _$;
+  for (Q = K0; Q <= W0; Q++) $[Q] = _$;
   return $;
 })();
-var K4 = /[\p{P}\p{S}]/u;
-var J4 = /\p{Zs}/u;
-var e5 = [];
-function U4($) {
+var P$ = /[\p{P}\p{S}]/u;
+var b$ = /\p{Zs}/u;
+var u5 = [];
+function w$($) {
   var Q = $.indexOf("\r"), Z = $.indexOf("\0");
   if (Q === -1 && Z === -1) return $;
-  var X = $.length;
-  e5.length = 0;
-  var Y = 0, V = 0;
-  for (Q === -1 ? V = Z : Z === -1 ? V = Q : V = Q < Z ? Q : Z; V < X; V++) {
-    var K = $.charCodeAt(V);
-    K === v5 ? (Y < V && e5.push($.slice(Y, V)), V + 1 < X && $.charCodeAt(V + 1) === g && V++, e5.push(`
-`), Y = V + 1) : K === 0 && (Y < V && e5.push($.slice(Y, V)), e5.push("\uFFFD"), Y = V + 1);
+  var V = $.length;
+  u5.length = 0;
+  var Y = 0, G = 0;
+  for (Q === -1 ? G = Z : Z === -1 ? G = Q : G = Q < Z ? Q : Z; G < V; G++) {
+    var K = $.charCodeAt(G);
+    K === _5 ? (Y < G && u5.push($.slice(Y, G)), G + 1 < V && $.charCodeAt(G + 1) === E && G++, u5.push(`
+`), Y = G + 1) : K === 0 && (Y < G && u5.push($.slice(Y, G)), u5.push("\uFFFD"), Y = G + 1);
   }
-  return Y < X && e5.push($.slice(Y)), e5.join("");
+  return Y < V && u5.push($.slice(Y)), u5.join("");
 }
-function G4($) {
-  return $.replace(/>\s+</g, "><").replace(/\n+/g, " ").trim();
-}
-function L6($, Q, Z) {
-  let X = Z ?? $.length;
-  for (; Q < X && ($[Q] === " " || $[Q] === "	"); ) Q++;
+function x4($, Q, Z) {
+  let V = Z ?? $.length;
+  for (; Q < V && ($[Q] === " " || $[Q] === "	"); ) Q++;
   return Q;
 }
-function f9($) {
+function P9($) {
   if (!$) return false;
   for (var Q in $) return true;
   return false;
 }
-function q4($) {
-  return { attrs: {}, children: [{ type: B.text, text: $ }], c: true, type: B.htmlBlock, tag: "header" };
+function R$($) {
+  return { attrs: {}, children: [{ type: _.text, text: $ }], d: true, type: _.htmlBlock, tag: "header" };
 }
-var T6 = /^\n+/;
-function W4($) {
+var f4 = /^\n+/;
+function y$($) {
   for (var Q = $.length; Q > 0 && ($[Q - 1] === `
 ` || $[Q - 1] === "\r"); ) Q--;
-  return `${$.slice(0, Q).replace(T6, "")}
+  return $.slice(0, Q).replace(f4, "") + `
 
 `;
 }
-function Z9($) {
-  if (($.type === B.htmlSelfClosing || $.type === B.htmlBlock) && $.a) return [];
-  if ($.type === B.paragraph) {
+function d5($) {
+  if (($.type === _.htmlSelfClosing || $.type === _.htmlBlock) && $.b) return [];
+  if ($.type === _.paragraph) {
     var Q = $.children;
-    return Q ? Q.flatMap(Z9) : [];
+    return Q ? Q.flatMap(d5) : [];
   }
-  return $.type === B.text ? $.text?.trim() ? [$] : [] : $.type === B.htmlBlock && $.children ? [{ ...$, children: $.children?.flatMap(Z9) }] : [$];
+  return $.type === _.text ? $.text?.trim() ? [$] : [] : $.type === _.htmlBlock && $.children ? [{ ...$, children: $.children?.flatMap(d5) }] : [$];
 }
-function G$($) {
+function m9($) {
   for (var Q = 0; Q < $.length; Q++) {
-    if ($[Q].type === B.htmlBlock) {
-      var Z = $[Q], X = false;
-      if (Z.c && Q === $.length - 1) {
-        var Y = Z.j === void 0 ? Z.a ? Z.e || "" : (Z.e || "") + (Z.h || "") : Z.j, V = `</${String(Z.tag).toLowerCase()}>`, K = Y.toLowerCase().indexOf(V);
-        if (K !== -1) {
-          var J = Y.slice(K + V.length).replace(/<\/[a-z][a-z0-9-]*\s*>/gi, "");
-          J.trim() && (X = true);
+    if ($[Q].type === _.htmlBlock) {
+      var Z = $[Q], V = false;
+      if (Z.d && Z.a && Q === $.length - 1) {
+        var Y = "</" + String(Z.tag).toLowerCase() + ">", G = Z.a.toLowerCase().indexOf(Y);
+        if (G !== -1) {
+          var K = Z.a.slice(G + Y.length).replace(/<\/[a-z][a-z0-9-]*\s*>/gi, "");
+          K.trim() && (V = true);
         }
       }
-      X || (Z.c = false);
+      V || (Z.d = false);
     }
-    "children" in $[Q] && $[Q].children && G$($[Q].children);
+    "children" in $[Q] && $[Q].children && m9($[Q].children);
   }
 }
-function z4($, Q) {
+function k$($, Q) {
   for (var Z = 0; Z < $.length; Z++) {
-    var X = $[Z];
-    if (X.type === B.paragraph && X.children) for (var Y = X.children, V = 0; V < Y.length; V++) {
-      var K = Y[V];
-      if (K.type === B.htmlSelfClosing && K.a && K.tag.toLowerCase() === Q) {
+    var V = $[Z];
+    if (V.type === _.paragraph && V.children) for (var Y = V.children, G = 0; G < Y.length; G++) {
+      var K = Y[G];
+      if (K.type === _.htmlSelfClosing && K.b && K.tag.toLowerCase() === Q) {
         var J = $.slice(0, Z);
-        V > 0 && J.push({ type: B.paragraph, children: Y.slice(0, V) });
-        var G = [];
-        if (V + 1 < Y.length) {
-          var U = Y.slice(V + 1).filter((W) => !(W.type === B.htmlSelfClosing && W.a));
-          U.length > 0 && (G = U);
+        G > 0 && J.push({ type: _.paragraph, children: Y.slice(0, G) });
+        var X = [];
+        if (G + 1 < Y.length) {
+          var U = Y.slice(G + 1).filter(function(q2) {
+            return !(q2.type === _.htmlSelfClosing && q2.b);
+          });
+          U.length > 0 && (X = U);
         }
-        return G = G.concat($.slice(Z + 1)), { found: true, beforeClose: J, afterClose: G };
+        return X = X.concat($.slice(Z + 1)), { found: true, beforeClose: J, afterClose: X };
       }
     }
-    if ((X.type === B.htmlSelfClosing || X.type === B.htmlBlock) && X.a && X.tag.toLowerCase() === Q) return { found: true, beforeClose: $.slice(0, Z), afterClose: $.slice(Z + 1) };
+    if ((V.type === _.htmlSelfClosing || V.type === _.htmlBlock) && V.b && V.tag.toLowerCase() === Q) return { found: true, beforeClose: $.slice(0, Z), afterClose: $.slice(Z + 1) };
   }
   return { found: false, beforeClose: $, afterClose: [] };
 }
-function y6($) {
+function S$($, Q, Z) {
+  var V = $.replace(new RegExp("\\s*</" + Q + ">\\s*$", "i"), "");
+  return Z ? p9(V) : V;
+}
+function h9($) {
   var Q = "";
   for (var Z in $) {
-    var X = $[Z];
-    X === true ? Q += ` ${Z}` : X !== void 0 && X != null && X !== false && (Q += ` ${Z}="${String(X)}"`);
+    var V = $[Z];
+    V === true ? Q += " " + Z : V != null && V !== false && (Q += " " + Z + '="' + String(V) + '"');
   }
   return Q;
 }
-function Q4($, Q, Z, X) {
-  var Y;
-  return Q === void 0 ? Y = y6(Z) : Y = Q.length > 0 && Q.charCodeAt(0) > I ? ` ${Q}` : Q, `<${$}${Y}${X}`;
-}
-function q$($) {
-  var Q = $.tag, Z = $.type === B.htmlSelfClosing, X = $, Y = X.b, V = `</${Q}>`;
-  if (!Z && X.a) return { kind: "literal", literal: (X.h || V) + (X.e || "") };
-  if (Z) {
-    var K = $;
-    return K.a ? { kind: "literal", literal: K.h || V } : K.m ? { kind: "literal", literal: K.m } : { kind: "literal", literal: Q4(Q, Y, $.attrs, " />") };
-  }
-  var J = Q4(Q, Y, $.attrs, ">"), G = X.children, U = G != null && G.length > 0;
-  if (X.c && X.j !== void 0) return U ? { kind: "sandwich", open: J, close: V } : { kind: "literal", literal: X.j };
-  if (X.c && !U) return { kind: "literal", literal: J + (X.e || "") + (X.h || V) };
-  if (G != null && G.length > 0) {
-    for (var W = "", z = 0; z < G.length; z++) {
-      var H = G[z];
-      if (H.type !== B.text) return { kind: "sandwich", open: J, close: V };
-      W += H.text;
-    }
-    return { kind: "literal", literal: J + W + V };
-  }
-  var F = X.e || "";
-  return F && F.indexOf(V) !== -1 ? { kind: "literal", literal: J + F } : { kind: "literal", literal: J + F + V };
-}
-function F4($, Q, Z) {
-  var X = [], Y = $, V = Z;
-  if (Y && X.push(Y), Array.isArray(Q)) for (var K = 0; K < Q.length; K++) X.push(Q[K]);
-  else Q != null && X.push(Q);
-  V && X.push(V);
-  for (var J = [], G = 0; G < X.length; G++) {
-    var U = X[G];
-    typeof U == "string" && J.length > 0 && typeof J.at(-1) == "string" ? J[J.length - 1] = J.at(-1) + U : J.push(U);
-  }
-  return J;
-}
-function m5($) {
-  return $ == null || $.tagfilter !== false;
-}
-function H4($, Q, Z, X) {
-  var Y = Q($, Z, X);
-  return Y === null ? null : S6(Y);
-}
-function M4($) {
+function L$($) {
   var Q = [];
   if (!$) return Q;
   for (var Z in $) Z.charCodeAt(0) === 94 && Q.push({ identifier: Z, footnote: $[Z].target });
   return Q;
 }
-function h9($, Q, Z) {
+function t5($, Q, Z) {
   if (Q.indexOf(".") === -1) return $?.[Q] || Z;
-  for (var X = $, Y = Q.split("."), V = 0; V < Y.length && (X = X?.[Y[V]], X !== void 0); ) V++;
-  return X || Z;
+  for (var V = $, Y = Q.split("."), G = 0; G < Y.length && (V = V?.[Y[G]], V !== void 0); ) G++;
+  return V || Z;
 }
-function S6($) {
+function E$($) {
   for (var Q = false, Z = 0; Z < $.length; Z++) {
-    var X = $.charCodeAt(Z);
-    if (X <= I || X === T5 || X === M9 || X === Y0 || X === l || X === A0 || X === T0 || X === J5 || X === W5 || X === Z0 || X >= 123) {
+    var V = $.charCodeAt(Z);
+    if (V <= v2 || V === v5 || V === G9 || V === G0 || V === o || V === A0 || V === y0 || V === K5 || V === U5 || V === $0 || V >= 123) {
       Q = true;
       break;
     }
   }
   if (!Q) return $;
   for (var Y = "", Z = 0; Z < $.length; Z++) {
-    var X = $.charCodeAt(Z);
-    if (X === M9 && Z + 2 < $.length) {
-      var V = $.charCodeAt(Z + 1), K = $.charCodeAt(Z + 2);
-      if ((V >= r && V <= o || V >= h && V <= D9 || V >= V0 && V <= L5) && (K >= r && K <= o || K >= h && K <= D9 || K >= V0 && K <= L5)) {
+    var V = $.charCodeAt(Z);
+    if (V === G9 && Z + 2 < $.length) {
+      var G = $.charCodeAt(Z + 1), K = $.charCodeAt(Z + 2);
+      if ((G >= i && G <= a || G >= h && G <= J9 || G >= K0 && G <= I5) && (K >= i && K <= a || K >= h && K <= J9 || K >= K0 && K <= I5)) {
         Y += $[Z] + $[Z + 1] + $[Z + 2], Z += 2;
         continue;
       }
-    }
-    if (X >= 55296 && X <= 57343) {
-      if (X <= 56319 && Z + 1 < $.length) {
-        var J = $.charCodeAt(Z + 1);
-        if (J >= 56320 && J <= 57343) {
-          Y += encodeURI($[Z] + $[Z + 1]), Z++;
-          continue;
-        }
-      }
-      Y += $[Z];
-      continue;
     }
     Y += encodeURI($[Z]);
   }
   return Y;
 }
-function O4(...$) {
+function g$(...$) {
   return $.filter(Boolean).join(" ");
 }
-var k6 = /* @__PURE__ */ new Set(["title", "textarea", "style", "xmp", "iframe", "noembed", "noframes", "script", "plaintext"]);
-var C9 = /<(\/?)(title|textarea|style|xmp|iframe|noembed|noframes|script|plaintext)(\s|>|\/)/gi;
-function W$($) {
-  return k6.has($.toLowerCase());
+var C4 = /* @__PURE__ */ new Set(["title", "textarea", "style", "xmp", "iframe", "noembed", "noframes", "script", "plaintext"]);
+var N9 = /<(\/?)(title|textarea|style|xmp|iframe|noembed|noframes|script|plaintext)(\s|>|\/)/gi;
+function u9($) {
+  return C4.has($.toLowerCase());
 }
-function D4($) {
-  return C9.lastIndex = 0, C9.test($);
+function T$($) {
+  return N9.lastIndex = 0, N9.test($);
 }
-function z$($) {
-  return C9.lastIndex = 0, $.replace(C9, (Q, Z, X, Y) => `&lt;${Z}${X}${Y}`);
-}
-function I9($, Q) {
-  var Z = $ || {}, X = Z.slugify, Y;
-  if (X) {
-    var V = X;
-    Y = (K) => V(K, N5);
-  } else Y = N5;
-  return { disableAutoLink: Z.disableAutoLink, disableFrontmatter: Z.disableFrontmatter, disableParsingRawHTML: Z.disableParsingRawHTML, enforceAtxHeadings: Z.enforceAtxHeadings, evalUnserializableExpressions: Z.evalUnserializableExpressions, forceBlock: Z.forceBlock, forceInline: Q === void 0 ? Z.forceInline : Q, ignoreHTMLBlocks: Z.ignoreHTMLBlocks, optimizeForStreaming: Z.optimizeForStreaming, preserveFrontmatter: Z.preserveFrontmatter, sanitizer: Z.sanitizer || H5, slugify: Y, tagfilter: m5(Z) };
-}
-var h4 = /^<([a-zA-Z][a-zA-Z0-9-]*)\s[^>]*>/;
-var m4 = /^<[A-Z]/;
-var D$ = ["script", "pre", "style", "textarea"];
-var N9 = new Set(D$);
-var x6 = /<(?:pre|script|style|textarea)\b/i;
-var j4 = /<(?:pre|script|style|textarea)\b/iy;
-var F$ = /^(\s{0,3}#[#\s]|\s{0,3}[-*+]\s|\s{0,3}\d+\.\s|\s{0,3}>\s|\s{0,3}```)/m;
-var B4 = /^<([a-z][^ >/\n\r]*) ?([^>]*?)>/im;
-var u4 = new Uint8Array(128);
-(() => {
-  for (var $ = [Z0, P0, O0, b0, K5, A0, c0, Y0, T0, O9, g, A9, C5, L5], Q = 0; Q < $.length; Q++) u4[$[Q]] = 1;
-})();
-var _4 = /([a-zA-Z_][a-zA-Z0-9_-]*)=(?:"([^"]*)"|'([^']*)')/g;
-function p4($) {
-  return N9.has($);
-}
-function d4($) {
-  return x6.test($);
-}
-function c4($, Q, Z) {
-  for (var X = Q, Y = Z; X < Y && ($.charCodeAt(X) === I || $.charCodeAt(X) === w); ) X++;
-  if (X >= Y) return false;
-  $.charCodeAt(X) === E0 && X++;
-  for (var V = 0; X < Y; ) {
-    for (; X < Y && ($.charCodeAt(X) === I || $.charCodeAt(X) === w); ) X++;
-    if (X >= Y) break;
-    if ($.charCodeAt(X) === E0 && V > 0) {
-      for (var K = X + 1; K < Y && ($.charCodeAt(K) === I || $.charCodeAt(K) === w); ) K++;
-      if (K >= Y) return true;
-    }
-    if ($.charCodeAt(X) === m0 && X++, X >= Y || $.charCodeAt(X) !== p) return false;
-    for (; X < Y && $.charCodeAt(X) === p; ) X++;
-    for (X < Y && $.charCodeAt(X) === m0 && X++, V++; X < Y && ($.charCodeAt(X) === I || $.charCodeAt(X) === w); ) X++;
-    if (X < Y) if ($.charCodeAt(X) === E0) X++;
-    else return false;
-  }
-  return V > 0;
-}
-var E6 = /[\u0000-\u001F\u007F]/g;
-var g6 = { action: 1, background: 1, cite: 1, data: 1, formaction: 1, href: 1, longdesc: 1, poster: 1, src: 1, "xlink:href": 1 };
-var C6 = /&#(x[0-9a-f]+|[0-9]+);?/gi;
-function f6($) {
-  return $.indexOf("&#") === -1 ? $ : $.replace(C6, (Q, Z) => {
-    var X = Z.charCodeAt(0) === V$ || Z.charCodeAt(0) === K$ ? Number.parseInt(Z.slice(1), 16) : Number.parseInt(Z, 10);
-    return X > 0 && X <= 1114111 ? String.fromCodePoint(X) : Q;
+function p9($) {
+  return N9.lastIndex = 0, $.replace(N9, function(Q, Z, V, Y) {
+    return "&lt;" + Z + V + Y;
   });
 }
-function h6($, Q, Z) {
-  if (Z && Q.charCodeAt(0) === S5) return false;
-  var X = $.charCodeAt(0), Y = $.charCodeAt(1);
-  if ((X === n$ || X === a$) && (Y === i$ || Y === o$)) return !(Z && Q === "");
-  var V = $.toLowerCase();
-  if (V === "srcdoc") return true;
-  if (V === "style") return /url\s*\(\s*(javascript|vbscript|data:(?!image\/))/i.test(Q);
-  if (g6[V] === 1) {
-    var K = f6(I5(Q));
-    if (H5(K) === null) return true;
-    var J = K.replace(E6, "");
-    return J !== K && H5(J) === null;
-  }
-  return false;
+var i$ = /^<([a-zA-Z][a-zA-Z0-9-]*)\s[^>]*>/;
+var a$ = /^<[A-Z]/;
+var c9 = ["script", "pre", "style", "textarea"];
+var z9 = new Set(c9);
+var m4 = /<(?:pre|script|style|textarea)\b/i;
+var f$ = /<(?:pre|script|style|textarea)\b/iy;
+var d9 = /^(\s{0,3}#[#\s]|\s{0,3}[-*+]\s|\s{0,3}\d+\.\s|\s{0,3}>\s|\s{0,3}```)/m;
+var C$ = /^<([a-z][^ >/\n\r]*) ?([^>]*?)>/im;
+var n$ = new Uint8Array(128);
+(function() {
+  for (var $ = [$0, _0, H0, N0, G5, A0, p0, G0, y0, K9, E, X9, k5, I5], Q = 0; Q < $.length; Q++) n$[$[Q]] = 1;
+})();
+var m$ = /([a-zA-Z_][a-zA-Z0-9_-]*)=(?:"([^"]*)"|'([^']*)')/g;
+function s$($) {
+  return z9.has($);
 }
-function A$($) {
-  return "<" + ($.f ? "/" : "") + $.tag + $.g + $.b + ($.n ? $.r ? " />" : "/>" : ">");
+function t$($) {
+  return m4.test($);
 }
-function v4($, Q, Z, X) {
-  for (var Y = [], V = Q, K = 0; K < X.length; K += 2) {
-    var J = X[K];
-    if (J > V) {
-      var G = $.slice(V, J).trim();
-      G && Y.push(G);
+function e$($, Q, Z) {
+  for (var V = Q, Y = Z; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+  if (V >= Y) return false;
+  $.charCodeAt(V) === k0 && V++;
+  for (var G = 0; V < Y; ) {
+    for (; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+    if (V >= Y) break;
+    if ($.charCodeAt(V) === k0 && G > 0) {
+      for (var K = V + 1; K < Y && ($.charCodeAt(K) === v2 || $.charCodeAt(K) === b); ) K++;
+      if (K >= Y) return true;
     }
-    V = X[K + 1];
+    if ($.charCodeAt(V) === f0 && V++, V >= Y || $.charCodeAt(V) !== p) return false;
+    for (; V < Y && $.charCodeAt(V) === p; ) V++;
+    for (V < Y && $.charCodeAt(V) === f0 && V++, G++; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+    if (V < Y) if ($.charCodeAt(V) === k0) V++;
+    else return false;
   }
-  if (V < Z) {
-    var U = $.slice(V, Z).trim();
-    U && Y.push(U);
-  }
-  return Y.join(" ");
+  return G > 0;
 }
 function w5($, Q) {
-  if ($.charCodeAt(Q) !== Y0) return null;
-  let Z = Q + 1, X = $.length, Y = false;
-  $.charCodeAt(Z) === j0 && (Z++, Y = true);
-  let V = Z, K = $.charCodeAt(Z);
-  if (!(K >= V0 && K <= q0 || K >= h && K <= u)) return null;
-  for (; Z < X && ($.charCodeAt(Z) >= V0 && $.charCodeAt(Z) <= q0 || $.charCodeAt(Z) >= h && $.charCodeAt(Z) <= u || $.charCodeAt(Z) >= r && $.charCodeAt(Z) <= o || $.charCodeAt(Z) === p); ) Z++;
-  let J = $.slice(V, Z);
+  if ($.charCodeAt(Q) !== G0) return null;
+  let Z = Q + 1, V = $.length, Y = false;
+  $.charCodeAt(Z) === M0 && (Z++, Y = true);
+  let G = Z, K = $.charCodeAt(Z);
+  if (!(K >= K0 && K <= W0 || K >= h && K <= c)) return null;
+  for (; Z < V && ($.charCodeAt(Z) >= K0 && $.charCodeAt(Z) <= W0 || $.charCodeAt(Z) >= h && $.charCodeAt(Z) <= c || $.charCodeAt(Z) >= i && $.charCodeAt(Z) <= a || $.charCodeAt(Z) === p); ) Z++;
+  let J = $.slice(G, Z);
   if (!J) return null;
-  let G = J.charCodeAt(0), U = G >= h && G <= u || J.indexOf("-") !== -1, W = Z;
-  for (; Z < X && ($.charCodeAt(Z) === I || $.charCodeAt(Z) === w || $.charCodeAt(Z) === g); ) Z++;
-  let z = $.slice(W, Z);
-  if (Z === W && Z < X) {
-    var H = $.charCodeAt(Z);
-    if (H !== l && H !== j0) return null;
+  let X = Z;
+  for (; Z < V && ($.charCodeAt(Z) === v2 || $.charCodeAt(Z) === b || $.charCodeAt(Z) === E); ) Z++;
+  let U = $.slice(X, Z);
+  if (Z === X && Z < V) {
+    var q2 = $.charCodeAt(Z);
+    if (q2 !== o && q2 !== M0) return null;
   }
-  let F = Z, M = {}, j = false;
-  for (var _ = null; Z < X; ) {
-    let f = $.charCodeAt(Z);
-    if (f === l) {
-      let y = _ ? v4($, F, Z, _) : $.slice(F, Z);
-      return { r: j, u: U, f: Y, b: y, q: _ != null, n: false, g: z, attrs: M, end: Z + 1, tag: J };
+  let W = Z, z = {}, F = false;
+  for (; Z < V; ) {
+    let k = $.charCodeAt(Z);
+    if (k === o) {
+      let S = $.slice(W, Z);
+      return { tag: J, attrs: z, selfClosing: false, end: Z + 1, rawAttrs: S, whitespaceBeforeAttrs: U, isClosing: Y, hasSpaceBeforeSlash: F };
     }
-    if (f === I || f === w || f === g) {
+    if (k === v2 || k === b || k === E) {
       Z++;
       continue;
     }
-    if (f === j0 && Z + 1 < X && $.charCodeAt(Z + 1) === l) {
-      j = Z > F && $.charCodeAt(Z - 1) === I;
-      let y = _ ? v4($, F, Z, _) : $.slice(F, Z);
-      return { r: j, u: U, f: Y, b: y, q: _ != null, n: true, g: z, attrs: M, end: Z + 2, tag: J };
+    if (k === M0 && Z + 1 < V && $.charCodeAt(Z + 1) === o) {
+      let S = $.slice(W, Z);
+      return F = Z > W && $.charCodeAt(Z - 1) === v2, { tag: J, attrs: z, selfClosing: true, end: Z + 2, rawAttrs: S, whitespaceBeforeAttrs: U, isClosing: Y, hasSpaceBeforeSlash: F };
     }
-    var q2 = Z, D = $.charCodeAt(Z);
-    if (!(D >= V0 && D <= q0 || D >= h && D <= u || D === O0 || D === m0)) return null;
-    for (Z++; Z < X; ) {
-      var A = $.charCodeAt(Z);
-      if (A >= V0 && A <= q0 || A >= h && A <= u || A >= r && A <= o || A === O0 || A === Q5 || A === m0 || A === p) Z++;
+    var D = Z, O = $.charCodeAt(Z);
+    if (!(O >= K0 && O <= W0 || O >= h && O <= c || O === H0 || O === f0)) return null;
+    for (Z++; Z < V; ) {
+      var H = $.charCodeAt(Z);
+      if (H >= K0 && H <= W0 || H >= h && H <= c || H >= i && H <= a || H === H0 || H === s0 || H === f0 || H === p) Z++;
       else break;
     }
-    for (var N = $.slice(q2, Z), L = Z; Z < X && ($.charCodeAt(Z) === I || $.charCodeAt(Z) === w); ) Z++;
-    var O, P;
-    if ($.charCodeAt(Z) === K5) {
-      for (Z++; Z < X && ($.charCodeAt(Z) === I || $.charCodeAt(Z) === w); ) Z++;
-      var v2 = $.charCodeAt(Z);
-      if (v2 === T5 || v2 === f5) {
-        Z++;
-        for (var b = Z; Z < X && $.charCodeAt(Z) !== v2; ) Z++;
-        if (Z >= X) return null;
-        if (O = $.slice(b, Z), Z++, Z < X) {
-          var k = $.charCodeAt(Z);
-          if (k !== I && k !== w && k !== g && k !== l && k !== j0) return null;
-        }
-        P = Z;
-      } else if (v2 === S5) {
-        var x = 1, b = Z;
-        for (Z++; Z < X && x > 0; ) {
-          var A = $.charCodeAt(Z);
-          A === S5 ? x++ : A === E9 && x--, Z++;
-        }
-        O = $.slice(b, Z), P = Z;
-      } else {
-        for (var b = Z; Z < X; ) {
-          var T = $.charCodeAt(Z);
-          if (T === I || T === w || T === l || T === g || T === T5 || T === f5 || T === K5 || T === Y0 || T === Z0) break;
-          Z++;
-        }
-        if (Z === b) return null;
-        O = $.slice(b, Z), P = Z;
+    for (var B = $.slice(D, Z); Z < V && ($.charCodeAt(Z) === v2 || $.charCodeAt(Z) === b); ) Z++;
+    if ($.charCodeAt(Z) !== G5) {
+      z[B] = "";
+      continue;
+    }
+    for (Z++; Z < V && ($.charCodeAt(Z) === v2 || $.charCodeAt(Z) === b); ) Z++;
+    var M = $.charCodeAt(Z);
+    if (M === v5 || M === S5) {
+      Z++;
+      for (var j = Z; Z < V && $.charCodeAt(Z) !== M; ) Z++;
+      if (Z >= V) return null;
+      if (z[B] = $.slice(j, Z), Z++, Z < V) {
+        var w = $.charCodeAt(Z);
+        if (w !== v2 && w !== b && w !== E && w !== o && w !== M0) return null;
       }
-    } else O = "", P = L;
-    h6(N, O, U) ? (_ === null && (_ = []), _.push(q2, P)) : M[N] = O;
+    } else if (M === L5) {
+      var I = 1, j = Z;
+      for (Z++; Z < V && I > 0; ) {
+        var H = $.charCodeAt(Z);
+        H === L5 ? I++ : H === I9 && I--, Z++;
+      }
+      z[B] = $.slice(j, Z);
+    } else {
+      for (var j = Z; Z < V; ) {
+        var A = $.charCodeAt(Z);
+        if (A === v2 || A === b || A === o || A === E || A === v5 || A === S5 || A === G5 || A === G0 || A === $0) break;
+        Z++;
+      }
+      if (Z === j) return null;
+      z[B] = $.slice(j, Z);
+    }
   }
   return null;
 }
-function G5($) {
-  var Q = $.indexOf("<");
-  if (Q === -1) return $;
-  for (var Z = "", X = 0, Y = false; Q !== -1; ) {
-    var V = w5($, Q);
-    V ? (V.q && (Z += $.slice(X, Q) + A$(V), X = V.end, Y = true), Q = $.indexOf("<", V.end)) : Q = $.indexOf("<", Q + 1);
-  }
-  return Y ? Z + $.slice(X) : $;
-}
-function m6($, Q, Z) {
+function h4($, Q, Z) {
   if (!Z.optimizeForStreaming && $.indexOf("[") === -1) return false;
-  for (var X = 0, Y = $.length, V = false, K = false; X < Y; ) {
+  for (var V = 0, Y = $.length, G = false, K = false; V < Y; ) {
     for (var J = $.indexOf(`
-`, X), G = J < 0 ? Y : J, U = X, W = 0; U < G && W < 4; ) if ($.charCodeAt(U) === I) W++, U++;
-    else if ($.charCodeAt(U) === w) W += 4, U++;
+`, V), X = J < 0 ? Y : J, U = V, q2 = 0; U < X && q2 < 4; ) if ($.charCodeAt(U) === v2) q2++, U++;
+    else if ($.charCodeAt(U) === b) q2 += 4, U++;
     else break;
-    if (U >= G) {
-      V = false, X = J < 0 ? Y : J + 1;
+    if (U >= X) {
+      G = false, V = J < 0 ? Y : J + 1;
       continue;
     }
-    if (W < 4) {
-      var z = $.charCodeAt(U);
-      if (z === Z0 || z === b0) {
-        for (var H = z, F = 0, M = U; M < G && $.charCodeAt(M) === H; ) F++, M++;
+    if (q2 < 4) {
+      var W = $.charCodeAt(U);
+      if (W === $0 || W === N0) {
+        for (var z = W, F = 0, D = U; D < X && $.charCodeAt(D) === z; ) F++, D++;
         if (F >= 3) {
-          var j = true;
-          if (H === Z0) {
-            for (var _ = M; _ < G; _++) if ($.charCodeAt(_) === Z0) {
-              j = false;
+          var O = true;
+          if (z === $0) {
+            for (var H = D; H < X; H++) if ($.charCodeAt(H) === $0) {
+              O = false;
               break;
             }
           }
-          if (j) {
-            V = false;
-            for (var q2 = J < 0 ? Y : J + 1; q2 < Y; ) {
-              for (var D = q2, A = 0; D < Y && A < 4; ) {
-                var N = $.charCodeAt(D);
-                if (N === I) A++, D++;
-                else if (N === w) A += 4, D++;
+          if (O) {
+            G = false;
+            for (var B = J < 0 ? Y : J + 1; B < Y; ) {
+              for (var M = B, j = 0; M < Y && j < 4; ) {
+                var w = $.charCodeAt(M);
+                if (w === v2) j++, M++;
+                else if (w === b) j += 4, M++;
                 else break;
               }
-              if (A < 4 && D < Y && $.charCodeAt(D) === H) {
-                for (var L = 0; D < Y && $.charCodeAt(D) === H; ) L++, D++;
-                if (L >= F) {
-                  for (; D < Y && ($.charCodeAt(D) === I || $.charCodeAt(D) === w); ) D++;
-                  if (D >= Y || $.charCodeAt(D) === g) {
-                    X = D >= Y ? Y : D + 1;
+              if (j < 4 && M < Y && $.charCodeAt(M) === z) {
+                for (var I = 0; M < Y && $.charCodeAt(M) === z; ) I++, M++;
+                if (I >= F) {
+                  for (; M < Y && ($.charCodeAt(M) === v2 || $.charCodeAt(M) === b); ) M++;
+                  if (M >= Y || $.charCodeAt(M) === E) {
+                    V = M >= Y ? Y : M + 1;
                     break;
                   }
                 }
               }
-              for (; q2 < Y && $.charCodeAt(q2) !== g; ) q2++;
-              q2 < Y && q2++;
+              for (; B < Y && $.charCodeAt(B) !== E; ) B++;
+              B < Y && B++;
             }
-            q2 >= Y && (X = Y, K = true);
+            B >= Y && (V = Y, K = true);
             continue;
           }
         }
       }
     }
-    for (var O = U; O < G && $.charCodeAt(O) === l; ) {
-      O++, O < G && $.charCodeAt(O) === I && O++;
-      for (var P = 0; O < G && P < 4; ) if ($.charCodeAt(O) === I) P++, O++;
-      else if ($.charCodeAt(O) === w) P += 4, O++;
+    for (var A = U; A < X && $.charCodeAt(A) === o; ) {
+      A++, A < X && $.charCodeAt(A) === v2 && A++;
+      for (var k = 0; A < X && k < 4; ) if ($.charCodeAt(A) === v2) k++, A++;
+      else if ($.charCodeAt(A) === b) k += 4, A++;
       else break;
-      if (P >= 4) break;
-      V = false;
+      if (k >= 4) break;
+      G = false;
     }
-    if (!V && W < 4 && O < G && $.charCodeAt(O) === A0 && !(O + 1 < Y && $.charCodeAt(O + 1) === W5)) {
-      var v2 = l4($, O, Q);
-      if (v2) {
-        X = v2, V = false;
+    if (!G && q2 < 4 && A < X && $.charCodeAt(A) === A0 && !(A + 1 < Y && $.charCodeAt(A + 1) === U5)) {
+      var S = $4($, A, Q);
+      if (S) {
+        V = S, G = false;
         continue;
       }
     }
-    var b = $.charCodeAt(U);
-    if (b === V5 && W < 4) V = false;
-    else if (W < 4 && (b === p || b === P0 || b === O0)) {
-      for (var k = U, x = 0; k < G; ) {
-        var T = $.charCodeAt(k);
-        if (T === b) x++;
-        else if (T !== I && T !== w) break;
-        k++;
+    var R = $.charCodeAt(U);
+    if (R === Y5 && q2 < 4) G = false;
+    else if (q2 < 4 && (R === p || R === _0 || R === H0)) {
+      for (var N = U, T = 0; N < X; ) {
+        var L = $.charCodeAt(N);
+        if (L === R) T++;
+        else if (L !== v2 && L !== b) break;
+        N++;
       }
-      V = !(x >= 3 && k >= G);
-    } else V = true;
-    X = J < 0 ? Y : J + 1;
+      G = !(T >= 3 && N >= X);
+    } else G = true;
+    V = J < 0 ? Y : J + 1;
   }
   return K;
 }
-function l4($, Q, Z) {
-  let X = $.length;
+function $4($, Q, Z) {
+  let V = $.length;
   if ($.charCodeAt(Q) !== A0) return null;
-  let Y = Q + 1 < X && $.charCodeAt(Q + 1) === W5, V = Q + 1;
-  for (; V < X; ) {
-    var K = $.charCodeAt(V);
-    if (K === J5) {
-      V++;
+  let Y = Q + 1 < V && $.charCodeAt(Q + 1) === U5, G = Q + 1;
+  for (; G < V; ) {
+    var K = $.charCodeAt(G);
+    if (K === K5) {
+      G++;
       break;
     }
     if (K === A0) return null;
-    K === T0 && V + 1 < X && V++, V++;
+    K === y0 && G + 1 < V && G++, G++;
   }
-  if (V > X || $.charCodeAt(V - 1) !== J5) return null;
-  let J = $.slice(Q + 1, V - 1);
+  if (G > V || $.charCodeAt(G - 1) !== K5) return null;
+  let J = $.slice(Q + 1, G - 1);
   if (J.length > 999) return null;
-  let G = p9(J);
-  if (!G || V >= X || $.charCodeAt(V) !== m0) return null;
-  V++;
+  let X = b9(J);
+  if (!X || G >= V || $.charCodeAt(G) !== f0) return null;
+  G++;
   let U = false;
-  for (; V < X; ) {
-    let f = $.charCodeAt(V);
-    if (f === I || f === w) V++;
-    else if (f === g && !U) U = true, V++;
+  for (; G < V; ) {
+    let u = $.charCodeAt(G);
+    if (u === v2 || u === b) G++;
+    else if (u === E && !U) U = true, G++;
     else break;
   }
   if (Y) {
-    let f = $.indexOf(`
-`, V), y = f < 0 ? X : f, C = $.slice(V, y).trim();
-    return Z[G] = { target: C, title: void 0 }, f < 0 ? X : f + 1;
+    let u = $.indexOf(`
+`, G), x = u < 0 ? V : u, g = $.slice(G, x).trim();
+    return Z[X] = { target: g, title: void 0 }, u < 0 ? V : u + 1;
   }
-  var W;
-  if (V < X && $.charCodeAt(V) === Y0) {
-    V++;
-    for (var z = V; V < X && $.charCodeAt(V) !== l && $.charCodeAt(V) !== g; ) $.charCodeAt(V) === T0 && V + 1 < X && V++, V++;
-    if (V >= X || $.charCodeAt(V) !== l) return null;
-    W = $.slice(z, V), V++;
-    for (var H = $.indexOf(`
-`, V), F = H < 0 ? X : H, M = V; M < F && ($.charCodeAt(M) === I || $.charCodeAt(M) === w); ) M++;
-    if (M < F) {
-      if (M === V) return null;
-      var j = $.charCodeAt(M);
-      if (j !== T5 && j !== f5 && j !== z5) return null;
+  var q2;
+  if (G < V && $.charCodeAt(G) === G0) {
+    G++;
+    for (var W = G; G < V && $.charCodeAt(G) !== o && $.charCodeAt(G) !== E; ) $.charCodeAt(G) === y0 && G + 1 < V && G++, G++;
+    if (G >= V || $.charCodeAt(G) !== o) return null;
+    q2 = $.slice(W, G), G++;
+    for (var z = $.indexOf(`
+`, G), F = z < 0 ? V : z, D = G; D < F && ($.charCodeAt(D) === v2 || $.charCodeAt(D) === b); ) D++;
+    if (D < F) {
+      if (D === G) return null;
+      var O = $.charCodeAt(D);
+      if (O !== v5 && O !== S5 && O !== F5) return null;
     }
   } else {
-    for (var z = V, _ = 0; V < X; ) {
-      var K = $.charCodeAt(V);
-      if (K === z5) _++;
-      else if (K === F5) {
-        if (_ === 0) break;
-        _--;
+    for (var W = G, H = 0; G < V; ) {
+      var K = $.charCodeAt(G);
+      if (K === F5) H++;
+      else if (K === q5) {
+        if (H === 0) break;
+        H--;
       } else {
-        if (K === I || K === w || K === g) break;
-        K === T0 && V + 1 < X && V++;
+        if (K === v2 || K === b || K === E) break;
+        K === y0 && G + 1 < V && G++;
       }
-      V++;
+      G++;
     }
-    if (W = $.slice(z, V), !W) return null;
+    if (q2 = $.slice(W, G), !q2) return null;
   }
-  for (; V < X && ($.charCodeAt(V) === I || $.charCodeAt(V) === w); ) V++;
-  var q2 = $.indexOf(`
-`, V), D = q2 < 0 ? X : q2, A, N = false, L = V, O = V;
-  if (V === D && V < X) for (O = V + 1; O < X && ($.charCodeAt(O) === I || $.charCodeAt(O) === w); ) O++;
-  if (O < X) {
-    var P = $.charCodeAt(O);
-    if (P === T5 || P === f5 || P === z5) {
-      for (var v2 = P === z5 ? 41 : P, b = O + 1, k = b; b < X; ) {
-        var x = $.charCodeAt(b);
-        if (x === v2) {
-          for (var T = b + 1; T < X && ($.charCodeAt(T) === I || $.charCodeAt(T) === w); ) T++;
-          (T >= X || $.charCodeAt(T) === g) && (A = $.slice(k, b), N = true, L = T < X ? T + 1 : X);
+  for (; G < V && ($.charCodeAt(G) === v2 || $.charCodeAt(G) === b); ) G++;
+  var B = $.indexOf(`
+`, G), M = B < 0 ? V : B, j, w = false, I = G, A = G;
+  if (G === M && G < V) for (A = G + 1; A < V && ($.charCodeAt(A) === v2 || $.charCodeAt(A) === b); ) A++;
+  if (A < V) {
+    var k = $.charCodeAt(A);
+    if (k === v5 || k === S5 || k === F5) {
+      for (var S = k === F5 ? 41 : k, R = A + 1, N = R; R < V; ) {
+        var T = $.charCodeAt(R);
+        if (T === S) {
+          for (var L = R + 1; L < V && ($.charCodeAt(L) === v2 || $.charCodeAt(L) === b); ) L++;
+          (L >= V || $.charCodeAt(L) === E) && (j = $.slice(N, R), w = true, I = L < V ? L + 1 : V);
           break;
         }
-        if (x === T0 && b + 1 < X) {
-          b += 2;
+        if (T === y0 && R + 1 < V) {
+          R += 2;
           continue;
         }
-        if (x === g && b + 1 < X && $.charCodeAt(b + 1) === g) break;
-        b++;
+        if (T === E && R + 1 < V && $.charCodeAt(R + 1) === E) break;
+        R++;
       }
-      if (!N && O === V) return null;
+      if (!w && A === G) return null;
     }
   }
-  if (N) return Z[G] || (Z[G] = { target: I5(q9(W)), title: A === void 0 ? A : I5(q9(A)) }), L;
-  for (; V < D && ($.charCodeAt(V) === I || $.charCodeAt(V) === w); ) V++;
-  return V < D ? null : (Z[G] || (Z[G] = { target: I5(q9(W)), title: A }), q2 < 0 ? X : q2 + 1);
+  if (w) return Z[X] || (Z[X] = { target: e5(q2), title: j !== void 0 ? s5(e5(j)) : j }), I;
+  for (; G < M && ($.charCodeAt(G) === v2 || $.charCodeAt(G) === b); ) G++;
+  return G < M ? null : (Z[X] || (Z[X] = { target: e5(q2), title: j }), B < 0 ? V : B + 1);
 }
-var X5 = new Uint8Array(V4);
-for (X5[V5] |= M5, X5[l] |= M5, X5[p] |= M5 | k5, X5[y5] |= M5, X5[P0] |= M5 | k5, X5[O0] |= M5 | k5, X5[Z0] |= M5 | k5, X5[b0] |= M5 | k5, X5[Y0] |= M5 | k5, X5[A0] |= k5, X5[c0] |= k5, X5[E0] |= M5, B9 = r; B9 <= o; B9++) X5[B9] |= M5;
-var B9;
-function I4($) {
+var $5 = new Uint8Array(N$);
+for ($5[Y5] |= W5, $5[o] |= W5, $5[p] |= W5 | P5, $5[N5] |= W5, $5[_0] |= W5 | P5, $5[H0] |= W5 | P5, $5[$0] |= W5 | P5, $5[N0] |= W5 | P5, $5[G0] |= W5 | P5, $5[A0] |= P5, $5[p0] |= P5, $5[k0] |= W5, F9 = i; F9 <= a; F9++) $5[F9] |= W5;
+var F9;
+function h$($) {
   if ($.indexOf("[") < 0 && $.indexOf("]") < 0) return false;
   for (var Q = 0; Q < $.length; Q++) {
-    if ($.charCodeAt(Q) === T0) {
+    if ($.charCodeAt(Q) === y0) {
       Q++;
       continue;
     }
-    if ($.charCodeAt(Q) === A0 || $.charCodeAt(Q) === J5) return true;
+    if ($.charCodeAt(Q) === A0 || $.charCodeAt(Q) === K5) return true;
   }
   return false;
 }
-function p9($) {
-  for (var Q = $.length, Z = true, X = Q > 0, Y = 0; Y < Q; Y++) {
-    var V = $.charCodeAt(Y);
-    if (V === I) {
+function b9($) {
+  for (var Q = $.length, Z = true, V = Q > 0, Y = 0; Y < Q; Y++) {
+    var G = $.charCodeAt(Y);
+    if (G === v2) {
       if (Z) {
-        X = false;
+        V = false;
         break;
       }
       Z = true;
-    } else if (V < 33 || V > 126 || V >= h && V <= u) {
-      X = false;
+    } else if (G < 33 || G > 126 || G >= h && G <= c) {
+      V = false;
       break;
     } else Z = false;
   }
-  if (X && !Z) return $;
+  if (V && !Z) return $;
   var K = $.replace(/\s+/g, " ").trim();
   return K.indexOf("\u1E9E") !== -1 ? K.replace(/\u1E9E/g, "ss").toLowerCase() : K.toLowerCase();
 }
-function R$($) {
-  return $ < U9 ? X5[$] : $ === c$ ? h5 : 0;
+function n9($) {
+  return $ < n5 ? $5[$] : $ === W$ ? E5 : 0;
 }
-function q9($) {
+function e5($) {
   return $.indexOf("\\") === -1 ? $ : $.replace(/\\([!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])/g, "$1");
 }
-var j$ = null;
-var B$ = -1;
-var d9 = -1;
-function G0($, Q) {
-  if (Q >= B$ && Q <= d9 && $ === j$) return d9;
+var l9 = null;
+var r9 = -1;
+var w9 = -1;
+function X0($, Q) {
+  if (Q >= r9 && Q <= w9 && $ === l9) return w9;
   var Z = $.indexOf(`
-`, Q), X = Z < 0 ? $.length : Z;
-  return j$ = $, B$ = Q, d9 = X, X;
+`, Q), V = Z < 0 ? $.length : Z;
+  return l9 = $, r9 = Q, w9 = V, V;
 }
-function e($, Q) {
-  let Z = G0($, Q);
+function s($, Q) {
+  let Z = X0($, Q);
   return Z < $.length ? Z + 1 : Z;
 }
-function v9($, Q, Z) {
+function W9($, Q, Z) {
   for (; Q < Z; ) {
-    let X = $.charCodeAt(Q);
-    if (X !== I && X !== w) break;
+    let V = $.charCodeAt(Q);
+    if (V !== v2 && V !== b) break;
     Q++;
   }
   return Q;
 }
-function N4($, Q) {
-  let Z = e($, Q);
+function u$($, Q) {
+  let Z = s($, Q);
   for (; Z < $.length; ) {
-    let X = G0($, Z);
-    if (e0($, Z, X)) return Z;
-    Z = e($, Z);
+    let V = X0($, Z);
+    if (e0($, Z, V)) return Z;
+    Z = s($, Z);
   }
   return $.length;
 }
-function l5($, Q, Z, X) {
+function C5($, Q, Z, V) {
   let Y = 0;
-  for (; Q + Y < Z && $.charCodeAt(Q + Y) === X; ) Y++;
+  for (; Q + Y < Z && $.charCodeAt(Q + Y) === V; ) Y++;
   return Y;
 }
-var U0 = 0;
-var Q0 = 0;
-function L0($, Q, Z) {
-  for (U0 = 0, Q0 = 0; Q + Q0 < Z; ) {
-    let X = $.charCodeAt(Q + Q0);
-    if (X === w) U0 += 4 - U0 % 4;
-    else if (X === I) U0++;
+var J0 = 0;
+var Z0 = 0;
+function P0($, Q, Z) {
+  for (J0 = 0, Z0 = 0; Q + Z0 < Z; ) {
+    let V = $.charCodeAt(Q + Z0);
+    if (V === b) J0 += 4 - J0 % 4;
+    else if (V === v2) J0++;
     else break;
-    Q0++;
+    Z0++;
   }
 }
 function e0($, Q, Z) {
-  return v9($, Q, Z) >= Z;
+  return W9($, Q, Z) >= Z;
 }
-function u6($, Q) {
-  if (!$) return $;
-  var Z = Q.v || (Q.v = /* @__PURE__ */ Object.create(null)), X = Z[$];
-  if (X === void 0) return Z[$] = 0, $;
-  for (var Y = X + 1, V = `${$}-${Y}`; Z[V] !== void 0; ) Y++, V = `${$}-${Y}`;
-  return Z[$] = Y, Z[V] = 0, V;
+function u4($, Q, Z, V) {
+  let Y = X0($, Q);
+  if (P0($, Q, Y), J0 > 3) return null;
+  let G = Q + Z0;
+  if ($.charCodeAt(G) !== Y5) return null;
+  let K = C5($, G, Y, 35);
+  if (K < 1 || K > 6 || (G += K, G < Y && $.charCodeAt(G) !== v2 && $.charCodeAt(G) !== b)) return null;
+  G = W9($, G, Y);
+  for (var J = Y; J > G && $.charCodeAt(J - 1) === v2; ) J--;
+  for (var X = J; J > G && $.charCodeAt(J - 1) === Y5; ) J--;
+  if (J < X) if (J === G || $.charCodeAt(J - 1) === v2) for (; J > G && $.charCodeAt(J - 1) === v2; ) J--;
+  else J = X;
+  let U = $.slice(G, J), q2 = $9(U, false, Z, V), z = (V?.slugify || C0)(U);
+  return { node: { type: _.heading, level: K, children: q2, id: z }, end: s($, Y) };
 }
-function p6($, Q, Z, X) {
-  let Y = G0($, Q);
-  if (L0($, Q, Y), U0 > 3) return null;
-  let V = Q + Q0;
-  if ($.charCodeAt(V) !== V5) return null;
-  let K = l5($, V, Y, 35);
-  if (K < 1 || K > 6 || (V += K, V < Y && $.charCodeAt(V) !== I && $.charCodeAt(V) !== w)) return null;
-  V = v9($, V, Y);
-  for (var J = Y; J > V && $.charCodeAt(J - 1) === I; ) J--;
-  for (var G = J; J > V && $.charCodeAt(J - 1) === V5; ) J--;
-  if (J < G) if (J === V || $.charCodeAt(J - 1) === I) for (; J > V && $.charCodeAt(J - 1) === I; ) J--;
-  else J = G;
-  let U = $.slice(V, J), W = W9(U, false, Z, X);
-  return { node: { type: B.heading, level: K, children: W, id: "" }, end: e($, Y) };
-}
-function d6($, Q, Z) {
-  var X = $.charCodeAt(Q);
-  if (X !== K5 && X !== p) return false;
-  for (var Y = Q; Y < Z && $.charCodeAt(Y) === X; ) Y++;
-  for (; Y < Z && ($.charCodeAt(Y) === I || $.charCodeAt(Y) === w); ) Y++;
+function p4($, Q, Z) {
+  var V = $.charCodeAt(Q);
+  if (V !== G5 && V !== p) return false;
+  for (var Y = Q; Y < Z && $.charCodeAt(Y) === V; ) Y++;
+  for (; Y < Z && ($.charCodeAt(Y) === v2 || $.charCodeAt(Y) === b); ) Y++;
   return Y >= Z;
 }
-function d5($, Q) {
-  let Z = G0($, Q);
-  if (L0($, Q, Z), U0 > 3) return null;
-  let X = Q + Q0, Y = $.charCodeAt(X);
-  if (Y !== p && Y !== P0 && Y !== O0) return null;
-  let V = 0;
-  for (; X < Z; ) {
-    let K = $.charCodeAt(X);
-    if (K === Y) V++;
-    else if (K !== I && K !== w) return null;
-    X++;
+function x5($, Q) {
+  let Z = X0($, Q);
+  if (P0($, Q, Z), J0 > 3) return null;
+  let V = Q + Z0, Y = $.charCodeAt(V);
+  if (Y !== p && Y !== _0 && Y !== H0) return null;
+  let G = 0;
+  for (; V < Z; ) {
+    let K = $.charCodeAt(V);
+    if (K === Y) G++;
+    else if (K !== v2 && K !== b) return null;
+    V++;
   }
-  return V < 3 ? null : { node: { type: B.breakThematic }, end: e($, Z) };
+  return G < 3 ? null : { node: { type: _.breakThematic }, end: s($, Z) };
 }
-var P4 = 0;
-var w4 = 0;
-var R4 = "";
-function c6($, Q, Z) {
-  let X = G0($, Q);
-  if (L0($, Q, X), U0 > 3) return null;
-  let Y = U0, V = Q0, K = Q + Q0, J = $.charCodeAt(K);
-  if (J !== Z0 && J !== b0) return null;
-  let G = l5($, K, X, J);
-  if (G < 3) return null;
-  K += G;
-  let U = v9($, K, X), W = X;
-  if (J === Z0) {
-    for (let C = U; C < X; C++) if ($.charCodeAt(C) === Z0) return null;
+function d4($, Q, Z) {
+  let V = X0($, Q);
+  if (P0($, Q, V), J0 > 3) return null;
+  let Y = J0, G = Z0, K = Q + Z0, J = $.charCodeAt(K);
+  if (J !== $0 && J !== N0) return null;
+  let X = C5($, K, V, J);
+  if (X < 3) return null;
+  K += X;
+  let U = W9($, K, V), q2 = V;
+  if (J === $0) {
+    for (let g = U; g < V; g++) if ($.charCodeAt(g) === $0) return null;
   }
-  for (; W > U && ($.charCodeAt(W - 1) === I || $.charCodeAt(W - 1) === w); ) W--;
-  let z = $.slice(U, W), H = "", F = "", M = z.indexOf(" ");
-  M === -1 ? H = z : (H = z.slice(0, M), F = z.slice(M + 1).trim()), H = q9(H);
-  var j;
+  for (; q2 > U && ($.charCodeAt(q2 - 1) === v2 || $.charCodeAt(q2 - 1) === b); ) q2--;
+  let W = $.slice(U, q2), z = "", F = "", D = W.indexOf(" ");
+  D === -1 ? z = W : (z = W.slice(0, D), F = W.slice(D + 1).trim()), z = e5(z);
+  var O = void 0;
   if (F) {
-    _4.lastIndex = 0;
-    for (var _; (_ = _4.exec(F)) != null; ) j || (j = {}), j[_[1]] = _[2] === void 0 ? _[3] : _[2];
+    m$.lastIndex = 0;
+    for (var H; (H = m$.exec(F)) !== null; ) O || (O = {}), O[H[1]] = H[2] !== void 0 ? H[2] : H[3];
   }
-  let q2 = e($, X), D = $.length, A = $.length;
-  var N;
-  J === P4 && G === w4 ? N = R4 : (N = String.fromCharCode(J).repeat(G), P4 = J, w4 = G, R4 = N);
-  for (var L = q2; L < $.length; ) {
-    var O = $.indexOf(N, L);
-    if (O === -1) break;
-    for (var P = O, v2 = 0; P > 0 && v2 < 4 && $.charCodeAt(P - 1) === I; ) P--, v2++;
-    if (v2 <= 3 && (P === 0 || $.charCodeAt(P - 1) === g)) {
-      for (var b = O + G; b < $.length && $.charCodeAt(b) === J; ) b++;
-      var k = G0($, b);
-      if (e0($, b, k)) {
-        D = P, A = e($, k);
+  let B = s($, V), M = $.length, j = $.length;
+  for (var w = String.fromCharCode(J).repeat(X), I = B; I < $.length; ) {
+    var A = $.indexOf(w, I);
+    if (A === -1) break;
+    for (var k = A, S = 0; k > 0 && S < 4 && $.charCodeAt(k - 1) === v2; ) k--, S++;
+    if (S <= 3 && (k === 0 || $.charCodeAt(k - 1) === E)) {
+      for (var R = A + X; R < $.length && $.charCodeAt(R) === J; ) R++;
+      var N = X0($, R);
+      if (e0($, R, N)) {
+        M = k, j = s($, N);
         break;
       }
     }
-    L = O + 1;
+    I = A + 1;
   }
-  var x;
-  if (Y === 0) x = D > q2 && $.charCodeAt(D - 1) === g ? $.slice(q2, D - 1) : $.slice(q2, D);
+  var T;
+  if (Y === 0) T = M > B && $.charCodeAt(M - 1) === E ? $.slice(B, M - 1) : $.slice(B, M);
   else {
-    x = "";
-    for (var T = q2; T < D; ) {
-      var f = G0($, T);
-      L0($, T, f);
-      var y = Math.min(Q0, Y);
-      x += `${$.slice(T + y, f)}
-`, T = e($, f);
+    T = "";
+    for (var L = B; L < M; ) {
+      var u = X0($, L);
+      P0($, L, u);
+      var x = Math.min(Z0, Y);
+      T += $.slice(L + x, u) + `
+`, L = s($, u);
     }
-    x.length > 0 && x.charCodeAt(x.length - 1) === g && (x = x.slice(0, -1));
+    T.length > 0 && T.charCodeAt(T.length - 1) === E && (T = T.slice(0, -1));
   }
-  return { node: { type: B.codeBlock, lang: H || void 0, text: x, infoString: F || void 0, attrs: j }, end: A };
+  return { node: { type: _.codeBlock, lang: z || void 0, text: T, infoString: F || void 0, attrs: O }, end: j };
 }
-function b4($, Q, Z) {
-  for (var X = 0, Y = Q; Y < Z && X < 4; ) $.charCodeAt(Y) === w ? X += 4 - X % 4 : X++, Y++;
-  if (X < 4) return "";
-  for (var V = "", K = 4; K < X; K++) V += " ";
-  return V + $.slice(Y, Z);
-}
-function l6($, Q) {
-  let Z = G0($, Q);
-  if (L0($, Q, Z), U0 < 4) return null;
-  let X = "", Y = Q;
+function c4($, Q) {
+  let Z = X0($, Q);
+  if (P0($, Q, Z), J0 < 4) return null;
+  let V = "", Y = Q;
   for (; Y < $.length; ) {
-    let H = G0($, Y);
-    if (L0($, Y, H), e0($, Y, H)) {
-      for (var V = `${b4($, Y, H)}
-`, K = e($, H); K < $.length; ) {
-        var J = G0($, K);
+    let F = X0($, Y);
+    if (P0($, Y, F), e0($, Y, F)) {
+      for (var G = 0, K = s($, F); K < $.length; ) {
+        var J = X0($, K);
         if (e0($, K, J)) {
-          V += `${b4($, K, J)}
-`, K = e($, J);
+          G++, K = s($, J);
           continue;
         }
-        L0($, K, J), U0 >= 4 && (X += V, Y = K);
+        if (P0($, K, J), J0 >= 4) {
+          for (var X = 0; X <= G; X++) V += `
+`;
+          Y = K;
+          break;
+        }
         break;
       }
       if (Y !== K) break;
       continue;
     }
-    if (U0 < 4) break;
-    let F = 0, M = 0;
-    var G = 0;
-    for (let j = Y; j < H && M < 4; j++) {
-      if ($.charCodeAt(j) === w) {
-        var U = 4 - M % 4;
-        M + U > 4 && (G = M + U - 4), M += U;
-      } else M++;
-      F++;
+    if (J0 < 4) break;
+    let D = 0, O = 0;
+    var U = 0;
+    for (let H = Y; H < F && O < 4; H++) {
+      if ($.charCodeAt(H) === b) {
+        var q2 = 4 - O % 4;
+        O + q2 > 4 && (U = O + q2 - 4), O += q2;
+      } else O++;
+      D++;
     }
     var W = "";
-    if (G > 0) for (var z = 0; z < G; z++) W += " ";
-    W += $.slice(Y + F, H), X += `${W}
-`, Y = e($, H);
+    if (U > 0) for (var z = 0; z < U; z++) W += " ";
+    W += $.slice(Y + D, F), V += W + `
+`, Y = s($, F);
   }
-  for (; X.length > 0 && X.charCodeAt(X.length - 1) === g; ) X = X.slice(0, -1);
-  return X ? { node: { type: B.codeBlock, lang: void 0, text: X, infoString: void 0, attrs: void 0 }, end: Y } : null;
+  for (; V.length > 0 && V.charCodeAt(V.length - 1) === E; ) V = V.slice(0, -1);
+  return V ? { node: { type: _.codeBlock, lang: void 0, text: V, infoString: void 0, attrs: void 0 }, end: Y } : null;
 }
-function r6($, Q, Z, X) {
-  let Y = G0($, Q);
-  if (L0($, Q, Y), U0 > 3) return null;
-  let V = Q + Q0;
-  if ($.charCodeAt(V) !== l) return null;
-  let K = "", J = Q, G, U = false, W = false, z = false;
+function l4($, Q, Z, V) {
+  let Y = X0($, Q);
+  if (P0($, Q, Y), J0 > 3) return null;
+  let G = Q + Z0;
+  if ($.charCodeAt(G) !== o) return null;
+  let K = "", J = Q, X, U = false, q2 = false, W = false;
   for (; J < $.length; ) {
-    let S = G0($, J);
-    L0($, J, S);
-    let s = J + Q0;
-    if ($.charCodeAt(s) === l) {
-      let X0 = s + 1;
-      var H = U0 + 1, F = false;
-      if (X0 < S) {
-        var M = $.charCodeAt(X0);
-        M === I ? (X0++, H++, F = true) : M === w && (F = true);
+    let P = X0($, J);
+    P0($, J, P);
+    let C = J + Z0;
+    if ($.charCodeAt(C) === o) {
+      let d = C + 1;
+      var z = J0 + 1, F = false;
+      if (d < P) {
+        var D = $.charCodeAt(d);
+        D === v2 ? (d++, z++, F = true) : D === b && (F = true);
       }
-      for (var j = "", _ = false, q2 = X0; q2 < S; q2++) if ($.charCodeAt(q2) === w) {
-        _ = true;
+      for (var O = "", H = false, B = d; B < P; B++) if ($.charCodeAt(B) === b) {
+        H = true;
         break;
       }
-      if (_) {
-        var D = H;
-        if (F && X0 < S && $.charCodeAt(X0) === w) {
-          for (var A = 4 - D % 4, N = 0; N < A - 1; N++) j += " ";
-          D += A, X0++;
+      if (H) {
+        var M = z;
+        if (F && d < P && $.charCodeAt(d) === b) {
+          for (var j = 4 - M % 4, w = 0; w < j - 1; w++) O += " ";
+          M += j, d++;
         }
-        for (var L = X0; L < S; L++) if ($.charCodeAt(L) === w) {
-          for (var O = 4 - D % 4, P = 0; P < O; P++) j += " ";
-          D += O;
-        } else j += $[L], D++;
-      } else j = $.slice(X0, S);
-      if (!(K || G)) {
-        let I0 = j.match(/^\[!([A-Za-z]+)\]\s*$/);
-        if (I0) {
-          G = I0[1].toUpperCase(), J = e($, S);
+        for (var I = d; I < P; I++) if ($.charCodeAt(I) === b) {
+          for (var A = 4 - M % 4, k = 0; k < A; k++) O += " ";
+          M += A;
+        } else O += $[I], M++;
+      } else O = $.slice(d, P);
+      if (!K && !X) {
+        let f = O.match(/^\[!([A-Za-z]+)\]\s*$/);
+        if (f) {
+          X = f[1].toUpperCase(), J = s($, P);
           continue;
         }
       }
-      K += `${j}
+      K += O + `
 `;
-      var v2 = j.trimStart();
-      v2.startsWith("```") || v2.startsWith("~~~") ? z = !z : (j.startsWith("    ") || j.startsWith("	")) && (z = true), W = v2.length > 0, J = e($, S);
-    } else if (K && !e0($, J, S) && W) {
-      if (U0 < 4) {
-        var b = J + Q0, k = b < S ? $.charCodeAt(b) : 0;
-        if (k === V5 || k === l || k === Z0 || k === b0 || k === Y0 || (k === p || k === P0 || k === O0) && d5($, J) || (k === p || k === P0 || k === y5) && b + 1 < S && ($.charCodeAt(b + 1) === I || $.charCodeAt(b + 1) === w)) break;
-        if (k >= r && k <= o) {
-          for (var x = b; x < S && $.charCodeAt(x) >= r && $.charCodeAt(x) <= o; ) x++;
-          if (x < S && ($.charCodeAt(x) === Q5 || $.charCodeAt(x) === F5)) break;
+      var S = O.trimStart();
+      S.startsWith("```") || S.startsWith("~~~") ? W = !W : (O.startsWith("    ") || O.startsWith("	")) && (W = true), q2 = S.length > 0, J = s($, P);
+    } else if (K && !e0($, J, P) && q2) {
+      if (J0 < 4) {
+        var R = J + Z0, N = R < P ? $.charCodeAt(R) : 0;
+        if (N === Y5 || N === o || N === $0 || N === N0 || N === G0 || (N === p || N === _0 || N === H0) && x5($, J) || (N === p || N === _0 || N === N5) && R + 1 < P && ($.charCodeAt(R + 1) === v2 || $.charCodeAt(R + 1) === b)) break;
+        if (N >= i && N <= a) {
+          for (var T = R; T < P && $.charCodeAt(T) >= i && $.charCodeAt(T) <= a; ) T++;
+          if (T < P && ($.charCodeAt(T) === s0 || $.charCodeAt(T) === q5)) break;
         }
       }
-      if (z) break;
-      K += `${$.slice(J, S)}
-`, U = true, J = e($, S);
+      if (W) break;
+      K += $.slice(J, P) + `
+`, U = true, J = s($, P);
     } else break;
   }
-  if (!(K || G)) return null;
-  var { inBlockQuote: T, l: f } = Z;
-  Z.inBlockQuote = true, U && (Z.l = true);
-  var y = Z.i;
-  Z.i = y || !e0($, J, $.length);
-  let C = c5(K || "", Z, X);
-  return Z.i = y, Z.inBlockQuote = T, Z.l = f, { node: { type: B.blockQuote, children: C, alert: G || void 0 }, end: J };
+  if (!K && !X) return null;
+  var { inBlockQuote: L, f: u } = Z;
+  Z.inBlockQuote = true, U && (Z.f = true);
+  let x = f5(K || "", Z, V);
+  return Z.inBlockQuote = L, Z.f = u, { node: { type: _.blockQuote, children: x, alert: X || void 0 }, end: J };
 }
-function r4($, Q, Z) {
-  for (var X = 0, Y = Q; Y < Z; Y++) $.charCodeAt(Y) === w ? X += 4 - X % 4 : X++;
-  return X;
+function Z4($, Q, Z) {
+  for (var V = 0, Y = Q; Y < Z; Y++) $.charCodeAt(Y) === b ? V += 4 - V % 4 : V++;
+  return V;
 }
-function u5($, Q, Z) {
-  if (L0($, Q, Z), U0 > 3) return null;
-  var X = Q + Q0;
-  if (X >= Z) return null;
-  var Y = $.charCodeAt(X), V = U0, K = X, J = X;
-  if (Y === p || Y === P0 || Y === y5) {
-    if (K = X + 1, K < Z && $.charCodeAt(K) !== I && $.charCodeAt(K) !== w && $.charCodeAt(K) !== g) return null;
-  } else if (Y >= r && Y <= o) {
-    for (; J < Z && J - X < 9; ) {
-      var G = $.charCodeAt(J);
-      if (G < r || G > o) break;
+function g5($, Q, Z) {
+  if (P0($, Q, Z), J0 > 3) return null;
+  var V = Q + Z0;
+  if (V >= Z) return null;
+  var Y = $.charCodeAt(V), G = J0, K = V;
+  if (Y === p || Y === _0 || Y === N5) {
+    if (K = V + 1, K < Z && $.charCodeAt(K) !== v2 && $.charCodeAt(K) !== b && $.charCodeAt(K) !== E) return null;
+  } else if (Y >= i && Y <= a) {
+    for (var J = V; J < Z && J - V < 9; ) {
+      var X = $.charCodeAt(J);
+      if (X < i || X > a) break;
       J++;
     }
-    if (J > X && J < Z) {
+    if (J > V && J < Z) {
       var U = $.charCodeAt(J);
-      if (U === Q5 || U === F5) {
-        if (K = J + 1, K < Z && $.charCodeAt(K) !== I && $.charCodeAt(K) !== w && $.charCodeAt(K) !== g) return null;
+      if (U === s0 || U === q5) {
+        if (K = J + 1, K < Z && $.charCodeAt(K) !== v2 && $.charCodeAt(K) !== b && $.charCodeAt(K) !== E) return null;
       } else return null;
     } else return null;
   } else return null;
-  var W = K, z = r4($, Q, K), H = 0, F = W, M = z;
-  if (W >= Z) return { ordered: Y >= r && Y <= o, marker: Y >= r && Y <= o ? $[J] : $[X], start: Y >= r && Y <= o ? Number.parseInt($.slice(X, J), 10) : void 0, contentStart: W, contentCol: z + 1, markerCol: V, isEmpty: true };
-  for (; F < Z && ($.charCodeAt(F) === I || $.charCodeAt(F) === w); ) {
-    if ($.charCodeAt(F) === w) {
-      var j = 4 - M % 4;
-      M += j;
-    } else M++;
-    F++, H++;
+  var q2 = K, W = Z4($, Q, K), z = 0, F = q2, D = W;
+  if (q2 >= Z) return { ordered: Y >= i && Y <= a, marker: Y >= i && Y <= a ? $[J] : $[V], start: Y >= i && Y <= a ? parseInt($.slice(V, J), 10) : void 0, contentStart: q2, contentCol: W + 1, markerCol: G, isEmpty: true };
+  for (; F < Z && ($.charCodeAt(F) === v2 || $.charCodeAt(F) === b); ) {
+    if ($.charCodeAt(F) === b) {
+      var O = 4 - D % 4;
+      D += O;
+    } else D++;
+    F++, z++;
   }
-  var _ = F >= Z, q2 = M - z;
-  return _ || q2 > 4 ? (M = z + 1, F = W + 1, H = 1) : H === 0 && (M = z + 1, F = W, H = 1), { ordered: Y >= r && Y <= o, marker: Y >= r && Y <= o ? $[J] : $[X], start: Y >= r && Y <= o ? Number.parseInt($.slice(X, J), 10) : void 0, contentStart: F, contentCol: M, markerCol: V, isEmpty: _ };
+  var H = F >= Z, B = D - W;
+  return H || B > 4 ? (D = W + 1, F = q2 + 1, z = 1) : z === 0 && (D = W + 1, F = q2, z = 1), { ordered: Y >= i && Y <= a, marker: Y >= i && Y <= a ? $[J] : $[V], start: Y >= i && Y <= a ? parseInt($.slice(V, J), 10) : void 0, contentStart: F, contentCol: D, markerCol: G, isEmpty: H };
 }
-var G9 = 0;
-function L4($, Q, Z, X) {
-  var Y = 0, V = Q;
-  for (G9 = 0; V < Z && Y < X; ) {
-    var K = $.charCodeAt(V);
-    if (K === w) {
+var R9 = 0;
+function r4($, Q, Z, V) {
+  var Y = 0, G = Q;
+  for (R9 = 0; G < Z && Y < V; ) {
+    var K = $.charCodeAt(G);
+    if (K === b) {
       var J = 4 - Y % 4;
-      if (Y + J > X) {
-        G9 = Y + J - X, V++, Y = X;
+      if (Y + J > V) {
+        R9 = Y + J - V, G++, Y = V;
         break;
       }
       Y += J;
-    } else if (K === I) Y++;
+    } else if (K === v2) Y++;
     else break;
-    V++;
+    G++;
   }
-  return V;
+  return G;
 }
-function T4($, Q, Z, X) {
-  var Y = G0($, Q), V = u5($, Q, Y);
-  if (!V) return null;
-  var K = [], J = Q, G = V.contentCol, U = "", W = V.isEmpty, z = false, H = false;
-  if (!V.isEmpty) {
-    for (var F = false, M = V.contentStart; M < Y; M++) if ($.charCodeAt(M) === w) {
+function p$($, Q, Z, V) {
+  var Y = X0($, Q), G = g5($, Q, Y);
+  if (!G) return null;
+  var K = [], J = Q, X = G.contentCol, U = "", q2 = G.isEmpty, W = false, z = false;
+  if (!G.isEmpty) {
+    for (var F = false, D = G.contentStart; D < Y; D++) if ($.charCodeAt(D) === b) {
       F = true;
       break;
     }
     if (F) {
-      var j = "", _ = r4($, Q, V.contentStart), q2 = _ - V.contentCol;
-      if (q2 > 0) for (var D = 0; D < q2; D++) j += " ";
-      for (var A = V.contentStart; A < Y; A++) if ($.charCodeAt(A) === w) {
-        for (var N = 4 - _ % 4, L = 0; L < N; L++) j += " ";
-        _ += N;
-      } else j += $[A], _++;
-      U = `${j}
+      var O = "", H = Z4($, Q, G.contentStart), B = H - G.contentCol;
+      if (B > 0) for (var M = 0; M < B; M++) O += " ";
+      for (var j = G.contentStart; j < Y; j++) if ($.charCodeAt(j) === b) {
+        for (var w = 4 - H % 4, I = 0; I < w; I++) O += " ";
+        H += w;
+      } else O += $[j], H++;
+      U = O + `
 `;
-    } else U = `${$.slice(V.contentStart, Y)}
+    } else U = $.slice(G.contentStart, Y) + `
 `;
   }
-  for (J = e($, Y); J < $.length; ) {
-    var O = G0($, J);
-    L0($, J, O);
-    var P = $.charCodeAt(J + Q0);
-    if (U0 < G && (P === p || P === P0 || P === O0) && U0 <= 3 && d5($, J)) break;
-    var v2 = u5($, J, O);
-    if (v2 && v2.ordered === V.ordered && v2.marker === V.marker && v2.markerCol < G) {
-      K.push({ contentCol: G, raw: U, hasBlankAfter: z, isEmpty: W }), z && (H = true), G = v2.contentCol, W = v2.isEmpty, z = false, U = v2.isEmpty ? "" : `${$.slice(v2.contentStart, O)}
-`, J = e($, O);
+  for (J = s($, Y); J < $.length; ) {
+    var A = X0($, J);
+    P0($, J, A);
+    var k = $.charCodeAt(J + Z0);
+    if (J0 < X && (k === p || k === _0 || k === H0) && J0 <= 3 && x5($, J)) break;
+    var S = g5($, J, A);
+    if (S && S.ordered === G.ordered && S.marker === G.marker && S.markerCol < X) {
+      K.push({ contentCol: X, raw: U, hasBlankAfter: W, isEmpty: q2 }), W && (z = true), X = S.contentCol, q2 = S.isEmpty, W = false, U = S.isEmpty ? "" : $.slice(S.contentStart, A) + `
+`, J = s($, A);
       continue;
     }
-    if (e0($, J, O)) {
-      var b = L4($, J, O, G);
-      if (G9 > 0 || b < O) {
-        for (var k = "", x = 0; x < G9; x++) k += " ";
-        U += `${k + $.slice(b, O)}
-`;
-      } else U += `
-`;
-      J = e($, O);
-      for (var T = false, f = 0; f < U.length; f++) {
-        var y = U.charCodeAt(f);
-        if (y !== g && y !== v5 && y !== I && y !== w) {
-          T = true;
+    if (e0($, J, A)) {
+      U += `
+`, J = s($, A);
+      for (var R = false, N = 0; N < U.length; N++) {
+        var T = U.charCodeAt(N);
+        if (T !== E && T !== _5 && T !== v2 && T !== b) {
+          R = true;
           break;
         }
       }
-      if (W && !T) if (J < $.length) {
-        var C = G0($, J), E = u5($, J, C);
-        if (!E || E.ordered !== V.ordered || E.marker !== V.marker) break;
-        z = true;
+      if (q2 && !R) if (J < $.length) {
+        var L = X0($, J), u = g5($, J, L);
+        if (!u || u.ordered !== G.ordered || u.marker !== G.marker) break;
+        W = true;
       } else break;
       if (J < $.length) {
-        var S = G0($, J);
-        L0($, J, S);
-        var s = $.charCodeAt(J + Q0);
-        if ((s === p || s === P0 || s === O0) && U0 <= 3 && d5($, J)) break;
-        var X0 = u5($, J, S);
-        if (X0 && X0.ordered === V.ordered && X0.marker === V.marker && X0.markerCol < G) {
-          z = true;
+        var x = X0($, J);
+        P0($, J, x);
+        var g = $.charCodeAt(J + Z0);
+        if ((g === p || g === _0 || g === H0) && J0 <= 3 && x5($, J)) break;
+        var P = g5($, J, x);
+        if (P && P.ordered === G.ordered && P.marker === G.marker && P.markerCol < X) {
+          W = true;
           continue;
         }
-        if (!e0($, J, S) && U0 < G) break;
+        if (!e0($, J, x) && J0 < X) break;
       }
       continue;
     }
-    if (U0 >= G) {
-      var I0 = L4($, J, O, G);
-      if (G9 > 0) {
-        for (var d = "", u0 = G, B0 = 0; B0 < G9; B0++) d += " ", u0++;
-        for (var W0 = I0; W0 < O; W0++) if ($.charCodeAt(W0) === w) {
-          for (var H0 = 4 - u0 % 4, D0 = 0; D0 < H0; D0++) d += " ";
-          u0 += H0;
-        } else d += $[W0], u0++;
-        U += `${d}
+    if (J0 >= X) {
+      var C = r4($, J, A, X);
+      if (R9 > 0) {
+        for (var d = "", f = X, U0 = 0; U0 < R9; U0++) d += " ", f++;
+        for (var n = C; n < A; n++) if ($.charCodeAt(n) === b) {
+          for (var m0 = 4 - f % 4, x0 = 0; x0 < m0; x0++) d += " ";
+          f += m0;
+        } else d += $[n], f++;
+        U += d + `
 `;
-      } else U += `${$.slice(I0, O)}
+      } else U += $.slice(C, A) + `
 `;
-      J = e($, O);
+      J = s($, A);
       continue;
     }
-    for (var m = false, c = 0; c < U.length; c++) {
-      var K0 = U.charCodeAt(c);
-      if (K0 !== g && K0 !== v5 && K0 !== I && K0 !== w) {
-        m = true;
+    for (var v0 = false, l = 0; l < U.length; l++) {
+      var t = U.charCodeAt(l);
+      if (t !== E && t !== _5 && t !== v2 && t !== b) {
+        v0 = true;
         break;
       }
     }
-    if (!z && m && !W) {
-      var y0 = J + Q0, S0 = $.charCodeAt(y0), _0 = S0 === V5 || S0 === l || S0 === Y0 || S0 === Z0 || S0 === b0 || (S0 === p || S0 === P0 || S0 === O0 || S0 === y5) && (d5($, J) != null || u5($, J, O) != null) || S0 >= r && S0 <= o && u5($, J, O) != null;
-      if (!_0) {
-        U += `${$.slice(y0, O)}
-`, J = e($, O);
+    if (!W && v0 && !q2) {
+      var b0 = J + Z0, r = $.charCodeAt(b0), z0 = r === Y5 || r === o || r === G0 || r === $0 || r === N0 || (r === p || r === _0 || r === H0 || r === N5) && (x5($, J) !== null || g5($, J, A) !== null) || r >= i && r <= a && g5($, J, A) !== null;
+      if (!z0) {
+        U += "" + $.slice(b0, A) + `
+`, J = s($, A);
         continue;
       }
     }
     break;
   }
-  if (K.push({ contentCol: G, raw: U, hasBlankAfter: z, isEmpty: W }), K.length === 0) return null;
-  var a = H;
-  if (!a) for (var w0 = 0; w0 < K.length; w0++) {
-    if (K[w0].hasBlankAfter && w0 < K.length - 1) {
-      a = true;
+  if (K.push({ contentCol: X, raw: U, hasBlankAfter: W, isEmpty: q2 }), K.length === 0) return null;
+  var Q0 = z;
+  if (!Q0) for (var I0 = 0; I0 < K.length; I0++) {
+    if (K[I0].hasBlankAfter && I0 < K.length - 1) {
+      Q0 = true;
       break;
     }
-    if (!K[w0].isEmpty) {
-      for (var z0 = K[w0].raw, F0 = z0.length, M0 = 0, f0 = false, v0 = false, k0 = false, h0 = false, p0 = 0, n = 0, N0 = -1; M0 < F0; ) {
-        var i = z0.indexOf(`
-`, M0);
-        if (i < 0 && (i = F0), h0) {
-          L0(z0, M0, i);
-          for (var x0 = z0.slice(M0 + Q0, i), R = 0; R < x0.length && x0.charCodeAt(R) === p0; ) R++;
-          R >= n && x0.slice(R).trim() === "" && (h0 = false), M0 = i < F0 ? i + 1 : F0;
+    if (!K[I0].isEmpty) {
+      for (var q0 = K[I0].raw, V0 = q0.length, O0 = 0, m = false, w0 = false, g0 = false, R0 = false, Z5 = 0, i0 = 0, T0 = -1; O0 < V0; ) {
+        var e = q0.indexOf(`
+`, O0);
+        if (e < 0 && (e = V0), R0) {
+          P0(q0, O0, e);
+          for (var Y0 = q0.slice(O0 + Z0, e), a0 = 0; a0 < Y0.length && Y0.charCodeAt(a0) === Z5; ) a0++;
+          a0 >= i0 && Y0.slice(a0).trim() === "" && (R0 = false), O0 = e < V0 ? e + 1 : V0;
           continue;
         }
-        if (e0(z0, M0, i)) {
-          N0 >= 0 ? k0 = true : f0 && (v0 = true), M0 = i < F0 ? i + 1 : F0;
+        if (e0(q0, O0, e)) {
+          T0 >= 0 ? g0 = true : m && (w0 = true), O0 = e < V0 ? e + 1 : V0;
           continue;
         }
-        if (L0(z0, M0, i), N0 >= 0) {
-          if (U0 >= N0) {
-            M0 = i < F0 ? i + 1 : F0;
+        if (P0(q0, O0, e), T0 >= 0) {
+          if (J0 >= T0) {
+            O0 = e < V0 ? e + 1 : V0;
             continue;
           }
-          var J0 = u5(z0, M0, i);
-          if (J0 && J0.markerCol < N0 && J0.contentCol <= N0) {
-            M0 = i < F0 ? i + 1 : F0;
+          var B0 = g5(q0, O0, e);
+          if (B0 && B0.markerCol < T0 && B0.contentCol <= T0) {
+            O0 = e < V0 ? e + 1 : V0;
             continue;
           }
-          if (J0) {
-            M0 = i < F0 ? i + 1 : F0;
+          if (B0) {
+            O0 = e < V0 ? e + 1 : V0;
             continue;
           }
-          N0 = -1, k0 && (v0 = true, k0 = false);
+          T0 = -1, g0 && (w0 = true, g0 = false);
         }
-        var a0 = z0.slice(M0 + Q0, i), q5 = a0.charCodeAt(0);
-        if ((q5 === Z0 || q5 === b0) && U0 <= 3) {
-          for (var $0 = 0; $0 < a0.length && a0.charCodeAt($0) === q5; ) $0++;
-          if ($0 >= 3) {
-            if (v0 && f0) {
-              a = true;
+        var A5 = q0.slice(O0 + Z0, e), y = A5.charCodeAt(0);
+        if ((y === $0 || y === N0) && J0 <= 3) {
+          for (var F0 = 0; F0 < A5.length && A5.charCodeAt(F0) === y; ) F0++;
+          if (F0 >= 3) {
+            if (w0 && m) {
+              Q0 = true;
               break;
             }
-            h0 = true, p0 = q5, n = $0, f0 = true, M0 = i < F0 ? i + 1 : F0;
+            R0 = true, Z5 = y, i0 = F0, m = true, O0 = e < V0 ? e + 1 : V0;
             continue;
           }
         }
-        var C0 = U0 <= 3 ? u5(z0, M0, i) : null;
-        if (C0 && f0) {
-          if (v0) {
-            a = true;
+        var l0 = J0 <= 3 ? g5(q0, O0, e) : null;
+        if (l0 && m) {
+          if (w0) {
+            Q0 = true;
             break;
           }
-          N0 = C0.contentCol, k0 = false, M0 = i < F0 ? i + 1 : F0, f0 = true;
+          T0 = l0.contentCol, g0 = false, O0 = e < V0 ? e + 1 : V0, m = true;
           continue;
         }
-        if (v0) {
-          a = true;
+        if (w0) {
+          Q0 = true;
           break;
         }
-        f0 = true, M0 = i < F0 ? i + 1 : F0;
+        m = true, O0 = e < V0 ? e + 1 : V0;
       }
-      if (a) break;
+      if (Q0) break;
     }
   }
-  for (var t = [], d0 = 0; d0 < K.length; d0++) {
-    for (var n0 = K[d0], $5 = n0.raw, l0 = $5.length; l0 > 0 && $5.charCodeAt(l0 - 1) === g; ) l0--;
-    var s0 = l0 < $5.length ? $5.slice(0, l0) : $5, r5 = null;
-    if (s0.length >= 3 && s0.charCodeAt(0) === A0) {
-      var x5 = s0[1];
-      (x5 === " " || x5 === "x" || x5 === "X") && s0.charCodeAt(2) === J5 && (r5 = { type: B.gfmTask, completed: x5 === "x" || x5 === "X" }, s0 = s0.slice(3));
+  for (var X5 = [], M5 = 0; M5 < K.length; M5++) {
+    for (var r0 = K[M5], D0 = r0.raw, S0 = D0.length; S0 > 0 && D0.charCodeAt(S0 - 1) === E; ) S0--;
+    var L0 = S0 < D0.length ? D0.slice(0, S0) : D0, h0 = null;
+    if (L0.length >= 3 && L0.charCodeAt(0) === A0) {
+      var Q5 = L0[1];
+      (Q5 === " " || Q5 === "x" || Q5 === "X") && L0.charCodeAt(2) === K5 && (h0 = { type: _.gfmTask, completed: Q5 === "x" || Q5 === "X" }, L0 = L0.slice(3));
     }
-    var R0;
-    if (n0.isEmpty && s0.trim() === "") R0 = [];
-    else if (a) {
-      var o5 = Z.inList;
-      Z.inList = true;
-      var w9 = Z.i;
-      Z.i = w9 || d0 !== K.length - 1, R0 = c5(s0, Z, X), Z.i = w9, Z.inList = o5;
+    var j0;
+    if (r0.isEmpty && L0.trim() === "") j0 = [];
+    else if (Q0) {
+      var R5 = Z.inList;
+      Z.inList = true, j0 = f5(L0, Z, V), Z.inList = R5;
     } else {
-      var b5 = Z.inList;
-      Z.inList = true;
-      var i5 = Z.i;
-      if (Z.i = i5 || d0 !== K.length - 1, R0 = c5(s0, Z, X), Z.i = i5, Z.inList = b5, R0.length === 1 && R0[0].type === B.paragraph) R0 = R0[0].children;
-      else if (Z.p) {
-        var E5 = [];
-        Z.p.push({ src: R0, dest: E5, unwrap: true }), R0 = E5;
+      var z5 = Z.inList;
+      if (Z.inList = true, j0 = f5(L0, Z, V), Z.inList = z5, j0.length === 1 && j0[0].type === _.paragraph) j0 = j0[0].children;
+      else if (Z.h) {
+        var H5 = [];
+        Z.h.push({ src: j0, dest: H5, unwrap: true }), j0 = H5;
       } else {
-        for (var j5 = [], Z5 = 0; Z5 < R0.length; Z5++) if (R0[Z5].type === B.paragraph) for (var B5 = R0[Z5].children, V9 = 0; V9 < B5.length; V9++) j5.push(B5[V9]);
-        else j5.push(R0[Z5]);
-        R0 = j5;
+        for (var o5 = [], j5 = 0; j5 < j0.length; j5++) if (j0[j5].type === _.paragraph) for (var O5 = j0[j5].children, Z9 = 0; Z9 < O5.length; Z9++) o5.push(O5[Z9]);
+        else o5.push(j0[j5]);
+        j0 = o5;
       }
     }
-    if (r5) {
-      var a5 = [r5, { type: B.text, text: " " }];
-      if (Z.p) Z.p.push({ src: R0, dest: a5, unwrap: false });
-      else for (var A5 = 0; A5 < R0.length; A5++) a5.push(R0[A5]);
-      t.push(a5);
-    } else t.push(R0);
+    if (h0) {
+      var Q9 = [h0, { type: _.text, text: " " }];
+      if (Z.h) Z.h.push({ src: j0, dest: Q9, unwrap: false });
+      else for (var B5 = 0; B5 < j0.length; B5++) Q9.push(j0[B5]);
+      X5.push(Q9);
+    } else X5.push(j0);
   }
-  return { node: { type: V.ordered ? B.orderedList : B.unorderedList, start: V.ordered ? V.start : void 0, items: t }, end: J };
+  return { node: { type: G.ordered ? _.orderedList : _.unorderedList, start: G.ordered ? G.start : void 0, items: X5 }, end: J };
 }
-var l9 = /* @__PURE__ */ new Set(["address", "article", "aside", "base", "basefont", "blockquote", "body", "caption", "center", "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "iframe", "legend", "li", "link", "main", "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p", "param", "search", "section", "summary", "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track", "ul"]);
-function P5($, Q, Z) {
-  let X = {};
+var y9 = /* @__PURE__ */ new Set(["address", "article", "aside", "base", "basefont", "blockquote", "body", "caption", "center", "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "iframe", "legend", "li", "link", "main", "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p", "param", "search", "section", "summary", "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track", "ul"]);
+function b5($, Q, Z) {
+  let V = {};
   for (let [K, J] of Object.entries($)) {
-    let G = K.toLowerCase();
-    if (G === "style" && typeof J == "string") {
-      let U = {}, W = [], z = 0, H = 0;
-      for (let M = 0; M < J.length; M++) {
-        let j = J.charCodeAt(M);
-        j === z5 ? z++ : j === F5 ? z-- : j === j9 && z === 0 && (W.push(J.slice(H, M)), H = M + 1);
+    let X = K.toLowerCase();
+    if (X === "style" && typeof J == "string") {
+      let U = {}, q2 = [], W = 0, z = 0;
+      for (let D = 0; D < J.length; D++) {
+        let O = J.charCodeAt(D);
+        O === F5 ? W++ : O === q5 ? W-- : O === U9 && W === 0 && (q2.push(J.slice(z, D)), z = D + 1);
       }
-      H < J.length && W.push(J.slice(H));
+      z < J.length && q2.push(J.slice(z));
       let F = false;
-      W.forEach((M) => {
-        let j = M.indexOf(":");
-        if (j === -1) return;
-        let _ = M.slice(0, j).trim(), q2 = M.slice(j + 1).trim();
-        if (_ && q2) {
-          if (/url\s*\(\s*(javascript|vbscript|data:(?!image\/))/i.test(q2)) {
+      q2.forEach((D) => {
+        let O = D.indexOf(":");
+        if (O === -1) return;
+        let H = D.slice(0, O).trim(), B = D.slice(O + 1).trim();
+        if (H && B) {
+          if (/url\s*\(\s*(javascript|vbscript|data:(?!image\/))/i.test(B)) {
             F = true;
             return;
           }
-          let D = _.indexOf("-") === -1 ? _ : _.replace(/-([a-z])/g, (A, N) => N.toUpperCase());
-          U[D] = q2;
+          let M = H.indexOf("-") !== -1 ? H.replace(/-([a-z])/g, (j, w) => w.toUpperCase()) : H;
+          U[M] = B;
         }
-      }), !F && Object.keys(U).length > 0 && (X[K] = U);
-    } else if ((G === "href" || G === "src") && Z?.sanitizer) {
-      let U = Z.sanitizer(J, Q, G);
-      U != null && (X[K] = U);
-    } else if (J === "") X[K] = true;
-    else if (J.length >= 2 && J.charCodeAt(0) === S5 && J.charCodeAt(J.length - 1) === E9) {
+      }), !F && Object.keys(U).length > 0 && (V[K] = U);
+    } else if ((X === "href" || X === "src") && Z?.sanitizer) {
+      let U = Z.sanitizer(J, Q, X);
+      U !== null && (V[K] = U);
+    } else if (J === "") V[K] = true;
+    else if (J.length >= 2 && J.charCodeAt(0) === L5 && J.charCodeAt(J.length - 1) === I9) {
       var Y = J.slice(1, -1);
       if (Y.length > 0) {
-        var V = Y.charCodeAt(0);
-        if (V === A0 || V === S5) try {
-          X[K] = JSON.parse(Y);
+        var G = Y.charCodeAt(0);
+        if (G === A0 || G === L5) try {
+          V[K] = JSON.parse(Y);
           continue;
         } catch {
         }
       }
       if (Y === "true") {
-        X[K] = true;
+        V[K] = true;
         continue;
       }
       if (Y === "false") {
-        X[K] = false;
+        V[K] = false;
         continue;
       }
       if (Z?.evalUnserializableExpressions) try {
-        X[K] = (0, eval)(`(${Y})`);
+        V[K] = (0, eval)("(" + Y + ")");
         continue;
       } catch {
       }
-      X[K] = Y;
-    } else X[K] = J;
+      V[K] = Y;
+    } else V[K] = J;
   }
-  return X;
+  return V;
 }
-function p5($, Q, Z) {
-  let X = Q.length;
-  if (X === 0) return Z;
-  var Y = Q.charCodeAt(0), V = Y >= h && Y <= u || Y >= V0 && Y <= q0;
-  if (!V) {
-    for (var K = String.fromCharCode(Y), J = $.length - X, G = Z; G <= J; ) {
-      var U = $.indexOf(K, G);
+function T5($, Q, Z) {
+  let V = Q.length;
+  if (V === 0) return Z;
+  var Y = Q.charCodeAt(0), G = Y >= h && Y <= c || Y >= K0 && Y <= W0;
+  if (!G) {
+    for (var K = String.fromCharCode(Y), J = $.length - V, X = Z; X <= J; ) {
+      var U = $.indexOf(K, X);
       if (U === -1 || U > J) return -1;
-      for (var W = true, z = 1; z < X; z++) {
-        var H = $.charCodeAt(U + z), F = Q.charCodeAt(z);
-        if (H >= h && H <= u && (H += U5), F >= h && F <= u && (F += U5), H !== F) {
-          W = false;
+      for (var q2 = true, W = 1; W < V; W++) {
+        var z = $.charCodeAt(U + W), F = Q.charCodeAt(W);
+        if (z >= h && z <= c && (z += J5), F >= h && F <= c && (F += J5), z !== F) {
+          q2 = false;
           break;
         }
       }
-      if (W) return U;
-      G = U + 1;
+      if (q2) return U;
+      X = U + 1;
     }
     return -1;
   }
-  Y >= h && Y <= u && (Y += U5);
-  for (let j = Z; j <= $.length - X; j++) {
-    var M = $.charCodeAt(j);
-    if (M >= h && M <= u && (M += U5), M !== Y) continue;
-    let _ = true;
-    for (let q2 = 1; q2 < X; q2++) {
-      let D = $.charCodeAt(j + q2), A = Q.charCodeAt(q2);
-      if (D >= h && D <= u && (D += U5), A >= h && A <= u && (A += U5), D !== A) {
-        _ = false;
+  Y >= h && Y <= c && (Y += J5);
+  for (let O = Z; O <= $.length - V; O++) {
+    var D = $.charCodeAt(O);
+    if (D >= h && D <= c && (D += J5), D !== Y) continue;
+    let H = true;
+    for (let B = 1; B < V; B++) {
+      let M = $.charCodeAt(O + B), j = Q.charCodeAt(B);
+      if (M >= h && M <= c && (M += J5), j >= h && j <= c && (j += J5), M !== j) {
+        H = false;
         break;
       }
     }
-    if (_) return j;
+    if (H) return O;
   }
   return -1;
 }
-function o6($, Q, Z) {
-  let X = Q.length;
+function o4($, Q, Z) {
+  let V = Q.length;
   var Y = Q.charCodeAt(0);
-  Y >= h && Y <= u && (Y += U5);
-  for (let K = Math.min(Z, $.length - X); K >= 0; K--) {
-    var V = $.charCodeAt(K);
-    if (V >= h && V <= u && (V += U5), V !== Y) continue;
+  Y >= h && Y <= c && (Y += J5);
+  for (let K = Math.min(Z, $.length - V); K >= 0; K--) {
+    var G = $.charCodeAt(K);
+    if (G >= h && G <= c && (G += J5), G !== Y) continue;
     let J = true;
-    for (let G = 1; G < X; G++) {
-      let U = $.charCodeAt(K + G), W = Q.charCodeAt(G);
-      if (U >= h && U <= u && (U += U5), W >= h && W <= u && (W += U5), U !== W) {
+    for (let X = 1; X < V; X++) {
+      let U = $.charCodeAt(K + X), q2 = Q.charCodeAt(X);
+      if (U >= h && U <= c && (U += J5), q2 >= h && q2 <= c && (q2 += J5), U !== q2) {
         J = false;
         break;
       }
@@ -22615,1702 +21829,1615 @@ function o6($, Q, Z) {
   }
   return -1;
 }
-var r9 = -1;
-function _$($, Q, Z) {
-  let X = Z.toLowerCase(), Y = `<${X}`, V = `</${X}`, K = 1, J = Q, G = $.length;
-  for (r9 = -1; J < G && K > 0; ) {
-    let z = p5($, Y, J), H = p5($, V, J);
-    if (H === -1) return -1;
-    if (z !== -1 && z < H) {
-      let F = w5($, z);
-      F ? (F.tag.toLowerCase() === X && !F.f && !F.n && !Q9(F.tag) && K++, J = F.end) : J = z + 1;
+var k9 = -1;
+function o9($, Q, Z) {
+  let V = Z.toLowerCase(), Y = "<" + V, G = "</" + V, K = 1, J = Q, X = $.length;
+  for (k9 = -1; J < X && K > 0; ) {
+    let W = T5($, Y, J), z = T5($, G, J);
+    if (z === -1) return -1;
+    if (W !== -1 && W < z) {
+      let F = w5($, W);
+      F ? (F.tag.toLowerCase() === V && !F.isClosing && !F.selfClosing && !l5(F.tag) && K++, J = F.end) : J = W + 1;
     } else {
-      var U = H + V.length, W = U < G ? $.charCodeAt(U) : 62;
-      if ((W === l || W === I || W === w || W === g) && (K--, K === 0)) {
-        r9 = H;
-        let F = H + V.length;
-        for (; F < G && $.charCodeAt(F) !== l; ) F++;
+      var U = z + G.length, q2 = U < X ? $.charCodeAt(U) : 62;
+      if ((q2 === o || q2 === v2 || q2 === b || q2 === E) && (K--, K === 0)) {
+        k9 = z;
+        let F = z + G.length;
+        for (; F < X && $.charCodeAt(F) !== o; ) F++;
         return F + 1;
       }
-      J = H + 1;
+      J = z + 1;
     }
   }
   return -1;
 }
-function o4($, Q, Z, X) {
-  if (X.ignoreHTMLBlocks || X.disableParsingRawHTML) return null;
-  var Y = G0($, Q);
-  if (L0($, Q, Y), U0 > 3 && !Z.inHTML) return null;
-  var V = Q + Q0;
-  if ($.charCodeAt(V) !== Y0) return null;
-  var K = $.indexOf(">", V + 1);
+function Q4($, Q, Z, V) {
+  if (V.ignoreHTMLBlocks || V.disableParsingRawHTML) return null;
+  var Y = X0($, Q);
+  if (P0($, Q, Y), J0 > 3 && !Z.inHTML) return null;
+  var G = Q + Z0;
+  if ($.charCodeAt(G) !== G0) return null;
+  var K = $.indexOf(">", G + 1);
   if (K !== -1 && K < Y) {
-    var J = $.slice(V + 1, K);
+    var J = $.slice(G + 1, K);
     if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(J) || /^[^\s@]+@[^\s@]+$/.test(J)) return null;
   }
-  var G = i6($, V);
-  if (G >= 1 && G <= 5) {
+  var X = i4($, G);
+  if (X >= 1 && X <= 5) {
     var U = $.length;
-    if (G === 1) {
-      for (var W = $.length, z = 0; z < D$.length; z++) {
-        var H = p5($, `</${D$[z]}>`, V);
-        H >= 0 && H < W && (W = H);
+    if (X === 1) {
+      for (var q2 = $.length, W = 0; W < c9.length; W++) {
+        var z = T5($, "</" + c9[W] + ">", G);
+        z >= 0 && z < q2 && (q2 = z);
       }
-      if (W < $.length) {
-        var F = $.indexOf(">", W);
-        U = F >= 0 ? e($, F + 1) : $.length;
+      if (q2 < $.length) {
+        var F = $.indexOf(">", q2);
+        U = F >= 0 ? s($, F + 1) : $.length;
       }
     } else {
-      var M = G === 2 ? "-->" : G === 3 ? "?>" : G === 4 ? ">" : "]]>", j = $.indexOf(M, V);
-      j >= 0 && (U = e($, j + M.length));
+      var D = X === 2 ? "-->" : X === 3 ? "?>" : X === 4 ? ">" : "]]>", O = $.indexOf(D, G);
+      O >= 0 && (U = s($, O + D.length));
     }
-    var _ = $.slice(V, U);
-    if (G >= 2) return { node: { type: B.htmlComment, text: _, s: false, raw: true }, end: U };
-    var q2 = "div", D = _.match(/^<\/?([a-zA-Z][a-zA-Z0-9-]*)/);
-    D && (q2 = D[1]);
-    var A = w5($, V), N = {}, L;
-    A && !A.f && (N = P5(A.attrs, q2, X), L = A.g + A.b);
-    var O = [], P = q2.toLowerCase(), v2 = `</${P}`, b = p5(_, v2, 0), k = "", x, T, f;
-    if (A?.f) {
-      f = _.slice(0, A.end - V);
-      for (var y = _.slice(A.end - V); y.length > 0 && y.charCodeAt(y.length - 1) === g; ) y = y.slice(0, -1);
-      y && (T = G5(y));
-    } else if (A && !A.f) {
-      var C = A.end - V;
-      if (b === -1) {
-        for (var E = _; E.length > 0 && E.charCodeAt(E.length - 1) === g; ) E = E.slice(0, -1);
-        x = G5(E);
-      } else {
-        var S = C;
-        _.charCodeAt(S) === g && S++;
-        for (var s = b; s > S; ) {
-          var X0 = _.charCodeAt(s - 1);
-          if (X0 !== I && X0 !== w && X0 !== g && X0 !== v5) break;
-          s--;
-        }
-        var I0 = _.slice(S, s);
-        I0 && (T = G5(I0));
-        for (var d = _.slice(b); d.length > 0 && d.charCodeAt(d.length - 1) === g; ) d = d.slice(0, -1);
-        f = G5(d), k = _.slice(C, b).trim();
+    var H = $.slice(G, U);
+    if (X >= 2) return { node: { type: _.htmlComment, text: H, l: false, raw: true }, end: U };
+    var B = "div", M = H.match(/^<\/?([a-zA-Z][a-zA-Z0-9-]*)/);
+    M && (B = M[1]);
+    var j = w5($, G), w = {}, I;
+    j && !j.isClosing && (w = b5(j.attrs, B, V), I = j.whitespaceBeforeAttrs + j.rawAttrs);
+    var A = [], k = B.toLowerCase(), S = "</" + k, R = T5(H, S, 0), N = H, T = "";
+    if (j && j.isClosing) for (N = H.slice(j.end - G); N.length > 0 && N.charCodeAt(N.length - 1) === E; ) N = N.slice(0, -1);
+    else if (j && !j.isClosing) {
+      var L = j.end - G;
+      if (R !== -1) for (N = H.slice(L), N.charCodeAt(0) === E && (N = N.slice(1)); N.length > 0 && N.charCodeAt(N.length - 1) === E; ) N = N.slice(0, -1);
+      else for (N = H; N.length > 0 && N.charCodeAt(N.length - 1) === E; ) N = N.slice(0, -1);
+      if (R !== -1) {
+        var u = H.slice(L, R);
+        T = u.trim();
       }
     }
-    var u0 = A ? A.f : false;
-    return { node: { type: B.htmlBlock, tag: q2, attrs: N, b: L, children: O, e: T, h: f, j: x, text: k, c: true, a: u0 }, end: U };
+    var x = j ? j.isClosing : false;
+    return { node: { type: _.htmlBlock, tag: B, attrs: w, i: I, children: A, a: N, text: T, d: true, b: x }, end: U };
   }
-  if (G === 6 || G === 7) {
-    var B0 = N4($, Q), W0 = B0 < $.length ? B0 : $.length, H0 = $.slice(V, W0), D0 = B0 < $.length ? e($, B0) : $.length, m = w5($, V);
-    if (m) {
-      var c = m.tag, K0 = c.toLowerCase(), y0 = m.f;
-      if (y0) {
-        var S0 = $.slice(m.end, W0);
-        return { node: { type: B.htmlBlock, tag: c, attrs: {}, children: [], h: $.slice(V, m.end), e: S0 ? G5(S0) : void 0, text: S0, c: true, a: true }, end: D0 };
+  if (X === 6 || X === 7) {
+    var g = u$($, Q), P = g < $.length ? g : $.length, C = $.slice(G, P), d = g < $.length ? s($, g) : $.length, f = w5($, G);
+    if (f) {
+      var U0 = f.tag, n = U0.toLowerCase(), m0 = f.isClosing;
+      if (m0) {
+        var x0 = $.slice(f.end, P);
+        return { node: { type: _.htmlBlock, tag: U0, attrs: {}, children: [], a: x0, text: x0, d: true, b: true }, end: d };
       }
-      if (m.n || Q9(c)) return { node: { type: B.htmlBlock, tag: c, attrs: P5(m.attrs, c, X), b: m.g + m.b, children: [], text: "", c: false, a: false }, end: m.end < $.length && $.charCodeAt(m.end) === g ? m.end + 1 : m.end };
-      var _0 = Z.d || 0, a = $.slice(V, W0), w0 = -1, z0 = -1, F0 = false;
-      if (_0 < 10) {
-        for (var M0 = `</${K0}`, f0 = m.end - V, v0 = 1, k0 = f0; k0 < a.length && v0 > 0; ) {
-          var h0 = p5(a, `<${K0}`, k0), p0 = p5(a, M0, k0);
-          if (p0 === -1) break;
-          if (h0 !== -1 && h0 < p0) {
-            var n = h0 + K0.length + 1;
-            if (n < a.length) {
-              var N0 = a.charCodeAt(n);
-              (N0 === I || N0 === w || N0 === g || N0 === l || N0 === j0) && v0++;
+      if (f.selfClosing || l5(U0)) return { node: { type: _.htmlBlock, tag: U0, attrs: b5(f.attrs, U0, V), i: f.whitespaceBeforeAttrs + f.rawAttrs, children: [], a: "", text: "", d: false, b: false }, end: f.end < $.length && $.charCodeAt(f.end) === E ? f.end + 1 : f.end };
+      var v0 = Z.c || 0, l = $.slice(G, P), t = -1, b0 = -1;
+      if (v0 < 10) {
+        for (var r = "</" + n, z0 = f.end - G, Q0 = 1, I0 = z0; I0 < l.length && Q0 > 0; ) {
+          var q0 = T5(l, "<" + n, I0), V0 = T5(l, r, I0);
+          if (V0 === -1) break;
+          if (q0 !== -1 && q0 < V0) {
+            var O0 = q0 + n.length + 1;
+            if (O0 < l.length) {
+              var m = l.charCodeAt(O0);
+              (m === v2 || m === b || m === E || m === o || m === M0) && Q0++;
             }
-            k0 = h0 + 1;
+            I0 = q0 + 1;
           } else {
-            var i = p0 + M0.length;
-            if (i < a.length) {
-              var x0 = a.charCodeAt(i);
-              if ((x0 === l || x0 === I || x0 === w || x0 === g) && (v0--, v0 === 0)) {
-                w0 = p0;
-                for (var R = i; R < a.length && a.charCodeAt(R) !== l; ) R++;
-                z0 = R + 1;
+            var w0 = V0 + r.length;
+            if (w0 < l.length) {
+              var g0 = l.charCodeAt(w0);
+              if ((g0 === o || g0 === v2 || g0 === b || g0 === E) && (Q0--, Q0 === 0)) {
+                t = V0;
+                for (var R0 = w0; R0 < l.length && l.charCodeAt(R0) !== o; ) R0++;
+                b0 = R0 + 1;
                 break;
               }
-            } else if (v0--, v0 === 0) {
-              w0 = p0, z0 = a.length;
+            } else if (Q0--, Q0 === 0) {
+              t = V0, b0 = l.length;
               break;
             }
-            k0 = p0 + 1;
+            I0 = V0 + 1;
           }
         }
-        if (w0 === -1 && !m.f && (G === 6 || m.u)) {
-          var J0 = _$($, m.end, K0);
-          if (J0 !== -1) {
-            for (var a0 = r9, q5 = m.end, $0 = false, C0 = false, t = false, d0 = 0, n0 = false, $5 = false, l0 = q5; l0 < a0; ) {
-              var s0 = $.charCodeAt(l0);
-              if (s0 === g) $5 && ($0 = true), n0 || d0++, $5 = true, l0++;
-              else if (s0 === I || s0 === w) l0++;
+        var Z5 = false;
+        if (t === -1 && X === 6 && !f.isClosing) {
+          var i0 = o9($, f.end, n);
+          if (i0 !== -1) {
+            for (var T0 = k9, e = f.end, Y0 = false, a0 = false, B0 = false, A5 = 0, y = false, F0 = false, l0 = e; l0 < T0; ) {
+              var X5 = $.charCodeAt(l0);
+              if (X5 === E) F0 && (Y0 = true), y || A5++, F0 = true, l0++;
+              else if (X5 === v2 || X5 === b) l0++;
               else {
-                if (!n0 && (n0 = true, d0 >= 2 && s0 === Y0)) {
-                  t = true;
+                if (!y && (y = true, A5 >= 2 && X5 === G0)) {
+                  B0 = true;
                   break;
                 }
-                if ($5 = false, s0 === Y0) {
-                  var r5 = $.charCodeAt(l0 + 1) | 32;
-                  if ((r5 === x9 || r5 === Y$ || r5 === s5) && (j4.lastIndex = l0, j4.test($))) {
-                    C0 = true;
+                if (F0 = false, X5 === G0) {
+                  var M5 = $.charCodeAt(l0 + 1) | 32;
+                  if ((M5 === _9 || M5 === f9 || M5 === h5) && (f$.lastIndex = l0, f$.test($))) {
+                    a0 = true;
                     break;
                   }
                 }
                 l0++;
               }
             }
-            if ($0 && !t && !C0) {
-              var x5 = G0($, J0);
-              W0 = x5, D0 = e($, x5), a = $.slice(V, W0), H0 = $.slice(V, W0), w0 = a0 - V, z0 = J0 - V, F0 = true;
+            if (Y0 && !B0 && !a0) {
+              var r0 = X0($, i0);
+              P = r0, d = s($, r0), l = $.slice(G, P), C = $.slice(G, P), t = T0 - G, b0 = i0 - G, Z5 = true;
             }
           }
         }
       }
-      var R0 = m.b.indexOf(`
-`) !== -1 || m.g.indexOf(`
-`) !== -1, o5 = false;
-      if (w0 !== -1) {
-        var w9 = a.slice(z0).trim();
-        o5 = w9.length === 0;
+      var D0 = f.rawAttrs.indexOf(`
+`) !== -1 || f.whitespaceBeforeAttrs.indexOf(`
+`) !== -1, S0 = false;
+      if (t !== -1) {
+        var L0 = l.slice(b0).trim();
+        S0 = L0.length === 0;
       }
-      var b5 = false, i5 = W0, E5 = D0;
-      if (w0 !== -1) {
-        var j5 = V + z0, Z5 = G0($, j5 - 1);
-        if (j5 < Z5) {
-          for (var B5 = j5; B5 < Z5 && ($.charCodeAt(B5) === I || $.charCodeAt(B5) === w); ) B5++;
-          if (B5 < Z5 && $.charCodeAt(B5) === Y0) {
-            var V9 = w5($, B5);
-            V9 && !V9.f && (b5 = true, i5 = j5, E5 = j5, o5 = true);
+      var h0 = false, Q5 = P, j0 = d;
+      if (t !== -1) {
+        var R5 = G + b0, z5 = X0($, R5 - 1);
+        if (R5 < z5) {
+          for (var H5 = R5; H5 < z5 && ($.charCodeAt(H5) === v2 || $.charCodeAt(H5) === b); ) H5++;
+          if (H5 < z5 && $.charCodeAt(H5) === G0) {
+            var o5 = w5($, H5);
+            o5 && !o5.isClosing && (h0 = true, Q5 = R5, j0 = R5, S0 = true);
           }
         }
-        if (!b5) {
-          var a5 = e($, Z5);
-          if (a5 < W0) {
-            for (var A5 = a5; A5 < W0 && ($.charCodeAt(A5) === I || $.charCodeAt(A5) === w); ) A5++;
-            if (A5 < W0 && $.charCodeAt(A5) === Y0) {
-              var s4 = w5($, A5);
-              s4 && (b5 = true, i5 = Z5, E5 = a5, o5 = true);
+        if (!h0) {
+          var j5 = s($, z5);
+          if (j5 < P) {
+            for (var O5 = j5; O5 < P && ($.charCodeAt(O5) === v2 || $.charCodeAt(O5) === b); ) O5++;
+            if (O5 < P && $.charCodeAt(O5) === G0) {
+              var Z9 = w5($, O5);
+              Z9 && (h0 = true, Q5 = z5, j0 = j5, S0 = true);
             }
           }
         }
-        if (!b5 && Z.inHTML) {
-          b5 = true, i5 = Z5, E5 = e($, Z5);
-          var t4 = $.slice(j5, Z5).trim();
-          o5 = t4.length === 0;
+        if (!h0 && Z.inHTML) {
+          h0 = true, Q5 = z5, j0 = s($, z5);
+          var Q9 = $.slice(R5, z5).trim();
+          S0 = Q9.length === 0;
         }
       }
-      var K9 = [], Y5 = "";
-      if (w0 !== -1) {
-        Y5 = a.slice(m.end - V, w0);
-        var J9 = Y5.trim();
-        if (J9) {
-          var { inline: e4, inHTML: $6, d: Z6 } = Z;
-          Z.inHTML = true, Z.d = _0 + 1;
-          var Q6 = K0 === "p";
-          if (Q6) Z.inline = true, K9 = W9(J9, false, Z, X);
+      var B5 = [], n0 = "";
+      if (t !== -1) {
+        n0 = l.slice(f.end - G, t);
+        var i5 = n0.trim();
+        if (i5) {
+          var { inline: K4, inHTML: J4, c: X4 } = Z;
+          Z.inHTML = true, Z.c = v0 + 1;
+          var U4 = n === "p";
+          if (U4) Z.inline = true, B5 = $9(i5, false, Z, V);
           else {
-            var S$ = Y5.indexOf(`
+            var Q$ = n0.indexOf(`
 
-`) !== -1, k$ = F$.test(J9), a9 = B4.test(J9), X6 = S$ || k$ || Z.inHTML && a9, Y6 = Y5.length >= 2 && Y5.charCodeAt(0) === g && Y5.charCodeAt(Y5.length - 1) === g && !S$;
-            Y6 && !k$ && !a9 ? K9 = [{ type: B.text, text: J9 }] : X6 || a9 ? (Z.inline = false, K9 = c5(Y5, Z, X)) : (Z.inline = true, K9 = W9(J9, false, Z, X));
+`) !== -1, V$ = d9.test(i5), S9 = C$.test(i5), F4 = Q$ || V$ || Z.inHTML && S9, q4 = n0.length >= 2 && n0.charCodeAt(0) === E && n0.charCodeAt(n0.length - 1) === E && !Q$;
+            q4 && !V$ && !S9 ? B5 = [{ type: _.text, text: i5 }] : F4 || S9 ? (Z.inline = false, B5 = f5(n0, Z, V)) : (Z.inline = true, B5 = $9(i5, false, Z, V));
           }
-          Z.inline = e4, Z.inHTML = $6, Z.d = Z6;
+          Z.inline = K4, Z.inHTML = J4, Z.c = X4;
         }
       }
-      var x$ = false;
-      if (G === 6 && w0 !== -1 && !Z.inHTML && !R0) {
-        var V6 = /<[a-zA-Z][^>]*>/.test(Y5), K6 = Y5.indexOf(`
+      var Y$ = false;
+      if (X === 6 && t !== -1 && !Z.inHTML && !D0) {
+        var W4 = /<[a-zA-Z][^>]*>/.test(n0), z4 = n0.indexOf(`
 
-`) !== -1 || F$.test(Y5);
-        V6 && !K6 && (x$ = true);
+`) !== -1 || d9.test(n0);
+        W4 && !z4 && (Y$ = true);
       }
-      var J6 = !F0 && (Z.inHTML || G === 7 || R0 || !o5 || x$);
-      if (J6) {
-        var z9, _5, E$ = false;
-        if (w0 !== -1 && b5) {
-          var g$ = false;
-          if (Z.inHTML && z0 < a.length) {
-            for (var R9 = z0; R9 < a.length && a.charCodeAt(R9) !== g; ) R9++;
-            var n9 = a.slice(z0, R9).trim();
-            g$ = n9.length > 1 && n9.charCodeAt(0) === Y0 && n9.charCodeAt(1) !== j0;
+      var H4 = !Z5 && (Z.inHTML || X === 7 || D0 || !S0 || Y$);
+      if (H4) {
+        var V5, G$ = false;
+        if (t !== -1 && h0) {
+          var K$ = false;
+          if (Z.inHTML && b0 < l.length) {
+            for (var O9 = b0; O9 < l.length && l.charCodeAt(O9) !== E; ) O9++;
+            var L9 = l.slice(b0, O9).trim();
+            K$ = L9.length > 1 && L9.charCodeAt(0) === G0 && L9.charCodeAt(1) !== M0;
           }
-          _5 = g$ ? a.slice(m.end - V) : Y5, E$ = true;
-        } else (G === 7 || Z.inHTML) && w0 !== -1 ? (_5 = a.slice(m.end - V), _5.charCodeAt(0) === g && (_5 = _5.slice(1))) : b5 ? z9 = $.slice(V, i5) : R0 ? z9 = H0 : (_5 = a.slice(m.end - V), _5.charCodeAt(0) === g && (_5 = _5.slice(1)));
-        var C$ = z9 !== void 0, s9 = G5(z9 === void 0 ? _5 || "" : z9), f$ = { type: B.htmlBlock, tag: c, attrs: P5(m.attrs, c, X), b: m.g + m.b, children: K9, e: C$ ? void 0 : s9, j: C$ ? s9 : void 0, text: s9, c: true, a: false };
-        return E$ && (f$.x = true), { node: f$, end: E5 };
+          V5 = K$ ? l.slice(f.end - G) : n0, G$ = true;
+        } else (X === 7 || Z.inHTML) && t !== -1 ? (V5 = l.slice(f.end - G), V5.charCodeAt(0) === E && (V5 = V5.slice(1))) : h0 ? V5 = $.slice(G, Q5) : D0 ? V5 = C : (V5 = l.slice(f.end - G), V5.charCodeAt(0) === E && (V5 = V5.slice(1)));
+        var J$ = { type: _.htmlBlock, tag: U0, attrs: b5(f.attrs, U0, V), i: f.whitespaceBeforeAttrs + f.rawAttrs, children: B5, a: V5, text: V5, d: true, b: false };
+        return G$ && (J$.n = true), { node: J$, end: j0 };
       }
-      var h$ = G5(Y5);
-      return { node: { type: B.htmlBlock, tag: c, attrs: P5(m.attrs, c, X), b: m.g + m.b, children: K9, e: F0 ? void 0 : h$, text: h$, c: false, a: false }, end: E5 };
+      return { node: { type: _.htmlBlock, tag: U0, attrs: b5(f.attrs, U0, V), i: f.whitespaceBeforeAttrs + f.rawAttrs, children: B5, a: Z5 ? "" : n0, text: n0, d: false, b: false }, end: j0 };
     }
-    var b9 = H0.match(/^<(\/?)([a-zA-Z][a-zA-Z0-9-]*)/), U6 = b9 ? b9[2] : "div", t9 = b9 ? b9[1] === "/" : false, e9, m$, u$, L9 = "";
-    if (t9) {
-      var $$ = H0.indexOf(">");
-      $$ === -1 ? e9 = H0 : (e9 = H0.slice(0, $$ + 1), L9 = H0.slice($$ + 1), L9 && (m$ = G5(L9)));
-    } else u$ = G5(H0);
-    return { node: { type: B.htmlBlock, tag: U6, attrs: {}, children: [], e: m$, h: e9, j: u$, text: t9 ? L9 : H0, c: true, a: t9 }, end: D0 };
+    var B9 = C.match(/^<(\/?)([a-zA-Z][a-zA-Z0-9-]*)/), O4 = B9 ? B9[2] : "div", X$ = B9 ? B9[1] === "/" : false, E9 = C;
+    if (X$) {
+      var U$ = C.indexOf(">");
+      U$ !== -1 && (E9 = C.slice(U$ + 1));
+    }
+    return { node: { type: _.htmlBlock, tag: O4, attrs: {}, children: [], a: E9, text: E9, d: true, b: X$ }, end: d };
   }
-  var r0 = w5($, V);
-  if (!r0) return null;
-  var g5 = r0.tag, Z$ = g5.toLowerCase(), p$ = g5.charCodeAt(0), T9 = p$ >= h && p$ <= u;
-  if (!(T9 || l9.has(Z$) || N9.has(Z$) || Z$.includes("-"))) return null;
-  if (r0.f) return { node: { type: B.htmlSelfClosing, tag: g5, attrs: {}, h: $.slice(V, r0.end), a: true }, end: r0.end };
-  var n5 = _$($, r0.end, g5), F9 = [];
-  if (n5 !== -1) {
-    var G6 = r9, y9 = $.slice(r0.end, G6), S9 = y9.trim();
-    if (S9) {
-      var q6 = y9.indexOf(`
+  var u0 = w5($, G);
+  if (!u0) return null;
+  var y5 = u0.tag, g9 = y5.toLowerCase(), F$ = y5.charCodeAt(0), D9 = F$ >= h && F$ <= c;
+  if (!D9 && !y9.has(g9) && !z9.has(g9) && !g9.includes("-")) return null;
+  if (u0.isClosing) return { node: { type: _.htmlSelfClosing, tag: y5, attrs: {}, a: $.slice(G, u0.end), b: true }, end: u0.end };
+  var m5 = o9($, u0.end, y5), V9 = [];
+  if (m5 !== -1) {
+    var B4 = k9, A9 = $.slice(u0.end, B4), M9 = A9.trim();
+    if (M9) {
+      var D4 = A9.indexOf(`
 
-`) !== -1, W6 = F$.test(S9), z6 = B4.test(S9), F6 = Z.inline, H6 = Z.inHTML, M6 = Z.d;
-      Z.inHTML = true, Z.d = (Z.d || 0) + 1, q6 || W6 || z6 ? (Z.inline = false, F9 = c5(y9, Z, X)) : (Z.inline = true, F9 = W9(S9, false, Z, X)), Z.inline = F6, Z.inHTML = H6, Z.d = M6;
+`) !== -1, A4 = d9.test(M9), M4 = C$.test(M9), j4 = Z.inline, _4 = Z.inHTML, I4 = Z.c;
+      Z.inHTML = true, Z.c = (Z.c || 0) + 1, D4 || A4 || M4 ? (Z.inline = false, V9 = f5(A9, Z, V)) : (Z.inline = true, V9 = $9(M9, false, Z, V)), Z.inline = j4, Z.inHTML = _4, Z.c = I4;
     }
-    var O6 = G0($, n5), D6 = $.slice(n5, O6).trim(), Q$ = D6 ? n5 : e($, n5), d$ = T9 ? $.slice(V, n5) : $.slice(V, Q$), jZ = T9 ? n5 : Q$;
-    return { node: { type: B.htmlBlock, tag: g5, attrs: P5(r0.attrs, g5, X), b: r0.g + r0.b, children: F9, j: G5(d$), text: T9 ? y9 : d$, c: true, a: false }, end: Q$ };
+    var v4 = X0($, m5), N4 = $.slice(m5, v4).trim(), T9 = N4 ? m5 : s($, m5), q$ = D9 ? $.slice(G, m5) : $.slice(G, T9), A6 = D9 ? m5 : T9;
+    return { node: { type: _.htmlBlock, tag: y5, attrs: b5(u0.attrs, y5, V), i: u0.whitespaceBeforeAttrs + u0.rawAttrs, children: V9, a: q$, text: D9 ? A9 : q$, d: true, b: false }, end: T9 };
   }
-  var H9 = N4($, r0.end), A6 = H9 < $.length ? e($, H9) : H9, X$ = $.slice(r0.end, H9);
-  if (X$.trim()) {
-    var { inline: j6, inHTML: B6, d: _6 } = Z;
-    Z.inline = false, Z.inHTML = true, Z.d = (Z.d || 0) + 1, F9 = c5(X$, Z, X), Z.inline = j6, Z.inHTML = B6, Z.d = _6;
+  var Y9 = u$($, u0.end), P4 = Y9 < $.length ? s($, Y9) : Y9, x9 = $.slice(u0.end, Y9);
+  if (x9.trim()) {
+    var { inline: b4, inHTML: w4, c: R4 } = Z;
+    Z.inline = false, Z.inHTML = true, Z.c = (Z.c || 0) + 1, V9 = f5(x9, Z, V), Z.inline = b4, Z.inHTML = w4, Z.c = R4;
   }
-  var v6 = $.slice(r0.end, H9);
-  return { node: { type: B.htmlBlock, tag: g5, attrs: P5(r0.attrs, g5, X), b: r0.g + r0.b, children: F9, e: G5(v6), text: X$, c: true, a: false }, end: A6 };
+  var y4 = $.slice(u0.end, Y9);
+  return { node: { type: _.htmlBlock, tag: y5, attrs: b5(u0.attrs, y5, V), i: u0.whitespaceBeforeAttrs + u0.rawAttrs, children: V9, a: y4, text: x9, d: true, b: false }, end: P4 };
 }
-function i6($, Q) {
-  if ($.charCodeAt(Q) !== Y0) return 0;
-  var Z = Q + 1, X = $.length;
-  if ($.charCodeAt(Z) === c0 && $.charCodeAt(Z + 1) === p && $.charCodeAt(Z + 2) === p) return 2;
-  if ($.charCodeAt(Z) === t5) return 3;
-  if ($.charCodeAt(Z) === c0) {
+function i4($, Q) {
+  if ($.charCodeAt(Q) !== G0) return 0;
+  var Z = Q + 1, V = $.length;
+  if ($.charCodeAt(Z) === p0 && $.charCodeAt(Z + 1) === p && $.charCodeAt(Z + 2) === p) return 2;
+  if ($.charCodeAt(Z) === a5) return 3;
+  if ($.charCodeAt(Z) === p0) {
     var Y = $.charCodeAt(Z + 1);
-    if (Y >= h && Y <= u) return 4;
+    if (Y >= h && Y <= c) return 4;
     if ($.slice(Z + 1, Z + 8) === "[CDATA[") return 5;
   }
-  for (var V = $.charCodeAt(Z) === j0, K = V ? Z + 1 : Z, J = K; J < X; ) {
-    var G = $.charCodeAt(J);
-    if (G >= h && G <= u || G >= V0 && G <= q0 || G >= r && G <= o || G === p) J++;
+  for (var G = $.charCodeAt(Z) === M0, K = G ? Z + 1 : Z, J = K; J < V; ) {
+    var X = $.charCodeAt(J);
+    if (X >= h && X <= c || X >= K0 && X <= W0 || X >= i && X <= a || X === p) J++;
     else break;
   }
   if (J === K) return 0;
   var U = $.slice(K, J);
-  if (N9.has(U.toLowerCase())) {
-    if (V) return 0;
-    var W = $.charCodeAt(J);
-    return W === I || W === w || W === l || W === g || J >= X ? 1 : 0;
+  if (z9.has(U.toLowerCase())) {
+    if (G) return 0;
+    var q2 = $.charCodeAt(J);
+    return q2 === v2 || q2 === b || q2 === o || q2 === E || J >= V ? 1 : 0;
   }
-  if (l9.has(U.toLowerCase())) {
-    if (V) {
-      for (var z = J; z < X && ($.charCodeAt(z) === I || $.charCodeAt(z) === w); ) z++;
-      return z < X && $.charCodeAt(z) === l ? 6 : 0;
+  if (y9.has(U.toLowerCase())) {
+    if (G) {
+      for (var W = J; W < V && ($.charCodeAt(W) === v2 || $.charCodeAt(W) === b); ) W++;
+      return W < V && $.charCodeAt(W) === o ? 6 : 0;
     }
-    var H = J < X ? $.charCodeAt(J) : -1;
-    return H === I || H === w || H === l || H === g || H === j0 || H === -1 ? 6 : 0;
+    var z = J < V ? $.charCodeAt(J) : -1;
+    return z === v2 || z === b || z === o || z === E || z === M0 || z === -1 ? 6 : 0;
   }
-  if (V) {
-    for (var F = J; F < X && ($.charCodeAt(F) === I || $.charCodeAt(F) === w); ) F++;
-    if (F < X && $.charCodeAt(F) === l) {
-      var M = G0($, Q), j = $.slice(F + 1, M).trim();
-      if (j === "") return 7;
+  if (G) {
+    for (var H = J; H < V && ($.charCodeAt(H) === v2 || $.charCodeAt(H) === b); ) H++;
+    if (H < V && $.charCodeAt(H) === o) {
+      var B = X0($, Q), M = $.slice(H + 1, B).trim();
+      if (M === "") return 7;
     }
   } else {
-    var _ = G0($, Q), q2 = w5($, Q);
-    if (q2 && q2.end <= _) {
-      var D = $.slice(q2.end, _).trim();
-      if (D === "") return 7;
+    var F = X0($, Q), D = w5($, Q);
+    if (D && D.end <= F) {
+      var O = $.slice(D.end, F).trim();
+      if (O === "") return 7;
     }
   }
   return 0;
 }
-function y4($, Q, Z) {
-  for (var X = 0, Y = $.length; X < Y && ($.charCodeAt(X) === I || $.charCodeAt(X) === w); ) X++;
-  for (; Y > X && ($.charCodeAt(Y - 1) === I || $.charCodeAt(Y - 1) === w); ) Y--;
-  X < Y && $.charCodeAt(X) === E0 && X++, Y > X && $.charCodeAt(Y - 1) === E0 && (Y - 2 < X || $.charCodeAt(Y - 2) !== T0) && Y--;
-  for (var V = [], K = X, J = false, G = [], U = X; U < Y; ) {
-    var W = $.charCodeAt(U);
-    if (W === T0 && U + 1 < Y) {
-      $.charCodeAt(U + 1) === E0 ? (J || (J = true, G = []), G.push($.slice(K, U)), G.push("|"), U += 2, K = U) : U += 2;
+function d$($, Q, Z) {
+  for (var V = 0, Y = $.length; V < Y && ($.charCodeAt(V) === v2 || $.charCodeAt(V) === b); ) V++;
+  for (; Y > V && ($.charCodeAt(Y - 1) === v2 || $.charCodeAt(Y - 1) === b); ) Y--;
+  V < Y && $.charCodeAt(V) === k0 && V++, Y > V && $.charCodeAt(Y - 1) === k0 && (Y - 2 < V || $.charCodeAt(Y - 2) !== y0) && Y--;
+  for (var G = [], K = V, J = false, X = [], U = V; U < Y; ) {
+    var q2 = $.charCodeAt(U);
+    if (q2 === y0 && U + 1 < Y) {
+      $.charCodeAt(U + 1) === k0 ? (J || (J = true, X = []), X.push($.slice(K, U)), X.push("|"), U += 2, K = U) : U += 2;
       continue;
     }
-    if (W === Z0) {
-      for (var z = 0; U < Y && $.charCodeAt(U) === Z0; ) z++, U++;
-      for (var H = false; U < Y && !H; ) {
-        for (var F = 0; U < Y && $.charCodeAt(U) === Z0; ) F++, U++;
-        F === z ? H = true : F === 0 && U++;
+    if (q2 === $0) {
+      for (var W = 0; U < Y && $.charCodeAt(U) === $0; ) W++, U++;
+      for (var z = false; U < Y && !z; ) {
+        for (var F = 0; U < Y && $.charCodeAt(U) === $0; ) F++, U++;
+        F === W ? z = true : F === 0 && U++;
       }
       continue;
     }
-    if (W === E0) {
-      var M = J ? (G.push($.slice(K, U)), G.join("")) : $.slice(K, U);
-      V.push(M.trim()), U++, K = U, J = false, G = [];
+    if (q2 === k0) {
+      var D = J ? (X.push($.slice(K, U)), X.join("")) : $.slice(K, U);
+      G.push(D.trim()), U++, K = U, J = false, X = [];
       continue;
     }
     U++;
   }
-  var j = J ? (G.push($.slice(K, Y)), G.join("")) : $.slice(K, Y);
-  return V.push(j.trim()), V.map((_) => {
-    var q2 = _.indexOf("\\|") === -1 ? _ : _.replace(/\\\|/g, "|");
-    return q2 ? W9(q2, false, Q, Z) : [];
+  var O = J ? (X.push($.slice(K, Y)), X.join("")) : $.slice(K, Y);
+  return G.push(O.trim()), G.map(function(H) {
+    var B = H.indexOf("\\|") !== -1 ? H.replace(/\\\|/g, "|") : H;
+    return B ? $9(B, false, Q, Z) : [];
   });
 }
-function S4($, Q, Z, X) {
-  let Y = G0($, Q);
-  var V = $.indexOf("|", Q);
-  if (V < 0 || V >= Y) return null;
-  let K = e($, Y);
+function c$($, Q, Z, V) {
+  let Y = X0($, Q);
+  var G = $.indexOf("|", Q);
+  if (G < 0 || G >= Y) return null;
+  let K = s($, Y);
   if (K >= $.length) return null;
-  let J = G0($, K);
-  if (!c4($, K, J)) return null;
-  let G = $.slice(Q, Y), U = $.slice(K, J);
-  for (var W = [], z = 0, H = U.length; z < H && (U.charCodeAt(z) === I || U.charCodeAt(z) === w); ) z++;
-  for (z < H && U.charCodeAt(z) === E0 && z++; z < H; ) {
-    for (; z < H && (U.charCodeAt(z) === I || U.charCodeAt(z) === w); ) z++;
-    if (z >= H || U.charCodeAt(z) === E0) break;
-    var F = U.charCodeAt(z) === m0;
-    for (F && z++; z < H && U.charCodeAt(z) === p; ) z++;
-    var M = z < H && U.charCodeAt(z) === m0;
-    for (M && z++, W.push(F && M ? "center" : M ? "right" : F ? "left" : null); z < H && (U.charCodeAt(z) === I || U.charCodeAt(z) === w); ) z++;
-    z < H && U.charCodeAt(z) === E0 && z++;
+  let J = X0($, K);
+  if (!e$($, K, J)) return null;
+  let X = $.slice(Q, Y), U = $.slice(K, J);
+  for (var q2 = [], W = 0, z = U.length; W < z && (U.charCodeAt(W) === v2 || U.charCodeAt(W) === b); ) W++;
+  for (W < z && U.charCodeAt(W) === k0 && W++; W < z; ) {
+    for (; W < z && (U.charCodeAt(W) === v2 || U.charCodeAt(W) === b); ) W++;
+    if (W >= z || U.charCodeAt(W) === k0) break;
+    var F = U.charCodeAt(W) === f0;
+    for (F && W++; W < z && U.charCodeAt(W) === p; ) W++;
+    var D = W < z && U.charCodeAt(W) === f0;
+    for (D && W++, q2.push(F && D ? "center" : D ? "right" : F ? "left" : null); W < z && (U.charCodeAt(W) === v2 || U.charCodeAt(W) === b); ) W++;
+    W < z && U.charCodeAt(W) === k0 && W++;
   }
-  let j = y4(G, Z, X);
-  if (W.length !== j.length) return null;
-  let _ = [], q2 = e($, J);
-  for (; q2 < $.length; ) {
-    let P = G0($, q2), v2 = $.slice(q2, P);
-    if (e0($, q2, P)) break;
-    if (L0($, q2, P), U0 < 4) {
-      var D = $.charCodeAt(q2 + Q0);
-      if (D === l || D === V5 || (D === p || D === P0 || D === O0) && d5($, q2)) break;
-      if (D === Z0 || D === b0) {
-        for (var A = q2 + Q0, N = 0; A < P && $.charCodeAt(A) === D; ) N++, A++;
-        if (N >= 3) break;
+  let O = d$(X, Z, V);
+  if (q2.length !== O.length) return null;
+  let H = [], B = s($, J);
+  for (; B < $.length; ) {
+    let k = X0($, B), S = $.slice(B, k);
+    if (e0($, B, k)) break;
+    if (P0($, B, k), J0 < 4) {
+      var M = $.charCodeAt(B + Z0);
+      if (M === o || M === Y5 || (M === p || M === _0 || M === H0) && x5($, B)) break;
+      if (M === $0 || M === N0) {
+        for (var j = B + Z0, w = 0; j < k && $.charCodeAt(j) === M; ) w++, j++;
+        if (w >= 3) break;
       }
     }
-    _.push(y4(v2, Z, X)), q2 = e($, P);
+    H.push(d$(S, Z, V)), B = s($, k);
   }
-  if (X.optimizeForStreaming && _.length === 0) return null;
-  for (var L = j.length, O = 0; O < _.length; O++) if (_[O].length < L) for (; _[O].length < L; ) _[O].push([]);
-  else _[O].length > L && (_[O].length = L);
-  return { node: { type: B.table, header: j, cells: _, align: W }, end: q2 };
+  if (V.optimizeForStreaming && H.length === 0) return null;
+  for (var I = O.length, A = 0; A < H.length; A++) if (H[A].length < I) for (; H[A].length < I; ) H[A].push([]);
+  else H[A].length > I && (H[A].length = I);
+  return { node: { type: _.table, header: O, cells: H, align: q2 }, end: B };
 }
-function a6($, Q, Z) {
-  var X = G0($, Q);
-  if (L0($, Q, X), U0 > 3) return null;
-  var Y = Q + Q0;
+function a4($, Q, Z) {
+  var V = X0($, Q);
+  if (P0($, Q, V), J0 > 3) return null;
+  var Y = Q + Z0;
   if ($.charCodeAt(Y) !== A0) return null;
-  if (Y + 1 < $.length && $.charCodeAt(Y + 1) === W5) {
-    var V = n6($, Y, Z);
-    return V || null;
+  if (Y + 1 < $.length && $.charCodeAt(Y + 1) === U5) {
+    var G = n4($, Y, Z);
+    return G || null;
   }
   Z.refs || (Z.refs = {});
-  var K = l4($, Y, Z.refs);
-  return K === null ? null : { node: { type: B.refCollection }, end: K };
+  var K = $4($, Y, Z.refs);
+  return K === null ? null : { node: { type: _.refCollection }, end: K };
 }
-function n6($, Q, Z) {
-  var X = $.length;
-  if ($.charCodeAt(Q) !== A0 || Q + 1 >= X || $.charCodeAt(Q + 1) !== W5) return null;
-  for (var Y = Q + 2, V = Y; Y < X && $.charCodeAt(Y) !== J5; ) {
-    if ($.charCodeAt(Y) === g) return null;
+function n4($, Q, Z) {
+  var V = $.length;
+  if ($.charCodeAt(Q) !== A0 || Q + 1 >= V || $.charCodeAt(Q + 1) !== U5) return null;
+  for (var Y = Q + 2, G = Y; Y < V && $.charCodeAt(Y) !== K5; ) {
+    if ($.charCodeAt(Y) === E) return null;
     Y++;
   }
-  if (Y >= X) return null;
-  var K = `^${$.slice(V, Y)}`.toLowerCase();
-  if (Y++, Y >= X || $.charCodeAt(Y) !== m0) return null;
-  for (Y++; Y < X && ($.charCodeAt(Y) === I || $.charCodeAt(Y) === w); ) Y++;
-  if (Y < X && $.charCodeAt(Y) === g) for (Y++; Y < X && ($.charCodeAt(Y) === I || $.charCodeAt(Y) === w); ) Y++;
+  if (Y >= V) return null;
+  var K = ("^" + $.slice(G, Y)).toLowerCase();
+  if (Y++, Y >= V || $.charCodeAt(Y) !== f0) return null;
+  for (Y++; Y < V && ($.charCodeAt(Y) === v2 || $.charCodeAt(Y) === b); ) Y++;
+  if (Y < V && $.charCodeAt(Y) === E) for (Y++; Y < V && ($.charCodeAt(Y) === v2 || $.charCodeAt(Y) === b); ) Y++;
   var J = $.indexOf(`
 `, Y);
-  J < 0 && (J = X);
-  for (var G = $.slice(Y, J).trim(), U = J < X ? J + 1 : X; U < X; ) {
-    var W = G0($, U);
-    if (L0($, U, W), U0 >= 2 && !e0($, U, W)) G += `
-${$.slice(U, W)}`, U = e($, W);
-    else if (e0($, U, W)) {
-      var z = e($, W);
-      if (z < X) {
-        var H = G0($, z);
-        if (L0($, z, H), U0 >= 2) {
-          G += `
-`, U = e($, W);
+  J < 0 && (J = V);
+  for (var X = $.slice(Y, J).trim(), U = J < V ? J + 1 : V; U < V; ) {
+    var q2 = X0($, U);
+    if (P0($, U, q2), J0 >= 2 && !e0($, U, q2)) X += `
+` + $.slice(U, q2), U = s($, q2);
+    else if (e0($, U, q2)) {
+      var W = s($, q2);
+      if (W < V) {
+        var z = X0($, W);
+        if (P0($, W, z), J0 >= 2) {
+          X += `
+`, U = s($, q2);
           continue;
         }
       }
       break;
     } else break;
   }
-  var F = Z.refs;
-  return F && !F[K] && (F[K] = { target: G, title: void 0 }), { node: { type: B.footnote }, end: U };
+  return Z.refs[K] || (Z.refs[K] = { target: X, title: void 0 }), { node: { type: _.footnote }, end: U };
 }
-function s6($, Q, Z, X) {
-  let Y = Q, V = 0, K = 0, J = -1;
+function s4($, Q, Z, V) {
+  let Y = Q, G = 0, K = 0, J = -1;
   for (; Y < $.length; ) {
-    let f = J >= 0 ? J : G0($, Y);
-    if (J = -1, e0($, Y, f)) break;
-    if (L0($, Y, f), U0 < 4 && K > 0 && !Z.l) {
-      let C = $.charCodeAt(Y + Q0);
-      if (C === K5 || C === p) {
-        let E = Y + Q0;
-        for (; E < f && $.charCodeAt(E) === C; ) E++;
-        for (; E < f && ($.charCodeAt(E) === I || $.charCodeAt(E) === w); ) E++;
-        if (E >= f) {
-          V = C === K5 ? 1 : 2, Y = e($, f);
+    let u = J >= 0 ? J : X0($, Y);
+    if (J = -1, e0($, Y, u)) break;
+    if (P0($, Y, u), J0 < 4 && K > 0 && !Z.f) {
+      let g = $.charCodeAt(Y + Z0);
+      if (g === G5 || g === p) {
+        let P = Y + Z0;
+        for (; P < u && $.charCodeAt(P) === g; ) P++;
+        for (; P < u && ($.charCodeAt(P) === v2 || $.charCodeAt(P) === b); ) P++;
+        if (P >= u) {
+          G = g === G5 ? 1 : 2, Y = s($, u);
           break;
         }
       }
     }
-    K = f;
-    let y = e($, f);
-    if (y < $.length) {
-      if ($.charCodeAt(y) === g9) {
-        var G = G0($, y);
-        Y = e($, G), K = G;
+    K = u;
+    let x = s($, u);
+    if (x < $.length) {
+      if ($.charCodeAt(x) === v9) {
+        var X = X0($, x);
+        Y = s($, X), K = X;
         continue;
       }
-      let C = G0($, y);
-      if (J = C, L0($, y, C), U0 < 4) {
-        let E = $.charCodeAt(y + Q0);
-        if (E === l) {
-          Y = y;
+      let g = X0($, x);
+      if (J = g, P0($, x, g), J0 < 4) {
+        let P = $.charCodeAt(x + Z0);
+        if (P === o) {
+          Y = x;
           break;
         }
-        if (E === V5) {
-          for (var U = y + Q0, W = 0; U < C && $.charCodeAt(U) === V5 && W <= 6; ) W++, U++;
-          if (W >= 1 && W <= 6 && (U >= C || $.charCodeAt(U) === I || $.charCodeAt(U) === w)) {
-            Y = y;
+        if (P === Y5) {
+          for (var U = x + Z0, q2 = 0; U < g && $.charCodeAt(U) === Y5 && q2 <= 6; ) q2++, U++;
+          if (q2 >= 1 && q2 <= 6 && (U >= g || $.charCodeAt(U) === v2 || $.charCodeAt(U) === b)) {
+            Y = x;
             break;
           }
         }
-        if (E === Z0 || E === b0) {
-          for (var z = y + Q0, H = 0; z < C && $.charCodeAt(z) === E; ) H++, z++;
-          if (H >= 3) {
-            Y = y;
+        if (P === $0 || P === N0) {
+          for (var W = x + Z0, z = 0; W < g && $.charCodeAt(W) === P; ) z++, W++;
+          if (z >= 3) {
+            Y = x;
             break;
           }
         }
-        if (E === Y0) {
-          var F = y + Q0 + 1, M = F < C ? $.charCodeAt(F) : 0, j = M === c0 || M === t5;
-          if (!j && M === j0) {
-            for (var _ = F + 1, q2 = _; q2 < C && ($.charCodeAt(q2) >= h && $.charCodeAt(q2) <= u || $.charCodeAt(q2) >= V0 && $.charCodeAt(q2) <= q0 || $.charCodeAt(q2) >= r && $.charCodeAt(q2) <= o || $.charCodeAt(q2) === p); ) q2++;
-            q2 > _ && (j = l9.has($.slice(_, q2).toLowerCase()));
-          } else if (!j) {
-            for (var D = F; D < C && ($.charCodeAt(D) >= h && $.charCodeAt(D) <= u || $.charCodeAt(D) >= V0 && $.charCodeAt(D) <= q0 || $.charCodeAt(D) >= r && $.charCodeAt(D) <= o || $.charCodeAt(D) === p); ) D++;
-            if (D > F) {
-              var A = $.slice(F, D).toLowerCase();
-              j = l9.has(A) || N9.has(A);
+        if (P === G0) {
+          var F = x + Z0 + 1, D = F < g ? $.charCodeAt(F) : 0, O = D === p0 || D === a5;
+          if (!O && D === M0) {
+            for (var H = F + 1, B = H; B < g && ($.charCodeAt(B) >= h && $.charCodeAt(B) <= c || $.charCodeAt(B) >= K0 && $.charCodeAt(B) <= W0 || $.charCodeAt(B) >= i && $.charCodeAt(B) <= a || $.charCodeAt(B) === p); ) B++;
+            B > H && (O = y9.has($.slice(H, B).toLowerCase()));
+          } else if (!O) {
+            for (var M = F; M < g && ($.charCodeAt(M) >= h && $.charCodeAt(M) <= c || $.charCodeAt(M) >= K0 && $.charCodeAt(M) <= W0 || $.charCodeAt(M) >= i && $.charCodeAt(M) <= a || $.charCodeAt(M) === p); ) M++;
+            if (M > F) {
+              var j = $.slice(F, M).toLowerCase();
+              O = y9.has(j) || z9.has(j);
             }
           }
-          if (j && o4($, y, Z, X)) {
-            Y = y;
+          if (O && Q4($, x, Z, V)) {
+            Y = x;
             break;
           }
         }
-        if (E === p || E === P0 || E === y5) {
-          let S = y + Q0 + 1;
-          if (S < C && ($.charCodeAt(S) === I || $.charCodeAt(S) === w)) {
-            var N = v9($, S, C);
-            if (N < C && !d5($, y)) {
-              Y = y;
+        if (P === p || P === _0 || P === N5) {
+          let C = x + Z0 + 1;
+          if (C < g && ($.charCodeAt(C) === v2 || $.charCodeAt(C) === b)) {
+            var w = W9($, C, g);
+            if (w < g && !x5($, x)) {
+              Y = x;
               break;
             }
           }
         }
-        if (E >= r && E <= o) {
-          let S = y + Q0;
-          for (; S < C && $.charCodeAt(S) >= r && $.charCodeAt(S) <= o; ) S++;
-          if (S < C && ($.charCodeAt(S) === Q5 || $.charCodeAt(S) === F5) && S - (y + Q0) === 1 && $.charCodeAt(y + Q0) === 49) {
-            var L = S + 1;
-            if (L < C && ($.charCodeAt(L) === I || $.charCodeAt(L) === w)) {
-              var O = v9($, L, C);
-              if (O < C) {
-                Y = y;
+        if (P >= i && P <= a) {
+          let C = x + Z0;
+          for (; C < g && $.charCodeAt(C) >= i && $.charCodeAt(C) <= a; ) C++;
+          if (C < g && ($.charCodeAt(C) === s0 || $.charCodeAt(C) === q5) && C - (x + Z0) === 1 && $.charCodeAt(x + Z0) === 49) {
+            var I = C + 1;
+            if (I < g && ($.charCodeAt(I) === v2 || $.charCodeAt(I) === b)) {
+              var A = W9($, I, g);
+              if (A < g) {
+                Y = x;
                 break;
               }
             }
           }
         }
-        if (E === E0) {
-          let S = e($, C);
-          if (S < $.length) {
-            let s = G0($, S);
-            if (c4($, S, s)) {
-              Y = y;
+        if (P === k0) {
+          let C = s($, g);
+          if (C < $.length) {
+            let d = X0($, C);
+            if (e$($, C, d)) {
+              Y = x;
               break;
             }
           }
         }
-        if ((E === p || E === P0 || E === O0) && d5($, y)) {
-          if (E !== p) {
-            Y = y;
+        if ((P === p || P === _0 || P === H0) && x5($, x)) {
+          if (P !== p) {
+            Y = x;
             break;
           }
-          let S = 0, s = y + Q0;
-          for (; s < C && $.charCodeAt(s) === p; ) S++, s++;
-          for (; s < C && ($.charCodeAt(s) === I || $.charCodeAt(s) === w); ) s++;
-          if (s < C) {
-            Y = y;
+          let C = 0, d = x + Z0;
+          for (; d < g && $.charCodeAt(d) === p; ) C++, d++;
+          for (; d < g && ($.charCodeAt(d) === v2 || $.charCodeAt(d) === b); ) d++;
+          if (d < g) {
+            Y = x;
             break;
           }
         }
       }
     }
-    Y = e($, f);
+    Y = s($, u);
   }
-  for (var P = V ? K : Y; P > Q && ($.charCodeAt(P - 1) === g || $.charCodeAt(P - 1) === v5 || $.charCodeAt(P - 1) === I || $.charCodeAt(P - 1) === w); ) P--;
-  for (var v2 = Q; v2 < P && ($.charCodeAt(v2) === I || $.charCodeAt(v2) === w); ) v2++;
-  if (v2 >= P) return null;
-  for (var b = false, k = v2; k < P; k++) if ($.charCodeAt(k) === g9) {
-    b = true;
+  for (var k = G ? K : Y; k > Q && ($.charCodeAt(k - 1) === E || $.charCodeAt(k - 1) === _5 || $.charCodeAt(k - 1) === v2 || $.charCodeAt(k - 1) === b); ) k--;
+  for (var S = Q; S < k && ($.charCodeAt(S) === v2 || $.charCodeAt(S) === b); ) S++;
+  if (S >= k) return null;
+  for (var R = false, N = S; N < k; N++) if ($.charCodeAt(N) === v9) {
+    R = true;
     break;
   }
-  var x = b ? $.slice(v2, P).replace(/\u001E/g, "") : $.slice(v2, P);
-  if (!x) return null;
-  let T = W9(x, true, Z, X);
-  return V ? { node: { type: B.heading, level: V, children: T, id: "" }, end: Y } : { node: { type: B.paragraph, children: T }, end: Y };
+  var T = R ? $.slice(S, k).replace(/\u001E/g, "") : $.slice(S, k);
+  if (!T) return null;
+  let L = $9(T, true, Z, V);
+  if (G) {
+    let x = (V?.slugify || C0)(T);
+    return { node: { type: _.heading, level: G, children: L, id: x }, end: Y };
+  }
+  return { node: { type: _.paragraph, children: L }, end: Y };
 }
-function W9($, Q, Z, X) {
-  var Y = Z.t;
+function $9($, Q, Z, V) {
+  var Y = Z.k;
   if (!Y) {
-    var V = Z.k;
-    Z.k = Q;
-    var K = R5($, 0, $.length, Z, X);
-    return Z.k = V, K;
+    var G = Z.e;
+    Z.e = Q;
+    var K = D5($, 0, $.length, Z, V);
+    return Z.e = G, K;
   }
   var J = [];
-  return Y.push({ dest: J, text: $, breaks: Q, inline: Z.inline, inAnchor: Z.inAnchor, inHTML: Z.inHTML, htmlDepth: Z.d, inList: Z.inList, inBlockQuote: Z.inBlockQuote, noSetext: Z.l, depth: Z.o }), J;
+  return Y.push({ dest: J, text: $, breaks: Q, inline: Z.inline, inAnchor: Z.inAnchor, inHTML: Z.inHTML, htmlDepth: Z.c, inList: Z.inList, inBlockQuote: Z.inBlockQuote, noSetext: Z.f, depth: Z.j }), J;
 }
-function t6($, Q, Z) {
-  if ($.charCodeAt(Q) !== Z0) return null;
-  let X = l5($, Q, Z, 96), Y = Q + X;
+function t4($, Q, Z) {
+  if ($.charCodeAt(Q) !== $0) return null;
+  let V = C5($, Q, Z, 96), Y = Q + V;
   for (; Y < Z; ) {
-    let V = $.indexOf("`", Y);
-    if (V < 0 || V >= Z) return null;
-    let K = l5($, V, Z, 96);
-    if (K === X) {
-      let J = $.slice(Q + X, V);
+    let G = $.indexOf("`", Y);
+    if (G < 0 || G >= Z) return null;
+    let K = C5($, G, Z, 96);
+    if (K === V) {
+      let J = $.slice(Q + V, G);
       return J.indexOf(`
-`) !== -1 && (J = J.replace(/\n/g, " ")), J.length > 0 && J[0] === " " && J.at(-1) === " " && J.trim().length > 0 && (J = J.slice(1, -1)), { node: { type: B.codeInline, text: J }, end: V + K };
+`) !== -1 && (J = J.replace(/\n/g, " ")), J.length > 0 && J[0] === " " && J[J.length - 1] === " " && J.trim().length > 0 && (J = J.slice(1, -1)), { node: { type: _.codeInline, text: J }, end: G + K };
     }
-    Y = V + K;
+    Y = G + K;
   }
   return null;
 }
-function b$($, Q, Z) {
-  if ($.charCodeAt(Q) !== Z0) return Q;
-  let X = l5($, Q, Z, 96), Y = Q + X;
+function s9($, Q, Z) {
+  if ($.charCodeAt(Q) !== $0) return Q;
+  let V = C5($, Q, Z, 96), Y = Q + V;
   for (; Y < Z; ) {
-    let V = $.indexOf("`", Y);
-    if (V < 0 || V >= Z) return Q;
-    let K = l5($, V, Z, 96);
-    if (K === X) return V + K;
-    Y = V + K;
+    let G = $.indexOf("`", Y);
+    if (G < 0 || G >= Z) return Q;
+    let K = C5($, G, Z, 96);
+    if (K === V) return G + K;
+    Y = G + K;
   }
   return Q;
 }
-function e6($, Q, Z) {
-  if ($.charCodeAt(Q) !== Y0) return Q;
-  if (Q + 1 < Z && $.charCodeAt(Q + 1) === j0) {
+function e4($, Q, Z) {
+  if ($.charCodeAt(Q) !== G0) return Q;
+  if (Q + 1 < Z && $.charCodeAt(Q + 1) === M0) {
     let U = Q + 2;
-    for (; U < Z && $.charCodeAt(U) !== l; ) U++;
+    for (; U < Z && $.charCodeAt(U) !== o; ) U++;
     return U < Z ? U + 1 : Q;
   }
-  if (Q + 3 < Z && $.charCodeAt(Q + 1) === c0 && $.charCodeAt(Q + 2) === p && $.charCodeAt(Q + 3) === p) {
+  if (Q + 3 < Z && $.charCodeAt(Q + 1) === p0 && $.charCodeAt(Q + 2) === p && $.charCodeAt(Q + 3) === p) {
     let U = $.indexOf("-->", Q + 4);
     return U >= 0 ? U + 3 : Q;
   }
-  let X = Q + 1, Y = X;
-  for (; X < Z; ) {
-    let U = $.charCodeAt(X);
-    if (U >= h && U <= u || U >= V0 && U <= q0 || U >= r && U <= o || U === p) X++;
+  let V = Q + 1, Y = V;
+  for (; V < Z; ) {
+    let U = $.charCodeAt(V);
+    if (U >= h && U <= c || U >= K0 && U <= W0 || U >= i && U <= a || U === p) V++;
     else break;
   }
-  if (X === Y) return Q;
-  let V = $.slice(Y, X).toLowerCase(), K = false;
-  for (; X < Z; ) {
-    let U = $.charCodeAt(X);
-    if (U === l) {
-      X++;
+  if (V === Y) return Q;
+  let G = $.slice(Y, V).toLowerCase(), K = false;
+  for (; V < Z; ) {
+    let U = $.charCodeAt(V);
+    if (U === o) {
+      V++;
       break;
     }
-    if (U === j0 && X + 1 < Z && $.charCodeAt(X + 1) === l) {
-      X += 2, K = true;
+    if (U === M0 && V + 1 < Z && $.charCodeAt(V + 1) === o) {
+      V += 2, K = true;
       break;
     }
-    if (U === T5 || U === f5) {
+    if (U === v5 || U === S5) {
       var J = U;
-      for (X++; X < Z && $.charCodeAt(X) !== J; ) X++;
-      X < Z && X++;
+      for (V++; V < Z && $.charCodeAt(V) !== J; ) V++;
+      V < Z && V++;
       continue;
     }
-    if (U === g) return Q;
-    X++;
+    if (U === E) return Q;
+    V++;
   }
-  if (K || Q9(V)) return X;
-  let G = 1;
-  for (; X < Z && G > 0; ) if ($.charCodeAt(X) === Y0) if (X + 1 < Z && $.charCodeAt(X + 1) === j0) {
-    let U = X + 2, W = U;
-    for (; W < Z && ($.charCodeAt(W) >= h && $.charCodeAt(W) <= u || $.charCodeAt(W) >= V0 && $.charCodeAt(W) <= q0); ) W++;
-    if ($.slice(U, W).toLowerCase() === V) {
-      for (; W < Z && $.charCodeAt(W) !== l; ) W++;
-      if (W < Z && W++, G--, G === 0) return W;
+  if (K || l5(G)) return V;
+  let X = 1;
+  for (; V < Z && X > 0; ) if ($.charCodeAt(V) === G0) if (V + 1 < Z && $.charCodeAt(V + 1) === M0) {
+    let U = V + 2, q2 = U;
+    for (; q2 < Z && ($.charCodeAt(q2) >= h && $.charCodeAt(q2) <= c || $.charCodeAt(q2) >= K0 && $.charCodeAt(q2) <= W0); ) q2++;
+    if ($.slice(U, q2).toLowerCase() === G) {
+      for (; q2 < Z && $.charCodeAt(q2) !== o; ) q2++;
+      if (q2 < Z && q2++, X--, X === 0) return q2;
     }
-    X = W;
+    V = q2;
   } else {
-    let U = X + 1, W = U;
-    for (; W < Z && ($.charCodeAt(W) >= h && $.charCodeAt(W) <= u || $.charCodeAt(W) >= V0 && $.charCodeAt(W) <= q0); ) W++;
-    $.slice(U, W).toLowerCase() === V && G++, X++;
+    let U = V + 1, q2 = U;
+    for (; q2 < Z && ($.charCodeAt(q2) >= h && $.charCodeAt(q2) <= c || $.charCodeAt(q2) >= K0 && $.charCodeAt(q2) <= W0); ) q2++;
+    $.slice(U, q2).toLowerCase() === G && X++, V++;
   }
-  else X++;
-  return X;
+  else V++;
+  return V;
 }
-function $Z($, Q, Z, X, Y) {
-  if ($.charCodeAt(Q) !== b0 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== b0) return null;
-  let V = Q + 2;
-  for (; V + 1 < Z; ) {
-    let K = $.charCodeAt(V);
-    if (K === Z0) {
-      let J = b$($, V, Z);
-      if (J > V) {
-        V = J;
+function $6($, Q, Z, V, Y) {
+  if ($.charCodeAt(Q) !== N0 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== N0) return null;
+  let G = Q + 2;
+  for (; G + 1 < Z; ) {
+    let K = $.charCodeAt(G);
+    if (K === $0) {
+      let J = s9($, G, Z);
+      if (J > G) {
+        G = J;
         continue;
       }
     }
-    if (K === b0 && $.charCodeAt(V + 1) === b0) {
-      let J = $.slice(Q + 2, V), G = R5(J, 0, J.length, X, Y);
-      return { node: { type: B.textFormatted, tag: "del", children: G }, end: V + 2 };
+    if (K === N0 && $.charCodeAt(G + 1) === N0) {
+      let J = $.slice(Q + 2, G), X = D5(J, 0, J.length, V, Y);
+      return { node: { type: _.textFormatted, tag: "del", children: X }, end: G + 2 };
     }
-    K === T0 && V + 1 < Z && V++, V++;
+    K === y0 && G + 1 < Z && G++, G++;
   }
   return null;
 }
-function ZZ($, Q, Z, X, Y) {
-  if ($.charCodeAt(Q) !== K5 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== K5) return null;
-  let V = Q + 2;
-  for (; V + 1 < Z; ) {
-    let K = $.charCodeAt(V);
-    if (K === Z0) {
-      let J = b$($, V, Z);
-      if (J > V) {
-        V = J;
+function Z6($, Q, Z, V, Y) {
+  if ($.charCodeAt(Q) !== G5 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== G5) return null;
+  let G = Q + 2;
+  for (; G + 1 < Z; ) {
+    let K = $.charCodeAt(G);
+    if (K === $0) {
+      let J = s9($, G, Z);
+      if (J > G) {
+        G = J;
         continue;
       }
     }
-    if (K === K5 && $.charCodeAt(V + 1) === K5 && V > Q + 2) {
-      let J = $.slice(Q + 2, V), G = R5(J, 0, J.length, X, Y);
-      return { node: { type: B.textFormatted, tag: "mark", children: G }, end: V + 2 };
+    if (K === G5 && $.charCodeAt(G + 1) === G5 && G > Q + 2) {
+      let J = $.slice(Q + 2, G), X = D5(J, 0, J.length, V, Y);
+      return { node: { type: _.textFormatted, tag: "mark", children: X }, end: G + 2 };
     }
-    K === T0 && V + 1 < Z && V++, V++;
+    K === y0 && G + 1 < Z && G++, G++;
   }
   return null;
 }
-function k4($, Q, Z) {
-  return $ < U9 ? !!(R$($) & $9) : K4.test(Q[Z]);
+function l$($, Q, Z) {
+  return $ < n5 ? !!(n9($) & p5) : P$.test(Q[Z]);
 }
-function x4($, Q, Z) {
-  return $ < U9 ? !!(R$($) & h5) : J4.test(Q[Z]);
+function r$($, Q, Z) {
+  return $ < n5 ? !!(n9($) & E5) : b$.test(Q[Z]);
 }
-function QZ($, Q, Z) {
-  var X = $.charCodeAt(Q);
-  if (X !== P0 && X !== O0) return null;
-  var Y = l5($, Q, Z, X);
+function Q6($, Q, Z) {
+  var V = $.charCodeAt(Q);
+  if (V !== _0 && V !== H0) return null;
+  var Y = C5($, Q, Z, V);
   if (Y === 0) return null;
-  var V = Q > 0 ? $.charCodeAt(Q - 1) : 32, K = Q + Y < Z ? $.charCodeAt(Q + Y) : 32, J = x4(V, $, Q - 1), G = x4(K, $, Q + Y), U = Q > 0 ? k4(V, $, Q - 1) : false, W = Q + Y < Z ? k4(K, $, Q + Y) : false, z = !G && (!W || J || U), H = !J && (!U || G || W), F, M;
-  return X === P0 ? (F = z, M = H) : (F = z && (!H || U), M = H && (!z || W)), { len: Y, canOpen: F, canClose: M };
+  var G = Q > 0 ? $.charCodeAt(Q - 1) : 32, K = Q + Y < Z ? $.charCodeAt(Q + Y) : 32, J = r$(G, $, Q - 1), X = r$(K, $, Q + Y), U = Q > 0 ? l$(G, $, Q - 1) : false, q2 = Q + Y < Z ? l$(K, $, Q + Y) : false, W = !X && (!q2 || J || U), z = !J && (!U || X || q2), F, D;
+  return V === _0 ? (F = W, D = z) : (F = W && (!z || U), D = z && (!W || q2)), { len: Y, canOpen: F, canClose: D };
 }
-function XZ($, Q, Z, X) {
+function V6($, Q, Z, V) {
   if (Q.length !== 0) {
-    for (var Y = $.length, V = Array(Y), K = null, J = null, G = 0; G < Y; G++) {
-      var U = { node: $[G], prev: J, next: null };
-      J ? J.next = U : K = U, V[G] = U, J = U;
+    for (var Y = $.length, G = Array(Y), K = null, J = null, X = 0; X < Y; X++) {
+      var U = { node: $[X], prev: J, next: null };
+      J ? J.next = U : K = U, G[X] = U, J = U;
     }
-    for (var W = Array(Q.length), z = 0; z < Q.length; z++) W[z] = V[Q[z].idx];
-    for (var H = [], F = 0; F < 12; F++) H[F] = -1;
-    for (var M = 0; M < Q.length; ) {
-      var j = Q[M];
-      if (!(j.active && j.canClose)) {
-        M++;
+    for (var q2 = Array(Q.length), W = 0; W < Q.length; W++) q2[W] = G[Q[W].idx];
+    for (var z = [], F = 0; F < 12; F++) z[F] = -1;
+    for (var D = 0; D < Q.length; ) {
+      var O = Q[D];
+      if (!O.active || !O.canClose) {
+        D++;
         continue;
       }
-      for (var _ = j.ch === P0 ? 0 : 1, q2 = _ * 6 + j.len % 3 * 2 + (j.canOpen ? 1 : 0), D = H[q2] === void 0 ? -1 : H[q2], A = -1, N = M - 1; N > D; N--) {
-        var L = Q[N];
-        if (!(!L.active || L.ch !== j.ch || !L.canOpen) && !((j.canOpen || L.canClose) && (L.len + j.len) % 3 === 0 && L.len % 3 !== 0)) {
-          A = N;
+      for (var H = O.ch === _0 ? 0 : 1, B = H * 6 + O.len % 3 * 2 + (O.canOpen ? 1 : 0), M = z[B] !== void 0 ? z[B] : -1, j = -1, w = D - 1; w > M; w--) {
+        var I = Q[w];
+        if (!(!I.active || I.ch !== O.ch || !I.canOpen) && !((O.canOpen || I.canClose) && (I.len + O.len) % 3 === 0 && I.len % 3 !== 0)) {
+          j = w;
           break;
         }
       }
-      if (A < 0) {
-        H[q2] = M - 1, !j.canOpen && (j.active = false), M++;
+      if (j < 0) {
+        z[B] = D - 1, !O.canOpen && (O.active = false), D++;
         continue;
       }
-      var O = Q[A], P = O.len >= 2 && j.len >= 2, v2 = P ? 2 : 1;
-      O.len -= v2, j.len -= v2;
-      var b = W[A], k = W[M], x = b.node, T = k.node;
-      x.text = x.text.slice(0, x.text.length - v2), T.text = T.text.slice(v2);
-      for (var f = [], y = b.next; y && y !== k; ) f.push(y.node), y = y.next;
-      var C = { type: B.textFormatted, tag: P ? "strong" : "em", children: f }, E = { node: C, prev: b, next: k };
-      b.next = E, k.prev = E;
-      for (var S = A + 1; S < M; S++) Q[S].active = false;
-      if (O.len === 0 && (O.active = false, x.text === "")) {
-        var s = b.prev;
-        E.prev = s, s ? s.next = E : K = E;
+      var A = Q[j], k = A.len >= 2 && O.len >= 2, S = k ? 2 : 1;
+      A.len -= S, O.len -= S;
+      var R = q2[j], N = q2[D], T = R.node, L = N.node;
+      T.text = T.text.slice(0, T.text.length - S), L.text = L.text.slice(S);
+      for (var u = [], x = R.next; x && x !== N; ) u.push(x.node), x = x.next;
+      var g = { type: _.textFormatted, tag: k ? "strong" : "em", children: u }, P = { node: g, prev: R, next: N };
+      R.next = P, N.prev = P;
+      for (var C = j + 1; C < D; C++) Q[C].active = false;
+      if (A.len === 0 && (A.active = false, T.text === "")) {
+        var d = R.prev;
+        P.prev = d, d ? d.next = P : K = P;
       }
-      if (j.len === 0) {
-        if (j.active = false, T.text === "") {
-          var X0 = k.next;
-          E.next = X0, X0 && (X0.prev = E);
+      if (O.len === 0) {
+        if (O.active = false, L.text === "") {
+          var f = N.next;
+          P.next = f, f && (f.prev = P);
         }
       } else continue;
-      M++;
+      D++;
     }
-    for (var I0 = 0, d = K; d; ) {
-      var u0 = d.node;
-      if (u0.type === B.text) {
-        var B0 = u0;
-        if (B0.text === "") {
-          d = d.next;
+    for (var U0 = 0, n = K; n; ) {
+      var m0 = n.node;
+      if (m0.type === _.text) {
+        var x0 = m0;
+        if (x0.text === "") {
+          n = n.next;
           continue;
         }
-        if (I0 > 0 && $[I0 - 1].type === B.text) {
-          $[I0 - 1].text += B0.text, d = d.next;
+        if (U0 > 0 && $[U0 - 1].type === _.text) {
+          $[U0 - 1].text += x0.text, n = n.next;
           continue;
         }
       }
-      $[I0++] = u0, d = d.next;
+      $[U0++] = m0, n = n.next;
     }
-    $.length = I0;
+    $.length = U0;
   }
 }
-function m9($, Q, Z, X) {
-  return Q($, Z, X) === null ? null : $;
-}
-var E4 = 0;
-var v$ = 0;
-var g4 = 0;
-var I$ = 0;
-var C4 = 0;
-var N$ = 0;
-var H$ = 0;
-var O5 = 0;
-function YZ() {
-  return H$ === 2147483647 && (v$ = 0, I$ = 0, N$ = 0, c9 = 0, H$ = 0), ++H$;
-}
-var M$ = null;
-var c9 = 0;
-var u9 = [];
-var O$ = 256;
-function f4($, Q, Z, X, Y) {
-  let V = $.charCodeAt(Q) === c0, K = V ? Q + 1 : Q;
-  if ($.charCodeAt(K) !== A0 || I$ === O5 && K >= g4) return null;
-  var J = c9 === O5 ? M$ : null, G = J === null ? 0 : J[K];
-  if (G < 0) return null;
-  var U = G;
-  if (G === 0) {
-    var W = $.indexOf("]", K + 1);
-    if (W < 0 || W >= Z) return g4 = K, I$ = O5, null;
-    U = K + 1;
-    var z = 0;
-    u9[z++] = K;
-    for (var H = Z - K >= O$; U < Z && z > 0; ) {
-      var F = $.charCodeAt(U);
-      if (F === T0 && U + 1 < Z) {
-        U += 2;
+function o$($, Q, Z, V, Y) {
+  let G = $.charCodeAt(Q) === p0, K = G ? Q + 1 : Q;
+  if ($.charCodeAt(K) !== A0) return null;
+  var J = $.indexOf("]", K + 1);
+  if (J < 0 || J >= Z) return null;
+  for (var X = K + 1, U = -1, q2 = 1; X < Z && q2 > 0; ) {
+    var W = $.charCodeAt(X);
+    if (W === y0 && X + 1 < Z) {
+      X += 2;
+      continue;
+    }
+    if (W === $0) {
+      var z = s9($, X, Z);
+      if (z > X) {
+        X = z;
         continue;
       }
-      if (F === Z0) {
-        var M = b$($, U, Z);
-        if (M > U) {
-          U = M;
-          continue;
-        }
-      }
-      if (F === Y0) {
-        var j = i4($, U, Z);
-        if (j) {
-          U = j.end;
-          continue;
-        }
-        var _ = e6($, U, Z);
-        if (_ > U) {
-          U = _;
-          continue;
-        }
-      }
-      if (F === A0) u9[z++] = U;
-      else if (F === J5) {
-        var q2 = u9[--z];
-        J === null && H && U - K >= O$ && (J = M$ = new Int32Array(Z), c9 = O5), J !== null && (J[q2] = U + 1);
-      }
-      U++;
     }
-    if (z > 0) {
-      if (J === null && H && U - K >= O$ && (J = M$ = new Int32Array(Z), c9 = O5), J !== null) for (; z > 0; ) J[u9[--z]] = -1;
-      return null;
+    if (W === G0) {
+      var F = V4($, X, Z);
+      if (F) {
+        X = F.end;
+        continue;
+      }
+      var D = e4($, X, Z);
+      if (D > X) {
+        X = D;
+        continue;
+      }
     }
+    W === A0 ? q2++ : W === K5 && q2--, X++;
   }
-  var D = U - 1, A = $.slice(K + 1, D), N = U < Z ? $.charCodeAt(U) : 0, L = false;
-  if (N === z5) {
-    var O = true;
-    for (U++; U < Z && ($.charCodeAt(U) === I || $.charCodeAt(U) === g); ) U++;
-    var P = "", v2 = U;
-    if (U < Z && $.charCodeAt(U) === Y0) {
-      for (U++, v2 = U; v2 < Z && $.charCodeAt(v2) !== l; ) {
-        if ($.charCodeAt(v2) === T0 && v2 + 1 < Z) {
-          v2 += 2;
+  if (q2 !== 0) return null;
+  var O = X - 1, H = $.slice(K + 1, O), B = X < Z ? $.charCodeAt(X) : 0, M = false;
+  if (B === F5) {
+    var j = true;
+    for (X++; X < Z && ($.charCodeAt(X) === v2 || $.charCodeAt(X) === E); ) X++;
+    var w = "", I = X;
+    if (X < Z && $.charCodeAt(X) === G0) {
+      for (X++, I = X; I < Z && $.charCodeAt(I) !== o; ) {
+        if ($.charCodeAt(I) === y0 && I + 1 < Z) {
+          I += 2;
           continue;
         }
-        if ($.charCodeAt(v2) === g) {
-          O = false;
+        if ($.charCodeAt(I) === E) {
+          j = false;
           break;
         }
-        v2++;
+        I++;
       }
-      O && (v2 >= Z || $.charCodeAt(v2) !== l) && (O = false), O && (P = $.slice(U, v2), v2++);
-    } else if (O) {
-      var b = v$ === O5 ? E4 : -1;
-      if (b >= 0 && U >= b) O = false;
-      else {
-        for (var k = 0, x = false; v2 < Z; ) {
-          var T = $.charCodeAt(v2);
-          if (T === T0 && v2 + 1 < Z) {
-            v2 += 2;
-            continue;
-          }
-          if (T === z5) k++;
-          else if (T === F5) {
-            if (x = true, k === 0) break;
-            k--;
-          } else if (T === I || T === g) break;
-          v2++;
+      j && (I >= Z || $.charCodeAt(I) !== o) && (j = false), j && (w = $.slice(X, I), I++);
+    } else if (j) if (V.g !== void 0 && X >= V.g) j = false;
+    else {
+      for (var A = 0, k = false; I < Z; ) {
+        var S = $.charCodeAt(I);
+        if (S === y0 && I + 1 < Z) {
+          I += 2;
+          continue;
         }
-        v2 >= Z && !x && (b < 0 || U < b) && (E4 = U, v$ = O5), P = $.slice(U, v2);
+        if (S === F5) A++;
+        else if (S === q5) {
+          if (k = true, A === 0) break;
+          A--;
+        } else if (S === v2 || S === E) break;
+        I++;
       }
+      I >= Z && !k && (V.g === void 0 || X < V.g) && (V.g = X), w = $.slice(X, I);
     }
-    if (O) {
-      for (U = v2; U < Z && ($.charCodeAt(U) === I || $.charCodeAt(U) === g); ) U++;
-      var f;
-      if (U < Z) {
-        var y = $.charCodeAt(U);
-        if (y === T5 || y === f5 || y === z5) {
-          var C = y === z5 ? 41 : y;
-          U++;
-          for (var E = U; U < Z && $.charCodeAt(U) !== C; ) $.charCodeAt(U) === T0 && U + 1 < Z && U++, U++;
-          U >= Z ? O = false : (f = $.slice(E, U), U++);
+    if (j) {
+      for (X = I; X < Z && ($.charCodeAt(X) === v2 || $.charCodeAt(X) === E); ) X++;
+      var R;
+      if (X < Z) {
+        var N = $.charCodeAt(X);
+        if (N === v5 || N === S5 || N === F5) {
+          var T = N === F5 ? 41 : N;
+          X++;
+          for (var L = X; X < Z && $.charCodeAt(X) !== T; ) $.charCodeAt(X) === y0 && X + 1 < Z && X++, X++;
+          X >= Z ? j = false : (R = $.slice(L, X), X++);
         }
       }
-      if (O) {
-        for (; U < Z && ($.charCodeAt(U) === I || $.charCodeAt(U) === g); ) U++;
-        (U >= Z || $.charCodeAt(U) !== F5) && (O = false);
+      if (j) {
+        for (; X < Z && ($.charCodeAt(X) === v2 || $.charCodeAt(X) === E); ) X++;
+        (X >= Z || $.charCodeAt(X) !== q5) && (j = false);
       }
     }
-    if (O) {
-      if (U++, P = I5(q9(P)), f !== void 0 && (f = I5(q9(f))), V) {
-        var S = R5(A, 0, A.length, X, Y), s = o9(S);
-        return { node: { type: B.image, target: m9(P, Y?.sanitizer || H5, "img", "src"), alt: s, title: f }, end: U };
+    if (j) {
+      X++, w = e5(w), R !== void 0 && (R = s5(e5(R)));
+      var u = Y?.sanitizer || c5, x = u(w, G ? "img" : "a", G ? "src" : "href"), g = x === null ? null : w;
+      if (G) {
+        var P = D5(H, 0, H.length, V, Y), C = a9(P);
+        return { node: { type: _.image, target: g, alt: C, title: R }, end: X };
+      } else {
+        var d = V.inAnchor;
+        V.inAnchor = true;
+        var f = d ? [{ type: _.text, text: H }] : D5(H, 0, H.length, V, Y);
+        return V.inAnchor = d, !V.inAnchor && i9(f) ? null : { node: { type: _.link, target: g, title: R, children: f }, end: X };
       }
-      var X0 = X.inAnchor;
-      X.inAnchor = true;
-      var m = X0 ? [{ type: B.text, text: A }] : R5(A, 0, A.length, X, Y);
-      return X.inAnchor = X0, !X.inAnchor && P$(m) ? null : { node: { type: B.link, target: m9(P, Y?.sanitizer || H5, "a", "href"), title: f, children: m }, end: U };
-    }
-    U = D + 1, L = true;
+    } else X = O + 1, M = true;
   }
-  var I0 = "", d = U;
-  if (!L && N === A0) {
-    var u0 = U + 1;
-    d = u0;
-    for (var B0 = false; d < Z && $.charCodeAt(d) !== J5; ) {
-      if ($.charCodeAt(d) === T0 && d + 1 < Z) {
-        d += 2;
+  var U0 = "", n = X;
+  if (!M && B === A0) {
+    var m0 = X + 1;
+    n = m0;
+    for (var x0 = false; n < Z && $.charCodeAt(n) !== K5; ) {
+      if ($.charCodeAt(n) === y0 && n + 1 < Z) {
+        n += 2;
         continue;
       }
-      if ($.charCodeAt(d) === A0) {
-        B0 = true;
+      if ($.charCodeAt(n) === A0) {
+        x0 = true;
         break;
       }
-      d++;
+      n++;
     }
-    if (B0 || d >= Z) return null;
-    var W0 = $.slice(u0, d);
-    if (W0.trim()) I0 = p9(W0);
+    if (x0 || n >= Z) return null;
+    var v0 = $.slice(m0, n);
+    if (v0.trim()) U0 = b9(v0);
     else {
-      if (I4(A)) return null;
-      I0 = p9(A);
+      if (h$(H)) return null;
+      U0 = b9(H);
     }
-    d += 1;
+    n = n + 1;
   } else {
-    if (I4(A)) return null;
-    I0 = p9(A);
+    if (h$(H)) return null;
+    U0 = b9(H);
   }
-  var H0 = X.refs?.[I0];
-  if (!H0) return null;
-  if (V) return { node: { type: B.image, target: m9(H0.target, Y?.sanitizer || H5, "img", "src"), alt: o9(R5(A, 0, A.length, X, Y)), title: H0.title }, end: d };
-  var D0 = X.inAnchor;
-  X.inAnchor = true;
-  var m = D0 ? [{ type: B.text, text: A }] : R5(A, 0, A.length, X, Y);
-  return X.inAnchor = D0, !X.inAnchor && P$(m) ? null : { node: { type: B.link, target: m9(H0.target, Y?.sanitizer || H5, "a", "href"), title: H0.title, children: m }, end: d };
+  var l = V.refs[U0];
+  if (!l) return null;
+  if (G) return { node: { type: _.image, target: l.target, alt: a9(D5(H, 0, H.length, V, Y)), title: l.title }, end: n };
+  var t = V.inAnchor;
+  V.inAnchor = true;
+  var f = t ? [{ type: _.text, text: H }] : D5(H, 0, H.length, V, Y);
+  return V.inAnchor = t, !V.inAnchor && i9(f) ? null : { node: { type: _.link, target: l.target, title: l.title, children: f }, end: n };
 }
-function i4($, Q, Z) {
-  if ($.charCodeAt(Q) !== Y0) return null;
-  for (var X = Q + 1; X < Z; ) {
-    var Y = $.charCodeAt(X);
-    if (Y === l) break;
-    if (Y === I || Y === g || Y === v5 || Y === Y0) return null;
-    X++;
+function V4($, Q, Z) {
+  if ($.charCodeAt(Q) !== G0) return null;
+  for (var V = Q + 1; V < Z; ) {
+    var Y = $.charCodeAt(V);
+    if (Y === o) break;
+    if (Y === v2 || Y === E || Y === _5 || Y === G0) return null;
+    V++;
   }
-  if (X >= Z || $.charCodeAt(X) !== l) return null;
-  var V = $.slice(Q + 1, X), K = V.match(/^([a-zA-Z][a-zA-Z0-9+.-]{1,31}):([^\x00-\x20]*)$/);
-  return K ? { node: { type: B.link, target: V, title: void 0, children: [{ type: B.text, text: V }] }, end: X + 1 } : V.indexOf("@") !== -1 && /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(V) ? { node: { type: B.link, target: `mailto:${V}`, title: void 0, children: [{ type: B.text, text: V }] }, end: X + 1 } : null;
+  if (V >= Z || $.charCodeAt(V) !== o) return null;
+  var G = $.slice(Q + 1, V), K = G.match(/^([a-zA-Z][a-zA-Z0-9+.-]{1,31}):([^\x00-\x20]*)$/);
+  return K ? { node: { type: _.link, target: G, title: void 0, children: [{ type: _.text, text: G }] }, end: V + 1 } : G.indexOf("@") !== -1 && /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(G) ? { node: { type: _.link, target: "mailto:" + G, title: void 0, children: [{ type: _.text, text: G }] }, end: V + 1 } : null;
 }
-function VZ($, Q, Z, X) {
-  if ($.charCodeAt(Q) !== A0 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== W5 || N$ === O5 && Q >= C4) return null;
+function Y6($, Q, Z, V) {
+  if ($.charCodeAt(Q) !== A0 || Q + 1 >= Z || $.charCodeAt(Q + 1) !== U5) return null;
   let Y = Q + 2;
-  for (; Y < Z && $.charCodeAt(Y) !== J5 && $.charCodeAt(Y) !== g; ) Y++;
-  if (Y >= Z) return C4 = Q, N$ = O5, null;
-  if ($.charCodeAt(Y) !== J5) return null;
-  let V = $.slice(Q + 2, Y);
-  return V ? { node: { type: B.footnoteReference, target: `#${N5(V)}`, text: V }, end: Y + 1 } : null;
+  for (; Y < Z && $.charCodeAt(Y) !== K5 && $.charCodeAt(Y) !== E; ) Y++;
+  if (Y >= Z || $.charCodeAt(Y) !== K5) return null;
+  let G = $.slice(Q + 2, Y);
+  return G ? { node: { type: _.footnoteReference, target: "#" + C0(G), text: G }, end: Y + 1 } : null;
 }
-function KZ($, Q, Z, X) {
-  if (X.disableBareUrls) return null;
-  var Y = "", V = false, K = $.charCodeAt(Q);
-  if (K === A9 || K === 72 ? Q + 8 <= Z && $.charCodeAt(Q + 1) === s5 && $.charCodeAt(Q + 2) === s5 && $.charCodeAt(Q + 3) === x9 && ($.charCodeAt(Q + 4) === Y$ && $.charCodeAt(Q + 5) === m0 && $.charCodeAt(Q + 6) === j0 && $.charCodeAt(Q + 7) === j0 ? Y = "https://" : $.charCodeAt(Q + 4) === m0 && $.charCodeAt(Q + 5) === j0 && $.charCodeAt(Q + 6) === j0 && (Y = "http://")) : K === L5 || K === 70 ? Q + 6 <= Z && $.charCodeAt(Q + 1) === s5 && $.charCodeAt(Q + 2) === x9 && $.charCodeAt(Q + 3) === m0 && $.charCodeAt(Q + 4) === j0 && $.charCodeAt(Q + 5) === j0 && (Y = "ftp://") : (K === C5 || K === 87) && Q + 4 <= Z && $.charCodeAt(Q + 1) === C5 && $.charCodeAt(Q + 2) === C5 && $.charCodeAt(Q + 3) === Q5 && (Y = "www.", V = true), !Y) return null;
+function G6($, Q, Z, V) {
+  if (V.disableBareUrls) return null;
+  var Y = "", G = false, K = $.charCodeAt(Q);
+  if (K === X9 || K === 72 ? Q + 8 <= Z && $.charCodeAt(Q + 1) === h5 && $.charCodeAt(Q + 2) === h5 && $.charCodeAt(Q + 3) === _9 && ($.charCodeAt(Q + 4) === f9 && $.charCodeAt(Q + 5) === f0 && $.charCodeAt(Q + 6) === M0 && $.charCodeAt(Q + 7) === M0 ? Y = "https://" : $.charCodeAt(Q + 4) === f0 && $.charCodeAt(Q + 5) === M0 && $.charCodeAt(Q + 6) === M0 && (Y = "http://")) : K === I5 || K === 70 ? Q + 6 <= Z && $.charCodeAt(Q + 1) === h5 && $.charCodeAt(Q + 2) === _9 && $.charCodeAt(Q + 3) === f0 && $.charCodeAt(Q + 4) === M0 && $.charCodeAt(Q + 5) === M0 && (Y = "ftp://") : (K === k5 || K === 87) && Q + 4 <= Z && $.charCodeAt(Q + 1) === k5 && $.charCodeAt(Q + 2) === k5 && $.charCodeAt(Q + 3) === s0 && (Y = "www.", G = true), !Y) return null;
   let J = Q + Y.length;
   for (; J < Z; ) {
-    let O = $.charCodeAt(J);
-    if (O === I || O === g || O === w || O === v5 || O === Y0 || O === l) break;
+    let A = $.charCodeAt(J);
+    if (A === v2 || A === E || A === b || A === _5 || A === G0 || A === o) break;
     J++;
   }
-  for (var G = 0, U = 0, W = Q; W < J; W++) {
-    var z = $.charCodeAt(W);
-    z === z5 ? G++ : z === F5 && U++;
+  for (var X = 0, U = 0, q2 = Q; q2 < J; q2++) {
+    var W = $.charCodeAt(q2);
+    W === F5 ? X++ : W === q5 && U++;
   }
-  let H = J;
-  for (; H > Q + Y.length; ) {
-    let O = $.charCodeAt(H - 1);
-    if (O === Q5 || O === r$ || O === m0 || O === c0 || O === t5 || O === F5 || O === P0 || O === O0 || O === b0) {
-      if (O === F5) {
-        if (G >= U) break;
+  let z = J;
+  for (; z > Q + Y.length; ) {
+    let A = $.charCodeAt(z - 1);
+    if (A === s0 || A === H$ || A === f0 || A === p0 || A === a5 || A === q5 || A === _0 || A === H0 || A === N0) {
+      if (A === q5) {
+        if (X >= U) break;
         U--;
       }
-      H--;
-    } else if (O === j9) {
-      for (var F = H - 2; F > Q && ($.charCodeAt(F) >= h && $.charCodeAt(F) <= u || $.charCodeAt(F) >= V0 && $.charCodeAt(F) <= q0 || $.charCodeAt(F) >= r && $.charCodeAt(F) <= o); ) F--;
-      F >= Q && $.charCodeAt(F) === O9 ? H = F : H--;
+      z--;
+    } else if (A === U9) {
+      for (var F = z - 2; F > Q && ($.charCodeAt(F) >= h && $.charCodeAt(F) <= c || $.charCodeAt(F) >= K0 && $.charCodeAt(F) <= W0 || $.charCodeAt(F) >= i && $.charCodeAt(F) <= a); ) F--;
+      F >= Q && $.charCodeAt(F) === K9 ? z = F : z--;
     } else break;
   }
-  if (H <= Q + Y.length) return null;
-  var M = Q + (V ? 4 : Y.length), j = $.indexOf("/", M);
-  if ((j < 0 || j > H) && (j = H), V && $.indexOf(".", M) === -1) return null;
-  for (var _ = -1, q2 = -1, D = j - 1; D >= M; D--) if ($.charCodeAt(D) === Q5) if (_ < 0) _ = D;
+  if (z <= Q + Y.length) return null;
+  var D = Q + (G ? 4 : Y.length), O = $.indexOf("/", D);
+  if ((O < 0 || O > z) && (O = z), G && $.indexOf(".", D) === -1) return null;
+  for (var H = -1, B = -1, M = O - 1; M >= D; M--) if ($.charCodeAt(M) === s0) if (H < 0) H = M;
   else {
-    q2 = D;
+    B = M;
     break;
   }
-  for (var A = q2 >= 0 ? q2 + 1 : M, D = A; D < j; D++) if ($.charCodeAt(D) === O0) return null;
-  var N = $.slice(Q, H), L = V ? `http://${N}` : N;
-  return { node: { type: B.link, target: L, title: void 0, children: [{ type: B.text, text: N }] }, end: H };
+  for (var j = B >= 0 ? B + 1 : D, M = j; M < O; M++) if ($.charCodeAt(M) === H0) return null;
+  var w = $.slice(Q, z), I = G ? "http://" + w : w;
+  return { node: { type: _.link, target: I, title: void 0, children: [{ type: _.text, text: w }] }, end: z };
 }
-function JZ($, Q, Z, X) {
-  if (X.disableBareUrls) return null;
-  for (var Y = Q, V = Y; Y < Z; ) {
+function K6($, Q, Z, V) {
+  if (V.disableBareUrls) return null;
+  for (var Y = Q, G = Y; Y < Z; ) {
     var K = $.charCodeAt(Y);
-    if (K >= h && K <= u || K >= V0 && K <= q0 || K >= r && K <= o || K === Q5 || K === c0 || K === V5 || K === 36 || K === M9 || K === O9 || K === f5 || K === P0 || K === y5 || K === j0 || K === K5 || K === t5 || K === W5 || K === O0 || K === Z0 || K === S5 || K === E0 || K === E9 || K === b0 || K === p) Y++;
+    if (K >= h && K <= c || K >= K0 && K <= W0 || K >= i && K <= a || K === s0 || K === p0 || K === Y5 || K === 36 || K === G9 || K === K9 || K === S5 || K === _0 || K === N5 || K === M0 || K === G5 || K === a5 || K === U5 || K === H0 || K === $0 || K === L5 || K === k0 || K === I9 || K === N0 || K === p) Y++;
     else break;
   }
-  if (Y === V || Y >= Z || $.charCodeAt(Y) !== k9) return null;
+  if (Y === G || Y >= Z || $.charCodeAt(Y) !== j9) return null;
   Y++;
-  for (var J = Y, G = -1, U = Y; Y < Z; ) {
+  for (var J = Y, X = -1, U = Y; Y < Z; ) {
     var K = $.charCodeAt(Y);
-    if (K >= h && K <= u || K >= V0 && K <= q0 || K >= r && K <= o) Y++;
-    else if ((K === p || K === O0) && Y > J) Y++;
-    else if (K === Q5) {
+    if (K >= h && K <= c || K >= K0 && K <= W0 || K >= i && K <= a) Y++;
+    else if ((K === p || K === H0) && Y > J) Y++;
+    else if (K === s0) {
       if (Y === J) break;
-      var W = $.charCodeAt(Y - 1);
-      if (W === p || W === O0 || Y - U > 63) break;
+      var q2 = $.charCodeAt(Y - 1);
+      if (q2 === p || q2 === H0 || Y - U > 63) break;
       if (Y + 1 < Z) {
-        var z = $.charCodeAt(Y + 1);
-        if (z >= h && z <= u || z >= V0 && z <= q0 || z >= r && z <= o) G = Y, U = Y + 1, Y++;
+        var W = $.charCodeAt(Y + 1);
+        if (W >= h && W <= c || W >= K0 && W <= W0 || W >= i && W <= a) X = Y, U = Y + 1, Y++;
         else break;
       } else break;
     } else break;
   }
-  if (Y - U > 63 || G < 0) return null;
-  var H = $.charCodeAt(Y - 1);
-  if (!(H >= h && H <= u || H >= V0 && H <= q0 || H >= r && H <= o) || Y <= G + 1) return null;
-  for (var F = -1, M = G - 1; M >= J; M--) if ($.charCodeAt(M) === Q5) {
-    F = M;
+  if (Y - U > 63 || X < 0) return null;
+  var z = $.charCodeAt(Y - 1);
+  if (!(z >= h && z <= c || z >= K0 && z <= W0 || z >= i && z <= a) || Y <= X + 1) return null;
+  for (var F = -1, D = X - 1; D >= J; D--) if ($.charCodeAt(D) === s0) {
+    F = D;
     break;
   }
-  for (var j = F >= 0 ? F + 1 : J, M = j; M < Y; M++) if ($.charCodeAt(M) === O0) return null;
-  var _ = $.slice(Q, Y);
-  return { node: { type: B.link, target: `mailto:${_}`, title: void 0, children: [{ type: B.text, text: _ }] }, end: Y };
+  for (var O = F >= 0 ? F + 1 : J, D = O; D < Y; D++) if ($.charCodeAt(D) === H0) return null;
+  var H = $.slice(Q, Y);
+  return { node: { type: _.link, target: "mailto:" + H, title: void 0, children: [{ type: _.text, text: H }] }, end: Y };
 }
-function P$($) {
-  for (var Q = 0; Q < $.length; Q++) if ($[Q].type === B.link || "children" in $[Q] && Array.isArray($[Q].children) && P$($[Q].children)) return true;
+function i9($) {
+  for (var Q = 0; Q < $.length; Q++) if ($[Q].type === _.link || "children" in $[Q] && Array.isArray($[Q].children) && i9($[Q].children)) return true;
   return false;
 }
-function o9($, Q) {
-  for (var Z = "", X = 0; X < $.length; X++) {
-    var Y = $[X];
-    Y.type === B.text ? Z += Y.text : Y.type === B.breakLine ? Z += " " : Y.type === B.codeInline || Y.type === B.footnoteReference ? Z += Y.text : "children" in Y && Array.isArray(Y.children) ? Z += o9(Y.children, Q) : !Q && Y.type === B.image && (Z += Y.alt || "");
+function a9($) {
+  for (var Q = "", Z = 0; Z < $.length; Z++) {
+    var V = $[Z];
+    V.type === _.text ? Q += V.text : V.type === _.breakLine ? Q += " " : V.type === _.codeInline ? Q += V.text : "children" in V && Array.isArray(V.children) ? Q += a9(V.children) : V.type === _.image && (Q += V.alt || "");
   }
-  return Z;
+  return Q;
 }
-function w$($, Q, Z) {
-  for (var X = 0; X < $.length; X++) {
-    var Y = $[X];
-    if (Y.type === B.heading) {
-      var V = Y;
-      V.id = u6(Z(o9(V.children, true)), Q);
+function r5($) {
+  return { type: _.text, text: $ };
+}
+function J6($, Q, Z) {
+  var V = Q + 1;
+  if (V >= Z) return -1;
+  if ($.charCodeAt(V) === Y5) {
+    V++;
+    var Y = V < Z && ($.charCodeAt(V) === O$ || $.charCodeAt(V) === B$);
+    Y && V++;
+    for (var G = V, K = Y ? 6 : 7; V < Z && V - G <= K; ) {
+      var J = $.charCodeAt(V), X = J >= i && J <= a || Y && (J >= h && J <= J9 || J >= K0 && J <= I5);
+      if (!X) break;
+      V++;
     }
-    if ("children" in Y) {
-      var K = Y.children;
-      Array.isArray(K) && w$(K, Q, Z);
-    }
-    if ((Y.type === B.orderedList || Y.type === B.unorderedList) && Array.isArray(Y.items)) for (var J = Y.items, G = 0; G < J.length; G++) w$(J[G], Q, Z);
+    return V === G || V - G > K ? -1 : V < Z && $.charCodeAt(V) === U9 ? V + 1 : -1;
   }
-}
-function X9($) {
-  return { type: B.text, text: $ };
-}
-function UZ($, Q, Z) {
-  var X = Q + 1;
-  if (X >= Z) return -1;
-  if ($.charCodeAt(X) === V5) {
-    X++;
-    var Y = X < Z && ($.charCodeAt(X) === V$ || $.charCodeAt(X) === K$);
-    Y && X++;
-    for (var V = X, K = Y ? 6 : 7; X < Z && X - V <= K; ) {
-      var J = $.charCodeAt(X), G = J >= r && J <= o || Y && (J >= h && J <= D9 || J >= V0 && J <= L5);
-      if (!G) break;
-      X++;
-    }
-    return X === V || X - V > K ? -1 : X < Z && $.charCodeAt(X) === j9 ? X + 1 : -1;
-  }
-  for (var U = X; X < Z && X - U < 48; ) {
-    var W = $.charCodeAt(X);
-    if (W >= h && W <= u || W >= V0 && W <= q0 || W >= r && W <= o) {
-      X++;
+  for (var U = V; V < Z && V - U < 48; ) {
+    var q2 = $.charCodeAt(V);
+    if (q2 >= h && q2 <= c || q2 >= K0 && q2 <= W0 || q2 >= i && q2 <= a) {
+      V++;
       continue;
     }
     break;
   }
-  return X === U ? -1 : X < Z && $.charCodeAt(X) === j9 ? X + 1 : -1;
+  return V === U ? -1 : V < Z && $.charCodeAt(V) === U9 ? V + 1 : -1;
 }
-function GZ($, Q, Z, X, Y) {
-  if ($.charCodeAt(Q) !== Y0) return null;
-  var V = Q + 1;
-  if (V >= Z) return null;
-  var K = $.charCodeAt(V);
-  if (K === c0 && V + 1 < Z && $.charCodeAt(V + 1) === p && V + 2 < Z && $.charCodeAt(V + 2) === p) {
-    var J = V + 3;
-    if (J < Z && $.charCodeAt(J) === l) return { node: { type: B.htmlComment, text: "", s: true }, end: J + 1 };
-    if (J + 1 < Z && $.charCodeAt(J) === p && $.charCodeAt(J + 1) === l) return { node: { type: B.htmlComment, text: "-", s: true }, end: J + 2 };
-    var G = $.indexOf("-->", J);
-    return G !== -1 && G <= Z - 3 ? { node: { type: B.htmlComment, text: $.slice(Q + 4, G), s: false }, end: G + 3 } : null;
+function X6($, Q, Z, V, Y) {
+  if ($.charCodeAt(Q) !== G0) return null;
+  var G = Q + 1;
+  if (G >= Z) return null;
+  var K = $.charCodeAt(G);
+  if (K === p0 && G + 1 < Z && $.charCodeAt(G + 1) === p && G + 2 < Z && $.charCodeAt(G + 2) === p) {
+    var J = G + 3;
+    if (J < Z && $.charCodeAt(J) === o) return { node: { type: _.htmlComment, text: "", l: true }, end: J + 1 };
+    if (J + 1 < Z && $.charCodeAt(J) === p && $.charCodeAt(J + 1) === o) return { node: { type: _.htmlComment, text: "-", l: true }, end: J + 2 };
+    var X = $.indexOf("-->", J);
+    return X !== -1 && X <= Z - 3 ? { node: { type: _.htmlComment, text: $.slice(Q + 4, X), l: false }, end: X + 3 } : null;
   }
-  if (K === t5) {
-    var U = $.indexOf("?>", V + 1);
-    return U !== -1 && U < Z ? { node: { type: B.htmlSelfClosing, tag: "?", attrs: {}, m: $.slice(Q, U + 2), a: false }, end: U + 2 } : null;
+  if (K === a5) {
+    var U = $.indexOf("?>", G + 1);
+    return U !== -1 && U < Z ? { node: { type: _.htmlSelfClosing, tag: "?", attrs: {}, a: $.slice(Q, U + 2), b: false }, end: U + 2 } : null;
   }
-  if (K === c0 && V + 1 < Z) {
-    var W = $.charCodeAt(V + 1);
-    if (W === A0 && $.slice(V + 1, V + 8) === "[CDATA[") {
-      var z = $.indexOf("]]>", V + 8);
-      return z !== -1 && z < Z ? { node: { type: B.htmlSelfClosing, tag: "![CDATA[", attrs: {}, m: $.slice(Q, z + 3), a: false }, end: z + 3 } : null;
+  if (K === p0 && G + 1 < Z) {
+    var q2 = $.charCodeAt(G + 1);
+    if (q2 === A0 && $.slice(G + 1, G + 8) === "[CDATA[") {
+      var W = $.indexOf("]]>", G + 8);
+      return W !== -1 && W < Z ? { node: { type: _.htmlSelfClosing, tag: "![CDATA[", attrs: {}, a: $.slice(Q, W + 3), b: false }, end: W + 3 } : null;
     }
-    if (W >= h && W <= u) {
-      var H = $.indexOf(">", V + 2);
-      return H !== -1 && H < Z ? { node: { type: B.htmlSelfClosing, tag: `!${$.slice(V + 1, H)}`, attrs: {}, m: $.slice(Q, H + 1), a: false }, end: H + 1 } : null;
+    if (q2 >= h && q2 <= c) {
+      var z = $.indexOf(">", G + 2);
+      return z !== -1 && z < Z ? { node: { type: _.htmlSelfClosing, tag: "!" + $.slice(G + 1, z), attrs: {}, a: $.slice(Q, z + 1), b: false }, end: z + 1 } : null;
     }
   }
-  if (K === j0) {
-    var F = V + 1;
+  if (K === M0) {
+    var F = G + 1;
     if (F >= Z) return null;
-    var M = $.charCodeAt(F);
-    if (!(M >= h && M <= u || M >= V0 && M <= q0)) return null;
+    var D = $.charCodeAt(F);
+    if (!(D >= h && D <= c || D >= K0 && D <= W0)) return null;
     for (F++; F < Z; ) {
-      var j = $.charCodeAt(F);
-      if (j >= h && j <= u || j >= V0 && j <= q0 || j >= r && j <= o || j === p) F++;
+      var O = $.charCodeAt(F);
+      if (O >= h && O <= c || O >= K0 && O <= W0 || O >= i && O <= a || O === p) F++;
       else break;
     }
-    for (; F < Z && ($.charCodeAt(F) === I || $.charCodeAt(F) === w || $.charCodeAt(F) === g); ) F++;
-    if (F < Z && $.charCodeAt(F) === l) {
-      var _ = $.slice(V + 1, F).trim();
-      return { node: { type: B.htmlSelfClosing, tag: _, attrs: {}, h: $.slice(Q, F + 1), a: true }, end: F + 1 };
+    for (; F < Z && ($.charCodeAt(F) === v2 || $.charCodeAt(F) === b || $.charCodeAt(F) === E); ) F++;
+    if (F < Z && $.charCodeAt(F) === o) {
+      var H = $.slice(G + 1, F).trim();
+      return { node: { type: _.htmlSelfClosing, tag: H, attrs: {}, a: $.slice(Q, F + 1), b: true }, end: F + 1 };
     }
     return null;
   }
-  if (!(K >= h && K <= u || K >= V0 && K <= q0)) return null;
-  var q2 = w5($, Q);
-  if (!q2) return null;
-  var D = q2.tag, A = D.toLowerCase(), N = q2.n;
-  if (N || Q9(D)) return { node: { type: B.htmlSelfClosing, tag: D, attrs: P5(q2.attrs, D, Y), m: q2.q ? A$(q2) : $.slice(Q, q2.end), a: false }, end: q2.end };
-  var L = N9.has(A), O = _$($.slice(0, Z), q2.end, D);
-  if (O === -1) return { node: { type: B.htmlSelfClosing, tag: D, attrs: P5(q2.attrs, D, Y), m: q2.q ? A$(q2) : $.slice(Q, q2.end), a: false }, end: q2.end };
-  var P = o6($, `</${A}`, O), v2 = $.slice(q2.end, P);
-  if (L) {
-    var b = G5(v2);
-    return { node: { type: B.htmlBlock, tag: D, attrs: P5(q2.attrs, D, Y), b: q2.g + q2.b, children: [], e: b || void 0, h: $.slice(P, O), text: b, c: true, a: false }, end: O };
-  }
-  var k = [], x = v2.trim();
-  if (x) {
-    var { inAnchor: T, inline: f, k: y } = X;
-    A === "a" && (X.inAnchor = true), X.k = false;
-    var C = x.indexOf(`
+  if (!(K >= h && K <= c || K >= K0 && K <= W0)) return null;
+  var B = w5($, Q);
+  if (!B) return null;
+  var M = B.tag, j = M.toLowerCase(), w = B.selfClosing;
+  if (w || l5(M)) return { node: { type: _.htmlSelfClosing, tag: M, attrs: b5(B.attrs, M, Y), a: $.slice(Q, B.end), b: false }, end: B.end };
+  var I = z9.has(j), A = o9($.slice(0, Z), B.end, M);
+  if (A === -1) return { node: { type: _.htmlSelfClosing, tag: M, attrs: b5(B.attrs, M, Y), a: $.slice(Q, B.end), b: false }, end: B.end };
+  var k = o4($, "</" + j, A), S = $.slice(B.end, k), R = [];
+  if (I) S.trim() && (R = [{ type: _.text, text: S }]);
+  else {
+    var N = S.trim();
+    if (N) {
+      var { inAnchor: T, inline: L, e: u } = V;
+      j === "a" && (V.inAnchor = true), V.e = false;
+      var x = N.indexOf(`
 
-`) !== -1 || /^#{1,6}\s/.test(x);
-    C ? (X.inline = false, k = c5(x, X, Y)) : k = R5(x, 0, x.length, X, Y), X.inAnchor = T, X.inline = f, X.k = y;
+`) !== -1 || /^#{1,6}\s/.test(N);
+      x ? (V.inline = false, R = f5(N, V, Y)) : R = D5(N, 0, N.length, V, Y), V.inAnchor = T, V.inline = L, V.e = u;
+    }
   }
-  return { node: { type: B.htmlBlock, tag: D, attrs: P5(q2.attrs, D, Y), b: q2.b, children: k, text: G5(v2), c: false, a: false }, end: O };
+  return { node: { type: _.htmlBlock, tag: M, attrs: b5(B.attrs, M, Y), i: B.rawAttrs, children: R, a: void 0, text: S, d: false, b: false }, end: A };
 }
-var qZ = 200;
-var _9 = 0;
-function R5($, Q, Z, X, Y) {
-  if (_9++, _9 > qZ) return _9--, [{ type: B.text, text: $.slice(Q, Z) }];
-  var V = O5;
-  O5 = YZ();
-  let K = X;
+var U6 = 200;
+var q9 = 0;
+function D5($, Q, Z, V, Y) {
+  if (q9++, q9 > U6) return q9--, [{ type: _.text, text: $.slice(Q, Z) }];
+  var G = V.g;
+  V.g = void 0;
+  let K = V;
   if (Y.optimizeForStreaming) {
-    let $0 = function(t, d0) {
-      for (var n0 = 1, $5 = d0 + 1; $5 < t.length; $5++) {
-        var l0 = t.charCodeAt($5);
-        if (l0 === A0) n0++;
-        else if (l0 === J5 && (n0--, n0 === 0)) return $5;
+    let M5 = function(D0, S0) {
+      for (var L0 = 1, h0 = S0 + 1; h0 < D0.length; h0++) {
+        var Q5 = D0.charCodeAt(h0);
+        if (Q5 === A0) L0++;
+        else if (Q5 === K5 && (L0--, L0 === 0)) return h0;
       }
       return -1;
-    }, R = $.slice(Q, Z), J0 = R;
-    for (var J = 0, G = 0, U = 0, W = 0, z = 0, H = -1, F = -1, M = -1, j = -1, _ = -1, q2 = 0; q2 < R.length; q2++) {
-      var D = R.charCodeAt(q2);
-      D === P0 ? q2 + 1 < R.length && R.charCodeAt(q2 + 1) === P0 ? (J++, H = q2, q2++) : (G++, F = q2) : D === O0 ? q2 + 1 < R.length && R.charCodeAt(q2 + 1) === O0 ? (U++, M = q2, q2++) : (W++, j = q2) : D === b0 && q2 + 1 < R.length && R.charCodeAt(q2 + 1) === b0 && (z++, _ = q2, q2++);
+    }, y = $.slice(Q, Z), F0 = y;
+    for (var J = 0, X = 0, U = 0, q2 = 0, W = 0, z = -1, F = -1, D = -1, O = -1, H = -1, B = 0; B < y.length; B++) {
+      var M = y.charCodeAt(B);
+      M === _0 ? B + 1 < y.length && y.charCodeAt(B + 1) === _0 ? (J++, z = B, B++) : (X++, F = B) : M === H0 ? B + 1 < y.length && y.charCodeAt(B + 1) === H0 ? (U++, D = B, B++) : (q2++, O = B) : M === N0 && B + 1 < y.length && y.charCodeAt(B + 1) === N0 && (W++, H = B, B++);
     }
-    var A = [];
-    z % 2 === 1 && _ >= 0 && A.push([_, 2]), U % 2 === 1 && M >= 0 && A.push([M, 2]), W % 2 === 1 && j >= 0 && A.push([j, 1]), J % 2 === 1 && H >= 0 && A.push([H, 2]), G % 2 === 1 && F >= 0 && A.push([F, 1]), A.sort((t, d0) => d0[0] - t[0]);
-    for (var N = 0; N < A.length; N++) {
-      var L = A[N][0], O = A[N][1];
-      R = R.slice(0, L) + R.slice(L + O);
+    var j = [];
+    W % 2 === 1 && H >= 0 && j.push([H, 2]), U % 2 === 1 && D >= 0 && j.push([D, 2]), q2 % 2 === 1 && O >= 0 && j.push([O, 1]), J % 2 === 1 && z >= 0 && j.push([z, 2]), X % 2 === 1 && F >= 0 && j.push([F, 1]), j.sort(function(D0, S0) {
+      return S0[0] - D0[0];
+    });
+    for (var w = 0; w < j.length; w++) {
+      var I = j[w][0], A = j[w][1];
+      y = y.slice(0, I) + y.slice(I + A);
     }
-    let a0 = 0, q5 = -1;
-    for (let t = 0; t < R.length; t++) R.charCodeAt(t) === Z0 && (a0++, q5 = t);
-    if (a0 % 2 === 1 && q5 !== -1) {
-      let t = false, d0 = -1, n0 = 0;
-      for (; n0 < R.length; ) R.charCodeAt(n0) === Z0 && (t ? (t = false, d0 = -1) : (d0 = n0, t = true)), n0++;
-      t && d0 !== -1 && (R = R.slice(0, d0));
+    let l0 = 0, X5 = -1;
+    for (let D0 = 0; D0 < y.length; D0++) y.charCodeAt(D0) === $0 && (l0++, X5 = D0);
+    if (l0 % 2 === 1 && X5 !== -1) {
+      let D0 = false, S0 = -1, L0 = 0;
+      for (; L0 < y.length; ) y.charCodeAt(L0) === $0 && (D0 ? (D0 = false, S0 = -1) : (S0 = L0, D0 = true)), L0++;
+      D0 && S0 !== -1 && (y = y.slice(0, S0));
     }
-    for (var P = true; P; ) {
-      P = false;
-      for (var v2 = -1, b = -1, k = -1, x = false, T = 0; T < R.length; T++) {
-        var f = R.charCodeAt(T);
-        if (f === A0 && (T === 0 || R.charCodeAt(T - 1) !== T0)) {
-          var y = T > 0 && R.charCodeAt(T - 1) === c0, C = y ? T - 1 : T, E = $0(R, T);
-          if (E === -1) v2 = C, x = y, b = T + 1, k = R.length;
+    for (var k = true; k; ) {
+      k = false;
+      for (var S = -1, R = -1, N = -1, T = false, L = 0; L < y.length; L++) {
+        var u = y.charCodeAt(L);
+        if (u === A0 && (L === 0 || y.charCodeAt(L - 1) !== y0)) {
+          var x = L > 0 && y.charCodeAt(L - 1) === p0, g = x ? L - 1 : L, P = M5(y, L);
+          if (P === -1) S = g, T = x, R = L + 1, N = y.length;
           else {
-            var S = E + 1;
-            if (S >= R.length) v2 = C, x = y, b = T + 1, k = E;
-            else if (R.charCodeAt(S) === z5) {
-              var s = R.indexOf(")", S + 1);
-              s === -1 ? (v2 = C, x = y, b = T + 1, k = E, T = R.length) : T = s;
-            } else if (R.charCodeAt(S) === A0) {
-              var X0 = R.indexOf("]", S + 1);
-              X0 === -1 ? (v2 = C, x = y, b = T + 1, k = E, T = R.length) : T = X0;
-            } else T = E;
+            var C = P + 1;
+            if (C >= y.length) S = g, T = x, R = L + 1, N = P;
+            else if (y.charCodeAt(C) === F5) {
+              var d = y.indexOf(")", C + 1);
+              d === -1 ? (S = g, T = x, R = L + 1, N = P, L = y.length) : L = d;
+            } else if (y.charCodeAt(C) === A0) {
+              var f = y.indexOf("]", C + 1);
+              f === -1 ? (S = g, T = x, R = L + 1, N = P, L = y.length) : L = f;
+            } else L = P;
           }
         }
       }
-      if (v2 >= 0) {
-        var I0 = x ? "" : R.slice(b, k);
-        R = R.slice(0, v2) + I0, P = true;
+      if (S >= 0) {
+        var U0 = T ? "" : y.slice(R, N);
+        y = y.slice(0, S) + U0, k = true;
       }
     }
-    let C0 = R.match(/<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>([^<]*)$/);
-    if (C0 && C0.index !== void 0) {
-      var d = C0[0].length - C0[2].length, u0 = d >= 2 && C0[0].charCodeAt(d - 2) === j0;
-      if (!u0) {
-        for (var B0 = false, W0 = 0, H0 = 0; H0 < C0.index; H0++) R.charCodeAt(H0) === Z0 && W0++;
-        if (B0 = W0 % 2 === 1, !B0) {
-          let t = C0[1];
-          p5(R, `</${t}`, 0) === -1 && (R = R.slice(0, C0.index) + C0[2]);
+    let r0 = y.match(/<([A-Z][A-Za-z0-9]*)(?:\s[^>]*)?>([^<]*)$/);
+    if (r0 && r0.index !== void 0) {
+      var n = r0[0].length - r0[2].length, m0 = n >= 2 && r0[0].charCodeAt(n - 2) === M0;
+      if (!m0) {
+        for (var x0 = false, v0 = 0, l = 0; l < r0.index; l++) y.charCodeAt(l) === $0 && v0++;
+        if (x0 = v0 % 2 === 1, !x0) {
+          let D0 = r0[1];
+          T5(y, "</" + D0, 0) === -1 && (y = y.slice(0, r0.index) + r0[2]);
         }
       }
     }
-    R !== J0 && ($ = $.slice(0, Q) + R, Z = Q + R.length);
+    y !== F0 && ($ = $.slice(0, Q) + y, Z = Q + y.length);
   }
-  let D0 = [];
-  var m = [];
-  let c = Q;
-  var K0 = "", y0 = Y.disableAutoLink || Y.disableBareUrls || K.inAnchor ? -1 : $.indexOf("@", Q);
-  for (y0 >= Z && (y0 = -1); Q < Z; ) {
-    let R = $.charCodeAt(Q), J0 = null;
-    if (R === Z0) {
-      if (J0 = t6($, Q, Z), !J0) {
-        var S0 = l5($, Q, Z, Z0);
-        Q += S0 - 1;
+  let t = [];
+  var b0 = [];
+  let r = Q;
+  var z0 = "", Q0 = Y.disableAutoLink || Y.disableBareUrls || K.inAnchor ? -1 : $.indexOf("@", Q);
+  for (Q0 >= Z && (Q0 = -1); Q < Z; ) {
+    let y = $.charCodeAt(Q), F0 = null;
+    if (y === $0) {
+      if (F0 = t4($, Q, Z), !F0) {
+        var I0 = C5($, Q, Z, $0);
+        Q += I0 - 1;
       }
-    } else if (R === P0 || R === O0) {
-      var _0 = QZ($, Q, Z);
-      if (_0) {
-        if (_0.canOpen || _0.canClose) {
-          (K0 || Q > c) && (D0.push(X9(K0 + $.slice(c, Q))), K0 = "");
-          var a = $.slice(Q, Q + _0.len), w0 = X9(a);
-          m.push({ idx: D0.length, ch: R, len: _0.len, canOpen: _0.canOpen, canClose: _0.canClose, active: true }), D0.push(w0), Q += _0.len, c = Q;
+    } else if (y === _0 || y === H0) {
+      var q0 = Q6($, Q, Z);
+      if (q0) {
+        if (q0.canOpen || q0.canClose) {
+          (z0 || Q > r) && (t.push(r5(z0 + $.slice(r, Q))), z0 = "");
+          var V0 = $.slice(Q, Q + q0.len), O0 = r5(V0);
+          b0.push({ idx: t.length, ch: y, len: q0.len, canOpen: q0.canOpen, canClose: q0.canClose, active: true }), t.push(O0), Q += q0.len, r = Q;
           continue;
         }
-        Q += _0.len - 1;
+        Q += q0.len - 1;
       }
-    } else if (R === b0) J0 = $Z($, Q, Z, K, Y);
-    else if (R === K5) J0 = ZZ($, Q, Z, K, Y);
-    else if (R === A0) Q + 1 < Z && $.charCodeAt(Q + 1) === W5 && (J0 = VZ($, Q, Z, K)), J0 || (J0 = f4($, Q, Z, K, Y));
-    else if (R === c0 && Q + 1 < Z && $.charCodeAt(Q + 1) === A0) J0 = f4($, Q, Z, K, Y);
-    else if (R === Y0) J0 = i4($, Q, Z), !(J0 || Y.disableParsingRawHTML || Y.ignoreHTMLBlocks) && (J0 = GZ($, Q, Z, K, Y));
-    else if (R === O9) {
-      var z0 = UZ($, Q, Z);
-      if (z0 !== -1) {
-        var F0 = $.slice(Q, z0), M0 = I5(F0);
-        if (M0 !== F0) {
-          K0 = K0 + $.slice(c, Q) + M0, Q = z0, c = z0;
+    } else if (y === N0) F0 = $6($, Q, Z, K, Y);
+    else if (y === G5) F0 = Z6($, Q, Z, K, Y);
+    else if (y === A0) Q + 1 < Z && $.charCodeAt(Q + 1) === U5 && (F0 = Y6($, Q, Z, K)), F0 || (F0 = o$($, Q, Z, K, Y));
+    else if (y === p0 && Q + 1 < Z && $.charCodeAt(Q + 1) === A0) F0 = o$($, Q, Z, K, Y);
+    else if (y === G0) F0 = V4($, Q, Z), !F0 && !Y.disableParsingRawHTML && !Y.ignoreHTMLBlocks && (F0 = X6($, Q, Z, K, Y));
+    else if (y === K9) {
+      var m = J6($, Q, Z);
+      if (m !== -1) {
+        var w0 = $.slice(Q, m), g0 = s5(w0);
+        if (g0 !== w0) {
+          z0 = z0 + $.slice(r, Q) + g0, Q = m, r = m;
           continue;
         }
       }
-    } else if ((R === A9 || R === C5 || R === L5) && !K.inAnchor && !Y.disableAutoLink && (Q === 0 || $.charCodeAt(Q - 1) !== Y0)) {
-      var f0 = Q + 1 < Z ? $.charCodeAt(Q + 1) : 0;
-      (R === A9 && f0 === s5 || R === L5 && f0 === s5 || R === C5 && f0 === C5) && (J0 = KZ($, Q, Z, Y));
+    } else if ((y === X9 || y === k5 || y === I5) && !K.inAnchor && !Y.disableAutoLink && (Q === 0 || $.charCodeAt(Q - 1) !== G0)) {
+      var R0 = Q + 1 < Z ? $.charCodeAt(Q + 1) : 0;
+      (y === X9 && R0 === h5 || y === I5 && R0 === h5 || y === k5 && R0 === k5) && (F0 = G6($, Q, Z, Y));
     }
-    if (!J0 && y0 >= 0 && y0 - Q <= 64 && !K.inAnchor && !Y.disableAutoLink && !Y.disableBareUrls && (R >= h && R <= u || R >= V0 && R <= q0 || R >= r && R <= o) && (J0 = JZ($, Q, Z, Y), !J0 && Q >= y0 && (y0 = $.indexOf("@", Q + 1), y0 >= Z && (y0 = -1))), R === g && K.k) {
-      var v0 = false, k0 = 0;
-      if (Q > c && $.charCodeAt(Q - 1) === T0) v0 = true, k0 = 1;
+    if (!F0 && Q0 >= 0 && Q0 - Q <= 64 && !K.inAnchor && !Y.disableAutoLink && !Y.disableBareUrls && (y >= h && y <= c || y >= K0 && y <= W0 || y >= i && y <= a) && (F0 = K6($, Q, Z, Y), !F0 && Q >= Q0 && (Q0 = $.indexOf("@", Q + 1), Q0 >= Z && (Q0 = -1))), y === E && K.e) {
+      var Z5 = false, i0 = 0;
+      if (Q > r && $.charCodeAt(Q - 1) === y0) Z5 = true, i0 = 1;
       else {
-        for (var h0 = 0, p0 = Q - 1; p0 >= c && $.charCodeAt(p0) === I; ) h0++, p0--;
-        h0 >= 2 && (v0 = true, k0 = h0);
+        for (var T0 = 0, e = Q - 1; e >= r && $.charCodeAt(e) === v2; ) T0++, e--;
+        T0 >= 2 && (Z5 = true, i0 = T0);
       }
-      if (v0) {
-        for ((K0 || Q - k0 > c) && (D0.push(X9(K0 + $.slice(c, Q - k0))), K0 = ""), D0.push({ type: B.breakLine }), Q++; Q < Z && $.charCodeAt(Q) === I; ) Q++;
-        c = Q;
+      if (Z5) {
+        for ((z0 || Q - i0 > r) && (t.push(r5(z0 + $.slice(r, Q - i0))), z0 = ""), t.push({ type: _.breakLine }), Q++; Q < Z && $.charCodeAt(Q) === v2; ) Q++;
+        r = Q;
         continue;
       }
-      var n = Q > c && $.charCodeAt(Q - 1) === I, N0 = Q + 1 < Z && $.charCodeAt(Q + 1) === I;
-      if (n || N0) {
-        for (var i = Q; i > c && $.charCodeAt(i - 1) === I; ) i--;
-        for (K0 += `${$.slice(c, i)}
-`, Q++; Q < Z && $.charCodeAt(Q) === I; ) Q++;
-        c = Q;
+      var Y0 = Q > r && $.charCodeAt(Q - 1) === v2, a0 = Q + 1 < Z && $.charCodeAt(Q + 1) === v2;
+      if (Y0 || a0) {
+        for (var B0 = Q; B0 > r && $.charCodeAt(B0 - 1) === v2; ) B0--;
+        for (z0 += $.slice(r, B0) + `
+`, Q++; Q < Z && $.charCodeAt(Q) === v2; ) Q++;
+        r = Q;
         continue;
       }
     }
-    if (J0) (K0 || Q > c) && (D0.push(X9(K0 + $.slice(c, Q))), K0 = ""), D0.push(J0.node), Q = J0.end, c = Q;
+    if (F0) (z0 || Q > r) && (t.push(r5(z0 + $.slice(r, Q))), z0 = ""), t.push(F0.node), Q = F0.end, r = Q;
     else {
-      if (R === T0 && Q + 1 < Z) {
-        let a0 = $.charCodeAt(Q + 1);
-        if (R$(a0) & $9) {
-          (K0 || Q > c) && (D0.push(X9(K0 + $.slice(c, Q))), K0 = ""), D0.push(X9($[Q + 1])), Q += 2, c = Q;
+      if (y === y0 && Q + 1 < Z) {
+        let l0 = $.charCodeAt(Q + 1);
+        if (n9(l0) & p5) {
+          (z0 || Q > r) && (t.push(r5(z0 + $.slice(r, Q))), z0 = ""), t.push(r5($[Q + 1])), Q += 2, r = Q;
           continue;
         }
       }
-      if (Q++, y0 < 0 || y0 - Q > 64) for (; Q < Z && !(y0 >= 0 && y0 - Q <= 64); ) {
-        var x0 = $.charCodeAt(Q);
-        if (x0 < U9 && !u4[x0]) Q++;
+      if (Q++, Q0 < 0 || Q0 - Q > 64) for (; Q < Z && !(Q0 >= 0 && Q0 - Q <= 64); ) {
+        var A5 = $.charCodeAt(Q);
+        if (A5 < n5 && !n$[A5]) Q++;
         else break;
       }
     }
   }
-  return (K0 || Z > c) && (D0.push(X9(K0 + $.slice(c, Z))), K0 = ""), m.length > 0 && XZ(D0, m, X, Y), O5 = V, _9--, D0;
+  return (z0 || Z > r) && (t.push(r5(z0 + $.slice(r, Z))), z0 = ""), b0.length > 0 && V6(t, b0, V, Y), V.g = G, q9--, t;
 }
-var WZ = 500;
-function c5($, Q, Z) {
-  var X = Q.o || 0;
-  if (X > WZ) return [{ type: B.text, text: $ }];
-  Q.o = X + 1;
+var F6 = 500;
+function f5($, Q, Z) {
+  var V = Q.j || 0;
+  if (V > F6) return [{ type: _.text, text: $ }];
+  Q.j = V + 1;
   let Y = Q;
-  if (Z.optimizeForStreaming && !(Q.i || Q.w)) {
-    for (var V = $.length; V > 0 && $.charCodeAt(V - 1) === g; ) V--;
-    for (var K = V; K > 0 && $.charCodeAt(K - 1) !== g; ) K--;
-    if (V > K && $.charCodeAt(K) === E0) {
-      for (var J = false, G = K + 1; G < V; G++) {
-        var U = $.charCodeAt(G);
-        if (U !== I && U !== w && U !== E0 && U !== m0 && U !== p) {
-          J = true;
+  if (Z.optimizeForStreaming && !Q.m) {
+    var G = $.length;
+    G > 0 && $.charCodeAt(G - 1) === E && G--;
+    for (var K = G; K > 0 && $.charCodeAt(K - 1) !== E; ) K--;
+    if (K > 0 && $.charCodeAt(K) === k0) {
+      for (var J = true, X = K; X < G; X++) {
+        var U = $.charCodeAt(X);
+        if (U !== v2 && U !== b && U !== p && U !== f0 && U !== k0) {
+          J = false;
           break;
         }
       }
-      for (var W = false, z = false, H = 0, F = K, M = K - 1; M > 0; ) {
-        for (var j = M; j > 0 && $.charCodeAt(j - 1) !== g; ) j--;
-        if ($.charCodeAt(j) !== E0) break;
-        F = j;
-        for (var _ = true, q2 = false, D = j; D < M; D++) {
-          var A = $.charCodeAt(D);
-          if (A === p) q2 = true;
-          else if (A !== I && A !== w && A !== m0 && A !== E0) {
-            _ = false;
-            break;
-          }
-        }
-        _ && q2 ? (W = true, z = true) : z || H++, M = j - 1;
+      if (J) {
+        for (var q2 = K - 1; q2 > 0 && $.charCodeAt(q2 - 1) !== E; ) q2--;
+        $.charCodeAt(q2) === k0 && ($ = $.slice(0, q2).trimEnd());
       }
-      J ? W || ($ = $.slice(0, K).trimEnd()) : $ = W && H > 0 ? $.slice(0, K).trimEnd() : $.slice(0, F).trimEnd();
     }
-    for (var N = -1, L = -1, O = -1, P = false, v2 = $.length - 1; v2 >= 0; v2--) if ($.charCodeAt(v2) === Y0) {
-      for (var b = v2 + 1 < $.length ? $.charCodeAt(v2 + 1) : 0, k = b >= h && b <= u || b >= V0 && b <= q0, x = b === j0 && v2 + 2 < $.length && ($.charCodeAt(v2 + 2) >= h && $.charCodeAt(v2 + 2) <= u || $.charCodeAt(v2 + 2) >= V0 && $.charCodeAt(v2 + 2) <= q0), T = b === c0 || b === t5, f = $.length; f > v2 + 1 && $.charCodeAt(f - 1) === g; ) f--;
-      var y = v2 + 1 >= f;
-      if (k || x || T || y) {
-        var C = v2 + 1;
-        if ((x || k) && (C = v2 + 2), k || x) for (; C < $.length; ) {
-          var E = $.charCodeAt(C);
-          if (E >= h && E <= u || E >= V0 && E <= q0 || E >= r && E <= o) C++;
+    var W = $.trim(), z = W.lastIndexOf(`
+`), F = z === -1 ? W : W.slice(z + 1);
+    if (F.length > 0 && F.charCodeAt(0) === k0) {
+      for (var D = false, O = false, H = 1; H < F.length; H++) {
+        var B = F.charCodeAt(H);
+        B === k0 && (D = true), B === p && (O = true);
+      }
+      D && O && ($ = z === -1 ? "" : $.slice(0, $.lastIndexOf(F)).trimEnd());
+    }
+    for (var M = -1, j = -1, w = -1, I = $.length - 1; I >= 0; I--) if ($.charCodeAt(I) === G0) {
+      var A = I + 1 < $.length ? $.charCodeAt(I + 1) : 0;
+      if (A >= h && A <= c || A >= K0 && A <= W0) {
+        for (var k = I + 2; k < $.length; ) {
+          var S = $.charCodeAt(k);
+          if (S >= h && S <= c || S >= K0 && S <= W0 || S >= i && S <= a) k++;
           else break;
         }
-        for (var S = k || x ? C : v2 + 2; S < $.length && $.charCodeAt(S) !== l; ) S++;
-        if (S >= $.length) N = v2, P = true;
-        else if ((k || x) && $.charCodeAt(S - 1) !== j0) {
-          for (var s = false, X0 = S + 1; X0 < $.length; X0++) if ($.charCodeAt(X0) === Y0) {
-            s = true;
+        for (var R = k; R < $.length && $.charCodeAt(R) !== o; ) R++;
+        if (R < $.length && $.charCodeAt(R - 1) !== M0) {
+          for (var N = false, T = R + 1; T < $.length; T++) if ($.charCodeAt(T) === G0) {
+            N = true;
             break;
           }
-          s || (N = v2, L = C, O = S + 1);
+          N || (M = I, j = k, w = R + 1);
         }
       }
       break;
     }
-    if (N >= 0) {
-      for (var I0 = 0, d = 0; d < N; d++) $.charCodeAt(d) === Z0 && I0++;
-      if (I0 % 2 === 0) if (P) $ = $.slice(0, N);
-      else {
-        var u0 = $.slice(N + 1, L);
-        p5($, `</${u0}`, 0) === -1 && ($ = $.slice(0, N) + $.slice(O));
+    if (M >= 0) {
+      for (var L = 0, u = 0; u < M; u++) $.charCodeAt(u) === $0 && L++;
+      if (L % 2 === 0) {
+        var x = $.slice(M + 1, j);
+        T5($, "</" + x, 0) === -1 && ($ = $.slice(0, M) + $.slice(w));
       }
     }
-    for (var B0 = $.length; B0 > 0 && $.charCodeAt(B0 - 1) === g; ) B0--;
-    if (B0 > 0) {
-      for (var W0 = B0; W0 > 0 && $.charCodeAt(W0 - 1) !== g; ) W0--;
-      for (var H0 = W0, D0 = 0; H0 < B0 && $.charCodeAt(H0) === I && D0 < 3; ) H0++, D0++;
-      if (W0 > 0 && H0 < B0 && d6($, H0, B0)) {
-        for (var m = W0 - 1, c = m; c > 0 && $.charCodeAt(c - 1) !== g; ) c--;
-        e0($, c, m) || ($ = $.slice(0, W0).trimEnd());
+    for (var g = $.length; g > 0 && $.charCodeAt(g - 1) === E; ) g--;
+    if (g > 0) {
+      for (var P = g; P > 0 && $.charCodeAt(P - 1) !== E; ) P--;
+      for (var C = P, d = 0; C < g && $.charCodeAt(C) === v2 && d < 3; ) C++, d++;
+      if (P > 0 && C < g && p4($, C, g)) {
+        for (var f = P - 1, U0 = f; U0 > 0 && $.charCodeAt(U0 - 1) !== E; ) U0--;
+        e0($, U0, f) || ($ = $.slice(0, P).trimEnd());
       }
     }
-    var K0 = $.length;
-    if (K0 > 0) {
-      for (var y0 = $.lastIndexOf(`
-`), S0 = y0 === -1 ? 0 : y0 + 1, _0 = K0, a = S0, w0 = 0; a < _0 && $.charCodeAt(a) === I && w0 < 3; ) a++, w0++;
-      if (a < _0) {
-        var z0 = $.charCodeAt(a), F0 = false;
-        if (z0 === P0 || z0 === p || z0 === y5) {
-          var M0 = a + 1;
-          if (M0 >= _0 || $.charCodeAt(M0) === I || $.charCodeAt(M0) === w) {
-            for (var f0 = M0; f0 < _0 && ($.charCodeAt(f0) === I || $.charCodeAt(f0) === w); ) f0++;
-            f0 >= _0 && (F0 = true);
+    var n = $.length;
+    if (n > 0) {
+      for (var m0 = $.lastIndexOf(`
+`), x0 = m0 === -1 ? 0 : m0 + 1, v0 = n, l = x0, t = 0; l < v0 && $.charCodeAt(l) === v2 && t < 3; ) l++, t++;
+      if (l < v0) {
+        var b0 = $.charCodeAt(l), r = false;
+        if (b0 === _0 || b0 === p || b0 === N5) {
+          var z0 = l + 1;
+          if (z0 >= v0 || $.charCodeAt(z0) === v2 || $.charCodeAt(z0) === b) {
+            for (var Q0 = z0; Q0 < v0 && ($.charCodeAt(Q0) === v2 || $.charCodeAt(Q0) === b); ) Q0++;
+            Q0 >= v0 && (r = true);
           }
-        } else if (z0 >= r && z0 <= o) {
-          for (var v0 = a; v0 < _0 && $.charCodeAt(v0) >= r && $.charCodeAt(v0) <= o; ) v0++;
-          if (v0 < _0 && ($.charCodeAt(v0) === Q5 || $.charCodeAt(v0) === F5)) {
-            var k0 = v0 + 1;
-            if (k0 >= _0 || $.charCodeAt(k0) === I || $.charCodeAt(k0) === w) {
-              for (var h0 = k0; h0 < _0 && ($.charCodeAt(h0) === I || $.charCodeAt(h0) === w); ) h0++;
-              h0 >= _0 && (F0 = true);
+        } else if (b0 >= i && b0 <= a) {
+          for (var I0 = l; I0 < v0 && $.charCodeAt(I0) >= i && $.charCodeAt(I0) <= a; ) I0++;
+          if (I0 < v0 && ($.charCodeAt(I0) === s0 || $.charCodeAt(I0) === q5)) {
+            var q0 = I0 + 1;
+            if (q0 >= v0 || $.charCodeAt(q0) === v2 || $.charCodeAt(q0) === b) {
+              for (var V0 = q0; V0 < v0 && ($.charCodeAt(V0) === v2 || $.charCodeAt(V0) === b); ) V0++;
+              V0 >= v0 && (r = true);
             }
           }
         }
-        F0 && ($ = $.slice(0, S0).trimEnd());
+        r && ($ = $.slice(0, x0).trimEnd());
       }
     }
   }
-  if (Q.inline) return R5($, 0, $.length, Q, Z);
-  let p0 = [], n = 0, N0 = $.length;
-  if (n === 0 && !Z.disableFrontmatter && $.startsWith("---")) {
-    let $0 = X4($);
-    if ($0?.hasValidYaml) {
+  if (Q.inline) return D5($, 0, $.length, Q, Z);
+  let O0 = [], m = 0, w0 = $.length;
+  if (m === 0 && !Z.disableFrontmatter && $.startsWith("---")) {
+    let Y0 = I$($);
+    if (Y0 && Y0.hasValidYaml) {
       if (Z.preserveFrontmatter !== false) {
-        let C0 = $.slice(0, $0.endPos).trimEnd();
-        p0.push({ type: B.frontmatter, text: C0 });
+        let a0 = $.slice(0, Y0.endPos).trimEnd();
+        O0.push({ type: _.frontmatter, text: a0 });
       }
-      n = $0.endPos;
+      m = Y0.endPos;
     }
   }
-  for (; n < N0; ) {
-    for (var i = $.indexOf(`
-`, n), x0 = i < 0 ? N0 : i; n < N0 && e0($, n, x0); ) n = x0 < N0 ? x0 + 1 : x0, n < N0 && (i = $.indexOf(`
-`, n), x0 = i < 0 ? N0 : i);
-    if (n >= N0) break;
-    var R = $.charCodeAt(n) === g9;
-    L0($, n, x0);
-    let $0 = null;
-    if (j$ = $, B$ = n, d9 = x0, !R && U0 >= 4 && !Q.inHTML) $0 = l6($, n);
-    else if (!R) {
-      let C0 = n + Q0, t = $.charCodeAt(C0);
-      t === V5 ? $0 = p6($, n, Q, Z) : t === l ? $0 = r6($, n, Q, Z) : t === Z0 || t === b0 ? $0 = c6($, n, Q) : t === p || t === P0 || t === O0 ? ($0 = d5($, n), !$0 && ($0 = T4($, n, Q, Z))) : t === y5 || t >= r && t <= o ? $0 = T4($, n, Q, Z) : t === Y0 ? $0 = o4($, n, Q, Z) : t === E0 ? $0 = S4($, n, Q, Z) : t === A0 && ($0 = a6($, n, Q));
+  for (; m < w0; ) {
+    for (var g0 = $.indexOf(`
+`, m), R0 = g0 < 0 ? w0 : g0; m < w0 && e0($, m, R0); ) m = R0 < w0 ? R0 + 1 : R0, m < w0 && (g0 = $.indexOf(`
+`, m), R0 = g0 < 0 ? w0 : g0);
+    if (m >= w0) break;
+    var Z5 = $.charCodeAt(m) === v9;
+    P0($, m, R0);
+    let Y0 = null;
+    if (l9 = $, r9 = m, w9 = R0, !Z5 && J0 >= 4 && !Q.inHTML) Y0 = c4($, m);
+    else if (!Z5) {
+      let a0 = m + Z0, B0 = $.charCodeAt(a0);
+      B0 === Y5 ? Y0 = u4($, m, Q, Z) : B0 === o ? Y0 = l4($, m, Q, Z) : B0 === $0 || B0 === N0 ? Y0 = d4($, m, Q) : B0 === p || B0 === _0 || B0 === H0 ? (Y0 = x5($, m), !Y0 && (Y0 = p$($, m, Q, Z))) : B0 === N5 || B0 >= i && B0 <= a ? Y0 = p$($, m, Q, Z) : B0 === G0 ? Y0 = Q4($, m, Q, Z) : B0 === k0 ? Y0 = c$($, m, Q, Z) : B0 === A0 && (Y0 = a4($, m, Q));
     }
-    if (!$0) {
-      for (var J0 = false, a0 = n; a0 < x0; a0++) if ($.charCodeAt(a0) === E0) {
-        J0 = true;
+    if (!Y0) {
+      for (var i0 = false, T0 = m; T0 < R0; T0++) if ($.charCodeAt(T0) === k0) {
+        i0 = true;
         break;
       }
-      J0 && ($0 = S4($, n, Q, Z));
+      i0 && (Y0 = c$($, m, Q, Z));
     }
-    if ($0 || ($0 = s6($, n, Q, Z)), $0) $0.node.type !== B.refCollection && p0.push($0.node), n = $0.end;
+    if (Y0 || (Y0 = s4($, m, Q, Z)), Y0) Y0.node.type !== _.refCollection && O0.push(Y0.node), m = Y0.end;
     else {
-      var q5 = $.indexOf(`
-`, n);
-      n = q5 < 0 ? N0 : q5 + 1;
+      var e = $.indexOf(`
+`, m);
+      m = e < 0 ? w0 : e + 1;
     }
   }
-  return Q.o = X, p0;
+  return Q.j = V, O0;
 }
-function a4($, Q, Z, X) {
+function Y4($, Q, Z, V) {
   var Y = w5($, Q);
-  return Y ? { tagName: Y.tag, tagLower: Y.tag.toLowerCase(), attrs: Y.b, whitespaceBeforeAttrs: Y.g, isSelfClosing: Y.n, hasSpaceBeforeSlash: Y.r, isClosing: Y.f, hasNewline: Y.g.includes(`
-`) || Y.b.includes(`
+  return Y ? { tagName: Y.tag, tagLower: Y.tag.toLowerCase(), attrs: Y.rawAttrs, whitespaceBeforeAttrs: Y.whitespaceBeforeAttrs, isSelfClosing: Y.selfClosing, hasSpaceBeforeSlash: Y.hasSpaceBeforeSlash, isClosing: Y.isClosing, hasNewline: Y.whitespaceBeforeAttrs.includes(`
+`) || Y.rawAttrs.includes(`
 `), endPos: Y.end } : null;
 }
-function P9($, Q, Z) {
-  _9 = 0, $ = U4($), !Q.refs && (Q.refs = {}), (Z.optimizeForStreaming || Q.inline) && (Q.w = m6($, Q.refs, Z));
-  var X, Y;
-  Q.t || (Q.t = X = [], Q.p = Y = []);
-  let V = c5($, Q, Z);
-  if (X && Y) {
-    for (var K = X, J = { inline: Q.inline, inAnchor: Q.inAnchor, inHTML: Q.inHTML, htmlDepth: Q.d, inList: Q.inList, inBlockQuote: Q.inBlockQuote, noSetext: Q.l, depth: Q.o }, G = 0; G < K.length; G++) {
-      var U = K[G];
-      Q.inline = U.inline, Q.inAnchor = U.inAnchor, Q.inHTML = U.inHTML, Q.d = U.htmlDepth, Q.inList = U.inList, Q.inBlockQuote = U.inBlockQuote, Q.l = U.noSetext, Q.o = U.depth, Q.k = U.breaks;
-      var W = R5(U.text, 0, U.text.length, Q, Z);
-      Q.k = false;
-      for (var z = 0; z < W.length; z++) U.dest.push(W[z]);
+function H9($, Q, Z) {
+  q9 = 0, $ = w$($), !Q.refs && (Q.refs = {}), (Z.optimizeForStreaming || Q.inline) && (Q.m = h4($, Q.refs, Z));
+  var V = !Q.k;
+  V && (Q.k = [], Q.h = []);
+  let Y = f5($, Q, Z);
+  if (V) {
+    for (var G = Q.k, K = { inline: Q.inline, inAnchor: Q.inAnchor, inHTML: Q.inHTML, htmlDepth: Q.c, inList: Q.inList, inBlockQuote: Q.inBlockQuote, noSetext: Q.f, depth: Q.j }, J = 0; J < G.length; J++) {
+      var X = G[J];
+      Q.inline = X.inline, Q.inAnchor = X.inAnchor, Q.inHTML = X.inHTML, Q.c = X.htmlDepth, Q.inList = X.inList, Q.inBlockQuote = X.inBlockQuote, Q.f = X.noSetext, Q.j = X.depth, Q.e = X.breaks;
+      var U = D5(X.text, 0, X.text.length, Q, Z);
+      Q.e = false;
+      for (var q2 = 0; q2 < U.length; q2++) X.dest.push(U[q2]);
     }
-    Q.inline = J.inline, Q.inAnchor = J.inAnchor, Q.inHTML = J.inHTML, Q.d = J.htmlDepth, Q.inList = J.inList, Q.inBlockQuote = J.inBlockQuote, Q.l = J.noSetext, Q.o = J.depth;
-    for (var H = Y, F = 0; F < H.length; F++) for (var M = H[F], j = 0; j < M.src.length; j++) {
-      var _ = M.src[j];
-      if (M.unwrap && _.type === B.paragraph) for (var q2 = _.children, D = 0; D < q2.length; D++) M.dest.push(q2[D]);
-      else M.dest.push(_);
+    Q.inline = K.inline, Q.inAnchor = K.inAnchor, Q.inHTML = K.inHTML, Q.c = K.htmlDepth, Q.inList = K.inList, Q.inBlockQuote = K.inBlockQuote, Q.f = K.noSetext, Q.j = K.depth;
+    for (var W = Q.h, z = 0; z < W.length; z++) for (var F = W[z], D = 0; D < F.src.length; D++) {
+      var O = F.src[D];
+      if (F.unwrap && O.type === _.paragraph) for (var H = O.children, B = 0; B < H.length; B++) F.dest.push(H[B]);
+      else F.dest.push(O);
     }
-    Q.t = void 0, Q.p = void 0, w$(V, Q, Z.slugify);
+    Q.k = void 0, Q.h = void 0;
   }
-  return f9(Q.refs) ? [{ type: B.refCollection, refs: Q.refs }, ...V] : V;
+  return P9(Q.refs) ? [{ type: _.refCollection, refs: Q.refs }, ...Y] : Y;
 }
-var L$;
+var t9;
 try {
-  Y9 = i0.createElement("div"), L$ = Y9 != null && typeof Y9 == "object" && "$$typeof" in Y9 && typeof Y9.$$typeof == "symbol" ? Y9.$$typeof : /* @__PURE__ */ Symbol.for("react.transitional.element");
+  t9 = c0.createElement("div").$$typeof;
 } catch {
-  L$ = /* @__PURE__ */ Symbol.for("react.transitional.element");
+  t9 = /* @__PURE__ */ Symbol.for("react.transitional.element");
 }
-var Y9;
-function T$($, Q, Z) {
-  return { $$typeof: L$, type: $, key: Z == null ? null : String(Z), ref: null, props: Q, _owner: null, _store: {}, _debugStack: null, _debugTask: null };
+function e9($, Q, Z) {
+  return { $$typeof: t9, type: $, key: Z != null ? "" + Z : null, ref: null, props: Q, _owner: null, _store: {}, _debugStack: null, _debugTask: null };
 }
-function D5($, Q) {
-  var Z = { key: $ };
-  if (Q) {
-    var X = U$(Q);
-    for (var Y in X) Z[Y] = X[Y];
-  }
-  return Z;
-}
-var i9 = typeof i0.createContext > "u" ? void 0 : i0.createContext(void 0);
-function n4($, Q, Z, X, Y, V, K, J, G) {
+var $$ = typeof c0.createContext < "u" ? c0.createContext(void 0) : void 0;
+function G4($, Q, Z, V, Y, G, K, J, X) {
   switch ($.type) {
-    case B.blockQuote: {
-      let q2 = { key: Z.key };
-      return $.alert && (q2.className = `markdown-alert-${V($.alert.toLowerCase(), N5)}`, $.children.unshift(q4($.alert))), X("blockquote", q2, Q($.children, Z));
+    case _.blockQuote: {
+      let F = { key: Z.key };
+      return $.alert && (F.className = "markdown-alert-" + G($.alert.toLowerCase(), C0), $.children.unshift(R$($.alert))), V("blockquote", F, Q($.children, Z));
     }
-    case B.breakLine:
-      return X("br", { key: Z.key });
-    case B.breakThematic:
-      return X("hr", { key: Z.key });
-    case B.frontmatter:
-      return J.preserveFrontmatter ? X("pre", { key: Z.key }, $.text) : null;
-    case B.codeBlock: {
-      let q2 = $.lang ? I5($.lang) : "";
-      var U = $.attrs ? U$($.attrs) : {};
-      return U.className = q2 ? `language-${q2} lang-${q2}` : "", X("pre", { key: Z.key }, X("code", U, $.text));
-    }
-    case B.codeInline:
-      return X("code", { key: Z.key }, $.text);
-    case B.footnoteReference:
-      return X("a", { key: Z.key, href: Y($.target, "a", "href") || void 0 }, X("sup", null, $.text));
-    case B.gfmTask:
-      return X("input", { checked: $.completed, key: Z.key, readOnly: true, type: "checkbox" });
-    case B.heading:
-      return X(`h${$.level}`, { id: $.id, key: Z.key }, Q($.children, Z));
-    case B.htmlBlock: {
-      let q2 = $;
-      if (m5(J) && W$(q2.tag)) {
-        var W = q$(q2);
-        return W.kind === "literal" ? X("span", { key: Z.key }, W.literal) : X("span", { key: Z.key }, ...F4(W.open, q2.children ? Q(q2.children, Z) : null, W.close));
-      }
-      let D = q2.j, A = D !== void 0, N = A ? D : q2.a ? q2.e || "" : (q2.e || "") + (q2.h || "");
-      if (N && q2.c) {
-        let L = q2.tag.toLowerCase(), O = p4(L), P = q2.children, v2 = P != null && P.length > 0;
+    case _.breakLine:
+      return V("br", { key: Z.key });
+    case _.breakThematic:
+      return V("hr", { key: Z.key });
+    case _.frontmatter:
+      return J.preserveFrontmatter ? V("pre", { key: Z.key }, $.text) : null;
+    case _.codeBlock:
+      let z = $.lang ? s5($.lang) : "";
+      return V("pre", { key: Z.key }, V("code", { ...t0($.attrs), className: z ? `language-${z} lang-${z}` : "" }, $.text));
+    case _.codeInline:
+      return V("code", { key: Z.key }, $.text);
+    case _.footnoteReference:
+      return V("a", { key: Z.key, href: Y($.target, "a", "href") || void 0 }, V("sup", null, $.text));
+    case _.gfmTask:
+      return V("input", { checked: $.completed, key: Z.key, readOnly: true, type: "checkbox" });
+    case _.heading:
+      return V(`h${$.level}`, { id: $.id, key: Z.key }, Q($.children, Z));
+    case _.htmlBlock: {
+      let F = $;
+      if (J.tagfilter && u9(F.tag)) return V("span", { key: Z.key }, "<" + F.tag + h9(F.attrs) + ">");
+      if (F.a && F.d) {
+        let D = F.tag.toLowerCase(), O = s$(D), H = F.children && F.children.length > 0;
         if (O) {
-          let S = A ? D : q2.e || "", s = m5(J) ? z$(S) : S;
-          if (/<[a-z][^>]{0,100}>/i.test(N)) {
-            var z = D5(Z.key, $.attrs);
-            return z.dangerouslySetInnerHTML = { __html: s }, G($.tag, z);
-          }
-          return G($.tag, D5(Z.key, $.attrs), s);
+          let L = S$(F.a, D, J.tagfilter);
+          return /<[a-z][^>]{0,100}>/i.test(F.a) ? X($.tag, { key: Z.key, ...t0($.attrs), dangerouslySetInnerHTML: { __html: L } }) : X($.tag, { key: Z.key, ...t0($.attrs) }, L);
         }
-        let b = new RegExp(`^<${q2.tag}(\\s|>)`, "i");
-        if (v2 && !b.test(N) && m5(J) && D4(N)) return G($.tag, D5(Z.key, $.attrs), Q(P, Z));
-        if (d4(N)) {
-          let S = m5(J) ? z$(N) : N;
-          var H = D5(Z.key, $.attrs);
-          return H.dangerouslySetInnerHTML = { __html: S }, G($.tag, H);
+        let B = new RegExp(`^<${F.tag}(\\s|>)`, "i");
+        if (H && !B.test(F.a) && J.tagfilter && T$(F.a)) return X($.tag, { key: Z.key, ...t0($.attrs) }, Q(F.children, Z));
+        if (t$(F.a)) {
+          let L = J.tagfilter ? p9(F.a) : F.a;
+          return X($.tag, { key: Z.key, ...t0($.attrs), dangerouslySetInnerHTML: { __html: L } });
         }
-        let x = I9({ slugify: J.slugify, sanitizer: Y, tagfilter: true }), T = G4(N);
-        if (new RegExp(`^<${q2.tag}(\\s[^>]*)?>(\\s*</${q2.tag}>)?$`, "i").test(T)) return q2.children && q2.children.length > 0 ? G($.tag, D5(Z.key, $.attrs), Q(q2.children, Z)) : G($.tag, D5(Z.key, $.attrs));
-        let y = P9(T, { inline: false, refs: K, inHTML: false }, x);
-        G$(y);
-        let C = q2.tag.toLowerCase(), E = A;
-        if (E && v2) return G($.tag, D5(Z.key, $.attrs), Q(P, Z));
-        if (E) return Q(y.flatMap(Z9), Z);
-        var F = z4(y, C);
-        if (F.found && F.afterClose.length > 0) {
-          var M = F.beforeClose.flatMap(Z9), j = F.afterClose.flatMap(Z9);
-          return T$(i0.Fragment, { children: [G($.tag, D5(Z.key, $.attrs), Q(M, Z)), Q(j, Z)] }, Z.key);
+        let j = { slugify: (L) => G(L, C0), sanitizer: Y, tagfilter: true }, w = F.a.replace(/>\s+</g, "><").replace(/\n+/g, " ").trim();
+        if (new RegExp(`^<${F.tag}(\\s[^>]*)?>(\\s*</${F.tag}>)?$`, "i").test(w)) return F.children && F.children.length > 0 ? X($.tag, { key: Z.key, ...t0($.attrs) }, Q(F.children, Z)) : X($.tag, { key: Z.key, ...t0($.attrs) });
+        let A = H9(w, { inline: false, refs: K, inHTML: false }, j);
+        m9(A);
+        let k = F.tag.toLowerCase(), S = "</" + k + ">", R = B.test(w), N = w.toLowerCase().trimEnd().endsWith(S), T = R && N;
+        if (T && H) return X($.tag, { key: Z.key, ...t0($.attrs) }, Q(F.children, Z));
+        if (T) return Q(A.flatMap(d5), Z);
+        var U = k$(A, k);
+        if (U.found && U.afterClose.length > 0) {
+          var q2 = U.beforeClose.flatMap(d5), W = U.afterClose.flatMap(d5);
+          return e9(c0.Fragment, { children: [X($.tag, { key: Z.key, ...t0($.attrs) }, Q(q2, Z)), Q(W, Z)] }, Z.key);
         }
-        return G($.tag, D5(Z.key, $.attrs), Q(y.flatMap(Z9), Z));
+        return X($.tag, { key: Z.key, ...t0($.attrs) }, Q(A.flatMap(d5), Z));
       }
-      return Q9($.tag) ? G($.tag, D5(Z.key, $.attrs)) : G($.tag, D5(Z.key, $.attrs), $.children ? Q($.children, Z) : "");
+      return l5($.tag) ? X($.tag, { key: Z.key, ...t0($.attrs) }) : X($.tag, { key: Z.key, ...t0($.attrs) }, $.children ? Q($.children, Z) : "");
     }
-    case B.htmlSelfClosing: {
-      let q2 = $;
-      if (m5(J) && W$(q2.tag)) {
-        var _ = q$(q2);
-        return X("span", { key: Z.key }, _.kind === "literal" ? _.literal : _.open + (_.close || ""));
-      }
-      return G($.tag, D5(Z.key, $.attrs));
+    case _.htmlSelfClosing: {
+      let F = $;
+      return J.tagfilter && u9(F.tag) ? V("span", { key: Z.key }, "<" + F.tag + h9(F.attrs) + " />") : X($.tag, { key: Z.key, ...t0($.attrs) });
     }
-    case B.image: {
-      let q2 = $.target === null ? null : Y($.target, "img", "src");
-      return X("img", { key: Z.key, alt: $.alt && $.alt.length > 0 ? $.alt : void 0, title: $.title || void 0, src: q2 || void 0 });
+    case _.image: {
+      let F = $.target != null ? Y($.target, "img", "src") : null;
+      return V("img", { key: Z.key, alt: $.alt && $.alt.length > 0 ? $.alt : void 0, title: $.title || void 0, src: F || void 0 });
     }
-    case B.link: {
-      let q2 = { key: Z.key };
-      if ($.target != null) {
-        let D = H4($.target, Y, "a", "href");
-        D != null && (q2.href = D);
-      }
-      return $.title && (q2.title = $.title), X("a", q2, Q($.children, Z));
+    case _.link: {
+      let F = { key: Z.key };
+      return $.target != null && (F.href = E$($.target)), $.title && (F.title = $.title), V("a", F, Q($.children, Z));
     }
-    case B.table: {
-      let q2 = $;
-      return X("table", { key: Z.key }, X("thead", { key: "thead" }, X("tr", null, q2.header.map(function(A, N) {
-        return X("th", { key: N, style: q2.align[N] === null ? {} : { textAlign: q2.align[N] } }, Q(A, Z));
-      }))), q2.cells.length > 0 && X("tbody", { key: "tbody" }, q2.cells.map(function(A, N) {
-        return X("tr", { key: N }, A.map(function(O, P) {
-          return X("td", { key: P, style: q2.align[P] === null ? {} : { textAlign: q2.align[P] } }, Q(O, Z));
+    case _.table: {
+      let F = $;
+      return V("table", { key: Z.key }, V("thead", { key: "thead" }, V("tr", null, F.header.map(function(O, H) {
+        return V("th", { key: H, style: F.align[H] == null ? {} : { textAlign: F.align[H] } }, Q(O, Z));
+      }))), F.cells.length > 0 && V("tbody", { key: "tbody" }, F.cells.map(function(O, H) {
+        return V("tr", { key: H }, O.map(function(M, j) {
+          return V("td", { key: j, style: F.align[j] == null ? {} : { textAlign: F.align[j] } }, Q(M, Z));
         }));
       })));
     }
-    case B.text:
+    case _.text:
       return $.text;
-    case B.textFormatted:
-      return X($.tag, { key: Z.key }, Q($.children, Z));
-    case B.orderedList:
-    case B.unorderedList: {
-      let q2 = $.type === B.orderedList ? "ol" : "ul";
-      return X(q2, { key: Z.key, start: $.type === B.orderedList ? $.start : void 0 }, $.items.map(function(A, N) {
-        return X("li", { key: N }, Q(A, Z));
+    case _.textFormatted:
+      return V($.tag, { key: Z.key }, Q($.children, Z));
+    case _.orderedList:
+    case _.unorderedList: {
+      let F = $.type === _.orderedList ? "ol" : "ul";
+      return V(F, { key: Z.key, start: $.type === _.orderedList ? $.start : void 0 }, $.items.map(function(O, H) {
+        return V("li", { key: H }, Q(O, Z));
       }));
     }
-    case B.paragraph:
-      return X("p", { key: Z.key }, Q($.children, Z));
-    case B.ref:
+    case _.paragraph:
+      return V("p", { key: Z.key }, Q($.children, Z));
+    case _.ref:
       return null;
     default:
       return null;
   }
 }
-var HZ = ($, Q, Z, X, Y, V, K) => {
-  var J = (U) => U.map((W) => "text" in W ? W.text : ""), G = (U, W = {}) => {
-    var z = Array.isArray(U) ? U : [U], H = (W.renderDepth || 0) + 1;
-    if (H > 2500) return J(z);
-    W.renderDepth = H;
-    for (var F = W.key, M = [], j = false, _ = 0; _ < z.length; _++) {
-      W.key = _;
-      var q2;
+var z6 = ($, Q, Z, V, Y, G, K) => {
+  var J = (U) => U.map(function(q2) {
+    return "text" in q2 ? q2.text : "";
+  }), X = (U, q2 = {}) => {
+    var W = (q2.renderDepth || 0) + 1;
+    if (W > 2500) return J(U);
+    q2.renderDepth = W;
+    for (var z = q2.key, F = [], D = false, O = 0; O < U.length; O++) {
+      q2.key = O;
+      var H;
       if ($) {
-        var D = n4.bind(null, z[_], G, W, Q, Z, X, Y, V, K);
-        q2 = $(D, z[_], G, W);
-      } else q2 = n4(z[_], G, W, Q, Z, X, Y, V, K);
-      var A = typeof q2 == "string";
-      if (j && typeof q2 == "string") {
-        var N = M.at(-1);
-        M[M.length - 1] = (typeof N == "string" ? N : "") + q2;
-      } else if (q2 != null) if (Array.isArray(q2)) for (var L = 0; L < q2.length; L++) M.push(q2[L]);
-      else M.push(q2);
-      j = A;
+        var B = G4.bind(null, U[O], X, q2, Q, Z, V, Y, G, K);
+        H = $(B, U[O], X, q2);
+      } else H = G4(U[O], X, q2, Q, Z, V, Y, G, K);
+      var M = typeof H == "string";
+      if (M && D) F[F.length - 1] += H;
+      else if (H !== null) if (Array.isArray(H)) for (var j = 0; j < H.length; j++) F.push(H[j]);
+      else F.push(H);
+      D = M;
     }
-    return W.key = F, W.renderDepth = H - 1, M;
+    return q2.key = z, q2.renderDepth = W - 1, F;
   };
-  return G;
+  return X;
 };
-var MZ = ($, Q) => {
-  let Z = h9(Q, $, void 0);
-  return Z ? typeof Z == "function" || typeof Z == "object" && "render" in Z ? Z : h9(Q, `${$}.component`, $) : $;
+var H6 = ($, Q) => {
+  let Z = t5(Q, $, void 0);
+  return Z ? typeof Z == "function" || typeof Z == "object" && "render" in Z ? Z : t5(Q, `${$}.component`, $) : $;
 };
-function OZ($, Q) {
+function O6($, Q) {
   let Z = { ...Q || {} };
   Z.overrides = Z.overrides || {};
-  let X = Z.slugify || N5, Y = Z.sanitizer || H5, V = Z.createElement, K = f9(Z.overrides), J = (A) => y$(A, { ...Z, wrapper: null });
-  function G(A) {
-    for (var N in A) {
-      var L = A[N];
-      if (typeof L == "string" && L.length > 0 && L.charCodeAt(0) === Y0 && (h4.test(L) || m4.test(L) || a4(L, 0))) {
-        var O = J(L.trim());
-        A[N] = N === "innerHTML" && Array.isArray(O) ? O[0] : O;
+  let V = Z.slugify || C0, Y = Z.sanitizer || c5, G = Z.createElement, K = P9(Z.overrides), J = (j) => Z$(j, { ...Z, wrapper: null });
+  function X(j) {
+    for (var w in j) {
+      var I = j[w];
+      if (typeof I == "string" && I.length > 0 && I.charCodeAt(0) === G0 && (i$.test(I) || a$.test(I) || Y4(I, 0))) {
+        var A = J(I.trim());
+        j[w] = w === "innerHTML" && Array.isArray(A) ? A[0] : A;
       }
     }
   }
-  function U(A, N, ...L) {
-    var O = N || {}, P = A;
+  function U(j, w, ...I) {
+    var A = w || {}, k = j;
     if (K) {
-      var v2 = h9(Z.overrides, `${A}.props`, {});
-      P = MZ(A, Z.overrides), O = { ...O, ...v2, className: O4(O.className, v2.className) || void 0 };
+      var S = t5(Z.overrides, j + ".props", {});
+      k = H6(j, Z.overrides), A = { ...A, ...S, className: g$(A.className, S.className) || void 0 };
     }
-    if (!V) {
-      var b = O.key;
-      return b != null && delete O.key, L.length === 1 ? O.children = L[0] : L.length > 1 && (O.children = L), T$(P, O, b);
+    if (!G) {
+      var R = A.key;
+      return R != null && delete A.key, I.length === 1 ? A.children = I[0] : I.length > 1 && (A.children = I), e9(k, A, R);
     }
-    return V(P, O, ...L);
+    return G(k, A, ...I);
   }
-  function W(A, N, ...L) {
-    return N && G(N), U(A, N, ...L);
+  function q2(j, w, ...I) {
+    return w && X(w), U(j, w, ...I);
   }
-  let z = I9(Z, Z.forceInline), H = $[0] && $[0].type === B.refCollection ? $[0].refs : {}, F = HZ(Z.renderRule, U, Y, X, H, Z, W), M = F($, { inline: Z.forceInline, refs: H }), j = M4(H);
-  if (j.length > 0 && M.push(U("footer", { key: "footer" }, j.map(function(N) {
-    let L = N.identifier.charCodeAt(0) === W5 ? N.identifier.slice(1) : N.identifier, O = P9(N.footnote, { inline: true, refs: H }, z);
-    return U("div", { id: X(L, N5), key: N.identifier }, `${L}: `, F(O, { inline: true, refs: H }));
-  }))), Z.wrapper === null) return M;
-  let _ = Z.wrapper || (Z.forceInline ? "span" : "div"), q2;
-  if (M.length > 1 || Z.forceWrapper) q2 = M;
-  else return M.length === 1 ? M[0] : null;
-  var D = Z.wrapperProps ? { ...Z.wrapperProps } : {};
-  return D.children = q2, T$(_, D, "outer");
+  let W = { ...Z, slugify: Z.slugify ? (j) => Z.slugify(j, C0) : C0, sanitizer: Y, tagfilter: Z.tagfilter !== false }, z = $[0] && $[0].type === _.refCollection ? $[0].refs : {}, F = z6(Z.renderRule, U, Y, V, z, Z, q2), D = F($, { inline: Z.forceInline, refs: z }), O = L$(z);
+  if (O.length && D.push(U("footer", { key: "footer" }, O.map(function(w) {
+    let I = w.identifier.charCodeAt(0) === U5 ? w.identifier.slice(1) : w.identifier, A = H9(w.footnote, { inline: true, refs: z }, W);
+    return U("div", { id: V(I, C0), key: w.identifier }, I + ": ", F(A, { inline: true, refs: z }));
+  }))), Z.wrapper === null) return D;
+  let H = Z.wrapper || (Z.forceInline ? "span" : "div"), B;
+  if (D.length > 1 || Z.forceWrapper) B = D;
+  else return D.length === 1 ? D[0] : null;
+  var M = Z.wrapperProps ? { ...Z.wrapperProps } : {};
+  return M.children = B, e9(H, M, "outer");
 }
-function y$($ = "", Q = {}) {
+function Z$($ = "", Q = {}) {
   let Z = { ...Q || {} };
   Z.overrides = Z.overrides || {};
-  let X = Z.slugify || N5, Y = Z.sanitizer || H5;
-  function V(J) {
-    let G = Z.forceInline || !(Z.forceBlock || Y4.test(J)), U = I9(Z, G), W = G ? J : W4(J), z = P9(W, { inline: G, refs: K }, U);
-    return OZ(z, { ...Z, forceInline: G });
+  let V = Z.slugify || C0, Y = Z.sanitizer || c5;
+  function G(J) {
+    let X = Z.forceInline || !Z.forceBlock && !v$.test(J), U = { ...Z, slugify: Z.slugify ? (F) => Z.slugify(F, C0) : C0, sanitizer: Y, tagfilter: Z.tagfilter !== false }, q2 = X ? J : y$(J);
+    if (Z.optimizeForStreaming) {
+      var W = q2.lastIndexOf("<");
+      W !== -1 && q2.indexOf(">", W) === -1 && (q2 = q2.slice(0, W));
+    }
+    let z = H9(q2, { inline: X, refs: K }, U);
+    return O6(z, { ...U, forceInline: X });
   }
   let K = {};
-  return V($);
+  return G($);
 }
-function DZ($) {
-  let Q = i0.useRef($), Z = Q.current;
+function B6($) {
+  let Q = c0.useRef($), Z = Q.current;
   if (Z !== $) {
-    var X = true, Y = 0;
-    for (var V in $) if (Y++, !Object.is(Z[V], $[V])) {
-      X = false;
+    var V = true, Y = 0;
+    for (var G in $) if (Y++, !Object.is(Z[G], $[G])) {
+      V = false;
       break;
     }
-    if (X) {
+    if (V) {
       var K = 0;
       for (var J in Z) K++;
-      X = K === Y;
+      V = K === Y;
     }
-    X || (Q.current = $);
+    V || (Q.current = $);
   }
   return Q.current;
 }
-var AZ = ({ children: $, options: Q, ...Z }) => {
-  if (!(typeof i0.useContext < "u")) {
+var D6 = ({ children: $, options: Q, ...Z }) => {
+  if (!(typeof c0.useContext < "u")) {
     let U = { ...Q, overrides: { ...Q?.overrides }, wrapperProps: { ...Q?.wrapperProps, ...Z } };
-    return y$($ ?? "", U);
+    return Z$($ ?? "", U);
   }
-  let Y = i9 ? i0.useContext(i9) : void 0, V = DZ(Z), K = i0.useMemo(() => ({ ...Y, ...Q, overrides: { ...Y?.overrides, ...Q?.overrides }, wrapperProps: { ...Y?.wrapperProps, ...Q?.wrapperProps, ...V } }), [Y, Q, V]), J = $ ?? "";
-  return i0.useMemo(() => y$(J, K), [J, K]);
+  let Y = c0.useContext($$), G = B6(Z), K = c0.useMemo(() => ({ ...Y, ...Q, overrides: { ...Y?.overrides, ...Q?.overrides }, wrapperProps: { ...Y?.wrapperProps, ...Q?.wrapperProps, ...G } }), [Y, Q, G]), J = $ ?? "";
+  return c0.useMemo(() => Z$(J, K), [J, K]);
 };
 
 // node_modules/@rjsf/core/lib/components/constants.js
@@ -24338,63 +23465,52 @@ function getDefaultValue(translateString, type) {
       return translateString(TranslatableString.NewStringDefault);
   }
 }
-function isAdditionalPropertySchema(schema) {
-  return Boolean(schema?.[ADDITIONAL_PROPERTY_FLAG]);
-}
-function getAdditionalPropertyOrder(schemaProperties) {
-  return Object.keys(schemaProperties).filter((property2) => isAdditionalPropertySchema(schemaProperties[property2]));
-}
 function ObjectFieldPropertyFn(props) {
   const { fieldPathId, schema, registry, uiSchema, errorSchema, formData, onChange, onBlur, onFocus, disabled, readonly, required, hideError, propertyName, handleKeyRename, handleRemoveProperty, addedByAdditionalProperties } = props;
-  const [wasPropertyKeyModified, setWasPropertyKeyModified] = useState22(false);
+  const [wasPropertyKeyModified, setWasPropertyKeyModified] = useState19(false);
   const { globalFormOptions, fields: fields2 } = registry;
   const { SchemaField: SchemaField2 } = fields2;
   const innerFieldIdPathId = useDeepCompareMemo(toFieldPathId(propertyName, globalFormOptions, fieldPathId.path));
-  const onPropertyChange = useCallback7((value, path, newErrorSchema, id) => {
+  const onPropertyChange = useCallback6((value, path, newErrorSchema, id) => {
     let normalizedValue = value;
     if (value === void 0 && addedByAdditionalProperties) {
       normalizedValue = "";
     }
     onChange(normalizedValue, path, newErrorSchema, id);
   }, [onChange, addedByAdditionalProperties]);
-  const onKeyRename = useCallback7((value) => {
+  const onKeyRename = useCallback6((value) => {
     if (propertyName !== value) {
       setWasPropertyKeyModified(true);
     }
     handleKeyRename(propertyName, value);
   }, [propertyName, handleKeyRename]);
-  const onKeyRenameBlur = useCallback7((event) => {
+  const onKeyRenameBlur = useCallback6((event) => {
     const { target: { value } } = event;
     onKeyRename(value);
   }, [onKeyRename]);
-  const onRemoveProperty = useCallback7(() => {
+  const onRemoveProperty = useCallback6(() => {
     handleRemoveProperty(propertyName);
   }, [propertyName, handleRemoveProperty]);
-  return _jsx13(SchemaField2, { name: propertyName, required, schema, uiSchema, errorSchema, fieldPathId: innerFieldIdPathId, formData, wasPropertyKeyModified, onKeyRename, onKeyRenameBlur, onRemoveProperty, onChange: onPropertyChange, onBlur, onFocus, registry, disabled, readonly, hideError });
+  return _jsx11(SchemaField2, { name: propertyName, required, schema, uiSchema, errorSchema, fieldPathId: innerFieldIdPathId, formData, wasPropertyKeyModified, onKeyRename, onKeyRenameBlur, onRemoveProperty, onChange: onPropertyChange, onBlur, onFocus, registry, disabled, readonly, hideError });
 }
 var ObjectFieldProperty = memo2(ObjectFieldPropertyFn);
 function ObjectField(props) {
   const { schema: rawSchema, uiSchema = {}, formData, errorSchema, fieldPathId, name, required = false, disabled, readonly, hideError, onBlur, onFocus, onChange, registry, title } = props;
   const { fields: fields2, schemaUtils, translateString, globalUiOptions } = registry;
   const { OptionalDataControlsField: OptionalDataControlsField2 } = fields2;
-  const formDataRef = useRef6(formData);
+  const formDataRef = useRef5(formData);
   formDataRef.current = formData;
-  const schema = useMemo7(() => schemaUtils.retrieveSchema(rawSchema, formData, true), [schemaUtils, rawSchema, formData]);
-  const uiOptions = useMemo7(() => getUiOptions(uiSchema, globalUiOptions), [uiSchema, globalUiOptions]);
-  const schemaProperties = useMemo7(() => schema.properties ?? {}, [schema.properties]);
+  const schema = useMemo6(() => schemaUtils.retrieveSchema(rawSchema, formData, true), [schemaUtils, rawSchema, formData]);
+  const uiOptions = useMemo6(() => getUiOptions(uiSchema, globalUiOptions), [uiSchema, globalUiOptions]);
+  const { properties: schemaProperties = {} } = schema;
   const childFieldPathId = props.childFieldPathId ?? fieldPathId;
-  const lastRenamedProperty = useRef6({ previousKey: "", currentKey: void 0 });
-  const [additionalPropertyOrder, setAdditionalPropertyOrder] = useState22(() => getAdditionalPropertyOrder(schemaProperties));
-  const definedPropertyOrder = useMemo7(() => {
-    const additionalPropertySet = new Set(getAdditionalPropertyOrder(schemaProperties));
-    return Object.keys(schemaProperties).filter((property2) => !additionalPropertySet.has(property2));
-  }, [schemaProperties]);
+  const lastRenamedProperty = useRef5({ previousKey: "", currentKey: void 0 });
   const templateTitle = uiOptions.title ?? schema.title ?? title ?? name;
   const description = uiOptions.description ?? schema.description;
   const renderOptionalField = shouldRenderOptionalField(registry, schema, required, uiSchema);
   const hasFormData = isFormDataAvailable(formData);
   let orderedProperties = [];
-  const getAvailableKey = useCallback7((preferredKey, existingFormData) => {
+  const getAvailableKey = useCallback6((preferredKey, existingFormData) => {
     const { duplicateKeySuffixSeparator = "-" } = getUiOptions(uiSchema, globalUiOptions);
     let index = 0;
     let newKey = preferredKey;
@@ -24404,7 +23520,7 @@ function ObjectField(props) {
     }
     return newKey;
   }, [uiSchema, globalUiOptions]);
-  const onAddProperty = useCallback7(() => {
+  const onAddProperty = useCallback6(() => {
     if (!(schema.additionalProperties || schema.patternProperties)) {
       return;
     }
@@ -24425,7 +23541,7 @@ function ObjectField(props) {
           apSchema = schemaUtils.retrieveSchema({ [REF_KEY]: apSchema[REF_KEY] }, formData);
           type = apSchema.type;
           constValue = apSchema.const;
-          defaultValue = schemaUtils.getDefaultFormState(apSchema, defaultValue);
+          defaultValue = apSchema.default;
         }
         if (!type && (ANY_OF_KEY in apSchema || ONE_OF_KEY in apSchema)) {
           type = "object";
@@ -24438,10 +23554,9 @@ function ObjectField(props) {
       lastRenamedProperty.current.currentKey = newKey;
       lastRenamedProperty.current.previousKey = getAvailableKey(newKey, newFormData);
     }
-    setAdditionalPropertyOrder((order) => [...order, newKey]);
     onChange(newFormData, childFieldPathId.path);
   }, [formData, onChange, translateString, schemaUtils, childFieldPathId, getAvailableKey, schema]);
-  const handleKeyRename = useCallback7((oldKey, newKey) => {
+  const handleKeyRename = useCallback6((oldKey, newKey) => {
     if (oldKey !== newKey) {
       const currentFormData = formDataRef.current;
       const actualNewKey = getAvailableKey(newKey, currentFormData);
@@ -24459,15 +23574,13 @@ function ObjectField(props) {
         lastRenamedProperty.current.previousKey = oldKey;
       }
       lastRenamedProperty.current.currentKey = actualNewKey;
-      setAdditionalPropertyOrder((order) => order.map((property2) => property2 === oldKey ? actualNewKey : property2));
       onChange(renamedObj, childFieldPathId.path);
     }
   }, [onChange, childFieldPathId, getAvailableKey]);
-  const handleRemoveProperty = useCallback7((key) => {
-    setAdditionalPropertyOrder((order) => order.filter((property2) => property2 !== key));
+  const handleRemoveProperty = useCallback6((key) => {
     onChange(ADDITIONAL_PROPERTY_KEY_REMOVE, [...childFieldPathId.path, key]);
   }, [onChange, childFieldPathId]);
-  const getStableKey = useCallback7((property2) => {
+  const getStableKey = useCallback6((property2) => {
     if (lastRenamedProperty.current.currentKey === property2) {
       return lastRenamedProperty.current.previousKey;
     }
@@ -24475,24 +23588,23 @@ function ObjectField(props) {
   }, []);
   if (!renderOptionalField || hasFormData) {
     try {
-      const definedPropertySet = new Set(definedPropertyOrder);
-      const currentAdditionalProperties = additionalPropertyOrder.filter((property2) => Object.hasOwn(schemaProperties, property2) && !definedPropertySet.has(property2));
-      orderedProperties = orderProperties([...definedPropertyOrder, ...currentAdditionalProperties], uiOptions.order);
+      const properties = Object.keys(schemaProperties);
+      orderedProperties = orderProperties(properties, uiOptions.order);
     } catch (err) {
-      return _jsxs("div", { children: [_jsx13("p", { className: "rjsf-config-error", style: { color: "red" }, children: _jsx13(AZ, { options: { disableParsingRawHTML: true }, children: translateString(TranslatableString.InvalidObjectField, [name || "root", err.message]) }) }), _jsx13("pre", { children: JSON.stringify(schema) })] });
+      return _jsxs("div", { children: [_jsx11("p", { className: "rjsf-config-error", style: { color: "red" }, children: _jsx11(D6, { options: { disableParsingRawHTML: true }, children: translateString(TranslatableString.InvalidObjectField, [name || "root", err.message]) }) }), _jsx11("pre", { children: JSON.stringify(schema) })] });
     }
   }
   const Template = getTemplate("ObjectFieldTemplate", registry, uiOptions);
-  const optionalDataControl = renderOptionalField ? _jsx13(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId, schema }) : void 0;
+  const optionalDataControl = renderOptionalField ? _jsx11(OptionalDataControlsField2, { ...props, fieldPathId: childFieldPathId, schema }) : void 0;
   const templateProps = {
     // getDisplayLabel() always returns false for object types, so just check the `uiOptions.label`
     title: uiOptions.label === false ? "" : templateTitle,
     description: uiOptions.label === false ? void 0 : description,
     properties: orderedProperties.map((propertyName) => {
-      const addedByAdditionalProperties = isAdditionalPropertySchema(schema.properties?.[propertyName]);
+      const addedByAdditionalProperties = has_default(schema, [PROPERTIES_KEY, propertyName, ADDITIONAL_PROPERTY_FLAG]);
       const fieldUiSchema = addedByAdditionalProperties ? uiSchema.additionalProperties : uiSchema[propertyName];
       const hidden = getUiOptions(fieldUiSchema).widget === "hidden";
-      const content = _jsx13(ObjectFieldProperty, { propertyName, required: isRequired(schema, propertyName), schema: get_default(schema, [PROPERTIES_KEY, propertyName], {}), uiSchema: fieldUiSchema, errorSchema: get_default(errorSchema, [propertyName]), fieldPathId: childFieldPathId, formData: get_default(formData, [propertyName]), handleKeyRename, handleRemoveProperty, addedByAdditionalProperties, onChange, onBlur, onFocus, registry, disabled, readonly, hideError }, getStableKey(propertyName));
+      const content = _jsx11(ObjectFieldProperty, { propertyName, required: isRequired(schema, propertyName), schema: get_default(schema, [PROPERTIES_KEY, propertyName], {}), uiSchema: fieldUiSchema, errorSchema: get_default(errorSchema, [propertyName]), fieldPathId: childFieldPathId, formData: get_default(formData, [propertyName]), handleKeyRename, handleRemoveProperty, addedByAdditionalProperties, onChange, onBlur, onFocus, registry, disabled, readonly, hideError }, getStableKey(propertyName));
       return {
         content,
         name: propertyName,
@@ -24514,11 +23626,11 @@ function ObjectField(props) {
     optionalDataControl,
     className: renderOptionalField ? "rjsf-optional-object-field" : void 0
   };
-  return _jsx13(Template, { ...templateProps, onAddProperty });
+  return _jsx11(Template, { ...templateProps, onAddProperty });
 }
 
 // node_modules/@rjsf/core/lib/components/fields/OptionalDataControlsField.js
-import { jsx as _jsx14 } from "react/jsx-runtime";
+import { jsx as _jsx12 } from "react/jsx-runtime";
 function OptionalDataControlsField(props) {
   const { schema, uiSchema = {}, formData, disabled = false, readonly = false, onChange, errorSchema, fieldPathId, registry } = props;
   const { globalUiOptions = {}, schemaUtils, translateString } = registry;
@@ -24549,12 +23661,12 @@ function OptionalDataControlsField(props) {
       };
     }
   }
-  return label && _jsx14(OptionalDataControlsTemplate2, { id, registry, schema, uiSchema, label, onAddClick, onRemoveClick });
+  return label && _jsx12(OptionalDataControlsTemplate2, { id, registry, schema, uiSchema, label, onAddClick, onRemoveClick });
 }
 
 // node_modules/@rjsf/core/lib/components/fields/SchemaField.js
-import { jsx as _jsx15, Fragment as _Fragment, jsxs as _jsxs2 } from "react/jsx-runtime";
-import { useCallback as useCallback8, memo as memo3 } from "react";
+import { jsx as _jsx13, Fragment as _Fragment, jsxs as _jsxs2 } from "react/jsx-runtime";
+import { useCallback as useCallback7, Component as Component2 } from "react";
 var COMPONENT_TYPES = {
   array: "ArrayField",
   boolean: "BooleanField",
@@ -24566,7 +23678,7 @@ var COMPONENT_TYPES = {
 };
 function getFieldComponent(schema, uiOptions, registry) {
   const { field } = uiOptions;
-  const { fields: fields2, schemaUtils } = registry;
+  const { fields: fields2 } = registry;
   if (typeof field === "function") {
     return field;
   }
@@ -24580,7 +23692,7 @@ function getFieldComponent(schema, uiOptions, registry) {
   if (schemaId && schemaId in fields2) {
     componentName = schemaId;
   }
-  if ((schema.anyOf || schema.oneOf) && !schemaUtils.isSelect(schema) && componentName !== "ObjectField") {
+  if (!componentName && (schema.anyOf || schema.oneOf)) {
     return () => null;
   }
   return componentName in fields2 ? fields2[componentName] : fields2.FallbackField;
@@ -24588,15 +23700,7 @@ function getFieldComponent(schema, uiOptions, registry) {
 function SchemaFieldRender(props) {
   const { schema: _schema, fieldPathId, uiSchema: _uiSchema, formData, errorSchema, name, onChange, onKeyRename, onKeyRenameBlur, onRemoveProperty, required = false, registry, wasPropertyKeyModified = false } = props;
   const { schemaUtils, globalFormOptions, globalUiOptions, fields: fields2 } = registry;
-  const { AnyOfField: _AnyOfField, OneOfField: _OneOfField, CyclicSchemaField: CyclicSchemaField2 } = fields2;
-  const fieldId = fieldPathId[ID_KEY];
-  const handleFieldComponentChange = useCallback8((newFormData, path, newErrorSchema, id2) => {
-    const theId = id2 || fieldId;
-    return onChange(newFormData, path, newErrorSchema, theId);
-  }, [fieldId, onChange]);
-  if (_schema[RJSF_REF_CYCLE_KEY]) {
-    return _jsx15(CyclicSchemaField2, { ...props });
-  }
+  const { AnyOfField: _AnyOfField, OneOfField: _OneOfField } = fields2;
   const uiSchema = resolveUiSchema(_schema, _uiSchema, registry);
   const uiOptions = getUiOptions(uiSchema, globalUiOptions);
   const FieldTemplate2 = getTemplate("FieldTemplate", registry, uiOptions);
@@ -24604,6 +23708,11 @@ function SchemaFieldRender(props) {
   const FieldHelpTemplate2 = getTemplate("FieldHelpTemplate", registry, uiOptions);
   const FieldErrorTemplate2 = getTemplate("FieldErrorTemplate", registry, uiOptions);
   const schema = schemaUtils.retrieveSchema(_schema, formData);
+  const fieldId = fieldPathId[ID_KEY];
+  const handleFieldComponentChange = useCallback7((newFormData, path, newErrorSchema, id2) => {
+    const theId = id2 || fieldId;
+    return onChange(newFormData, path, newErrorSchema, theId);
+  }, [fieldId, onChange]);
   const FieldComponent = getFieldComponent(schema, uiOptions, registry);
   const isDeprecated = Boolean(schema.deprecated);
   const deprecatedHandling = isDeprecated ? uiOptions.deprecatedHandling ?? "label" : void 0;
@@ -24643,7 +23752,7 @@ function SchemaFieldRender(props) {
   if (UI_OPTIONS_KEY in fieldUiSchema) {
     fieldUiSchema[UI_OPTIONS_KEY] = omit_default(fieldUiSchema[UI_OPTIONS_KEY], ["classNames", "style"]);
   }
-  const field = _jsx15(FieldComponent, { ...props, onChange: handleFieldComponentChange, ...fieldPathIdProps, schema, uiSchema: fieldUiSchema, disabled, readonly, hideError, autofocus, errorSchema: fieldErrorSchema, rawErrors: __errors });
+  const field = _jsx13(FieldComponent, { ...props, onChange: handleFieldComponentChange, ...fieldPathIdProps, schema, uiSchema: fieldUiSchema, disabled, readonly, hideError, autofocus, errorSchema: fieldErrorSchema, rawErrors: __errors });
   const id = fieldPathId[ID_KEY];
   let label;
   if (wasPropertyKeyModified) {
@@ -24664,10 +23773,10 @@ function SchemaFieldRender(props) {
   if (uiOptions.classNames) {
     classNames2.push(uiOptions.classNames);
   }
-  const helpComponent = _jsx15(FieldHelpTemplate2, { help, fieldPathId, schema, uiSchema, hasErrors: !hideError && __errors && __errors.length > 0, registry });
-  const errorsComponent = hideError || XxxOfField && !schemaUtils.isSelect(schema) ? void 0 : _jsx15(FieldErrorTemplate2, { errors: __errors, errorSchema, fieldPathId, schema, uiSchema, registry });
+  const helpComponent = _jsx13(FieldHelpTemplate2, { help, fieldPathId, schema, uiSchema, hasErrors: !hideError && __errors && __errors.length > 0, registry });
+  const errorsComponent = hideError || XxxOfField && !schemaUtils.isSelect(schema) ? void 0 : _jsx13(FieldErrorTemplate2, { errors: __errors, errorSchema, fieldPathId, schema, uiSchema, registry });
   const fieldProps = {
-    description: _jsx15(DescriptionFieldTemplate, { id: descriptionId(id), description, schema, uiSchema, registry }),
+    description: _jsx13(DescriptionFieldTemplate, { id: descriptionId(id), description, schema, uiSchema, registry }),
     rawDescription: description,
     help: helpComponent,
     rawHelp: typeof help === "string" ? help : void 0,
@@ -24693,23 +23802,23 @@ function SchemaFieldRender(props) {
     uiSchema,
     registry
   };
-  return _jsx15(FieldTemplate2, { ...fieldProps, children: _jsxs2(_Fragment, { children: [field, XxxOfField && _jsx15(XxxOfField, { name, disabled, readonly, hideError, errorSchema, formData, fieldPathId, onBlur: props.onBlur, onChange: props.onChange, onFocus: props.onFocus, options: XxxOfOptions, registry, required, schema, uiSchema })] }) });
+  return _jsx13(FieldTemplate2, { ...fieldProps, children: _jsxs2(_Fragment, { children: [field, XxxOfField && _jsx13(XxxOfField, { name, disabled, readonly, hideError, errorSchema, formData, fieldPathId, onBlur: props.onBlur, onChange: props.onChange, onFocus: props.onFocus, options: XxxOfOptions, registry, required, schema, uiSchema })] }) });
 }
-var SchemaField = memo3(SchemaFieldRender, (prevProps, nextProps) => {
-  const { experimental_componentUpdateStrategy = "customDeep" } = nextProps.registry.globalFormOptions;
-  if (experimental_componentUpdateStrategy === "always") {
-    return false;
+var SchemaField = class extends Component2 {
+  shouldComponentUpdate(nextProps) {
+    const { registry: { globalFormOptions } } = this.props;
+    const { experimental_componentUpdateStrategy = "customDeep" } = globalFormOptions;
+    return shouldRender(this, nextProps, this.state, experimental_componentUpdateStrategy);
   }
-  if (experimental_componentUpdateStrategy === "shallow") {
-    return shallowEquals(prevProps, nextProps);
+  render() {
+    return _jsx13(SchemaFieldRender, { ...this.props });
   }
-  return deepEquals_default(prevProps, nextProps);
-});
+};
 var SchemaField_default = SchemaField;
 
 // node_modules/@rjsf/core/lib/components/fields/StringField.js
-import { jsx as _jsx16 } from "react/jsx-runtime";
-import { useCallback as useCallback9 } from "react";
+import { jsx as _jsx14 } from "react/jsx-runtime";
+import { useCallback as useCallback8 } from "react";
 function StringField(props) {
   const { schema, name, uiSchema, fieldPathId, formData, required, disabled = false, readonly = false, autofocus = false, onChange, onBlur, onFocus, registry, rawErrors, hideError, title } = props;
   const { title: schemaTitle, format } = schema;
@@ -24723,8 +23832,8 @@ function StringField(props) {
   const displayLabel = schemaUtils.getDisplayLabel(schema, uiSchema, globalUiOptions);
   const label = uiTitle ?? title ?? schemaTitle ?? name;
   const Widget = getWidget(schema, widget, widgets2);
-  const onWidgetChange = useCallback9((value, errorSchema, id) => onChange(value, fieldPathId.path, errorSchema, id), [onChange, fieldPathId]);
-  return _jsx16(Widget, { options: { ...options, enumOptions }, schema, uiSchema, id: fieldPathId.$id, name, label, hideLabel: !displayLabel, hideError, value: formData, onChange: onWidgetChange, onBlur, onFocus, required, disabled, readonly, autofocus, registry, placeholder, rawErrors, htmlName: fieldPathId.name });
+  const onWidgetChange = useCallback8((value, errorSchema, id) => onChange(value, fieldPathId.path, errorSchema, id), [onChange, fieldPathId]);
+  return _jsx14(Widget, { options: { ...options, enumOptions }, schema, uiSchema, id: fieldPathId.$id, name, label, hideLabel: !displayLabel, hideError, value: formData, onChange: onWidgetChange, onBlur, onFocus, required, disabled, readonly, autofocus, registry, placeholder, rawErrors, htmlName: fieldPathId.name });
 }
 var StringField_default = StringField;
 
@@ -24735,7 +23844,6 @@ function fields() {
     ArrayField,
     // ArrayField falls back to SchemaField if ArraySchemaField is not defined, which it isn't by default
     BooleanField: BooleanField_default,
-    CyclicSchemaField,
     FallbackField,
     LayoutGridField,
     LayoutHeaderField,
@@ -24752,7 +23860,7 @@ function fields() {
 var fields_default = fields;
 
 // node_modules/@rjsf/core/lib/components/templates/ArrayFieldDescriptionTemplate.js
-import { jsx as _jsx17 } from "react/jsx-runtime";
+import { jsx as _jsx15 } from "react/jsx-runtime";
 function ArrayFieldDescriptionTemplate(props) {
   const { fieldPathId, description, registry, schema, uiSchema } = props;
   const options = getUiOptions(uiSchema, registry.globalUiOptions);
@@ -24761,19 +23869,19 @@ function ArrayFieldDescriptionTemplate(props) {
     return null;
   }
   const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
-  return _jsx17(DescriptionFieldTemplate, { id: descriptionId(fieldPathId), description, schema, uiSchema, registry });
+  return _jsx15(DescriptionFieldTemplate, { id: descriptionId(fieldPathId), description, schema, uiSchema, registry });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ArrayFieldItemButtonsTemplate.js
-import { jsx as _jsx18, Fragment as _Fragment2, jsxs as _jsxs3 } from "react/jsx-runtime";
+import { jsx as _jsx16, Fragment as _Fragment2, jsxs as _jsxs3 } from "react/jsx-runtime";
 function ArrayFieldItemButtonsTemplate(props) {
   const { disabled, hasCopy, hasMoveDown, hasMoveUp, hasRemove, fieldPathId, onCopyItem, onRemoveItem, onMoveDownItem, onMoveUpItem, readonly, registry, uiSchema } = props;
   const { CopyButton: CopyButton2, MoveDownButton: MoveDownButton2, MoveUpButton: MoveUpButton2, RemoveButton: RemoveButton2 } = registry.templates.ButtonTemplates;
-  return _jsxs3(_Fragment2, { children: [(hasMoveUp || hasMoveDown) && _jsx18(MoveUpButton2, { id: buttonId(fieldPathId, "moveUp"), className: "rjsf-array-item-move-up", disabled: disabled || readonly || !hasMoveUp, onClick: onMoveUpItem, uiSchema, registry }), (hasMoveUp || hasMoveDown) && _jsx18(MoveDownButton2, { id: buttonId(fieldPathId, "moveDown"), className: "rjsf-array-item-move-down", disabled: disabled || readonly || !hasMoveDown, onClick: onMoveDownItem, uiSchema, registry }), hasCopy && _jsx18(CopyButton2, { id: buttonId(fieldPathId, "copy"), className: "rjsf-array-item-copy", disabled: disabled || readonly, onClick: onCopyItem, uiSchema, registry }), hasRemove && _jsx18(RemoveButton2, { id: buttonId(fieldPathId, "remove"), className: "rjsf-array-item-remove", disabled: disabled || readonly, onClick: onRemoveItem, uiSchema, registry })] });
+  return _jsxs3(_Fragment2, { children: [(hasMoveUp || hasMoveDown) && _jsx16(MoveUpButton2, { id: buttonId(fieldPathId, "moveUp"), className: "rjsf-array-item-move-up", disabled: disabled || readonly || !hasMoveUp, onClick: onMoveUpItem, uiSchema, registry }), (hasMoveUp || hasMoveDown) && _jsx16(MoveDownButton2, { id: buttonId(fieldPathId, "moveDown"), className: "rjsf-array-item-move-down", disabled: disabled || readonly || !hasMoveDown, onClick: onMoveDownItem, uiSchema, registry }), hasCopy && _jsx16(CopyButton2, { id: buttonId(fieldPathId, "copy"), className: "rjsf-array-item-copy", disabled: disabled || readonly, onClick: onCopyItem, uiSchema, registry }), hasRemove && _jsx16(RemoveButton2, { id: buttonId(fieldPathId, "remove"), className: "rjsf-array-item-remove", disabled: disabled || readonly, onClick: onRemoveItem, uiSchema, registry })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ArrayFieldItemTemplate.js
-import { jsx as _jsx19, jsxs as _jsxs4 } from "react/jsx-runtime";
+import { jsx as _jsx17, jsxs as _jsxs4 } from "react/jsx-runtime";
 function ArrayFieldItemTemplate(props) {
   const { children, className, buttonsProps, displayLabel, hasDescription, hasToolbar, registry, uiSchema } = props;
   const uiOptions = getUiOptions(uiSchema);
@@ -24787,11 +23895,11 @@ function ArrayFieldItemTemplate(props) {
   const margin = hasDescription ? 31 : 9;
   const containerStyle = { display: "flex", alignItems: displayLabel ? "center" : "baseline" };
   const toolbarStyle = { display: "flex", justifyContent: "flex-end", marginTop: displayLabel ? `${margin}px` : 0 };
-  return _jsxs4("div", { className, style: containerStyle, children: [_jsx19("div", { className: hasToolbar ? "col-xs-9 col-md-10 col-xl-11" : "col-xs-12", children }), hasToolbar && _jsx19("div", { className: "col-xs-3 col-md-2 col-xl-1 array-item-toolbox", children: _jsx19("div", { className: "btn-group", style: toolbarStyle, children: _jsx19(ArrayFieldItemButtonsTemplate2, { ...buttonsProps, style: btnStyle }) }) })] });
+  return _jsxs4("div", { className, style: containerStyle, children: [_jsx17("div", { className: hasToolbar ? "col-xs-9 col-md-10 col-xl-11" : "col-xs-12", children }), hasToolbar && _jsx17("div", { className: "col-xs-3 col-md-2 col-xl-1 array-item-toolbox", children: _jsx17("div", { className: "btn-group", style: toolbarStyle, children: _jsx17(ArrayFieldItemButtonsTemplate2, { ...buttonsProps, style: btnStyle }) }) })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ArrayFieldTemplate.js
-import { jsx as _jsx20, jsxs as _jsxs5 } from "react/jsx-runtime";
+import { jsx as _jsx18, jsxs as _jsxs5 } from "react/jsx-runtime";
 function ArrayFieldTemplate(props) {
   const { canAdd, className, disabled, fieldPathId, uiSchema, items, optionalDataControl, onAddClick, readonly, registry, required, schema, title } = props;
   const uiOptions = getUiOptions(uiSchema);
@@ -24799,11 +23907,11 @@ function ArrayFieldTemplate(props) {
   const ArrayFieldTitleTemplate2 = getTemplate("ArrayFieldTitleTemplate", registry, uiOptions);
   const showOptionalDataControlInTitle = !readonly && !disabled;
   const { ButtonTemplates: { AddButton: AddButton2 } } = registry.templates;
-  return _jsxs5("fieldset", { className, id: fieldPathId.$id, children: [_jsx20(ArrayFieldTitleTemplate2, { fieldPathId, title: uiOptions.title || title, required, schema, uiSchema, registry, optionalDataControl: showOptionalDataControlInTitle ? optionalDataControl : void 0 }), _jsx20(ArrayFieldDescriptionTemplate2, { fieldPathId, description: uiOptions.description || schema.description, schema, uiSchema, registry }), !showOptionalDataControlInTitle ? optionalDataControl : void 0, _jsx20("div", { className: "row array-item-list", children: items }), canAdd && _jsx20(AddButton2, { id: buttonId(fieldPathId, "add"), className: "rjsf-array-item-add", onClick: onAddClick, disabled: disabled || readonly, uiSchema, registry })] });
+  return _jsxs5("fieldset", { className, id: fieldPathId.$id, children: [_jsx18(ArrayFieldTitleTemplate2, { fieldPathId, title: uiOptions.title || title, required, schema, uiSchema, registry, optionalDataControl: showOptionalDataControlInTitle ? optionalDataControl : void 0 }), _jsx18(ArrayFieldDescriptionTemplate2, { fieldPathId, description: uiOptions.description || schema.description, schema, uiSchema, registry }), !showOptionalDataControlInTitle ? optionalDataControl : void 0, _jsx18("div", { className: "row array-item-list", children: items }), canAdd && _jsx18(AddButton2, { id: buttonId(fieldPathId, "add"), className: "rjsf-array-item-add", onClick: onAddClick, disabled: disabled || readonly, uiSchema, registry })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ArrayFieldTitleTemplate.js
-import { jsx as _jsx21 } from "react/jsx-runtime";
+import { jsx as _jsx19 } from "react/jsx-runtime";
 function ArrayFieldTitleTemplate(props) {
   const { fieldPathId, title, schema, uiSchema, required, registry, optionalDataControl } = props;
   const options = getUiOptions(uiSchema, registry.globalUiOptions);
@@ -24812,22 +23920,22 @@ function ArrayFieldTitleTemplate(props) {
     return null;
   }
   const TitleFieldTemplate = getTemplate("TitleFieldTemplate", registry, options);
-  return _jsx21(TitleFieldTemplate, { id: titleId(fieldPathId), title, required, schema, uiSchema, registry, optionalDataControl });
+  return _jsx19(TitleFieldTemplate, { id: titleId(fieldPathId), title, required, schema, uiSchema, registry, optionalDataControl });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/BaseInputTemplate.js
-import { jsx as _jsx23, Fragment as _Fragment3, jsxs as _jsxs6 } from "react/jsx-runtime";
-import { useCallback as useCallback10 } from "react";
+import { jsx as _jsx21, Fragment as _Fragment3, jsxs as _jsxs6 } from "react/jsx-runtime";
+import { useCallback as useCallback9 } from "react";
 
 // node_modules/@rjsf/core/lib/components/SchemaExamples.js
-import { jsx as _jsx22 } from "react/jsx-runtime";
+import { jsx as _jsx20 } from "react/jsx-runtime";
 function SchemaExamples(props) {
   const { id, schema } = props;
   const { examples, default: schemaDefault } = schema;
   if (!Array.isArray(examples)) {
     return null;
   }
-  return _jsx22("datalist", { id: examplesId(id), children: examples.concat(schemaDefault !== void 0 && !examples.map(String).includes(String(schemaDefault)) ? [schemaDefault] : []).map((example) => _jsx22("option", { value: example }, String(example))) }, `datalist_${id}`);
+  return _jsx20("datalist", { id: examplesId(id), children: examples.concat(schemaDefault !== void 0 && !examples.map(String).includes(String(schemaDefault)) ? [schemaDefault] : []).map((example) => _jsx20("option", { value: example }, String(example))) }, `datalist_${id}`);
 }
 
 // node_modules/@rjsf/core/lib/components/templates/BaseInputTemplate.js
@@ -24872,69 +23980,69 @@ function BaseInputTemplate(props) {
   } else {
     inputValue = value == null ? "" : value;
   }
-  const handleChange = useCallback10(({ target: { value: newValue } }) => onChange(newValue === "" ? options.emptyValue : newValue), [onChange, options]);
-  const handleBlur = useCallback10(({ target }) => onBlur(id, target?.value), [onBlur, id]);
-  const handleFocus = useCallback10(({ target }) => onFocus(id, target?.value), [onFocus, id]);
-  const handleClear = useCallback10((e2) => {
-    e2.preventDefault();
-    e2.stopPropagation();
+  const handleChange = useCallback9(({ target: { value: newValue } }) => onChange(newValue === "" ? options.emptyValue : newValue), [onChange, options]);
+  const handleBlur = useCallback9(({ target }) => onBlur(id, target && target.value), [onBlur, id]);
+  const handleFocus = useCallback9(({ target }) => onFocus(id, target && target.value), [onFocus, id]);
+  const handleClear = useCallback9((e) => {
+    e.preventDefault();
+    e.stopPropagation();
     onChange(options.emptyValue ?? "");
   }, [onChange, options.emptyValue]);
-  return _jsxs6(_Fragment3, { children: [_jsx23("input", { id, name: htmlName || id, className: "form-control", readOnly: readonly, disabled, autoFocus: autofocus, value: inputValue, ...inputProps, list: schema.examples ? examplesId(id) : void 0, onChange: onChangeOverride || handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id, !!schema.examples) }), options.allowClearTextInputs && !readonly && !disabled && inputValue && _jsx23(ClearButton2, { registry, onClick: handleClear }), _jsx23(SchemaExamples, { id, schema })] });
+  return _jsxs6(_Fragment3, { children: [_jsx21("input", { id, name: htmlName || id, className: "form-control", readOnly: readonly, disabled, autoFocus: autofocus, value: inputValue, ...inputProps, list: schema.examples ? examplesId(id) : void 0, onChange: onChangeOverride || handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id, !!schema.examples) }), options.allowClearTextInputs && !readonly && !disabled && inputValue && _jsx21(ClearButton2, { registry, onClick: handleClear }), _jsx21(SchemaExamples, { id, schema })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/AddButton.js
-import { jsx as _jsx25 } from "react/jsx-runtime";
+import { jsx as _jsx23 } from "react/jsx-runtime";
 
 // node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/IconButton.js
-import { jsx as _jsx24 } from "react/jsx-runtime";
-import { memo as memo4 } from "react";
+import { jsx as _jsx22 } from "react/jsx-runtime";
+import { memo as memo3 } from "react";
 function IconButtonFn(props) {
   const { iconType = "default", icon, className, uiSchema, registry, ...otherProps } = props;
-  return _jsx24("button", { type: "button", className: `btn btn-${iconType} ${className}`, ...otherProps, children: _jsx24("i", { className: `glyphicon glyphicon-${icon}` }) });
+  return _jsx22("button", { type: "button", className: `btn btn-${iconType} ${className}`, ...otherProps, children: _jsx22("i", { className: `glyphicon glyphicon-${icon}` }) });
 }
-var IconButton = memo4(IconButtonFn);
+var IconButton = memo3(IconButtonFn);
 var IconButton_default = IconButton;
 function CopyButtonFn(props) {
   const { registry: { translateString } } = props;
-  return _jsx24(IconButton, { title: translateString(TranslatableString.CopyButton), ...props, icon: "copy" });
+  return _jsx22(IconButton, { title: translateString(TranslatableString.CopyButton), ...props, icon: "copy" });
 }
-var CopyButton = memo4(CopyButtonFn);
+var CopyButton = memo3(CopyButtonFn);
 function MoveDownButtonFn(props) {
   const { registry: { translateString } } = props;
-  return _jsx24(IconButton, { title: translateString(TranslatableString.MoveDownButton), ...props, icon: "arrow-down" });
+  return _jsx22(IconButton, { title: translateString(TranslatableString.MoveDownButton), ...props, icon: "arrow-down" });
 }
-var MoveDownButton = memo4(MoveDownButtonFn);
+var MoveDownButton = memo3(MoveDownButtonFn);
 function MoveUpButtonFn(props) {
   const { registry: { translateString } } = props;
-  return _jsx24(IconButton, { title: translateString(TranslatableString.MoveUpButton), ...props, icon: "arrow-up" });
+  return _jsx22(IconButton, { title: translateString(TranslatableString.MoveUpButton), ...props, icon: "arrow-up" });
 }
-var MoveUpButton = memo4(MoveUpButtonFn);
+var MoveUpButton = memo3(MoveUpButtonFn);
 function RemoveButtonFn(props) {
   const { registry: { translateString } } = props;
-  return _jsx24(IconButton, { title: translateString(TranslatableString.RemoveButton), ...props, iconType: "danger", icon: "remove" });
+  return _jsx22(IconButton, { title: translateString(TranslatableString.RemoveButton), ...props, iconType: "danger", icon: "remove" });
 }
-var RemoveButton = memo4(RemoveButtonFn);
+var RemoveButton = memo3(RemoveButtonFn);
 function ClearButtonFn({ id, className, onClick, disabled, registry, ...props }) {
   const { translateString } = registry;
-  return _jsx24(IconButton, { id, iconType: "default", icon: "remove", className: "btn-clear col-xs-12", title: translateString(TranslatableString.ClearButton), onClick, disabled, registry, ...props });
+  return _jsx22(IconButton, { id, iconType: "default", icon: "remove", className: "btn-clear col-xs-12", title: translateString(TranslatableString.ClearButton), onClick, disabled, registry, ...props });
 }
-var ClearButton = memo4(ClearButtonFn);
+var ClearButton = memo3(ClearButtonFn);
 
 // node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/AddButton.js
 function AddButton({ id, className, onClick, disabled, registry }) {
   const { translateString } = registry;
-  return _jsx25("div", { className: "row", children: _jsx25("p", { className: `col-xs-4 col-sm-2 col-lg-1 col-xs-offset-8 col-sm-offset-10 col-lg-offset-11 text-right ${className}`, children: _jsx25(IconButton_default, { id, iconType: "info", icon: "plus", className: "btn-add col-xs-12", title: translateString(TranslatableString.AddButton), onClick, disabled, registry }) }) });
+  return _jsx23("div", { className: "row", children: _jsx23("p", { className: `col-xs-4 col-sm-2 col-lg-1 col-xs-offset-8 col-sm-offset-10 col-lg-offset-11 text-right ${className}`, children: _jsx23(IconButton_default, { id, iconType: "info", icon: "plus", className: "btn-add col-xs-12", title: translateString(TranslatableString.AddButton), onClick, disabled, registry }) }) });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/SubmitButton.js
-import { jsx as _jsx26 } from "react/jsx-runtime";
+import { jsx as _jsx24 } from "react/jsx-runtime";
 function SubmitButton({ uiSchema }) {
   const { submitText, norender, props: submitButtonProps = {} } = getSubmitButtonOptions(uiSchema);
   if (norender) {
     return null;
   }
-  return _jsx26("div", { children: _jsx26("button", { type: "submit", ...submitButtonProps, className: `btn btn-info ${submitButtonProps.className || ""}`, children: submitText }) });
+  return _jsx24("div", { children: _jsx24("button", { type: "submit", ...submitButtonProps, className: `btn btn-info ${submitButtonProps.className || ""}`, children: submitText }) });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ButtonTemplates/index.js
@@ -24951,26 +24059,17 @@ function buttonTemplates() {
 }
 var ButtonTemplates_default = buttonTemplates;
 
-// node_modules/@rjsf/core/lib/components/templates/CyclicSchemaExpandTemplate.js
-import { jsx as _jsx27, jsxs as _jsxs7 } from "react/jsx-runtime";
-function CyclicSchemaExpandTemplate(props) {
-  const { name, fieldPathId, registry, onExpand } = props;
-  const { translateString } = registry;
-  const buttonId2 = `${fieldPathId[ID_KEY]}-button`;
-  return _jsxs7("div", { style: { marginTop: "1rem" }, children: [_jsx27("div", { className: "text-danger", children: translateString(TranslatableString.CycleDetected, [name]) }), _jsxs7("div", { children: [_jsx27("button", { id: buttonId2, type: "button", className: "btn btn-sm btn-warning", onClick: () => onExpand(fieldPathId[ID_KEY]), children: translateString(TranslatableString.ExpandButton) }), " "] })] });
-}
-
 // node_modules/@rjsf/core/lib/components/templates/DescriptionField.js
-import { jsx as _jsx29 } from "react/jsx-runtime";
+import { jsx as _jsx26 } from "react/jsx-runtime";
 
 // node_modules/@rjsf/core/lib/components/RichDescription.js
-import { jsx as _jsx28 } from "react/jsx-runtime";
+import { jsx as _jsx25 } from "react/jsx-runtime";
 var TEST_IDS = getTestIds();
 function RichDescription({ description, registry, uiSchema = {} }) {
   const { globalUiOptions } = registry;
   const uiOptions = getUiOptions(uiSchema, globalUiOptions);
   if (uiOptions.enableMarkdownInDescription && typeof description === "string") {
-    return _jsx28(AZ, { options: { disableParsingRawHTML: true }, "data-testid": TEST_IDS.markdown, children: description });
+    return _jsx25(D6, { options: { disableParsingRawHTML: true }, "data-testid": TEST_IDS.markdown, children: description });
   }
   return description;
 }
@@ -24982,46 +24081,46 @@ function DescriptionField(props) {
   if (!description) {
     return null;
   }
-  return _jsx29("div", { id, className: "field-description", children: _jsx29(RichDescription, { description, registry, uiSchema }) });
+  return _jsx26("div", { id, className: "field-description", children: _jsx26(RichDescription, { description, registry, uiSchema }) });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ErrorList.js
-import { jsx as _jsx30, jsxs as _jsxs8 } from "react/jsx-runtime";
+import { jsx as _jsx27, jsxs as _jsxs7 } from "react/jsx-runtime";
 function ErrorList({ errors, registry }) {
   const { translateString } = registry;
-  return _jsxs8("div", { className: "panel panel-danger errors", children: [_jsx30("div", { className: "panel-heading", children: _jsx30("h3", { className: "panel-title", children: translateString(TranslatableString.ErrorsLabel) }) }), _jsx30("ul", { className: "list-group", children: errors.map((error, i) => _jsx30("li", { className: "list-group-item text-danger", children: error.stack }, i)) })] });
+  return _jsxs7("div", { className: "panel panel-danger errors", children: [_jsx27("div", { className: "panel-heading", children: _jsx27("h3", { className: "panel-title", children: translateString(TranslatableString.ErrorsLabel) }) }), _jsx27("ul", { className: "list-group", children: errors.map((error, i2) => _jsx27("li", { className: "list-group-item text-danger", children: error.stack }, i2)) })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/FallbackFieldTemplate.js
-import { jsx as _jsx31 } from "react/jsx-runtime";
+import { jsx as _jsx28 } from "react/jsx-runtime";
 function FallbackFieldTemplate(props) {
   const { schema, registry, typeSelector, schemaField } = props;
   const MultiSchemaFieldTemplate2 = getTemplate("MultiSchemaFieldTemplate", registry);
-  return _jsx31(MultiSchemaFieldTemplate2, { selector: typeSelector, optionSchemaField: schemaField, schema, registry });
+  return _jsx28(MultiSchemaFieldTemplate2, { selector: typeSelector, optionSchemaField: schemaField, schema, registry });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/FieldErrorTemplate.js
-import { jsx as _jsx32 } from "react/jsx-runtime";
+import { jsx as _jsx29 } from "react/jsx-runtime";
 function FieldErrorTemplate(props) {
   const { errors = [], fieldPathId } = props;
   if (errors.length === 0) {
     return null;
   }
   const id = errorId(fieldPathId);
-  return _jsx32("div", { children: _jsx32("ul", { id, className: "error-detail bs-callout bs-callout-info", children: errors.filter((elem) => !!elem).map((error, index) => _jsx32("li", { className: "text-danger", children: error }, index)) }) });
+  return _jsx29("div", { children: _jsx29("ul", { id, className: "error-detail bs-callout bs-callout-info", children: errors.filter((elem) => !!elem).map((error, index) => _jsx29("li", { className: "text-danger", children: error }, index)) }) });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/FieldHelpTemplate.js
-import { jsx as _jsx34 } from "react/jsx-runtime";
+import { jsx as _jsx31 } from "react/jsx-runtime";
 
 // node_modules/@rjsf/core/lib/components/RichHelp.js
-import { jsx as _jsx33 } from "react/jsx-runtime";
+import { jsx as _jsx30 } from "react/jsx-runtime";
 var TEST_IDS2 = getTestIds();
 function RichHelp({ help, registry, uiSchema = {} }) {
   const { globalUiOptions } = registry;
   const uiOptions = getUiOptions(uiSchema, globalUiOptions);
   if (uiOptions.enableMarkdownInHelp && typeof help === "string") {
-    return _jsx33(AZ, { options: { disableParsingRawHTML: true }, "data-testid": TEST_IDS2.markdown, children: help });
+    return _jsx30(D6, { options: { disableParsingRawHTML: true }, "data-testid": TEST_IDS2.markdown, children: help });
   }
   return help;
 }
@@ -25033,21 +24132,21 @@ function FieldHelpTemplate(props) {
   if (!help) {
     return null;
   }
-  return _jsx34("div", { id: helpId(fieldPathId), className: "help-block", children: _jsx34(RichHelp, { help, registry, uiSchema }) });
+  return _jsx31("div", { id: helpId(fieldPathId), className: "help-block", children: _jsx31(RichHelp, { help, registry, uiSchema }) });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/FieldTemplate/FieldTemplate.js
-import { jsx as _jsx36, jsxs as _jsxs10 } from "react/jsx-runtime";
+import { jsx as _jsx33, jsxs as _jsxs9 } from "react/jsx-runtime";
 
 // node_modules/@rjsf/core/lib/components/templates/FieldTemplate/Label.js
-import { jsx as _jsx35, jsxs as _jsxs9 } from "react/jsx-runtime";
+import { jsx as _jsx32, jsxs as _jsxs8 } from "react/jsx-runtime";
 var REQUIRED_FIELD_SYMBOL = "*";
 function Label(props) {
   const { label, required, id } = props;
   if (!label) {
     return null;
   }
-  return _jsxs9("label", { className: "control-label", htmlFor: id, children: [label, required && _jsx35("span", { className: "required", children: REQUIRED_FIELD_SYMBOL })] });
+  return _jsxs8("label", { className: "control-label", htmlFor: id, children: [label, required && _jsx32("span", { className: "required", children: REQUIRED_FIELD_SYMBOL })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/FieldTemplate/FieldTemplate.js
@@ -25056,31 +24155,31 @@ function FieldTemplate(props) {
   const uiOptions = getUiOptions(uiSchema);
   const WrapIfAdditionalTemplate2 = getTemplate("WrapIfAdditionalTemplate", registry, uiOptions);
   if (hidden) {
-    return _jsx36("div", { className: "hidden", children });
+    return _jsx33("div", { className: "hidden", children });
   }
   const isCheckbox = uiOptions.widget === "checkbox";
-  return _jsxs10(WrapIfAdditionalTemplate2, { ...props, children: [displayLabel && !isCheckbox && _jsx36(Label, { label, required, id }), displayLabel && description ? description : null, children, errors, help] });
+  return _jsxs9(WrapIfAdditionalTemplate2, { ...props, children: [displayLabel && !isCheckbox && _jsx33(Label, { label, required, id }), displayLabel && description ? description : null, children, errors, help] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/FieldTemplate/index.js
 var FieldTemplate_default = FieldTemplate;
 
 // node_modules/@rjsf/core/lib/components/templates/GridTemplate.js
-import { jsx as _jsx37 } from "react/jsx-runtime";
+import { jsx as _jsx34 } from "react/jsx-runtime";
 function GridTemplate(props) {
   const { children, column, className, ...rest } = props;
-  return _jsx37("div", { className, ...rest, children });
+  return _jsx34("div", { className, ...rest, children });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/MultiSchemaFieldTemplate.js
-import { jsx as _jsx38, jsxs as _jsxs11 } from "react/jsx-runtime";
+import { jsx as _jsx35, jsxs as _jsxs10 } from "react/jsx-runtime";
 function MultiSchemaFieldTemplate(props) {
   const { selector, optionSchemaField } = props;
-  return _jsxs11("div", { className: "panel panel-default panel-body", children: [_jsx38("div", { className: "form-group", children: selector }), optionSchemaField] });
+  return _jsxs10("div", { className: "panel panel-default panel-body", children: [_jsx35("div", { className: "form-group", children: selector }), optionSchemaField] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/ObjectFieldTemplate.js
-import { jsx as _jsx39, jsxs as _jsxs12 } from "react/jsx-runtime";
+import { jsx as _jsx36, jsxs as _jsxs11 } from "react/jsx-runtime";
 function ObjectFieldTemplate(props) {
   const { className, description, disabled, formData, fieldPathId, onAddProperty, optionalDataControl, properties, readonly, registry, required, schema, title, uiSchema } = props;
   const options = getUiOptions(uiSchema);
@@ -25092,38 +24191,38 @@ function ObjectFieldTemplate(props) {
   }
   const showOptionalDataControlInTitle = !readonly && !disabled;
   const { ButtonTemplates: { AddButton: AddButton2 } } = registry.templates;
-  return _jsxs12("fieldset", { className, id: fieldPathId.$id, children: [title && _jsx39(TitleFieldTemplate, { id: titleId(fieldPathId), title, required, schema, uiSchema, registry, optionalDataControl: showOptionalDataControlInTitle ? optionalDataControl : void 0 }), description && _jsx39(DescriptionFieldTemplate, { id: descriptionId(fieldPathId), description, schema, uiSchema, registry }), !showOptionalDataControlInTitle ? optionalDataControl : void 0, properties.map((prop) => prop.content), canExpand(schema, uiSchema, formData) && _jsx39(AddButton2, { id: buttonId(fieldPathId, "add"), className: "rjsf-object-property-expand", onClick: onAddProperty, disabled: disabled || readonly, uiSchema, registry })] });
+  return _jsxs11("fieldset", { className, id: fieldPathId.$id, children: [title && _jsx36(TitleFieldTemplate, { id: titleId(fieldPathId), title, required, schema, uiSchema, registry, optionalDataControl: showOptionalDataControlInTitle ? optionalDataControl : void 0 }), description && _jsx36(DescriptionFieldTemplate, { id: descriptionId(fieldPathId), description, schema, uiSchema, registry }), !showOptionalDataControlInTitle ? optionalDataControl : void 0, properties.map((prop) => prop.content), canExpand(schema, uiSchema, formData) && _jsx36(AddButton2, { id: buttonId(fieldPathId, "add"), className: "rjsf-object-property-expand", onClick: onAddProperty, disabled: disabled || readonly, uiSchema, registry })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/OptionalDataControlsTemplate.js
-import { jsx as _jsx40 } from "react/jsx-runtime";
+import { jsx as _jsx37 } from "react/jsx-runtime";
 function OptionalDataControlsTemplate(props) {
   const { id, registry, label, onAddClick, onRemoveClick } = props;
   if (onAddClick) {
-    return _jsx40(IconButton_default, { id, registry, icon: "plus", className: "rjsf-add-optional-data btn-sm", onClick: onAddClick, title: label });
+    return _jsx37(IconButton_default, { id, registry, icon: "plus", className: "rjsf-add-optional-data btn-sm", onClick: onAddClick, title: label });
   }
   if (onRemoveClick) {
-    return _jsx40(IconButton_default, { id, registry, icon: "remove", className: "rjsf-remove-optional-data btn-sm", onClick: onRemoveClick, title: label });
+    return _jsx37(IconButton_default, { id, registry, icon: "remove", className: "rjsf-remove-optional-data btn-sm", onClick: onRemoveClick, title: label });
   }
-  return _jsx40("em", { id, children: label });
+  return _jsx37("em", { id, children: label });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/TitleField.js
-import { jsx as _jsx41, jsxs as _jsxs13 } from "react/jsx-runtime";
+import { jsx as _jsx38, jsxs as _jsxs12 } from "react/jsx-runtime";
 var REQUIRED_FIELD_SYMBOL2 = "*";
 function TitleField(props) {
   const { id, title, required, optionalDataControl } = props;
-  return _jsxs13("legend", { id, children: [title, required && _jsx41("span", { className: "required", children: REQUIRED_FIELD_SYMBOL2 }), optionalDataControl && _jsx41("span", { className: "pull-right", style: { marginBottom: "2px" }, children: optionalDataControl })] });
+  return _jsxs12("legend", { id, children: [title, required && _jsx38("span", { className: "required", children: REQUIRED_FIELD_SYMBOL2 }), optionalDataControl && _jsx38("span", { className: "pull-right", style: { marginBottom: "2px" }, children: optionalDataControl })] });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/UnsupportedField.js
-import { jsx as _jsx42, jsxs as _jsxs14 } from "react/jsx-runtime";
+import { jsx as _jsx39, jsxs as _jsxs13 } from "react/jsx-runtime";
 function UnsupportedField(props) {
   const { schema, fieldPathId, reason, registry } = props;
   const { translateString } = registry;
   let translateEnum = TranslatableString.UnsupportedField;
   const translateParams = [];
-  if (fieldPathId?.$id) {
+  if (fieldPathId && fieldPathId.$id) {
     translateEnum = TranslatableString.UnsupportedFieldWithId;
     translateParams.push(fieldPathId.$id);
   }
@@ -25131,12 +24230,12 @@ function UnsupportedField(props) {
     translateEnum = translateEnum === TranslatableString.UnsupportedField ? TranslatableString.UnsupportedFieldWithReason : TranslatableString.UnsupportedFieldWithIdAndReason;
     translateParams.push(reason);
   }
-  return _jsxs14("div", { className: "unsupported-field", children: [_jsx42("p", { children: _jsx42(AZ, { options: { disableParsingRawHTML: true }, children: translateString(translateEnum, translateParams) }) }), schema && _jsx42("pre", { children: JSON.stringify(schema, null, 2) })] });
+  return _jsxs13("div", { className: "unsupported-field", children: [_jsx39("p", { children: _jsx39(D6, { options: { disableParsingRawHTML: true }, children: translateString(translateEnum, translateParams) }) }), schema && _jsx39("pre", { children: JSON.stringify(schema, null, 2) })] });
 }
 var UnsupportedField_default = UnsupportedField;
 
 // node_modules/@rjsf/core/lib/components/templates/WrapIfAdditionalTemplate.js
-import { jsx as _jsx43, jsxs as _jsxs15 } from "react/jsx-runtime";
+import { jsx as _jsx40, jsxs as _jsxs14 } from "react/jsx-runtime";
 function WrapIfAdditionalTemplate(props) {
   const { id, classNames: classNames2, style, disabled, displayLabel, label, onKeyRenameBlur, onRemoveProperty, rawDescription, readonly, required, schema, hideError, rawErrors, children, uiSchema, registry } = props;
   const { templates: templates2, translateString } = registry;
@@ -25150,10 +24249,10 @@ function WrapIfAdditionalTemplate(props) {
   }
   const uiClassNames = classNamesList.join(" ").trim();
   if (!additional) {
-    return _jsx43("div", { className: uiClassNames, style, children });
+    return _jsx40("div", { className: uiClassNames, style, children });
   }
   const margin = hasDescription ? 46 : 26;
-  return _jsx43("div", { className: uiClassNames, style, children: _jsxs15("div", { className: "row", children: [_jsx43("div", { className: "col-xs-5 form-additional", children: _jsxs15("div", { className: "form-group", children: [displayLabel && _jsx43(Label, { label: keyLabel, required, id: `${id}-key` }), displayLabel && rawDescription && _jsx43("div", { children: "\xA0" }), _jsx43("input", { className: "form-control", type: "text", id: `${id}-key`, onBlur: onKeyRenameBlur, defaultValue: label }, label)] }) }), _jsx43("div", { className: "form-additional form-group col-xs-5", children }), _jsx43("div", { className: "col-xs-2", style: { marginTop: displayLabel ? `${margin}px` : void 0 }, children: _jsx43(RemoveButton2, { id: buttonId(id, "remove"), className: "rjsf-object-property-remove btn-block", style: { border: "0" }, disabled: disabled || readonly, onClick: onRemoveProperty, uiSchema, registry }) })] }) });
+  return _jsx40("div", { className: uiClassNames, style, children: _jsxs14("div", { className: "row", children: [_jsx40("div", { className: "col-xs-5 form-additional", children: _jsxs14("div", { className: "form-group", children: [displayLabel && _jsx40(Label, { label: keyLabel, required, id: `${id}-key` }), displayLabel && rawDescription && _jsx40("div", { children: "\xA0" }), _jsx40("input", { className: "form-control", type: "text", id: `${id}-key`, onBlur: onKeyRenameBlur, defaultValue: label }, label)] }) }), _jsx40("div", { className: "form-additional form-group col-xs-5", children }), _jsx40("div", { className: "col-xs-2", style: { marginTop: displayLabel ? `${margin}px` : void 0 }, children: _jsx40(RemoveButton2, { id: buttonId(id, "remove"), className: "rjsf-object-property-remove btn-block", style: { border: "0" }, disabled: disabled || readonly, onClick: onRemoveProperty, uiSchema, registry }) })] }) });
 }
 
 // node_modules/@rjsf/core/lib/components/templates/index.js
@@ -25166,7 +24265,6 @@ function templates() {
     ArrayFieldTitleTemplate,
     ButtonTemplates: ButtonTemplates_default(),
     BaseInputTemplate,
-    CyclicSchemaExpandTemplate,
     DescriptionFieldTemplate: DescriptionField,
     ErrorListTemplate: ErrorList,
     FallbackFieldTemplate,
@@ -25185,33 +24283,33 @@ function templates() {
 var templates_default = templates;
 
 // node_modules/@rjsf/core/lib/components/widgets/AltDateTimeWidget.js
-import { jsx as _jsx44 } from "react/jsx-runtime";
+import { jsx as _jsx41 } from "react/jsx-runtime";
 function AltDateTimeWidget({ time = true, ...props }) {
   const { AltDateWidget: AltDateWidget2 } = props.registry.widgets;
-  return _jsx44(AltDateWidget2, { time, ...props });
+  return _jsx41(AltDateWidget2, { time, ...props });
 }
 var AltDateTimeWidget_default = AltDateTimeWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/AltDateWidget.js
-import { jsx as _jsx45, jsxs as _jsxs16 } from "react/jsx-runtime";
+import { jsx as _jsx42, jsxs as _jsxs15 } from "react/jsx-runtime";
 function AltDateWidget(props) {
   const { disabled = false, readonly = false, autofocus = false, options, id, name, registry, onBlur, onFocus } = props;
   const { translateString } = registry;
   const { elements, handleChange, handleClear, handleSetNow } = useAltDateWidgetProps(props);
-  return _jsxs16("ul", { className: "list-inline", children: [elements.map((elemProps, i) => _jsx45("li", { className: "list-inline-item", children: _jsx45(DateElement, { rootId: id, name, select: handleChange, ...elemProps, disabled, readonly, registry, onBlur, onFocus, autofocus: autofocus && i === 0 }) }, i)), (options.hideNowButton !== "undefined" ? !options.hideNowButton : true) && _jsx45("li", { className: "list-inline-item", children: _jsx45("button", { type: "button", className: "btn btn-info btn-now", onClick: handleSetNow, children: translateString(TranslatableString.NowLabel) }) }), (options.hideClearButton !== "undefined" ? !options.hideClearButton : true) && _jsx45("li", { className: "list-inline-item", children: _jsx45("button", { type: "button", className: "btn btn-warning btn-clear", onClick: handleClear, children: translateString(TranslatableString.ClearLabel) }) })] });
+  return _jsxs15("ul", { className: "list-inline", children: [elements.map((elemProps, i2) => _jsx42("li", { className: "list-inline-item", children: _jsx42(DateElement, { rootId: id, name, select: handleChange, ...elemProps, disabled, readonly, registry, onBlur, onFocus, autofocus: autofocus && i2 === 0 }) }, i2)), (options.hideNowButton !== "undefined" ? !options.hideNowButton : true) && _jsx42("li", { className: "list-inline-item", children: _jsx42("button", { type: "button", className: "btn btn-info btn-now", onClick: handleSetNow, children: translateString(TranslatableString.NowLabel) }) }), (options.hideClearButton !== "undefined" ? !options.hideClearButton : true) && _jsx42("li", { className: "list-inline-item", children: _jsx42("button", { type: "button", className: "btn btn-warning btn-clear", onClick: handleClear, children: translateString(TranslatableString.ClearLabel) }) })] });
 }
 var AltDateWidget_default = AltDateWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/CheckboxesWidget.js
-import { jsx as _jsx46, jsxs as _jsxs17 } from "react/jsx-runtime";
-import { useCallback as useCallback11 } from "react";
+import { jsx as _jsx43, jsxs as _jsxs16 } from "react/jsx-runtime";
+import { useCallback as useCallback10 } from "react";
 function CheckboxesWidget({ id, disabled, options, value, autofocus = false, readonly, onChange, onBlur, onFocus, htmlName }) {
   const { inline = false, enumOptions, enumDisabled, emptyValue } = options;
   const optionValueFormat = getOptionValueFormat(options);
   const checkboxesValues = Array.isArray(value) ? value : [value];
-  const handleBlur = useCallback11(({ target }) => onBlur(id, enumOptionValueDecoder(target?.value, enumOptions, optionValueFormat, emptyValue)), [onBlur, id, enumOptions, emptyValue, optionValueFormat]);
-  const handleFocus = useCallback11(({ target }) => onFocus(id, enumOptionValueDecoder(target?.value, enumOptions, optionValueFormat, emptyValue)), [onFocus, id, enumOptions, emptyValue, optionValueFormat]);
-  return _jsx46("div", { className: "checkboxes", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+  const handleBlur = useCallback10(({ target }) => onBlur(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onBlur, id, enumOptions, emptyValue, optionValueFormat]);
+  const handleFocus = useCallback10(({ target }) => onFocus(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onFocus, id, enumOptions, emptyValue, optionValueFormat]);
+  return _jsx43("div", { className: "checkboxes", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
     const checked = enumOptionsIsSelected(option.value, checkboxesValues);
     const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
     const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
@@ -25222,64 +24320,64 @@ function CheckboxesWidget({ id, disabled, options, value, autofocus = false, rea
         onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
       }
     };
-    const checkbox = _jsxs17("span", { children: [_jsx46("input", { type: "checkbox", id: optionId(id, index), name: htmlName || id, checked, value: enumOptionValueEncoder(option.value, index, optionValueFormat), disabled: disabled || itemDisabled || readonly, autoFocus: autofocus && index === 0, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), _jsx46("span", { children: option.label })] });
-    return inline ? _jsx46("label", { className: `checkbox-inline ${disabledCls}`, children: checkbox }, String(option.value)) : _jsx46("div", { className: `checkbox ${disabledCls}`, children: _jsx46("label", { children: checkbox }) }, String(option.value));
+    const checkbox = _jsxs16("span", { children: [_jsx43("input", { type: "checkbox", id: optionId(id, index), name: htmlName || id, checked, value: enumOptionValueEncoder(option.value, index, optionValueFormat), disabled: disabled || itemDisabled || readonly, autoFocus: autofocus && index === 0, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), _jsx43("span", { children: option.label })] });
+    return inline ? _jsx43("label", { className: `checkbox-inline ${disabledCls}`, children: checkbox }, String(option.value)) : _jsx43("div", { className: `checkbox ${disabledCls}`, children: _jsx43("label", { children: checkbox }) }, String(option.value));
   }) });
 }
 var CheckboxesWidget_default = CheckboxesWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/CheckboxWidget.js
-import { jsx as _jsx47, jsxs as _jsxs18 } from "react/jsx-runtime";
-import { useCallback as useCallback12 } from "react";
+import { jsx as _jsx44, jsxs as _jsxs17 } from "react/jsx-runtime";
+import { useCallback as useCallback11 } from "react";
 function CheckboxWidget({ schema, uiSchema, options, id, value, disabled, readonly, label, hideLabel, autofocus = false, onBlur, onFocus, onChange, registry, htmlName }) {
   const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
   const required = schemaRequiresTrueValue(schema);
-  const handleChange = useCallback12((event) => onChange(event.target.checked), [onChange]);
-  const handleBlur = useCallback12((event) => onBlur(id, event.target.checked), [onBlur, id]);
-  const handleFocus = useCallback12((event) => onFocus(id, event.target.checked), [onFocus, id]);
+  const handleChange = useCallback11((event) => onChange(event.target.checked), [onChange]);
+  const handleBlur = useCallback11((event) => onBlur(id, event.target.checked), [onBlur, id]);
+  const handleFocus = useCallback11((event) => onFocus(id, event.target.checked), [onFocus, id]);
   const uiOptions = getUiOptions(uiSchema);
   const isCheckboxWidget = uiOptions.widget === "checkbox";
   const description = isCheckboxWidget ? void 0 : options.description ?? schema.description;
-  return _jsxs18("div", { className: `checkbox ${disabled || readonly ? "disabled" : ""}`, children: [!hideLabel && description && _jsx47(DescriptionFieldTemplate, { id: descriptionId(id), description, schema, uiSchema, registry }), _jsxs18("label", { children: [_jsx47("input", { type: "checkbox", id, name: htmlName || id, checked: typeof value === "undefined" ? false : value, required, disabled: disabled || readonly, autoFocus: autofocus, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), labelValue(_jsx47("span", { children: label }), hideLabel)] })] });
+  return _jsxs17("div", { className: `checkbox ${disabled || readonly ? "disabled" : ""}`, children: [!hideLabel && description && _jsx44(DescriptionFieldTemplate, { id: descriptionId(id), description, schema, uiSchema, registry }), _jsxs17("label", { children: [_jsx44("input", { type: "checkbox", id, name: htmlName || id, checked: typeof value === "undefined" ? false : value, required, disabled: disabled || readonly, autoFocus: autofocus, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), labelValue(_jsx44("span", { children: label }), hideLabel)] })] });
 }
 var CheckboxWidget_default = CheckboxWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/ColorWidget.js
-import { jsx as _jsx48 } from "react/jsx-runtime";
+import { jsx as _jsx45 } from "react/jsx-runtime";
 function ColorWidget(props) {
   const { disabled, readonly, options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx48(BaseInputTemplate2, { type: "color", ...props, disabled: disabled || readonly });
+  return _jsx45(BaseInputTemplate2, { type: "color", ...props, disabled: disabled || readonly });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/DateTimeWidget.js
-import { jsx as _jsx49 } from "react/jsx-runtime";
+import { jsx as _jsx46 } from "react/jsx-runtime";
 function DateTimeWidget(props) {
   const { onChange, value, options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx49(BaseInputTemplate2, { type: "datetime-local", ...props, value: utcToLocal(value), onChange: (newValue) => onChange(localToUTC(newValue)) });
+  return _jsx46(BaseInputTemplate2, { type: "datetime-local", ...props, value: utcToLocal(value), onChange: (newValue) => onChange(localToUTC(newValue)) });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/DateWidget.js
-import { jsx as _jsx50 } from "react/jsx-runtime";
-import { useCallback as useCallback13 } from "react";
+import { jsx as _jsx47 } from "react/jsx-runtime";
+import { useCallback as useCallback12 } from "react";
 function DateWidget(props) {
   const { onChange, options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  const handleChange = useCallback13((value) => onChange(value || void 0), [onChange]);
-  return _jsx50(BaseInputTemplate2, { type: "date", ...props, onChange: handleChange });
+  const handleChange = useCallback12((value) => onChange(value || void 0), [onChange]);
+  return _jsx47(BaseInputTemplate2, { type: "date", ...props, onChange: handleChange });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/EmailWidget.js
-import { jsx as _jsx51 } from "react/jsx-runtime";
+import { jsx as _jsx48 } from "react/jsx-runtime";
 function EmailWidget(props) {
   const { options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx51(BaseInputTemplate2, { type: "email", ...props });
+  return _jsx48(BaseInputTemplate2, { type: "email", ...props });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/FileWidget.js
-import { jsx as _jsx52, Fragment as _Fragment4, jsxs as _jsxs19 } from "react/jsx-runtime";
+import { jsx as _jsx49, Fragment as _Fragment4, jsxs as _jsxs18 } from "react/jsx-runtime";
 function FileInfoPreview({ fileInfo, registry }) {
   const { translateString } = registry;
   const { dataURL, type, name } = fileInfo;
@@ -25288,9 +24386,9 @@ function FileInfoPreview({ fileInfo, registry }) {
   }
   const previewLabel = translateString(TranslatableString.PreviewLabel);
   if (["image/jpeg", "image/png"].includes(type)) {
-    return _jsx52("img", { src: dataURL, alt: previewLabel, style: { maxWidth: "100%" }, className: "file-preview" });
+    return _jsx49("img", { src: dataURL, alt: previewLabel, style: { maxWidth: "100%" }, className: "file-preview" });
   }
-  return _jsxs19(_Fragment4, { children: [" ", _jsx52("a", { download: `preview-${name}`, href: dataURL, className: "file-download", children: previewLabel })] });
+  return _jsxs18(_Fragment4, { children: [" ", _jsx49("a", { download: `preview-${name}`, href: dataURL, className: "file-download", children: previewLabel })] });
 }
 function FilesInfo({ filesInfo, registry, preview, onRemove, options }) {
   if (filesInfo.length === 0) {
@@ -25298,10 +24396,10 @@ function FilesInfo({ filesInfo, registry, preview, onRemove, options }) {
   }
   const { translateString } = registry;
   const { RemoveButton: RemoveButton2 } = getTemplate("ButtonTemplates", registry, options);
-  return _jsx52("ul", { className: "file-info", children: filesInfo.map((fileInfo, key) => {
+  return _jsx49("ul", { className: "file-info", children: filesInfo.map((fileInfo, key) => {
     const { name, size, type } = fileInfo;
     const handleRemove = () => onRemove(key);
-    return _jsxs19("li", { children: [_jsx52(AZ, { children: translateString(TranslatableString.FilesInfo, [name, type, String(size)]) }), preview && _jsx52(FileInfoPreview, { fileInfo, registry }), _jsx52(RemoveButton2, { onClick: handleRemove, registry })] }, key);
+    return _jsxs18("li", { children: [_jsx49(D6, { children: translateString(TranslatableString.FilesInfo, [name, type, String(size)]) }), preview && _jsx49(FileInfoPreview, { fileInfo, registry }), _jsx49(RemoveButton2, { onClick: handleRemove, registry })] }, key);
   }) });
 }
 function FileWidget(props) {
@@ -25313,70 +24411,70 @@ function FileWidget(props) {
       void handleChange(event.target.files);
     }
   };
-  return _jsxs19("div", { children: [_jsx52(BaseInputTemplate2, { ...props, disabled: disabled || readonly, type: "file", required: value ? false : required, onChangeOverride: handleOnChangeEvent, value: "", accept: options.accept ? String(options.accept) : void 0 }), _jsx52(FilesInfo, { filesInfo, onRemove: handleRemove, registry, preview: options.filePreview, options })] });
+  return _jsxs18("div", { children: [_jsx49(BaseInputTemplate2, { ...props, disabled: disabled || readonly, type: "file", required: value ? false : required, onChangeOverride: handleOnChangeEvent, value: "", accept: options.accept ? String(options.accept) : void 0 }), _jsx49(FilesInfo, { filesInfo, onRemove: handleRemove, registry, preview: options.filePreview, options })] });
 }
 var FileWidget_default = FileWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/HiddenWidget.js
-import { jsx as _jsx53 } from "react/jsx-runtime";
+import { jsx as _jsx50 } from "react/jsx-runtime";
 function HiddenWidget({ id, value, htmlName }) {
-  return _jsx53("input", { type: "hidden", id, name: htmlName || id, value: typeof value === "undefined" ? "" : value });
+  return _jsx50("input", { type: "hidden", id, name: htmlName || id, value: typeof value === "undefined" ? "" : value });
 }
 var HiddenWidget_default = HiddenWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/PasswordWidget.js
-import { jsx as _jsx54 } from "react/jsx-runtime";
+import { jsx as _jsx51 } from "react/jsx-runtime";
 function PasswordWidget(props) {
   const { options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx54(BaseInputTemplate2, { type: "password", ...props });
+  return _jsx51(BaseInputTemplate2, { type: "password", ...props });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/RadioWidget.js
-import { jsx as _jsx55, jsxs as _jsxs20 } from "react/jsx-runtime";
-import { useCallback as useCallback14 } from "react";
+import { jsx as _jsx52, jsxs as _jsxs19 } from "react/jsx-runtime";
+import { useCallback as useCallback13 } from "react";
 function RadioWidget({ options, value, required, disabled, readonly, autofocus = false, onBlur, onFocus, onChange, id, htmlName }) {
   const { enumOptions, enumDisabled, inline, emptyValue } = options;
   const optionValueFormat = getOptionValueFormat(options);
-  const handleBlur = useCallback14(({ target }) => onBlur(id, enumOptionValueDecoder(target?.value, enumOptions, optionValueFormat, emptyValue)), [onBlur, enumOptions, emptyValue, id, optionValueFormat]);
-  const handleFocus = useCallback14(({ target }) => onFocus(id, enumOptionValueDecoder(target?.value, enumOptions, optionValueFormat, emptyValue)), [onFocus, enumOptions, emptyValue, id, optionValueFormat]);
-  return _jsx55("div", { className: "field-radio-group", id, role: "radiogroup", children: Array.isArray(enumOptions) && enumOptions.map((option, i) => {
+  const handleBlur = useCallback13(({ target }) => onBlur(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onBlur, enumOptions, emptyValue, id, optionValueFormat]);
+  const handleFocus = useCallback13(({ target }) => onFocus(id, enumOptionValueDecoder(target && target.value, enumOptions, optionValueFormat, emptyValue)), [onFocus, enumOptions, emptyValue, id, optionValueFormat]);
+  return _jsx52("div", { className: "field-radio-group", id, role: "radiogroup", children: Array.isArray(enumOptions) && enumOptions.map((option, i2) => {
     const checked = enumOptionsIsSelected(option.value, value);
     const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
     const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
     const handleChange = () => onChange(option.value);
-    const radio = _jsxs20("span", { children: [_jsx55("input", { type: "radio", id: optionId(id, i), checked, name: htmlName || id, required, value: enumOptionValueEncoder(option.value, i, optionValueFormat), disabled: disabled || itemDisabled || readonly, autoFocus: autofocus && i === 0, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), _jsx55("span", { children: option.label })] });
-    return inline ? _jsx55("label", { className: `radio-inline ${disabledCls}`, children: radio }, String(option.value)) : _jsx55("div", { className: `radio ${disabledCls}`, children: _jsx55("label", { children: radio }) }, String(option.value));
+    const radio = _jsxs19("span", { children: [_jsx52("input", { type: "radio", id: optionId(id, i2), checked, name: htmlName || id, required, value: enumOptionValueEncoder(option.value, i2, optionValueFormat), disabled: disabled || itemDisabled || readonly, autoFocus: autofocus && i2 === 0, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, "aria-describedby": ariaDescribedByIds(id) }), _jsx52("span", { children: option.label })] });
+    return inline ? _jsx52("label", { className: `radio-inline ${disabledCls}`, children: radio }, String(option.value)) : _jsx52("div", { className: `radio ${disabledCls}`, children: _jsx52("label", { children: radio }) }, String(option.value));
   }) });
 }
 var RadioWidget_default = RadioWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/RangeWidget.js
-import { jsx as _jsx56, jsxs as _jsxs21 } from "react/jsx-runtime";
+import { jsx as _jsx53, jsxs as _jsxs20 } from "react/jsx-runtime";
 function RangeWidget(props) {
   const { value, registry: { templates: { BaseInputTemplate: BaseInputTemplate2 } } } = props;
-  return _jsxs21("div", { className: "field-range-wrapper", children: [_jsx56(BaseInputTemplate2, { type: "range", ...props }), _jsx56("span", { className: "range-view", children: value })] });
+  return _jsxs20("div", { className: "field-range-wrapper", children: [_jsx53(BaseInputTemplate2, { type: "range", ...props }), _jsx53("span", { className: "range-view", children: value })] });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/RatingWidget.js
-import { jsx as _jsx57, jsxs as _jsxs22 } from "react/jsx-runtime";
-import { useCallback as useCallback15 } from "react";
+import { jsx as _jsx54, jsxs as _jsxs21 } from "react/jsx-runtime";
+import { useCallback as useCallback14 } from "react";
 function RatingWidget({ id, value, required, disabled, readonly, autofocus, onChange, onFocus, onBlur, schema, options, htmlName }) {
   const { stars = 5, shape = "star" } = options;
   const numStars = schema.maximum ? Math.min(schema.maximum, 5) : Math.min(Math.max(stars, 1), 5);
   const min = schema.minimum || 0;
-  const handleStarClick = useCallback15((starValue) => {
+  const handleStarClick = useCallback14((starValue) => {
     if (!disabled && !readonly) {
       onChange(starValue);
     }
   }, [onChange, disabled, readonly]);
-  const handleFocus = useCallback15((event) => {
+  const handleFocus = useCallback14((event) => {
     if (onFocus) {
       const starValue = Number(event.target.dataset.value);
       onFocus(id, starValue);
     }
   }, [onFocus, id]);
-  const handleBlur = useCallback15((event) => {
+  const handleBlur = useCallback14((event) => {
     if (onBlur) {
       const starValue = Number(event.target.dataset.value);
       onBlur(id, starValue);
@@ -25388,100 +24486,99 @@ function RatingWidget({ id, value, required, disabled, readonly, autofocus, onCh
     }
     return isFilled ? "\u2605" : "\u2606";
   };
-  return _jsxs22("div", { className: "rating-widget", style: {
+  return _jsxs21("div", { className: "rating-widget", style: {
     display: "inline-flex",
     fontSize: "1.5rem",
     cursor: disabled || readonly ? "default" : "pointer"
-  }, children: [[...Array(numStars)].map((_, index) => {
+  }, children: [[...Array(numStars)].map((_2, index) => {
     const starValue = min + index;
     const isFilled = starValue <= value;
-    return _jsx57("span", { onClick: () => handleStarClick(starValue), onKeyDown: (e2) => (e2.key === "Enter" || e2.key === " ") && handleStarClick(starValue), onFocus: handleFocus, onBlur: handleBlur, "data-value": starValue, tabIndex: disabled || readonly ? -1 : 0, role: "radio", "aria-checked": starValue === value, "aria-label": `${starValue} ${shape === "heart" ? "heart" : "star"}${starValue === 1 ? "" : "s"}`, style: {
+    return _jsx54("span", { onClick: () => handleStarClick(starValue), onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && handleStarClick(starValue), onFocus: handleFocus, onBlur: handleBlur, "data-value": starValue, tabIndex: disabled || readonly ? -1 : 0, role: "radio", "aria-checked": starValue === value, "aria-label": `${starValue} ${shape === "heart" ? "heart" : "star"}${starValue === 1 ? "" : "s"}`, style: {
       color: isFilled ? "#FFD700" : "#ccc",
       padding: "0 0.2rem",
       transition: "color 0.2s",
       userSelect: "none"
     }, children: getSymbol(isFilled) }, index);
-  }), _jsx57("input", { type: "hidden", id, name: htmlName || id, value: value || "", required, disabled: disabled || readonly, "aria-hidden": "true" })] });
+  }), _jsx54("input", { type: "hidden", id, name: htmlName || id, value: value || "", required, disabled: disabled || readonly, "aria-hidden": "true" })] });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/SelectWidget.js
-import { jsx as _jsx58, jsxs as _jsxs23, Fragment as _Fragment5 } from "react/jsx-runtime";
-import { useCallback as useCallback16 } from "react";
+import { jsx as _jsx55, jsxs as _jsxs22 } from "react/jsx-runtime";
+import { useCallback as useCallback15 } from "react";
 function getValue2(event, multiple) {
   if (multiple) {
     return Array.from(event.target.options).slice().filter((o2) => o2.selected).map((o2) => o2.value);
   }
   return event.target.value;
 }
-function SelectWidget({ schema, id, options, value, required, disabled, readonly, multiple = false, autofocus = false, onChange, onBlur, onFocus, placeholder, htmlName, registry, uiSchema }) {
+function SelectWidget({ schema, id, options, value, required, disabled, readonly, multiple = false, autofocus = false, onChange, onBlur, onFocus, placeholder, htmlName }) {
   const { enumOptions, enumDisabled, emptyValue: optEmptyVal } = options;
   const emptyValue = multiple ? [] : "";
   const optionValueFormat = getOptionValueFormat(options);
-  const handleFocus = useCallback16((event) => {
+  const handleFocus = useCallback15((event) => {
     const newValue = getValue2(event, multiple);
     return onFocus(id, enumOptionValueDecoder(newValue, enumOptions, optionValueFormat, optEmptyVal));
   }, [onFocus, id, multiple, enumOptions, optEmptyVal, optionValueFormat]);
-  const handleBlur = useCallback16((event) => {
+  const handleBlur = useCallback15((event) => {
     const newValue = getValue2(event, multiple);
     return onBlur(id, enumOptionValueDecoder(newValue, enumOptions, optionValueFormat, optEmptyVal));
   }, [onBlur, id, multiple, enumOptions, optEmptyVal, optionValueFormat]);
-  const handleChange = useCallback16((event) => {
+  const handleChange = useCallback15((event) => {
     const newValue = getValue2(event, multiple);
     return onChange(enumOptionValueDecoder(newValue, enumOptions, optionValueFormat, optEmptyVal));
   }, [onChange, multiple, enumOptions, optEmptyVal, optionValueFormat]);
   const selectValue = enumOptionSelectedValue(value, enumOptions, multiple, optionValueFormat, emptyValue);
   const showPlaceholderOption = !multiple && schema.default === void 0;
-  logUnsupportedDefaultForEnum(id, schema, enumOptions, multiple);
-  return _jsxs23(_Fragment5, { children: [_jsx58(SelectedOptionDescription, { id, multiple, options, registry, uiSchema, value }), _jsxs23("select", { id, name: htmlName || id, multiple, className: "form-control", value: selectValue, required, disabled: disabled || readonly, autoFocus: autofocus, onBlur: handleBlur, onFocus: handleFocus, onChange: handleChange, "aria-describedby": ariaDescribedByIds(id), children: [showPlaceholderOption && _jsx58("option", { value: "", children: placeholder }), Array.isArray(enumOptions) && enumOptions.map(({ value: enumValue, label: enumLabel }, i) => {
+  return _jsxs22("select", { id, name: htmlName || id, multiple, className: "form-control", value: selectValue, required, disabled: disabled || readonly, autoFocus: autofocus, onBlur: handleBlur, onFocus: handleFocus, onChange: handleChange, "aria-describedby": ariaDescribedByIds(id), children: [showPlaceholderOption && _jsx55("option", { value: "", children: placeholder }), Array.isArray(enumOptions) && enumOptions.map(({ value: enumValue, label: enumLabel }, i2) => {
     const isDisabled = enumDisabled && enumDisabled.includes(enumValue);
-    return _jsx58("option", { value: enumOptionValueEncoder(enumValue, i, optionValueFormat), disabled: isDisabled, children: enumLabel }, String(enumValue));
-  })] })] });
+    return _jsx55("option", { value: enumOptionValueEncoder(enumValue, i2, optionValueFormat), disabled: isDisabled, children: enumLabel }, String(enumValue));
+  })] });
 }
 var SelectWidget_default = SelectWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/TextareaWidget.js
-import { jsx as _jsx59 } from "react/jsx-runtime";
-import { useCallback as useCallback17 } from "react";
-function TextareaWidget({ id, options, placeholder, value, required, disabled, readonly, autofocus = false, onChange, onBlur, onFocus, htmlName }) {
-  const handleChange = useCallback17(({ target: { value: newValue } }) => onChange(newValue === "" ? options.emptyValue : newValue), [onChange, options.emptyValue]);
-  const handleBlur = useCallback17(({ target }) => onBlur(id, target?.value), [onBlur, id]);
-  const handleFocus = useCallback17(({ target }) => onFocus(id, target?.value), [id, onFocus]);
-  return _jsx59("textarea", { id, name: htmlName || id, className: "form-control", value: value || "", placeholder, required, disabled, readOnly: readonly, autoFocus: autofocus, rows: options.rows, onBlur: handleBlur, onFocus: handleFocus, onChange: handleChange, "aria-describedby": ariaDescribedByIds(id) });
+import { jsx as _jsx56 } from "react/jsx-runtime";
+import { useCallback as useCallback16 } from "react";
+function TextareaWidget({ id, options = {}, placeholder, value, required, disabled, readonly, autofocus = false, onChange, onBlur, onFocus, htmlName }) {
+  const handleChange = useCallback16(({ target: { value: newValue } }) => onChange(newValue === "" ? options.emptyValue : newValue), [onChange, options.emptyValue]);
+  const handleBlur = useCallback16(({ target }) => onBlur(id, target && target.value), [onBlur, id]);
+  const handleFocus = useCallback16(({ target }) => onFocus(id, target && target.value), [id, onFocus]);
+  return _jsx56("textarea", { id, name: htmlName || id, className: "form-control", value: value || "", placeholder, required, disabled, readOnly: readonly, autoFocus: autofocus, rows: options.rows, onBlur: handleBlur, onFocus: handleFocus, onChange: handleChange, "aria-describedby": ariaDescribedByIds(id) });
 }
 var TextareaWidget_default = TextareaWidget;
 
 // node_modules/@rjsf/core/lib/components/widgets/TextWidget.js
-import { jsx as _jsx60 } from "react/jsx-runtime";
+import { jsx as _jsx57 } from "react/jsx-runtime";
 function TextWidget(props) {
   const { options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx60(BaseInputTemplate2, { ...props });
+  return _jsx57(BaseInputTemplate2, { ...props });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/TimeWidget.js
-import { jsx as _jsx61 } from "react/jsx-runtime";
-import { useCallback as useCallback18 } from "react";
+import { jsx as _jsx58 } from "react/jsx-runtime";
+import { useCallback as useCallback17 } from "react";
 function TimeWidget(props) {
   const { onChange, options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  const handleChange = useCallback18((value) => onChange(value ? `${value}:00` : void 0), [onChange]);
-  return _jsx61(BaseInputTemplate2, { type: "time", ...props, onChange: handleChange });
+  const handleChange = useCallback17((value) => onChange(value ? `${value}:00` : void 0), [onChange]);
+  return _jsx58(BaseInputTemplate2, { type: "time", ...props, onChange: handleChange });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/UpDownWidget.js
-import { jsx as _jsx62 } from "react/jsx-runtime";
+import { jsx as _jsx59 } from "react/jsx-runtime";
 function UpDownWidget(props) {
   const { options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx62(BaseInputTemplate2, { type: "number", ...props });
+  return _jsx59(BaseInputTemplate2, { type: "number", ...props });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/URLWidget.js
-import { jsx as _jsx63 } from "react/jsx-runtime";
+import { jsx as _jsx60 } from "react/jsx-runtime";
 function URLWidget(props) {
   const { options, registry } = props;
   const BaseInputTemplate2 = getTemplate("BaseInputTemplate", registry, options);
-  return _jsx63(BaseInputTemplate2, { type: "url", ...props });
+  return _jsx60(BaseInputTemplate2, { type: "url", ...props });
 }
 
 // node_modules/@rjsf/core/lib/components/widgets/index.js
@@ -25535,7 +24632,7 @@ function toIChangeEvent(state, status) {
     ...status !== void 0 && { status }
   };
 }
-var Form = class _Form extends Component {
+var Form = class _Form extends Component3 {
   /** Constructs the `Form` from the `props`. Will setup the initial state from the props. It will also call the
    * `onChange` handler if the initially provided `formData` is modified to add missing default values as part of the
    * state construction.
@@ -25628,7 +24725,7 @@ var Form = class _Form extends Component {
         initialDefaultsGenerated: false,
         customErrors: void 0
       };
-      this.setState(state, () => onChange?.(toIChangeEvent({ ...this.state, ...state })));
+      this.setState(state, () => onChange && onChange(toIChangeEvent({ ...this.state, ...state })));
     });
     /** Callback function to handle when a field on the form is blurred. Calls the `onBlur` callback for the `Form` if it
      * was provided. Also runs any live validation and/or live omit operations if the flags indicate they should happen
@@ -25867,7 +24964,7 @@ var Form = class _Form extends Component {
    * @param prevState - The previous state of the component before the update.
    * @param snapshot - The value returned from `getSnapshotBeforeUpdate`.
    */
-  componentDidUpdate(_, prevState, snapshot) {
+  componentDidUpdate(_2, prevState, snapshot) {
     if (snapshot.shouldUpdate) {
       const { nextState } = snapshot;
       const nextStateDiffersFromProps = !deepEquals_default(nextState.formData, this.props.formData);
@@ -26033,16 +25130,15 @@ var Form = class _Form extends Component {
     const schemaUtils = altSchemaUtils || this.state.schemaUtils;
     const { customValidate, transformErrors, uiSchema } = this.props;
     const validationSchema = retrievedSchema ?? schema;
-    const validationFormData = formData ? JSON.parse(JSON.stringify(formData)) : void 0;
-    return schemaUtils.getValidator().validateFormData(validationFormData, validationSchema, customValidate, transformErrors, uiSchema);
+    return schemaUtils.getValidator().validateFormData(formData, validationSchema, customValidate, transformErrors, uiSchema);
   }
   /** Renders any errors contained in the `state` in using the `ErrorList`, if not disabled by `showErrorList`. */
   renderErrors(registry) {
     const { errors, errorSchema, schema, uiSchema } = this.state;
     const options = getUiOptions(uiSchema);
     const ErrorListTemplate = getTemplate("ErrorListTemplate", registry, options);
-    if (errors?.length) {
-      return _jsx64(ErrorListTemplate, { errors, errorSchema: errorSchema || {}, schema, uiSchema, registry });
+    if (errors && errors.length) {
+      return _jsx61(ErrorListTemplate, { errors, errorSchema: errorSchema || {}, schema, uiSchema, registry });
     }
     return null;
   }
@@ -26117,14 +25213,14 @@ var Form = class _Form extends Component {
     const rootPathId = fieldPathId.path[0] || "";
     const isRootPath = !path || path.length === 0 || path.length === 1 && path[0] === rootPathId;
     let formData = isRootPath ? newValue : cloneDeep_default(oldFormData);
-    const hasOnlyUndefinedValues = isObject(formData) && Object.keys(formData).length > 0 && Object.values(formData).every((v2) => v2 === void 0);
+    const hasOnlyUndefinedValues = isObject(formData) && Object.keys(formData).length > 0 && Object.values(formData).every((v3) => v3 === void 0);
     const wasPreviouslyNull = oldFormData === null || oldFormData === void 0;
     const inputForDefaults = hasOnlyUndefinedValues && wasPreviouslyNull ? void 0 : formData;
     if (isObject(formData) || Array.isArray(formData)) {
-      let plainLeafWasCleared = false;
       if (newValue === ADDITIONAL_PROPERTY_KEY_REMOVE) {
         unset_default(formData, path);
       } else if (!isRootPath) {
+        let unsetPath = false;
         let valueForPath = newValue;
         if (newValue === void 0) {
           const lastSegment = path[path.length - 1];
@@ -26135,12 +25231,12 @@ var Form = class _Form extends Component {
             const leaf = field;
             const isOneOfOrAnyOfLeaf = leaf && (ONE_OF_KEY in leaf || ANY_OF_KEY in leaf);
             if (!isOneOfOrAnyOfLeaf && leaf !== void 0) {
-              plainLeafWasCleared = true;
+              unsetPath = true;
             }
           }
         }
-        if (plainLeafWasCleared) {
-          set_default(formData, path, void 0);
+        if (unsetPath) {
+          unset_default(formData, path);
         } else {
           set_default(formData, path, valueForPath);
         }
@@ -26149,9 +25245,6 @@ var Form = class _Form extends Component {
       const newState = this.getStateFromProps(this.props, inputForDefaults, void 0, void 0, void 0, true, shouldSanitize);
       formData = newState.formData;
       retrievedSchema = newState.retrievedSchema;
-      if (plainLeafWasCleared && formData) {
-        set_default(formData, path, void 0);
-      }
     }
     const mustValidate = !noValidate && (liveValidate === true || liveValidate === "onChange");
     let state = { formData, retrievedSchema };
@@ -26274,7 +25367,7 @@ var Form = class _Form extends Component {
     if (!field) {
       field = this.formElement.current.querySelector(`input[id^="${elementId}"], button[id^="${elementId}"]`);
     }
-    if (field?.length) {
+    if (field && field.length) {
       field = field[0];
     }
     if (field) {
@@ -26310,7 +25403,7 @@ var Form = class _Form extends Component {
       submitOptions = { ...submitOptions, props: { ...submitOptions.props, disabled: true } };
     }
     const submitUiSchema = { [UI_OPTIONS_KEY]: { [SUBMIT_BTN_OPTIONS_KEY]: submitOptions } };
-    return _jsxs24(FormTag, { className: className || "rjsf", id, name, method, target, action, autoComplete, encType: enctype, acceptCharset, noValidate: noHtml5Validate, onSubmit: this.onSubmit, as, ref: this.formElement, children: [showErrorList === "top" && this.renderErrors(registry), _jsx64(SchemaFieldComponent, { name: "", schema, uiSchema, errorSchema, fieldPathId, formData, onChange: this.onChange, onBlur: this.onBlur, onFocus: this.onFocus, registry, disabled, readonly }), children || _jsx64(SubmitButton2, { uiSchema: submitUiSchema, registry }), showErrorList === "bottom" && this.renderErrors(registry)] });
+    return _jsxs23(FormTag, { className: className || "rjsf", id, name, method, target, action, autoComplete, encType: enctype, acceptCharset, noValidate: noHtml5Validate, onSubmit: this.onSubmit, as, ref: this.formElement, children: [showErrorList === "top" && this.renderErrors(registry), _jsx61(SchemaFieldComponent, { name: "", schema, uiSchema, errorSchema, fieldPathId, formData, onChange: this.onChange, onBlur: this.onBlur, onFocus: this.onFocus, registry, disabled, readonly }), children || _jsx61(SubmitButton2, { uiSchema: submitUiSchema, registry }), showErrorList === "bottom" && this.renderErrors(registry)] });
   }
 };
 
@@ -26329,9 +25422,9 @@ function filterDuplicateErrors(errorList, suppressDuplicateFiltering = "none") {
     } else if (oneOfIndex && oneOfIndex >= 0) {
       schemaPrefix = schemaPath === null || schemaPath === void 0 ? void 0 : schemaPath.substring(0, oneOfIndex);
     }
-    const dup = schemaPrefix ? acc.find((e2) => {
+    const dup = schemaPrefix ? acc.find((e) => {
       var _a;
-      return e2.message === message && ((_a = e2.schemaPath) === null || _a === void 0 ? void 0 : _a.startsWith(schemaPrefix));
+      return e.message === message && ((_a = e.schemaPath) === null || _a === void 0 ? void 0 : _a.startsWith(schemaPrefix));
     }) : void 0;
     if (!dup) {
       acc.push(err);
@@ -26339,10 +25432,10 @@ function filterDuplicateErrors(errorList, suppressDuplicateFiltering = "none") {
     return acc;
   }, []);
 }
-function transformRJSFValidationErrors(errors = [], uiSchema, suppressDuplicateFiltering, schema) {
-  const errorList = errors.map((e2) => {
+function transformRJSFValidationErrors(errors = [], uiSchema, suppressDuplicateFiltering) {
+  const errorList = errors.map((e) => {
     var _a;
-    const { instancePath, keyword, params, schemaPath, parentSchema, ...rest } = e2;
+    const { instancePath, keyword, params, schemaPath, parentSchema, ...rest } = e;
     let { message = "" } = rest;
     let property2 = instancePath.replace(/\//g, ".");
     let stack = `${property2} ${message}`.trim();
@@ -26360,10 +25453,6 @@ function transformRJSFValidationErrors(errors = [], uiSchema, suppressDuplicateF
           const uiSchemaPath = schemaPath.replace(/\/properties\//g, "/").split("/").slice(1, -1).concat([currentProperty]);
           uiSchemaTitle = getUiOptions(get_default(uiSchema, uiSchemaPath)).title;
         }
-        if (uiSchemaTitle === void 0) {
-          const propParts = property2.replace(/^\./, "").split(".").filter(Boolean);
-          uiSchemaTitle = get_default(uiSchema, [...propParts, currentProperty, "title"]);
-        }
         if (uiSchemaTitle) {
           message = message.replace(`'${currentProperty}'`, `'${uiSchemaTitle}'`);
           uiTitle = uiSchemaTitle;
@@ -26372,18 +25461,6 @@ function transformRJSFValidationErrors(errors = [], uiSchema, suppressDuplicateF
           if (parentSchemaTitle) {
             message = message.replace(`'${currentProperty}'`, `'${parentSchemaTitle}'`);
             uiTitle = parentSchemaTitle;
-          } else if (schema) {
-            const propParts = property2.replace(/^\./, "").split(".").filter(Boolean);
-            const aSchemaPath = [];
-            for (const part of propParts) {
-              aSchemaPath.push(PROPERTIES_KEY, part);
-            }
-            aSchemaPath.push(PROPERTIES_KEY, currentProperty, "title");
-            const rootSchemaTitle = get_default(schema, aSchemaPath);
-            if (rootSchemaTitle) {
-              message = message.replace(`'${currentProperty}'`, `'${rootSchemaTitle}'`);
-              uiTitle = rootSchemaTitle;
-            }
           }
         }
       });
@@ -26419,7 +25496,7 @@ function transformRJSFValidationErrors(errors = [], uiSchema, suppressDuplicateF
 }
 function processRawValidationErrors(validator, rawErrors, formData, schema, customValidate, transformErrors, uiSchema, suppressDuplicateFiltering) {
   const { validationError: invalidSchemaError } = rawErrors;
-  let errors = transformRJSFValidationErrors(rawErrors.errors, uiSchema, suppressDuplicateFiltering, schema);
+  let errors = transformRJSFValidationErrors(rawErrors.errors, uiSchema, suppressDuplicateFiltering);
   if (invalidSchemaError) {
     errors = [...errors, { stack: invalidSchemaError.message }];
   }
@@ -26466,6 +25543,7 @@ function createAjvInstance(additionalMetaSchemas, customFormats, ajvOptionsOverr
   }
   ajv.addFormat("data-url", DATA_URL_FORMAT_REGEX);
   ajv.addFormat("color", COLOR_FORMAT_REGEX);
+  ajv.addKeyword(ADDITIONAL_PROPERTY_FLAG);
   ajv.addKeyword(RJSF_ADDITIONAL_PROPERTIES_FLAG);
   if (Array.isArray(additionalMetaSchemas)) {
     ajv.addMetaSchema(additionalMetaSchemas);
@@ -26535,7 +25613,7 @@ var AJV8Validator = class {
             }
           });
           if ((_a2 = error.params) === null || _a2 === void 0 ? void 0 : _a2.deps) {
-            error.params.deps = error.params.deps.split(", ").map((v2) => `'${v2}'`).join(", ");
+            error.params.deps = error.params.deps.split(", ").map((v3) => `'${v3}'`).join(", ");
           }
         });
         this.localizer(compiledValidator.errors);
@@ -26548,7 +25626,7 @@ var AJV8Validator = class {
             }
           });
           if ((_a2 = error.params) === null || _a2 === void 0 ? void 0 : _a2.deps) {
-            error.params.deps = error.params.deps.split(", ").map((v2) => v2.slice(1, -1)).join(", ");
+            error.params.deps = error.params.deps.split(", ").map((v3) => v3.slice(1, -1)).join(", ");
           }
         });
       }
@@ -26617,8 +25695,8 @@ var AJV8Validator = class {
       }
       const result = compiledValidator(formData);
       return result;
-    } catch (e2) {
-      console.warn("Error encountered compiling schema:", e2);
+    } catch (e) {
+      console.warn("Error encountered compiling schema:", e);
       return false;
     }
   }
@@ -26633,7 +25711,7 @@ function customizeValidator(options = {}, localizer) {
 var lib_default = customizeValidator();
 
 // node_modules/@rjsf/core/lib/withTheme.js
-import { jsx as _jsx65 } from "react/jsx-runtime";
+import { jsx as _jsx62 } from "react/jsx-runtime";
 import { forwardRef } from "react";
 function withTheme(themeProps) {
   return forwardRef(({ fields: propFields, widgets: propWidgets, templates: propTemplates, ...directProps }, ref) => {
@@ -26647,31 +25725,40 @@ function withTheme(themeProps) {
         ...propTemplates?.ButtonTemplates
       }
     };
-    return _jsx65(Form, { ...themeProps, ...directProps, fields: fields2, widgets: widgets2, templates: templates2, ref });
+    return _jsx62(Form, { ...themeProps, ...directProps, fields: fields2, widgets: widgets2, templates: templates2, ref });
   });
 }
 
 // src/DaisyTheme.tsx
+import { useCallback as useCallback18 } from "react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  DocumentDuplicateIcon,
+  PlusIcon as PlusIcon4,
+  TrashIcon as TrashIcon3,
+  XMarkIcon as XMarkIcon5
+} from "@heroicons/react/24/outline";
 import ReactMarkdown2 from "react-markdown";
 import remarkGfm2 from "remark-gfm";
 import remarkBreaks2 from "remark-breaks";
-import { jsx as jsx28, jsxs as jsxs22 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs24 } from "react/jsx-runtime";
 var REQUIRED_FIELD_SYMBOL3 = " *";
 function Label2(props) {
   const { label, required, id } = props;
   if (!label) {
     return null;
   }
-  return /* @__PURE__ */ jsxs22("label", { className: "text-lg font-bold", htmlFor: id, children: [
+  return /* @__PURE__ */ jsxs24("label", { className: "mb-1 block text-base font-semibold text-base-content", htmlFor: id, children: [
     label,
-    required && /* @__PURE__ */ jsx28("span", { className: "font-red italic", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx29("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyTitleField(props) {
   const { id, title, required } = props;
-  return /* @__PURE__ */ jsxs22("legend", { id, className: "text-xl font-bold", children: [
+  return /* @__PURE__ */ jsxs24("legend", { id, className: "mb-4 text-xl font-semibold text-base-content", children: [
     title,
-    required && /* @__PURE__ */ jsx28("span", { className: "required", children: REQUIRED_FIELD_SYMBOL3 })
+    required && /* @__PURE__ */ jsx29("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 })
   ] });
 }
 function MyDescriptionField(props) {
@@ -26680,16 +25767,16 @@ function MyDescriptionField(props) {
     return null;
   }
   if (typeof description === "string") {
-    return /* @__PURE__ */ jsx28(
+    return /* @__PURE__ */ jsx29(
       "div",
       {
         id,
         className: "markdown-display prose max-w-none dark:prose-invert text-md italic mb-2",
-        children: /* @__PURE__ */ jsx28(ReactMarkdown2, { remarkPlugins: [remarkGfm2, remarkBreaks2], children: description })
+        children: /* @__PURE__ */ jsx29(ReactMarkdown2, { remarkPlugins: [remarkGfm2, remarkBreaks2], children: description })
       }
     );
   } else {
-    return /* @__PURE__ */ jsx28("div", { id, className: "text-md italic", children: description });
+    return /* @__PURE__ */ jsx29("div", { id, className: "text-md italic", children: description });
   }
 }
 function MyFieldTemplate(props) {
@@ -26713,15 +25800,99 @@ function MyFieldTemplate(props) {
     uiOptions
   );
   if (hidden) {
-    return /* @__PURE__ */ jsx28("div", { className: "hidden", children });
+    return /* @__PURE__ */ jsx29("div", { className: "hidden", children });
   }
-  return /* @__PURE__ */ jsx28("div", { className: "mb-4", children: /* @__PURE__ */ jsxs22(WrapIfAdditionalTemplate2, { ...props, children: [
-    displayLabel && /* @__PURE__ */ jsx28(Label2, { label, required, id }),
+  return /* @__PURE__ */ jsx29(WrapIfAdditionalTemplate2, { ...props, children: /* @__PURE__ */ jsxs24("div", { className: "rjsf-field-layout mb-5 min-w-0 px-1", children: [
+    displayLabel && /* @__PURE__ */ jsx29(Label2, { label, required, id }),
     displayLabel && description ? description : null,
-    children,
+    /* @__PURE__ */ jsx29("div", { className: "min-w-0", children }),
     errors,
     help
   ] }) });
+}
+function MyArrayFieldItemTemplate(props) {
+  const { children, className, buttonsProps, hasToolbar, registry, uiSchema } = props;
+  const options = getUiOptions(uiSchema);
+  const ArrayFieldItemButtonsTemplate2 = getTemplate("ArrayFieldItemButtonsTemplate", registry, options);
+  return /* @__PURE__ */ jsxs24(
+    "div",
+    {
+      className: `${className} mb-3 flex w-full min-w-0 items-end gap-2 [&_.rjsf-field-layout]:mb-0`,
+      children: [
+        /* @__PURE__ */ jsx29("div", { className: "min-w-0 flex-1", children }),
+        hasToolbar ? /* @__PURE__ */ jsx29("div", { className: "flex shrink-0 items-center gap-1 py-1", children: /* @__PURE__ */ jsx29(ArrayFieldItemButtonsTemplate2, { ...buttonsProps }) }) : null
+      ]
+    }
+  );
+}
+function MyObjectFieldTemplate(props) {
+  const {
+    description,
+    disabled,
+    fieldPathId,
+    formData,
+    onAddProperty,
+    optionalDataControl,
+    properties,
+    readonly,
+    registry,
+    required,
+    schema,
+    title,
+    uiSchema
+  } = props;
+  const options = getUiOptions(uiSchema);
+  const DescriptionFieldTemplate = getTemplate(
+    "DescriptionFieldTemplate",
+    registry,
+    options
+  );
+  const { AddButton: AddButton2 } = registry.templates.ButtonTemplates;
+  const isRoot = fieldPathId.path.length === 0;
+  const showOptionalDataControlInTitle = !readonly && !disabled;
+  return /* @__PURE__ */ jsxs24(
+    "fieldset",
+    {
+      id: fieldPathId.$id,
+      className: isRoot ? "min-w-0" : "mt-8 min-w-0",
+      children: [
+        title && /* @__PURE__ */ jsxs24(
+          "legend",
+          {
+            className: isRoot ? "mb-6 block w-full text-2xl font-bold text-base-content" : "mb-4 block w-full text-xl font-semibold text-base-content",
+            children: [
+              /* @__PURE__ */ jsx29("span", { id: titleId(fieldPathId), children: title }),
+              required && /* @__PURE__ */ jsx29("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 }),
+              showOptionalDataControlInTitle ? optionalDataControl : void 0
+            ]
+          }
+        ),
+        description && /* @__PURE__ */ jsx29(
+          DescriptionFieldTemplate,
+          {
+            id: descriptionId(fieldPathId),
+            description,
+            schema,
+            uiSchema,
+            registry
+          }
+        ),
+        !showOptionalDataControlInTitle ? optionalDataControl : void 0,
+        /* @__PURE__ */ jsx29("div", { className: "min-w-0", children: properties.map((property2) => /* @__PURE__ */ jsx29("div", { children: property2.content }, property2.name)) }),
+        canExpand(schema, uiSchema, formData) && /* @__PURE__ */ jsx29(
+          AddButton2,
+          {
+            id: buttonId(fieldPathId, "add"),
+            className: "rjsf-object-property-expand",
+            onClick: onAddProperty,
+            disabled: disabled || readonly,
+            uiSchema,
+            registry
+          }
+        )
+      ]
+    }
+  );
 }
 function MySubmitButton({ uiSchema }) {
   const {
@@ -26732,7 +25903,7 @@ function MySubmitButton({ uiSchema }) {
   if (norender) {
     return null;
   }
-  return /* @__PURE__ */ jsx28("div", { children: /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsx29("div", { children: /* @__PURE__ */ jsx29(
     "button",
     {
       type: "submit",
@@ -26742,51 +25913,119 @@ function MySubmitButton({ uiSchema }) {
     }
   ) });
 }
-var MyTextWidget = (props) => {
-  return /* @__PURE__ */ jsx28("div", { className: "flex", children: /* @__PURE__ */ jsx28(
-    "input",
+var actionButtonClassName = "btn h-11 min-h-11 gap-2 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+function buttonLabel(props, key) {
+  return props.registry.translateString(key);
+}
+function MyAddButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.AddButton);
+  return /* @__PURE__ */ jsxs24(
+    "button",
     {
-      type: "text",
-      style: { fontSize: "1rem" },
-      className: "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2",
-      value: props.value || "",
-      required: props.required,
-      onChange: (event) => props.onChange(event.target.value)
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-primary ml-1 mt-1 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: [
+        /* @__PURE__ */ jsx29(PlusIcon4, { className: "h-4 w-4", "aria-hidden": "true" }),
+        /* @__PURE__ */ jsxs24("span", { children: [
+          label,
+          " item"
+        ] })
+      ]
     }
-  ) });
-};
-var MyEmailWidget = (props) => {
-  return /* @__PURE__ */ jsx28("div", { className: "flex", children: /* @__PURE__ */ jsx28(
-    "input",
+  );
+}
+function MyRemoveButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.RemoveButton);
+  return /* @__PURE__ */ jsxs24(
+    "button",
     {
-      type: "email",
-      style: { fontSize: "1rem" },
-      className: "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2",
-      value: props.value || "",
-      required: props.required,
-      onChange: (event) => props.onChange(event.target.value)
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-error btn-outline ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: [
+        /* @__PURE__ */ jsx29(TrashIcon3, { className: "h-4 w-4", "aria-hidden": "true" }),
+        /* @__PURE__ */ jsx29("span", { className: "hidden sm:inline", children: label })
+      ]
     }
-  ) });
-};
-var MyTextareaWidget = (props) => {
-  const options = props.options || {};
-  const rows = typeof options.rows === "number" || typeof options.rows === "string" ? options.rows : 5;
-  return /* @__PURE__ */ jsx28("div", { className: "flex", children: /* @__PURE__ */ jsx28(
-    "textarea",
+  );
+}
+function MyMoveUpButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.MoveUpButton);
+  return /* @__PURE__ */ jsx29(
+    "button",
     {
-      style: { fontSize: "1rem" },
-      className: "textarea textarea-primary textarea-bordered focus:outline-secondary bg-base-300 w-full mt-2",
-      rows,
-      value: props.value || "",
-      required: props.required,
-      onChange: (event) => props.onChange(event.target.value === "" ? options.emptyValue : event.target.value)
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx29(ArrowUpIcon, { className: "h-4 w-4", "aria-hidden": "true" })
     }
-  ) });
-};
+  );
+}
+function MyMoveDownButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.MoveDownButton);
+  return /* @__PURE__ */ jsx29(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx29(ArrowDownIcon, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+function MyCopyButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.CopyButton);
+  return /* @__PURE__ */ jsx29(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx29(DocumentDuplicateIcon, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+function MyClearButton(props) {
+  const { registry, uiSchema: _uiSchema, className, ...buttonProps } = props;
+  const label = buttonLabel(props, TranslatableString.ClearButton);
+  return /* @__PURE__ */ jsx29(
+    "button",
+    {
+      type: "button",
+      ...buttonProps,
+      className: `${actionButtonClassName} btn-square btn-ghost border border-base-300 ${className || ""}`,
+      title: label,
+      "aria-label": label,
+      children: /* @__PURE__ */ jsx29(XMarkIcon5, { className: "h-4 w-4", "aria-hidden": "true" })
+    }
+  );
+}
+var inputClassName = `input input-bordered input-primary h-11 w-full text-base text-base-content ${controlAppearanceClass}`;
+var textareaClassName = `textarea textarea-bordered textarea-primary min-h-28 w-full resize-y text-base text-base-content ${controlAppearanceClass}`;
+var choiceFocusClassName = "focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-1 focus:ring-offset-base-100";
+var checkboxClassName = `checkbox checkbox-primary ${choiceFocusClassName}`;
+var radioClassName = `radio radio-primary ${choiceFocusClassName}`;
+var selectClassName = `select select-bordered select-primary w-full text-base text-base-content ${controlAppearanceClass}`;
 function MyBaseInputTemplate(props) {
   const {
     id,
-    name,
+    name: _name,
     htmlName,
     value,
     readonly,
@@ -26798,127 +26037,87 @@ function MyBaseInputTemplate(props) {
     onChangeOverride,
     options,
     schema,
+    uiSchema: _uiSchema,
+    registry,
+    rawErrors: _rawErrors,
     type,
-    hideLabel,
-    hideError,
+    hideLabel: _hideLabel,
+    hideError: _hideError,
+    className,
     ...rest
   } = props;
+  const { ClearButton: ClearButton2 } = registry.templates.ButtonTemplates;
+  if (!id) {
+    throw new Error("RJSF base input requires an id");
+  }
   const inputProps = {
     ...rest,
     ...getInputProps(schema, type, options)
   };
-  let inputValue;
-  if (inputProps.type === "number" || inputProps.type === "integer") {
-    inputValue = value || value === 0 ? value : "";
-  } else {
-    inputValue = value == null ? "" : value;
-  }
-  const handleChange = (event) => onChange(event.target.value === "" ? options.emptyValue : event.target.value);
-  const handleBlur = (event) => onBlur(id, event.target?.value);
-  const handleFocus = (event) => onFocus(id, event.target?.value);
-  let className = "input input-primary input-bordered focus:outline-secondary bg-base-300 w-full mt-2";
-  if (inputProps.type === "range") {
-    className = "range range-primary mt-2";
-  } else if (inputProps.type === "file") {
-    className = "file-input file-input-primary file-input-bordered focus:outline-secondary bg-base-300 w-full mt-2";
-  } else if (inputProps.type === "color") {
-    className = "input input-primary input-bordered focus:outline-secondary h-12 w-20 p-1 mt-2";
-  }
-  return /* @__PURE__ */ jsx28(
-    "input",
-    {
-      id,
-      name: htmlName || id,
-      className,
-      readOnly: readonly,
-      disabled,
-      autoFocus: autofocus,
-      value: inputValue,
-      ...inputProps,
-      list: schema.examples ? examplesId(id) : void 0,
-      onChange: onChangeOverride || handleChange,
-      onBlur: handleBlur,
-      onFocus: handleFocus,
-      "aria-describedby": ariaDescribedByIds(id, !!schema.examples)
-    }
+  const inputValue = inputProps.type === "number" || inputProps.type === "integer" ? value || value === 0 ? value : "" : value == null ? "" : value;
+  const handleChange = useCallback18(
+    ({ target: { value: nextValue } }) => onChange(nextValue === "" ? options.emptyValue : nextValue),
+    [onChange, options]
   );
+  const handleBlur = useCallback18(
+    ({ target }) => onBlur(id, target?.value),
+    [id, onBlur]
+  );
+  const handleFocus = useCallback18(
+    ({ target }) => onFocus(id, target?.value),
+    [id, onFocus]
+  );
+  const handleClear = useCallback18(
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onChange(options.emptyValue ?? "");
+    },
+    [onChange, options.emptyValue]
+  );
+  return /* @__PURE__ */ jsxs24("div", { className: "min-w-0 py-1", children: [
+    /* @__PURE__ */ jsx29(
+      "input",
+      {
+        id,
+        name: htmlName || id,
+        className: `${inputClassName} ${className || ""}`.trim(),
+        readOnly: readonly,
+        disabled,
+        autoFocus: autofocus,
+        value: inputValue,
+        ...inputProps,
+        list: schema.examples ? examplesId(id) : void 0,
+        onChange: onChangeOverride || handleChange,
+        onBlur: handleBlur,
+        onFocus: handleFocus,
+        "aria-describedby": ariaDescribedByIds(id, !!schema.examples)
+      }
+    ),
+    options.allowClearTextInputs && !readonly && !disabled && inputValue ? /* @__PURE__ */ jsx29(ClearButton2, { registry, onClick: handleClear }) : null,
+    /* @__PURE__ */ jsx29(SchemaExamples, { id, schema })
+  ] });
 }
-var MyRadioWidget = (props) => {
-  const { id, options, value, required, disabled, readonly, onChange, htmlName } = props;
-  const { enumOptions, enumDisabled } = options;
-  return /* @__PURE__ */ jsx28("div", { id, role: "radiogroup", className: "flex flex-col gap-1 mt-1", children: Array.isArray(enumOptions) && enumOptions.map((option, i) => {
-    const checked = option.value === value;
-    const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
-    return /* @__PURE__ */ jsxs22("label", { className: "label cursor-pointer justify-start gap-3 px-0", children: [
-      /* @__PURE__ */ jsx28(
-        "input",
-        {
-          type: "radio",
-          id: optionId(id, i),
-          name: htmlName || id,
-          checked,
-          required,
-          value: option.value,
-          disabled: disabled || itemDisabled || readonly,
-          onChange: () => onChange(option.value),
-          className: "radio radio-primary radio-sm",
-          "aria-describedby": ariaDescribedByIds(id)
-        }
-      ),
-      /* @__PURE__ */ jsx28("span", { className: "label-text text-base", children: option.label })
-    ] }, String(option.value));
-  }) });
-};
-var MySelectWidget = (props) => {
-  const {
-    schema,
-    id,
-    options,
-    value,
-    required,
-    disabled,
-    readonly,
-    multiple = false,
-    onChange,
-    onBlur,
-    onFocus,
-    placeholder,
-    htmlName
-  } = props;
-  const { enumOptions, enumDisabled, emptyValue: optEmptyVal } = options;
-  const emptyValue = multiple ? [] : "";
-  const optionValueFormat = getOptionValueFormat(options);
-  const getValue3 = (event) => {
-    if (multiple) {
-      return Array.from(event.target.options).filter((o2) => o2.selected).map((o2) => o2.value);
-    }
-    return event.target.value;
-  };
-  const selectValue = enumOptionSelectedValue(value, enumOptions, multiple, optionValueFormat, emptyValue);
-  const showPlaceholderOption = !multiple && schema.default === void 0;
-  return /* @__PURE__ */ jsxs22(
-    "select",
+var MyTextareaWidget = (props) => {
+  return /* @__PURE__ */ jsx29("div", { className: "min-w-0 py-1", children: /* @__PURE__ */ jsx29(
+    "textarea",
     {
-      id,
-      name: htmlName || id,
-      multiple,
-      className: "select select-primary select-bordered focus:outline-secondary bg-base-300 w-full mt-2",
-      value: selectValue,
-      required,
-      disabled: disabled || readonly,
-      onBlur: (event) => onBlur(id, enumOptionValueDecoder(getValue3(event), enumOptions, optionValueFormat, optEmptyVal)),
-      onFocus: (event) => onFocus(id, enumOptionValueDecoder(getValue3(event), enumOptions, optionValueFormat, optEmptyVal)),
-      onChange: (event) => onChange(enumOptionValueDecoder(getValue3(event), enumOptions, optionValueFormat, optEmptyVal)),
-      "aria-describedby": ariaDescribedByIds(id),
-      children: [
-        showPlaceholderOption && /* @__PURE__ */ jsx28("option", { value: "", children: placeholder }),
-        Array.isArray(enumOptions) && enumOptions.map(({ value: enumValue, label: enumLabel }, i) => {
-          const isDisabled = enumDisabled && enumDisabled.includes(enumValue);
-          return /* @__PURE__ */ jsx28("option", { value: enumOptionValueEncoder(enumValue, i, optionValueFormat), disabled: isDisabled, children: enumLabel }, String(enumValue));
-        })
-      ]
+      id: props.id,
+      name: props.htmlName || props.id,
+      className: textareaClassName,
+      value: props.value ?? "",
+      placeholder: props.placeholder,
+      required: props.required,
+      disabled: props.disabled,
+      readOnly: props.readonly,
+      autoFocus: props.autofocus,
+      rows: typeof props.options.rows === "number" ? props.options.rows : 5,
+      onChange: (event) => props.onChange(event.target.value === "" ? props.options.emptyValue : event.target.value),
+      onBlur: (event) => props.onBlur(props.id, event.target.value),
+      onFocus: (event) => props.onFocus(props.id, event.target.value),
+      "aria-describedby": ariaDescribedByIds(props.id)
     }
-  );
+  ) });
 };
 var MyCheckboxWidget = (props) => {
   const {
@@ -26934,17 +26133,15 @@ var MyCheckboxWidget = (props) => {
     options,
     schema,
     uiSchema,
-    registry
+    registry,
+    htmlName,
+    autofocus
   } = props;
   const DescriptionFieldTemplate = getTemplate("DescriptionFieldTemplate", registry, options);
   const description = options.description ?? schema.description;
   const required = schemaRequiresTrueValue(schema);
-  return /* @__PURE__ */ jsxs22("div", { className: "field-checkbox", children: [
-    !hideLabel && label && /* @__PURE__ */ jsxs22("label", { className: "text-lg font-bold block mb-1", htmlFor: id, children: [
-      label,
-      required && /* @__PURE__ */ jsx28("span", { className: "italic", children: REQUIRED_FIELD_SYMBOL3 })
-    ] }),
-    !hideLabel && !!description && /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsxs24("div", { className: "field-checkbox py-1", children: [
+    !hideLabel && !!description && /* @__PURE__ */ jsx29(
       DescriptionFieldTemplate,
       {
         id: descriptionId(id),
@@ -26954,23 +26151,165 @@ var MyCheckboxWidget = (props) => {
         registry
       }
     ),
-    /* @__PURE__ */ jsx28("label", { className: "label cursor-pointer justify-start gap-3 mt-1 px-0", children: /* @__PURE__ */ jsx28(
-      "input",
+    /* @__PURE__ */ jsxs24(
+      "label",
       {
-        type: "checkbox",
-        id,
-        name: id,
-        className: "checkbox checkbox-primary",
-        checked: typeof value === "undefined" ? false : value,
-        required,
-        disabled: disabled || readonly,
-        "aria-describedby": ariaDescribedByIds(id),
-        onChange: (e2) => onChange(e2.target.checked),
-        onBlur: (e2) => onBlur(id, e2.target.checked),
-        onFocus: (e2) => onFocus(id, e2.target.checked)
+        className: `flex items-center gap-3 ${disabled || readonly ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`,
+        htmlFor: id,
+        children: [
+          /* @__PURE__ */ jsx29(
+            "input",
+            {
+              type: "checkbox",
+              id,
+              name: htmlName || id,
+              className: checkboxClassName,
+              checked: typeof value === "undefined" ? false : value,
+              required,
+              disabled: disabled || readonly,
+              autoFocus: autofocus,
+              "aria-describedby": ariaDescribedByIds(id),
+              onChange: (e) => onChange(e.target.checked),
+              onBlur: (e) => onBlur(id, e.target.checked),
+              onFocus: (e) => onFocus(id, e.target.checked)
+            }
+          ),
+          !hideLabel && label ? /* @__PURE__ */ jsxs24("span", { className: "text-base font-semibold text-base-content", children: [
+            label,
+            required && /* @__PURE__ */ jsx29("span", { className: "text-error", children: REQUIRED_FIELD_SYMBOL3 })
+          ] }) : null
+        ]
       }
-    ) })
+    )
   ] });
+};
+var getSelectValue = (event, multiple) => multiple ? Array.from(event.target.options).filter((option) => option.selected).map((option) => option.value) : event.target.value;
+var MySelectWidget = (props) => {
+  const {
+    schema,
+    id,
+    options,
+    value,
+    required,
+    disabled,
+    readonly,
+    multiple = false,
+    autofocus = false,
+    onChange,
+    onBlur,
+    onFocus,
+    placeholder,
+    htmlName
+  } = props;
+  const { enumOptions, enumDisabled, emptyValue: optionEmptyValue } = options;
+  const emptyValue = multiple ? [] : "";
+  const optionValueFormat = getOptionValueFormat(options);
+  const selectedValue = enumOptionSelectedValue(
+    value,
+    enumOptions,
+    multiple,
+    optionValueFormat,
+    emptyValue
+  );
+  const decodeValue = (event) => enumOptionValueDecoder(
+    getSelectValue(event, multiple),
+    enumOptions,
+    optionValueFormat,
+    optionEmptyValue
+  );
+  return /* @__PURE__ */ jsx29("div", { className: "min-w-0 py-1", children: /* @__PURE__ */ jsxs24(
+    "select",
+    {
+      id,
+      name: htmlName || id,
+      multiple,
+      className: `${selectClassName} ${multiple ? "min-h-28" : "h-11"}`,
+      value: selectedValue,
+      required,
+      disabled: disabled || readonly,
+      autoFocus: autofocus,
+      onChange: (event) => onChange(decodeValue(event)),
+      onBlur: (event) => onBlur(id, decodeValue(event)),
+      onFocus: (event) => onFocus(id, decodeValue(event)),
+      "aria-describedby": ariaDescribedByIds(id),
+      children: [
+        !multiple && schema.default === void 0 ? /* @__PURE__ */ jsx29("option", { value: "", children: placeholder }) : null,
+        Array.isArray(enumOptions) ? enumOptions.map(({ value: optionValue, label: optionLabel }, index) => /* @__PURE__ */ jsx29(
+          "option",
+          {
+            value: enumOptionValueEncoder(optionValue, index, optionValueFormat),
+            disabled: Array.isArray(enumDisabled) && enumDisabled.includes(optionValue),
+            children: optionLabel
+          },
+          String(optionValue)
+        )) : null
+      ]
+    }
+  ) });
+};
+var MyRadioWidget = (props) => {
+  const {
+    options,
+    value,
+    required,
+    disabled,
+    readonly,
+    autofocus = false,
+    onBlur,
+    onFocus,
+    onChange,
+    id,
+    htmlName
+  } = props;
+  const { enumOptions, enumDisabled, inline = false, emptyValue } = options;
+  const optionValueFormat = getOptionValueFormat(options);
+  return /* @__PURE__ */ jsx29(
+    "div",
+    {
+      className: `flex gap-3 py-1 ${inline ? "flex-row flex-wrap" : "flex-col"}`,
+      id,
+      role: "radiogroup",
+      children: Array.isArray(enumOptions) ? enumOptions.map((option, index) => {
+        const itemDisabled = disabled || readonly || Array.isArray(enumDisabled) && enumDisabled.includes(option.value);
+        const encodedValue = enumOptionValueEncoder(option.value, index, optionValueFormat);
+        const decodeValue = (event) => enumOptionValueDecoder(
+          event.target.value,
+          enumOptions,
+          optionValueFormat,
+          emptyValue
+        );
+        return /* @__PURE__ */ jsxs24(
+          "label",
+          {
+            className: `flex items-center gap-3 ${itemDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`,
+            htmlFor: optionId(id, index),
+            children: [
+              /* @__PURE__ */ jsx29(
+                "input",
+                {
+                  type: "radio",
+                  className: radioClassName,
+                  id: optionId(id, index),
+                  checked: enumOptionsIsSelected(option.value, value),
+                  name: htmlName || id,
+                  required,
+                  value: encodedValue,
+                  disabled: itemDisabled,
+                  autoFocus: autofocus && index === 0,
+                  onChange: () => onChange(option.value),
+                  onBlur: (event) => onBlur(id, decodeValue(event)),
+                  onFocus: (event) => onFocus(id, decodeValue(event)),
+                  "aria-describedby": ariaDescribedByIds(id)
+                }
+              ),
+              /* @__PURE__ */ jsx29("span", { className: "text-base text-base-content", children: option.label })
+            ]
+          },
+          String(option.value)
+        );
+      }) : null
+    }
+  );
 };
 var MyCheckboxesWidget = (props) => {
   const {
@@ -26982,81 +26321,100 @@ var MyCheckboxesWidget = (props) => {
     onChange,
     onBlur,
     onFocus,
-    autofocus = false
+    autofocus = false,
+    htmlName
   } = props;
-  const { enumOptions, enumDisabled, emptyValue } = options;
+  const { enumOptions, enumDisabled, emptyValue, inline = false } = options;
   const checkboxesValues = Array.isArray(value) ? value : [value];
-  return /* @__PURE__ */ jsx28("div", { className: "checkboxes-group flex flex-col gap-1", id, children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
-    const checked = enumOptionsIsSelected(option.value, checkboxesValues);
-    const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
-    const disabledCls = disabled || itemDisabled || readonly ? "disabled" : "";
-    return /* @__PURE__ */ jsxs22(
-      "label",
-      {
-        className: `checkboxes-option label cursor-pointer justify-start gap-3 px-0 ${disabledCls}`,
-        children: [
-          /* @__PURE__ */ jsx28(
-            "input",
-            {
-              type: "checkbox",
-              id: optionId(id, index),
-              name: id,
-              className: "checkbox checkbox-primary",
-              checked,
-              value: String(index),
-              disabled: disabled || itemDisabled || readonly,
-              autoFocus: autofocus && index === 0,
-              onChange: (event) => {
-                if (event.target.checked) {
-                  onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
-                } else {
-                  onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
+  const optionValueFormat = getOptionValueFormat(options);
+  return /* @__PURE__ */ jsx29(
+    "div",
+    {
+      className: `checkboxes-group flex gap-3 py-1 ${inline ? "flex-row flex-wrap" : "flex-col"}`,
+      id,
+      children: Array.isArray(enumOptions) && enumOptions.map((option, index) => {
+        const checked = enumOptionsIsSelected(option.value, checkboxesValues);
+        const itemDisabled = Array.isArray(enumDisabled) && enumDisabled.indexOf(option.value) !== -1;
+        const isDisabled = disabled || itemDisabled || readonly;
+        const encodedValue = enumOptionValueEncoder(option.value, index, optionValueFormat);
+        const decodeValue = (event) => enumOptionValueDecoder(
+          event.target.value,
+          enumOptions,
+          optionValueFormat,
+          emptyValue
+        );
+        return /* @__PURE__ */ jsxs24(
+          "label",
+          {
+            className: `checkboxes-option flex items-center gap-3 ${isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`,
+            htmlFor: optionId(id, index),
+            children: [
+              /* @__PURE__ */ jsx29(
+                "input",
+                {
+                  type: "checkbox",
+                  className: checkboxClassName,
+                  id: optionId(id, index),
+                  name: htmlName || id,
+                  checked,
+                  value: encodedValue,
+                  disabled: isDisabled,
+                  autoFocus: autofocus && index === 0,
+                  onChange: (event) => {
+                    if (event.target.checked) {
+                      onChange(enumOptionsSelectValue(index, checkboxesValues, enumOptions));
+                    } else {
+                      onChange(enumOptionsDeselectValue(index, checkboxesValues, enumOptions));
+                    }
+                  },
+                  onBlur: (event) => onBlur(id, decodeValue(event)),
+                  onFocus: (event) => onFocus(id, decodeValue(event)),
+                  "aria-describedby": ariaDescribedByIds(id)
                 }
-              },
-              onBlur: ({ target: { value: v2 } }) => onBlur(id, enumOptionsValueForIndex(v2, enumOptions, emptyValue)),
-              onFocus: ({ target: { value: v2 } }) => onFocus(id, enumOptionsValueForIndex(v2, enumOptions, emptyValue)),
-              "aria-describedby": ariaDescribedByIds(id)
-            }
-          ),
-          /* @__PURE__ */ jsx28("span", { children: option.label })
-        ]
-      },
-      index
-    );
-  }) });
+              ),
+              /* @__PURE__ */ jsx29("span", { children: option.label })
+            ]
+          },
+          String(option.value)
+        );
+      })
+    }
+  );
 };
 var myTemplates = {
   TitleFieldTemplate: MyTitleField,
   DescriptionFieldTemplate: MyDescriptionField,
   FieldTemplate: MyFieldTemplate,
+  ObjectFieldTemplate: MyObjectFieldTemplate,
+  ArrayFieldItemTemplate: MyArrayFieldItemTemplate,
+  BaseInputTemplate: MyBaseInputTemplate,
   ButtonTemplates: {
-    SubmitButton: MySubmitButton
-    // AddButton: DefaultTemplate,
-    // CopyButton: DefaultTemplate,
-    // MoveDownButton: DefaultTemplate,
-    // MoveUpButton: DefaultTemplate,
-    // RemoveButton: DefaultTemplate,
-  },
+    SubmitButton: MySubmitButton,
+    AddButton: MyAddButton,
+    CopyButton: MyCopyButton,
+    MoveDownButton: MyMoveDownButton,
+    MoveUpButton: MyMoveUpButton,
+    RemoveButton: MyRemoveButton,
+    ClearButton: MyClearButton
+  }
   // ArrayFieldTemplate: DefaultTemplate,
   // ArrayFieldDescriptionTemplate: DefaultTemplate,
   // ArrayFieldItemTemplate: DefaultTemplate,
   // ArrayFieldTitleTemplate: DefaultTemplate,
   // ObjectFieldTemplate: DefaultTemplate,
   // ErrorListTemplate: DefaultTemplate,
-  BaseInputTemplate: MyBaseInputTemplate
+  // BaseInputTemplate: DefaultTemplate,
   // UnsupportedFieldTemplate: DefaultTemplate,
   // FieldErrorTemplate: DefaultTemplate,
   // FieldHelpTemplate: DefaultTemplate,
   // WrapIfAdditionalTemplate: DefaultTemplate,
 };
 var myWidgets = {
-  TextWidget: MyTextWidget,
-  EmailWidget: MyEmailWidget,
   TextareaWidget: MyTextareaWidget,
-  SelectWidget: MySelectWidget,
-  RadioWidget: MyRadioWidget,
   CheckboxWidget: MyCheckboxWidget,
-  CheckboxesWidget: MyCheckboxesWidget
+  CheckboxesWidget: MyCheckboxesWidget,
+  RadioWidget: MyRadioWidget,
+  SelectWidget: MySelectWidget
 };
 var DaisyTheme = {
   widgets: myWidgets,
@@ -27064,10 +26422,45 @@ var DaisyTheme = {
 };
 var DaisyTheme_default = DaisyTheme;
 
-// src/FormPreview.tsx
-init_FormStudioContext();
-import { jsx as jsx29 } from "react/jsx-runtime";
+// src/JsonSchemaForm.tsx
+import { jsx as jsx30 } from "react/jsx-runtime";
 var ThemedForm = withTheme(DaisyTheme_default);
+function normalizeValidationErrors(errors) {
+  return errors.map((error) => ({
+    name: typeof error?.name === "string" ? error.name : void 0,
+    property: typeof error?.property === "string" ? error.property : void 0,
+    message: typeof error?.message === "string" ? error.message : void 0,
+    params: error?.params && typeof error.params === "object" && !Array.isArray(error.params) ? error.params : void 0,
+    stack: typeof error?.stack === "string" ? error.stack : void 0,
+    schemaPath: typeof error?.schemaPath === "string" ? error.schemaPath : void 0
+  }));
+}
+function JsonSchemaForm({
+  schema,
+  uiSchema = {},
+  formData,
+  onChange,
+  onSubmit,
+  onError,
+  ...formProps
+}) {
+  return /* @__PURE__ */ jsx30(
+    ThemedForm,
+    {
+      ...formProps,
+      schema,
+      uiSchema,
+      formData,
+      validator: lib_default,
+      onChange: onChange ? ({ formData: nextFormData }) => onChange({ formData: nextFormData }) : void 0,
+      onSubmit: onSubmit ? ({ formData: submittedFormData }) => onSubmit({ formData: submittedFormData }) : void 0,
+      onError: onError ? (errors) => onError(normalizeValidationErrors(errors)) : void 0
+    }
+  );
+}
+
+// src/FormPreview.tsx
+import { jsx as jsx31 } from "react/jsx-runtime";
 var hideSubmitButton = (uiSchema) => {
   return {
     ...uiSchema,
@@ -27078,31 +26471,132 @@ var hideSubmitButton = (uiSchema) => {
 };
 function FormPreview() {
   const { state, setFormData } = useFormStudio();
-  const uiSchema = React20.useMemo(() => hideSubmitButton(state.uiSchema), [state.uiSchema]);
+  const uiSchema = React19.useMemo(() => hideSubmitButton(state.uiSchema), [state.uiSchema]);
   if (!state.schema || Object.keys(state.schema).length === 0) {
-    return /* @__PURE__ */ jsx29("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx29("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
+    return /* @__PURE__ */ jsx31("div", { className: "flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8", children: /* @__PURE__ */ jsx31("p", { className: "text-base-content/60 italic", children: "No form defined to preview." }) });
   }
   const handleChange = ({ formData }) => {
     setFormData(formData);
   };
-  return /* @__PURE__ */ jsx29("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx29(
-    ThemedForm,
+  return /* @__PURE__ */ jsx31("div", { className: "h-full overflow-y-auto pt-2 pb-8", children: /* @__PURE__ */ jsx31(
+    JsonSchemaForm,
     {
       schema: state.schema,
       uiSchema,
       formData: state.formData,
-      onChange: handleChange,
-      validator: lib_default
+      onChange: handleChange
     }
   ) });
 }
 
+// src/StudioPanelErrorBoundary.tsx
+import { Component as Component4 } from "react";
+import { jsx as jsx32, jsxs as jsxs25 } from "react/jsx-runtime";
+function StudioPanelErrorFallback({
+  error,
+  panelName
+}) {
+  return /* @__PURE__ */ jsx32(
+    "div",
+    {
+      className: "alert alert-warning",
+      "data-studio-panel-error": "true",
+      role: "alert",
+      children: /* @__PURE__ */ jsxs25("div", { className: "flex min-w-0 flex-col items-start gap-2", children: [
+        /* @__PURE__ */ jsxs25("h4", { className: "font-bold", children: [
+          panelName,
+          " unavailable"
+        ] }),
+        /* @__PURE__ */ jsx32("p", { className: "text-sm", children: "This panel could not interpret the current schema. The rest of Form Studio is still available." }),
+        /* @__PURE__ */ jsx32("p", { className: "max-w-full overflow-x-auto whitespace-pre-wrap font-mono text-xs", children: error.message }),
+        /* @__PURE__ */ jsx32("p", { className: "text-sm", children: "Use the JSON Editor to correct the schema or UI schema." })
+      ] })
+    }
+  );
+}
+var StudioPanelErrorBoundary = class extends Component4 {
+  constructor() {
+    super(...arguments);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error(`Form Studio ${this.props.panelName} render error`, error, errorInfo);
+  }
+  componentDidUpdate(previousProps) {
+    if (this.state.error && previousProps.resetKey !== this.props.resetKey) {
+      this.setState({ error: null });
+    }
+  }
+  render() {
+    if (this.state.error) {
+      return /* @__PURE__ */ jsx32(StudioPanelErrorFallback, { error: this.state.error, panelName: this.props.panelName });
+    }
+    return this.props.children;
+  }
+};
+
+// src/extensions/diagnostics.tsx
+import { jsx as jsx33, jsxs as jsxs26 } from "react/jsx-runtime";
+function FormStudioDiagnostics() {
+  const { extensions, extensionDiagnostics } = useFormStudio();
+  if (extensionDiagnostics.length === 0) return null;
+  return /* @__PURE__ */ jsx33(
+    "div",
+    {
+      className: "flex flex-col gap-4",
+      role: "alert",
+      "data-form-studio-diagnostics": "true",
+      "data-form-studio-diagnostics-count": extensionDiagnostics.length,
+      children: extensions.map((extension) => {
+        const diagnostics = extensionDiagnostics.filter(
+          (diagnostic) => diagnostic.source === extension.id
+        );
+        if (diagnostics.length === 0) return null;
+        const blocksCommit = diagnostics.some((diagnostic) => diagnostic.blocksCommit);
+        return /* @__PURE__ */ jsxs26(
+          "section",
+          {
+            className: "rounded-xl border border-base-300 bg-base-200 p-4",
+            "data-diagnostic-source": extension.id,
+            children: [
+              /* @__PURE__ */ jsx33("h4", { className: "text-lg font-bold", children: extension.label }),
+              blocksCommit && /* @__PURE__ */ jsx33("p", { className: "mt-1 text-sm text-error", children: "Resolve the blocking issues below before committing this form." }),
+              /* @__PURE__ */ jsx33("ul", { className: "mt-3 flex flex-col gap-2", children: diagnostics.map((diagnostic, index) => /* @__PURE__ */ jsxs26(
+                "li",
+                {
+                  className: `rounded-lg border px-3 py-2 text-sm ${diagnostic.severity === "error" ? "border-error/40 bg-error/10" : "border-warning/40 bg-warning/10"}`,
+                  "data-diagnostic-code": diagnostic.code,
+                  "data-diagnostic-severity": diagnostic.severity,
+                  "data-diagnostic-blocks-commit": diagnostic.blocksCommit,
+                  children: [
+                    /* @__PURE__ */ jsxs26("div", { className: "flex flex-wrap items-center gap-2", children: [
+                      /* @__PURE__ */ jsx33("span", { className: "badge badge-outline badge-sm font-mono", children: diagnostic.code }),
+                      diagnostic.stage && /* @__PURE__ */ jsx33("span", { className: "font-mono text-xs opacity-70", children: diagnostic.stage }),
+                      diagnostic.pointer && /* @__PURE__ */ jsx33("span", { className: "font-mono text-xs opacity-70", children: diagnostic.pointer })
+                    ] }),
+                    /* @__PURE__ */ jsx33("p", { className: "mt-1", children: diagnostic.message })
+                  ]
+                },
+                `${diagnostic.code}-${diagnostic.pointer ?? ""}-${index}`
+              )) })
+            ]
+          },
+          extension.id
+        );
+      })
+    }
+  );
+}
+
 // src/FormStudio.tsx
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
-import { jsx as jsx31, jsxs as jsxs24 } from "react/jsx-runtime";
-var JsonEditor2 = lazy(() => Promise.resolve().then(() => (init_JsonEditor(), JsonEditor_exports)));
+import { jsx as jsx34, jsxs as jsxs27 } from "react/jsx-runtime";
+var JsonEditor2 = lazy(() => import("./JsonEditor-RGY5P2XN.js"));
 function JsonEditorFallback() {
-  return /* @__PURE__ */ jsx31("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx31("span", { className: "loading loading-spinner text-primary loading-lg" }) });
+  return /* @__PURE__ */ jsx34("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx34("span", { className: "loading loading-spinner text-primary loading-lg" }) });
 }
 function FormStudioUI({
   onAutoSave,
@@ -27110,41 +26604,71 @@ function FormStudioUI({
   onSaveNewVersion,
   onCancel,
   mods,
-  saveStatus
+  saveStatus,
+  onDiagnosticsChange
 }) {
-  const { state, setSchema, setUiSchema } = useFormStudio();
-  const [activeTab, setActiveTab] = useState24("builder");
-  const [hasVisitedJson, setHasVisitedJson] = useState24(false);
+  const {
+    state,
+    setSchema,
+    setUiSchema,
+    extensionDiagnostics,
+    validateForCommit
+  } = useFormStudio();
+  const blockingDiagnostics = useMemo7(
+    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
+    [extensionDiagnostics]
+  );
+  const [activeTab, setActiveTab] = useState20("builder");
+  const panelResetKey = computeStateFingerprint(state);
+  useEffect6(() => {
+    onDiagnosticsChange?.(extensionDiagnostics);
+  }, [extensionDiagnostics, onDiagnosticsChange]);
+  const [commitDiagnostics, setCommitDiagnostics] = useState20([]);
+  useEffect6(() => {
+    if (blockingDiagnostics.length === 0) setCommitDiagnostics([]);
+  }, [blockingDiagnostics]);
+  function attemptSave(save) {
+    const result = validateForCommit();
+    if (result.blocked) {
+      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit));
+      return;
+    }
+    setCommitDiagnostics([]);
+    void save(state);
+  }
+  const [hasVisitedJson, setHasVisitedJson] = useState20(false);
   if (activeTab === "json" && !hasVisitedJson) {
     setHasVisitedJson(true);
   }
-  const isInitialMount = useRef7(true);
-  const lastBufferedStateRef = useRef7("");
-  useEffect7(() => {
+  const isInitialMount = useRef6(true);
+  const lastBufferedStateRef = useRef6("");
+  const autoSaveDebouncerRef = useRef6(createDebouncer(DEBOUNCE_MS));
+  useEffect6(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      lastBufferedStateRef.current = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema });
+      lastBufferedStateRef.current = computeStateFingerprint(state);
       return;
     }
     if (!onAutoSave) return;
-    const currentStateStr = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema });
+    const currentStateStr = computeStateFingerprint(state);
     if (currentStateStr === lastBufferedStateRef.current) {
       return;
     }
-    const handler = setTimeout(async () => {
+    const debouncer = autoSaveDebouncerRef.current;
+    debouncer.schedule(async () => {
       try {
         await onAutoSave(state);
         lastBufferedStateRef.current = currentStateStr;
-      } catch (e2) {
-        console.error("Recovery buffer write failed", e2);
+      } catch (e) {
+        console.error("Recovery buffer write failed", e);
       }
-    }, 1500);
-    return () => clearTimeout(handler);
-  }, [state.schema, state.uiSchema, onAutoSave, state]);
-  return /* @__PURE__ */ jsxs24("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
-    /* @__PURE__ */ jsxs24("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
-      /* @__PURE__ */ jsxs24("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
-        /* @__PURE__ */ jsx31(
+    });
+    return () => debouncer.cancel();
+  }, [state.schema, state.uiSchema, state.extensionValues, onAutoSave, state]);
+  return /* @__PURE__ */ jsxs27("div", { className: "form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden", children: [
+    /* @__PURE__ */ jsxs27("div", { className: "flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4", children: [
+      /* @__PURE__ */ jsxs27("div", { className: "tabs tabs-bordered w-full md:w-auto", children: [
+        /* @__PURE__ */ jsx34(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "builder" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -27152,7 +26676,7 @@ function FormStudioUI({
             children: "Visual Builder"
           }
         ),
-        /* @__PURE__ */ jsx31(
+        /* @__PURE__ */ jsx34(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "json" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -27160,7 +26684,7 @@ function FormStudioUI({
             children: "JSON Editor"
           }
         ),
-        /* @__PURE__ */ jsx31(
+        /* @__PURE__ */ jsx34(
           "button",
           {
             className: `tab tab-lg transition-all font-semibold ${activeTab === "preview" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`,
@@ -27169,35 +26693,73 @@ function FormStudioUI({
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs24("div", { className: "flex items-center gap-3 pb-3", children: [
-        saveStatus !== void 0 && /* @__PURE__ */ jsxs24(
+      /* @__PURE__ */ jsxs27("div", { className: "flex items-center gap-3 pb-3", children: [
+        saveStatus !== void 0 && /* @__PURE__ */ jsxs27(
           "div",
           {
             className: "flex items-center mr-1 bg-base-100 px-3 py-1.5 rounded-full border border-base-300 shadow-sm min-w-[160px] justify-center transition-all",
             title: saveStatus === "unsaved" ? "Backed up in browser \xB7 not yet saved to your collection" : void 0,
             children: [
-              saveStatus === "synced" && /* @__PURE__ */ jsxs24("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx31(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
+              saveStatus === "synced" && /* @__PURE__ */ jsxs27("span", { className: "text-xs font-medium text-base-content/60 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx34(CheckCircleIcon, { className: "w-4 h-4 text-success/80" }),
                 "All changes saved"
               ] }),
-              saveStatus === "saving" && /* @__PURE__ */ jsxs24("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx31("span", { className: "loading loading-spinner loading-xs text-primary" }),
+              saveStatus === "saving" && /* @__PURE__ */ jsxs27("span", { className: "text-xs font-medium text-base-content/70 flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx34("span", { className: "loading loading-spinner loading-xs text-primary" }),
                 "Saving\u2026"
               ] }),
-              saveStatus === "unsaved" && /* @__PURE__ */ jsxs24("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx31(ExclamationCircleIcon, { className: "w-4 h-4" }),
+              saveStatus === "unsaved" && /* @__PURE__ */ jsxs27("span", { className: "text-xs font-medium text-warning flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx34(ExclamationCircleIcon, { className: "w-4 h-4" }),
                 "Unsaved changes"
               ] })
             ]
           }
         ),
-        onCancel && /* @__PURE__ */ jsx31("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
-        onSave && /* @__PURE__ */ jsx31("div", { className: "tooltip tooltip-bottom", "data-tip": "Overwrites the current version of this schema.", children: /* @__PURE__ */ jsx31("button", { className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all", onClick: () => onSave(state), children: "Save Changes" }) }),
-        onSaveNewVersion && /* @__PURE__ */ jsx31("div", { className: "tooltip tooltip-bottom tooltip-primary", "data-tip": "Preserves current history and saves edits as a brand new version.", children: /* @__PURE__ */ jsx31("button", { className: "btn btn-primary shadow-sm hover:shadow-md transition-all", onClick: () => onSaveNewVersion(state), children: "Save as New Version" }) })
+        onCancel && /* @__PURE__ */ jsx34("button", { className: "btn btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
+        onSave && /* @__PURE__ */ jsx34(
+          "div",
+          {
+            className: "tooltip tooltip-bottom",
+            "data-tip": blockingDiagnostics.length > 0 ? "Resolve the validation issues below before saving." : "Overwrites the current version of this schema.",
+            children: /* @__PURE__ */ jsx34(
+              "button",
+              {
+                className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all",
+                disabled: blockingDiagnostics.length > 0,
+                onClick: () => attemptSave(onSave),
+                children: "Save Changes"
+              }
+            )
+          }
+        ),
+        onSaveNewVersion && /* @__PURE__ */ jsx34(
+          "div",
+          {
+            className: "tooltip tooltip-bottom tooltip-primary",
+            "data-tip": blockingDiagnostics.length > 0 ? "Resolve the validation issues below before saving." : "Preserves current history and saves edits as a brand new version.",
+            children: /* @__PURE__ */ jsx34(
+              "button",
+              {
+                className: "btn btn-primary shadow-sm hover:shadow-md transition-all",
+                disabled: blockingDiagnostics.length > 0,
+                onClick: () => attemptSave(onSaveNewVersion),
+                children: "Save as New Version"
+              }
+            )
+          }
+        )
       ] })
     ] }),
-    /* @__PURE__ */ jsxs24("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
-      /* @__PURE__ */ jsx31("div", { className: activeTab === "builder" ? "block" : "hidden", children: /* @__PURE__ */ jsx31(
+    commitDiagnostics.length > 0 && /* @__PURE__ */ jsx34("div", { className: "px-6 pt-6", children: /* @__PURE__ */ jsx34("div", { className: "alert alert-warning", role: "alert", children: /* @__PURE__ */ jsxs27("div", { children: [
+      /* @__PURE__ */ jsx34("p", { children: "Validation issues must be resolved before saving." }),
+      /* @__PURE__ */ jsx34("ul", { className: "mt-2 list-disc pl-5", children: commitDiagnostics.map((diagnostic, index) => /* @__PURE__ */ jsxs27("li", { children: [
+        /* @__PURE__ */ jsx34("span", { className: "font-mono", children: diagnostic.code }),
+        " \u2014 ",
+        diagnostic.message
+      ] }, `${diagnostic.source}-${diagnostic.code}-${index}`)) })
+    ] }) }) }),
+    /* @__PURE__ */ jsxs27("div", { className: "flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6", children: [
+      activeTab === "builder" && /* @__PURE__ */ jsx34("div", { className: "block", "data-studio-panel": "builder", children: /* @__PURE__ */ jsx34(StudioPanelErrorBoundary, { panelName: "Visual Builder", resetKey: panelResetKey, children: /* @__PURE__ */ jsx34(
         FormBuilder,
         {
           schema: typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema),
@@ -27206,42 +26768,55 @@ function FormStudioUI({
             try {
               setSchema(JSON.parse(newSchemaStr));
               setUiSchema(JSON.parse(newUiSchemaStr));
-            } catch (e2) {
-              console.error("Failed to parse schema from FormBuilder", e2);
+            } catch (e) {
+              console.error("Failed to parse schema from FormBuilder", e);
             }
           },
           mods
         }
-      ) }),
-      /* @__PURE__ */ jsx31("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx31(Suspense, { fallback: /* @__PURE__ */ jsx31(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx31(JsonEditor2, {}) }) }),
-      /* @__PURE__ */ jsx31("div", { className: activeTab === "preview" ? "block" : "hidden", children: /* @__PURE__ */ jsx31(FormPreview, {}) })
-    ] })
+      ) }) }),
+      /* @__PURE__ */ jsx34("div", { className: activeTab === "json" ? "block h-full" : "hidden", children: hasVisitedJson && /* @__PURE__ */ jsx34(Suspense, { fallback: /* @__PURE__ */ jsx34(JsonEditorFallback, {}), children: /* @__PURE__ */ jsx34(JsonEditor2, {}) }) }),
+      activeTab === "preview" && /* @__PURE__ */ jsx34("div", { className: "block", "data-studio-panel": "preview", children: /* @__PURE__ */ jsx34(StudioPanelErrorBoundary, { panelName: "Live Preview", resetKey: panelResetKey, children: /* @__PURE__ */ jsx34(FormPreview, {}) }) })
+    ] }),
+    extensionDiagnostics.length > 0 && /* @__PURE__ */ jsx34("div", { className: "px-6 pb-6", children: /* @__PURE__ */ jsx34(FormStudioDiagnostics, {}) })
   ] });
 }
 function FormStudio(props) {
-  return /* @__PURE__ */ jsx31(FormStudioProvider, { initialSchema: props.initialSchema, initialUiSchema: props.initialUiSchema, children: /* @__PURE__ */ jsx31(
-    FormStudioUI,
+  return /* @__PURE__ */ jsx34(
+    FormStudioProvider,
     {
-      onAutoSave: props.onAutoSave,
-      onSave: props.onSave,
-      onSaveNewVersion: props.onSaveNewVersion,
-      onCancel: props.onCancel,
-      mods: props.mods,
-      saveStatus: props.saveStatus
+      extensions: props.extensions,
+      initialSchema: props.initialSchema,
+      initialUiSchema: props.initialUiSchema,
+      initialExtensionValues: props.initialExtensionValues,
+      initialFormData: props.initialFormData,
+      children: /* @__PURE__ */ jsx34(
+        FormStudioUI,
+        {
+          onAutoSave: props.onAutoSave,
+          onSave: props.onSave,
+          onSaveNewVersion: props.onSaveNewVersion,
+          onCancel: props.onCancel,
+          mods: props.mods,
+          saveStatus: props.saveStatus,
+          onDiagnosticsChange: props.onDiagnosticsChange
+        }
+      )
     }
-  ) });
+  );
 }
-
-// src/index.ts
-init_JsonEditor();
-init_FormStudioContext();
 export {
   FormBuilder,
   FormPreview,
   FormStudio,
+  FormStudioDiagnostics,
   FormStudioProvider,
   FormStudioUI,
   JsonEditor,
+  JsonSchemaForm,
+  computeStateFingerprint,
+  defineFormStudioExtension,
+  getFormStudioExtensionValue,
   useFormStudio
 };
 /*! Bundled license information:

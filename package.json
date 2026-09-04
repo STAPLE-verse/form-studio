@@ -1,6 +1,6 @@
 {
   "name": "@staple-verse/form-studio",
-  "version": "0.1.0",
+  "version": "0.2.0-rc.3",
   "description": "Visual JSON Schema form builder and preview studio for React",
   "license": "MIT",
   "repository": {
@@ -21,6 +21,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./semantic-v1": {
+      "types": "./dist/semantic-v1.d.ts",
+      "import": "./dist/semantic-v1.js"
     }
   },
   "files": [
@@ -29,8 +33,14 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "postinstall": "rm -rf node_modules/react node_modules/react-dom"
+    "test": "npm run test:capabilities && npm run test:integration && npm run test:packaging",
+    "test:capabilities": "tsup --config tsup.test.config.ts && node .test-dist/capability-fixtures.test.js",
+    "test:integration": "vitest run tests/semantic-integration.test.tsx tests/extension-registry.test.tsx tests/extension-outlets.test.tsx",
+    "test:packaging": "npm run build && node scripts/verify-package-outputs.mjs",
+    "test:packed-consumers": "npm run build && node scripts/verify-packed-consumers.mjs",
+    "test:staple:packed": "npm run build && node scripts/verify-staple-packed.mjs",
+    "test:clean-install": "node scripts/verify-clean-install.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {
     "daisyui": "^4.6.1 || ^5.0.0",
@@ -42,6 +52,7 @@
     "@hello-pangea/dnd": "^18.0.1",
     "@heroicons/react": "^2.2.0",
     "@monaco-editor/react": "^4.7.0",
+    "@staple-verse/marker-template-runtime": "https://github.com/STAPLE-verse/marker-template-spec/releases/download/v1.0.0-rc.3/staple-verse-marker-template-runtime-1.0.0-rc.3.tgz",
     "react-markdown": "^10.1.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1"
@@ -50,11 +61,17 @@
     "@rjsf/core": "^6.6.2",
     "@rjsf/utils": "^6.6.2",
     "@rjsf/validator-ajv8": "^6.6.2",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^20.19.43",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "daisyui": "^5.7.4",
+    "jsdom": "^26.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "tailwindcss": "^4.3.3",
     "tsup": "^8.5.1",
-    "typescript": "^5.8.0"
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.4"
   }
 }

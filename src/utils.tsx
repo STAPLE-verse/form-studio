@@ -14,7 +14,15 @@ import {
   AddFormObjectParametersType,
   DefinitionData,
   InputSelectDataType,
+  FieldCompatibility,
 } from "./types"
+import CompatibilityCard from "./CompatibilityCard"
+import {
+  getLocalDefinitionName,
+  resolveLocalDefinitionReference,
+  type LocalReferenceResolutionStatus,
+} from "./localReferences"
+import { buildChildFieldPointer } from "./fieldPointer"
 
 // parse in either YAML or JSON
 export function parse(text: string): any {
@@ -91,27 +99,145 @@ export function generateCategoryHash(allFormInputs: { [key: string]: FormInput }
   return categoryHash
 }
 
-// determines a card's category based on it's properties
-// mostly useful for reading a schema for the first time
-export function getCardCategory(
+// Determine whether a field is safe to edit visually before choosing a card category.
+export function classifyCard(
   cardProps: CardProps,
   categoryHash: { [key: string]: string }
-): string {
+): FieldCompatibility {
+  const { dataOptions, uiOptions } = cardProps
+  const widget = uiOptions["ui:widget"]
+
+  if (cardProps.referenceResolution && cardProps.referenceResolution !== "resolved") {
+    const diagnostics: Record<
+      Exclude<LocalReferenceResolutionStatus, "resolved">,
+      Extract<FieldCompatibility, { kind: "readOnly" }>
+    > = {
+      cycle: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_CYCLE_READ_ONLY",
+        message: "Recursive local references are preserved but cannot be expanded visually.",
+      },
+      external: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_EXTERNAL_READ_ONLY",
+        message: "External references are preserved but cannot be edited visually.",
+      },
+      unresolved: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNRESOLVED_READ_ONLY",
+        message: "This reference does not resolve to an available local definition.",
+      },
+      unsupportedLocal: {
+        kind: "readOnly",
+        code: "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY",
+        message:
+          "This local reference is preserved, but Form Studio only edits references under #/definitions.",
+      },
+    }
+    return diagnostics[cardProps.referenceResolution]
+  }
+
+  if (dataOptions.oneOf !== undefined) {
+    return {
+      kind: "readOnly",
+      code: "FS_ONE_OF_READ_ONLY",
+      message: "Standalone oneOf fields are preserved but cannot be edited visually.",
+    }
+  }
+
+  if (
+    dataOptions.anyOf !== undefined ||
+    dataOptions.allOf !== undefined ||
+    dataOptions.not !== undefined
+  ) {
+    return {
+      kind: "readOnly",
+      code: "FS_COMPOSITION_READ_ONLY",
+      message: "Composed field schemas are preserved but cannot be edited visually.",
+    }
+  }
+
+  if (dataOptions.readOnly === true || widget === "hidden") {
+    return {
+      kind: "readOnly",
+      code: "FS_HIDDEN_READ_ONLY",
+      message: "Hidden or read-only fields cannot be edited in the visual builder.",
+    }
+  }
+
+  if (dataOptions.format === "textarea") {
+    return {
+      kind: "migration",
+      code: "FS_TEXTAREA_MIGRATION",
+      message:
+        'The legacy format "textarea" is not standard JSON Schema. To migrate it, remove "format" from this field and set ui:widget "textarea" at the same path in the UI schema.',
+    }
+  }
+
   const currentHash = `type:${cardProps.dataOptions.type || ""};widget:${
-    cardProps.uiOptions["ui:widget"] || ""
+    widget || ""
   };field:${cardProps.uiOptions["ui:field"] || ""};format:${
     cardProps.dataOptions.format || ""
   };$ref:${cardProps.$ref !== undefined ? "true" : "false"};enum:${
     cardProps.dataOptions.enum ? "true" : "false"
   }`
   const category = categoryHash[currentHash]
-  if (!category) {
-    if (cardProps.$ref) return "ref"
 
-    console.error(`No match for card': ${currentHash} among set`)
-    return "shortAnswer"
+  if (dataOptions.type === "array") {
+    if (category && category !== "stringArray") {
+      return { kind: "editable", category }
+    }
+
+    if (
+      category === "stringArray" &&
+      !Array.isArray(dataOptions.items) &&
+      dataOptions.items?.type === "string" &&
+      !["oneOf", "anyOf", "allOf", "not", "$ref"].some((keyword) =>
+        Object.prototype.hasOwnProperty.call(dataOptions.items, keyword)
+      )
+    ) {
+      return { kind: "editable", category }
+    }
+
+    if (dataOptions.items?.type === "object") {
+      return {
+        kind: "readOnly",
+        code: "FS_OBJECT_ARRAY_READ_ONLY",
+        message: "Arrays of objects are preserved but cannot be edited visually.",
+      }
+    }
+
+    if (dataOptions.items?.type === "string") {
+      return {
+        kind: "readOnly",
+        code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+        message: "This string item schema is composed or referenced and cannot be edited visually.",
+      }
+    }
+
+    if (["number", "integer", "boolean"].includes(dataOptions.items?.type)) {
+      return {
+        kind: "readOnly",
+        code: "FS_SCALAR_ARRAY_READ_ONLY",
+        message: "Only arrays of strings can currently be edited visually; this field is read-only.",
+      }
+    }
+
+    return {
+      kind: "readOnly",
+      code: "FS_UNSUPPORTED_ARRAY_READ_ONLY",
+      message: "This array shape cannot be edited visually.",
+    }
   }
-  return category
+
+  if (category) return { kind: "editable", category }
+  if (cardProps.$ref !== undefined) return { kind: "editable", category: "ref" }
+
+  return {
+    kind: "readOnly",
+    code: "FS_UNKNOWN_FIELD_READ_ONLY",
+    message: "This field uses a schema or UI construct Form Studio does not recognize.",
+  }
 }
 
 // check for unsupported feature in schema and uischema
@@ -137,13 +263,13 @@ const supportedPropertyParameters = new Set([
   "$ref",
   "minItems",
   "maxItems",
+  "uniqueItems",
   "enumNames",
   "dependencies",
   "$id",
   "$schema",
   "meta",
   "additionalProperties",
-  "ontologyId",
 ])
 
 const supportedUiParameters = new Set([
@@ -165,7 +291,9 @@ function checkObjectForUnsupportedFeatures(
   uischema: { [key: string]: any },
   supportedWidgets: Set<string>,
   supportedFields: Set<string>,
-  supportedOptions: Set<string>
+  supportedOptions: Set<string>,
+  definitionData: DefinitionData,
+  definitionUi: { [key: string]: any }
 ) {
   // add each unsupported feature to this array
   const unsupportedFeatures: Array<string> = []
@@ -174,7 +302,11 @@ function checkObjectForUnsupportedFeatures(
   if (schema && typeof schema === "object") {
     Object.keys(schema).forEach((property) => {
       if (!supportedPropertyParameters.has(property) && property !== "properties") {
-        unsupportedFeatures.push(`Unrecognized Object Property: ${property}`)
+        unsupportedFeatures.push(
+          property === "allOf"
+            ? "Conditional rules at /allOf are not visually editable."
+            : `Unrecognized Object Property: ${property}`
+        )
       }
     })
   }
@@ -217,6 +349,18 @@ function checkObjectForUnsupportedFeatures(
   // check for unsupported property parameters
   if (schema.properties) {
     Object.entries(schema.properties).forEach(([parameter, element]: [string, any]) => {
+      const referenceResolution =
+        element && typeof element === "object" && typeof element.$ref === "string"
+          ? resolveLocalDefinitionReference({
+              schema: element,
+              uiSchema: uischema?.[parameter],
+              definitions: definitionData,
+              definitionUi,
+            })
+          : undefined
+      const inspectedElement =
+        referenceResolution?.status === "resolved" ? referenceResolution.schema : element
+
       if (element && typeof element === "object" && element.type && element.type !== "object") {
         // make sure that the type is valid
         if (!["array", "string", "integer", "number", "boolean"].includes(element.type)) {
@@ -241,8 +385,9 @@ function checkObjectForUnsupportedFeatures(
       if (
         uischema &&
         uischema[parameter] &&
-        element &&
-        (!element.type || element.type !== "object")
+        inspectedElement &&
+        (!referenceResolution || referenceResolution.status === "resolved") &&
+        (!inspectedElement.type || inspectedElement.type !== "object")
       ) {
         // check for unsupported ui properties
         Object.keys(uischema[parameter]).forEach((uiProp) => {
@@ -280,7 +425,9 @@ function checkObjectForUnsupportedFeatures(
 export function checkForUnsupportedFeatures(
   schema: { [key: string]: any },
   uischema: { [key: string]: any },
-  allFormInputs: { [key: string]: FormInput }
+  allFormInputs: { [key: string]: FormInput },
+  definitionData: DefinitionData = schema.definitions || {},
+  definitionUi: { [key: string]: any } = uischema.definitions || {}
 ): string[] {
   // add each unsupported feature to this array
   const unsupportedFeatures: string[] = []
@@ -316,7 +463,9 @@ export function checkForUnsupportedFeatures(
         uischema,
         supportedWidgets,
         supportedFields,
-        supportedOptions
+        supportedOptions,
+        definitionData,
+        definitionUi
       )
     )
   } else {
@@ -341,33 +490,29 @@ function generateDependencyElement(
     ...uiProperties,
   }
   const newElement: FormElement = {}
-  let elementDetails = dataProps && typeof dataProps === "object" ? dataProps : {}
+  let elementDetails =
+    dataProps && typeof dataProps === "object" ? { ...dataProps } : {}
+  let referenceResolution: LocalReferenceResolutionStatus | undefined
 
   // populate newElement with reference if applicable
   if (elementDetails.$ref !== undefined && definitionData) {
-    const pathArr = typeof elementDetails.$ref === "string" ? elementDetails.$ref.split("/") : []
-    if (
-      pathArr[0] === "#" &&
-      pathArr[1] === "definitions" &&
-      definitionData[pathArr[2]] &&
-      useDefinitionDetails === true
-    ) {
-      elementDetails = {
-        ...elementDetails,
-        ...definitionData[pathArr[2]],
-      }
-    }
-
-    const definedUiProps = (definitionUi || {})[pathArr[2]]
-    uiProps = {
-      ...(definedUiProps || {}),
-      ...uiProps,
+    const resolution = resolveLocalDefinitionReference({
+      schema: elementDetails,
+      uiSchema: uiProps,
+      definitions: definitionData,
+      definitionUi,
+    })
+    referenceResolution = resolution.status
+    if (resolution.status === "resolved") {
+      if (useDefinitionDetails) elementDetails = resolution.schema
+      uiProps = resolution.uiSchema
     }
   }
 
   newElement.name = name
   newElement.required = requiredNames.includes(name)
   newElement.$ref = typeof elementDetails.$ref === "string" ? elementDetails.$ref : undefined
+  newElement.referenceResolution = referenceResolution
 
   if (elementDetails.type && elementDetails.type === "object") {
     // create a section
@@ -387,7 +532,10 @@ function generateDependencyElement(
       }
     })
 
-    newElement.dataOptions!.category = getCardCategory(newElement as CardProps, categoryHash)
+    newElement.compatibility = classifyCard(newElement as CardProps, categoryHash)
+    if (newElement.compatibility.kind === "editable") {
+      newElement.dataOptions!.category = newElement.compatibility.category
+    }
     newElement.propType = "card"
   }
   return newElement
@@ -411,40 +559,41 @@ export function generateElementPropsFromSchemas(parameters: {
   // read regular elements from properties
   Object.entries(schema.properties).forEach(([parameter, element]) => {
     const newElement: FormElement = {}
-    let elementDetails: FormElement = element && typeof element === "object" ? element : {}
+    let elementDetails: FormElement =
+      element && typeof element === "object" ? { ...element } : {}
+    let elementUiOptions = {
+      ...(uischema[parameter] || {}),
+    }
+    let referenceResolution: LocalReferenceResolutionStatus | undefined
 
     // populate newElement with reference if applicable
     if (elementDetails?.$ref !== undefined && definitionData) {
-      if (elementDetails.$ref && !elementDetails.$ref.startsWith("#/definitions")) {
-        throw new Error(`Invalid definition, not at '#/definitions': ${elementDetails.$ref}`)
-      }
-      const pathArr = elementDetails.$ref !== undefined ? elementDetails.$ref.split("/") : []
-      if (pathArr[0] === "#" && pathArr[1] === "definitions" && definitionData[pathArr[2]!]) {
-        elementDetails = {
-          ...definitionData[pathArr[2]!],
-          ...elementDetails,
-        }
-      }
-
-      const definedUiProps = (definitionUi || {})[pathArr[2]!]
-      uischema[parameter] = {
-        ...(definedUiProps || {}),
-        ...uischema[parameter],
+      const resolution = resolveLocalDefinitionReference({
+        schema: elementDetails,
+        uiSchema: elementUiOptions,
+        definitions: definitionData,
+        definitionUi,
+      })
+      referenceResolution = resolution.status
+      if (resolution.status === "resolved") {
+        elementDetails = resolution.schema
+        elementUiOptions = resolution.uiSchema
       }
     }
     newElement.name = parameter
     newElement.required = requiredNames.includes(parameter)
     newElement.$ref = elementDetails.$ref
+    newElement.referenceResolution = referenceResolution
     newElement.dataOptions = elementDetails
 
     if (elementDetails.type && elementDetails.type === "object") {
       // create a section
       newElement.schema = elementDetails
-      newElement.uischema = uischema[parameter] || {}
+      newElement.uischema = elementUiOptions
       newElement.propType = "section"
     } else {
       // create a card
-      newElement.uiOptions = uischema[parameter] || {}
+      newElement.uiOptions = elementUiOptions
 
       // ensure that uiOptions does not have duplicate keys with dataOptions
       const reservedKeys = Object.keys(newElement.dataOptions)
@@ -454,7 +603,10 @@ export function generateElementPropsFromSchemas(parameters: {
         }
       })
 
-      newElement.dataOptions.category = getCardCategory(newElement as CardProps, categoryHash)
+      newElement.compatibility = classifyCard(newElement as CardProps, categoryHash)
+      if (newElement.compatibility.kind === "editable") {
+        newElement.dataOptions.category = newElement.compatibility.category
+      }
       newElement.propType = "card"
     }
     elementDict[newElement.name!] = newElement
@@ -688,6 +840,7 @@ function generateSchemaElementFromElement(element: ElementProps) {
             "definitionData",
             "definitionUi",
             "allFormInputs",
+            "fieldPointer",
           ].includes(key) &&
           element.dataOptions[key] !== "" &&
           !(nullableNumberParameters.has(key) && element.dataOptions[key] === null)
@@ -794,9 +947,9 @@ export function generateUiSchemaFromElementProps(
     uiOrder.push(element.name)
     if (element.$ref !== undefined) {
       // look for the reference
-      const pathArr = typeof element.$ref === "string" ? element.$ref.split("/") : []
-      if (definitions && definitions[pathArr[2]!]) {
-        uiSchema[element.name] = definitions[pathArr[2]!]
+      const definitionName = getLocalDefinitionName(element.$ref)
+      if (definitionName !== undefined && definitions && definitions[definitionName]) {
+        uiSchema[element.name] = definitions[definitionName]
       }
     }
     if (element.propType === "card" && element.uiOptions) {
@@ -825,6 +978,142 @@ export function getCardParameterInputComponentForType(
   return (allFormInputs[category] && allFormInputs[category]!.modalBody) || (() => null)
 }
 
+function isJsonObject(value: any): value is { [key: string]: any } {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+}
+
+function cloneJsonValue<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneJsonValue(item)) as T
+  }
+  if (isJsonObject(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneJsonValue(child)])
+    ) as T
+  }
+  return value
+}
+
+function jsonValuesEqual(left: any, right: any): boolean {
+  if (Object.is(left, right)) return true
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return (
+      Array.isArray(left) &&
+      Array.isArray(right) &&
+      left.length === right.length &&
+      left.every((value, index) => jsonValuesEqual(value, right[index]))
+    )
+  }
+  if (!isJsonObject(left) || !isJsonObject(right)) return false
+
+  const leftKeys = Object.keys(left)
+  const rightKeys = Object.keys(right)
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key) => Object.prototype.hasOwnProperty.call(right, key) && jsonValuesEqual(left[key], right[key])
+    )
+  )
+}
+
+function mergeUiOrder(
+  originalOrder: any,
+  baselineOrder: string[],
+  nextOrder: string[]
+): string[] {
+  if (!Array.isArray(originalOrder)) return cloneJsonValue(nextOrder)
+
+  const visuallyOwnedNames = new Set([...baselineOrder, ...nextOrder])
+  const explicitVisualNames = new Set(
+    originalOrder.filter(
+      (name): name is string => typeof name === "string" && visuallyOwnedNames.has(name)
+    )
+  )
+  const wildcardNames = baselineOrder.filter((name) => !explicitVisualNames.has(name))
+  const expandedOriginalOrder = originalOrder.flatMap((name) =>
+    name === "*" ? wildcardNames : [name]
+  )
+
+  const mergedOrder: string[] = []
+  let nextVisualIndex = 0
+  expandedOriginalOrder.forEach((name) => {
+    if (typeof name === "string" && visuallyOwnedNames.has(name)) {
+      if (nextVisualIndex < nextOrder.length) {
+        mergedOrder.push(nextOrder[nextVisualIndex]!)
+        nextVisualIndex += 1
+      }
+    } else {
+      mergedOrder.push(name)
+    }
+  })
+  mergedOrder.push(...nextOrder.slice(nextVisualIndex))
+  return mergedOrder
+}
+
+// Apply only changes made by the visual model. Anything it did not model remains opaque.
+function applyVisualChanges(
+  original: any,
+  baselineGenerated: any,
+  nextGenerated: any,
+  key?: string
+): any {
+  if (jsonValuesEqual(baselineGenerated, nextGenerated)) {
+    return cloneJsonValue(original)
+  }
+
+  if (
+    key === "ui:order" &&
+    Array.isArray(baselineGenerated) &&
+    Array.isArray(nextGenerated)
+  ) {
+    return mergeUiOrder(original, baselineGenerated, nextGenerated)
+  }
+
+  if (
+    Array.isArray(original) &&
+    Array.isArray(baselineGenerated) &&
+    Array.isArray(nextGenerated) &&
+    baselineGenerated.length === nextGenerated.length
+  ) {
+    return nextGenerated.map((nextValue, index) =>
+      applyVisualChanges(original[index], baselineGenerated[index], nextValue)
+    )
+  }
+
+  if (isJsonObject(baselineGenerated) && isJsonObject(nextGenerated)) {
+    const merged = isJsonObject(original) ? cloneJsonValue(original) : {}
+    const generatedKeys = new Set([
+      ...Object.keys(baselineGenerated),
+      ...Object.keys(nextGenerated),
+    ])
+
+    generatedKeys.forEach((generatedKey) => {
+      const existedBefore = Object.prototype.hasOwnProperty.call(baselineGenerated, generatedKey)
+      const existsNext = Object.prototype.hasOwnProperty.call(nextGenerated, generatedKey)
+      if (!existsNext) {
+        if (existedBefore) delete merged[generatedKey]
+        return
+      }
+      if (!existedBefore) {
+        merged[generatedKey] = cloneJsonValue(nextGenerated[generatedKey])
+        return
+      }
+      if (jsonValuesEqual(baselineGenerated[generatedKey], nextGenerated[generatedKey])) {
+        return
+      }
+      merged[generatedKey] = applyVisualChanges(
+        isJsonObject(original) ? original[generatedKey] : undefined,
+        baselineGenerated[generatedKey],
+        nextGenerated[generatedKey],
+        generatedKey
+      )
+    })
+    return merged
+  }
+
+  return cloneJsonValue(nextGenerated)
+}
+
 // takes in an array of Card Objects and updates both schemas
 export function updateSchemas(
   elementArr: ElementProps[],
@@ -834,18 +1123,41 @@ export function updateSchemas(
     onChange: (schema: { [key: string]: any }, uischema: { [key: string]: any }) => any
     definitionData?: { [key: string]: any }
     definitionUi?: { [key: string]: any }
+    categoryHash: { [key: string]: string }
   }
 ) {
-  const { schema, uischema, onChange, definitionUi } = parameters
-  const newSchema = Object.assign({ ...schema }, generateSchemaFromElementProps(elementArr))
+  const {
+    schema,
+    uischema,
+    onChange,
+    definitionData,
+    definitionUi,
+    categoryHash,
+  } = parameters
+  const baselineSchema = cloneJsonValue(schema)
+  const baselineUiSchema = cloneJsonValue(uischema)
+  const baselineElements = generateElementPropsFromSchemas({
+    schema: baselineSchema,
+    uischema: baselineUiSchema,
+    definitionData: definitionData || baselineSchema.definitions,
+    definitionUi: definitionUi || baselineUiSchema.definitions,
+    categoryHash,
+  })
 
-  const newUiSchema: {
-    [key: string]: any
-    definitions?: { [key: string]: any }
-  } = generateUiSchemaFromElementProps(elementArr, definitionUi)
-  if (uischema.definitions) {
-    newUiSchema.definitions = uischema.definitions
-  }
+  const baselineGeneratedSchema = generateSchemaFromElementProps(baselineElements)
+  const nextGeneratedSchema = generateSchemaFromElementProps(elementArr)
+  const newSchema = applyVisualChanges(schema, baselineGeneratedSchema, nextGeneratedSchema)
+
+  const baselineGeneratedUiSchema = generateUiSchemaFromElementProps(
+    baselineElements,
+    definitionUi
+  )
+  const nextGeneratedUiSchema = generateUiSchemaFromElementProps(elementArr, definitionUi)
+  const newUiSchema = applyVisualChanges(
+    uischema,
+    baselineGeneratedUiSchema,
+    nextGeneratedUiSchema
+  )
 
   // mandate that the type is an object if not already done
   newSchema.type = "object"
@@ -916,6 +1228,7 @@ export function addCardObj(parameters: AddFormObjectParametersType) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange,
   })
 }
@@ -962,6 +1275,7 @@ export function addSectionObj(parameters: AddFormObjectParametersType) {
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange,
   })
 }
@@ -975,6 +1289,8 @@ export function generateElementComponentsFromSchemas(parameters: {
   definitionUi?: { [key: string]: any }
   hideKey?: boolean
   path: string
+  /** RFC 6901 pointer rooted at the form schema; `""` identifies the schema root. */
+  fieldPointer?: string
   cardOpenState: Record<string, boolean>
   setCardOpenState: (newState: Record<string, boolean>) => void
   allFormInputs: { [key: string]: FormInput }
@@ -991,6 +1307,7 @@ export function generateElementComponentsFromSchemas(parameters: {
     definitionUi,
     hideKey,
     path,
+    fieldPointer = "",
     cardOpenState,
     setCardOpenState,
     allFormInputs,
@@ -1026,10 +1343,24 @@ export function generateElementComponentsFromSchemas(parameters: {
     }
 
     const expanded = cardOpenState[elementKey] || false
+    const childFieldPointer = buildChildFieldPointer(fieldPointer, elementProp.name)
     if (elementProp.propType === "card") {
+      const compatibility = elementProp.compatibility
+      if (compatibility && compatibility.kind !== "editable") {
+        return (
+          <CompatibilityCard
+            key={elementKey}
+            name={elementProp.name}
+            title={elementProp.dataOptions.title}
+            compatibility={compatibility}
+            fieldPointer={childFieldPointer}
+          />
+        )
+      }
+
       // choose the appropriate type specific parameters
       const TypeSpecificParameters = getCardParameterInputComponentForType(
-        elementProp.dataOptions.category || "string",
+        compatibility?.category || elementProp.dataOptions.category,
         allFormInputs
       )
 
@@ -1043,6 +1374,7 @@ export function generateElementComponentsFromSchemas(parameters: {
                 required: elementPropArr[index]!.required,
                 hideKey,
                 path: `${path}_${elementPropArr[index]!.name}`,
+                fieldPointer: childFieldPointer,
                 definitionData,
                 definitionUi,
                 neighborNames: elementPropArr[index]!.neighborNames,
@@ -1084,6 +1416,7 @@ export function generateElementComponentsFromSchemas(parameters: {
                   "dependents",
                   "dependent",
                   "parent",
+                  "fieldPointer",
                 ].includes(propName)
               ) {
                 newDataProps[propName] = newCardObj[propName]
@@ -1116,6 +1449,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1137,6 +1471,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1164,6 +1499,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1190,6 +1526,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1262,6 +1599,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1287,6 +1625,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1309,6 +1648,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1337,6 +1677,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               onChange,
               definitionData,
               definitionUi,
+              categoryHash,
             })
           }}
           onDelete={() => {
@@ -1357,6 +1698,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1384,6 +1726,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1410,6 +1753,7 @@ export function generateElementComponentsFromSchemas(parameters: {
               uischema,
               definitionData,
               definitionUi,
+              categoryHash,
               onChange,
             })
           }}
@@ -1418,6 +1762,7 @@ export function generateElementComponentsFromSchemas(parameters: {
           key={elementKey}
           required={elementProp.required}
           path={`${path}_${elementProp.name}`}
+          fieldPointer={childFieldPointer}
           definitionData={definitionData || {}}
           definitionUi={definitionUi || {}}
           hideKey={hideKey}
@@ -1491,6 +1836,7 @@ export function onDragEnd(
     uischema,
     definitionData: definitionData || {},
     definitionUi: definitionUi || {},
+    categoryHash,
     onChange,
   })
 }
@@ -1568,6 +1914,7 @@ export function propagateDefinitionChanges(
     uischema,
     definitionData,
     definitionUi,
+    categoryHash,
     onChange,
   })
 }

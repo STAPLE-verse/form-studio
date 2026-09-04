@@ -1,9 +1,27 @@
 "use client"
 
-import { lazy, Suspense, useState, useEffect, useRef } from "react"
-import { FormStudioProvider, useFormStudio, type FormStudioState } from "./FormStudioContext"
+import {
+  lazy,
+  Suspense,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactElement,
+} from "react"
+import {
+  FormStudioProvider,
+  useFormStudio,
+  computeStateFingerprint,
+  type FormStudioProviderProps,
+  type FormStudioState,
+} from "./FormStudioContext"
+import type { FormStudioDiagnostic } from "./extensions/types"
 import FormBuilder from "./FormBuilder"
 import FormPreview from "./FormPreview"
+import StudioPanelErrorBoundary from "./StudioPanelErrorBoundary"
+import FormStudioDiagnostics from "./extensions/diagnostics"
+import { createDebouncer, DEBOUNCE_MS } from "./debounce"
 
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid"
 import type { Mods } from "./types"
@@ -21,7 +39,7 @@ function JsonEditorFallback() {
 
 export type FormStudioSaveStatus = "synced" | "unsaved" | "saving"
 
-interface FormStudioUIProps {
+export interface FormStudioUIProps {
   onAutoSave?: (state: FormStudioState) => Promise<void> | void
   onSave?: (state: FormStudioState) => Promise<void>
   onSaveNewVersion?: (state: FormStudioState) => Promise<void>
@@ -29,11 +47,16 @@ interface FormStudioUIProps {
   mods?: Mods
   /** When provided, the route layer owns save-status semantics (§8.11.4). */
   saveStatus?: FormStudioSaveStatus
+  /** Notified with current debounced diagnostics in registry order. */
+  onDiagnosticsChange?: (diagnostics: FormStudioDiagnostic[]) => void
 }
 
-interface FormStudioProps extends FormStudioUIProps {
+export interface FormStudioProps extends FormStudioUIProps {
+  extensions?: FormStudioProviderProps["extensions"]
+  initialExtensionValues?: FormStudioProviderProps["initialExtensionValues"]
   initialSchema?: string | object
   initialUiSchema?: string | object
+  initialFormData?: object
 }
 
 export function FormStudioUI({
@@ -43,9 +66,42 @@ export function FormStudioUI({
   onCancel,
   mods,
   saveStatus,
-}: FormStudioUIProps) {
-  const { state, setSchema, setUiSchema } = useFormStudio()
+  onDiagnosticsChange,
+}: FormStudioUIProps): ReactElement {
+  const {
+    state,
+    setSchema,
+    setUiSchema,
+    extensionDiagnostics,
+    validateForCommit,
+  } = useFormStudio()
+  const blockingDiagnostics = useMemo(
+    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
+    [extensionDiagnostics]
+  )
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
+  const panelResetKey = computeStateFingerprint(state)
+
+  useEffect(() => {
+    onDiagnosticsChange?.(extensionDiagnostics)
+  }, [extensionDiagnostics, onDiagnosticsChange])
+
+  // Live diagnostics are debounced, so every committed save performs a fresh
+  // synchronous registry validation against the current provider state.
+  const [commitDiagnostics, setCommitDiagnostics] = useState<FormStudioDiagnostic[]>([])
+  useEffect(() => {
+    if (blockingDiagnostics.length === 0) setCommitDiagnostics([])
+  }, [blockingDiagnostics])
+
+  function attemptSave(save: (state: FormStudioState) => Promise<void>) {
+    const result = validateForCommit()
+    if (result.blocked) {
+      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit))
+      return
+    }
+    setCommitDiagnostics([])
+    void save(state)
+  }
   
   // Track if the JSON tab has ever been visited so we only load the heavy editor once,
   // but keep it mounted in the background to preserve undo history and unsaved text.
@@ -56,33 +112,37 @@ export function FormStudioUI({
 
   const isInitialMount = useRef(true)
   const lastBufferedStateRef = useRef<string>("")
+  // Uses the same trailing-debounce interval as registered extension
+  // validation and schema-change revalidation.
+  const autoSaveDebouncerRef = useRef(createDebouncer(DEBOUNCE_MS))
 
   // Debounced recovery-buffer write (silent — no status pill updates)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
-      lastBufferedStateRef.current = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema })
+      lastBufferedStateRef.current = computeStateFingerprint(state)
       return
     }
     if (!onAutoSave) return
 
-    const currentStateStr = JSON.stringify({ schema: state.schema, uiSchema: state.uiSchema })
-    
+    const currentStateStr = computeStateFingerprint(state)
+
     if (currentStateStr === lastBufferedStateRef.current) {
       return
     }
 
-    const handler = setTimeout(async () => {
+    const debouncer = autoSaveDebouncerRef.current
+    debouncer.schedule(async () => {
       try {
         await onAutoSave(state)
         lastBufferedStateRef.current = currentStateStr
       } catch (e) {
         console.error("Recovery buffer write failed", e)
       }
-    }, 1500)
+    })
 
-    return () => clearTimeout(handler)
-  }, [state.schema, state.uiSchema, onAutoSave, state])
+    return () => debouncer.cancel()
+  }, [state.schema, state.uiSchema, state.extensionValues, onAutoSave, state])
 
   return (
     <div className="form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden">
@@ -144,15 +204,37 @@ export function FormStudioUI({
             </button>
           )}
           {onSave && (
-            <div className="tooltip tooltip-bottom" data-tip="Overwrites the current version of this schema.">
-              <button className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all" onClick={() => onSave(state)}>
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip={
+                blockingDiagnostics.length > 0
+                  ? "Resolve the validation issues below before saving."
+                  : "Overwrites the current version of this schema."
+              }
+            >
+              <button
+                className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all"
+                disabled={blockingDiagnostics.length > 0}
+                onClick={() => attemptSave(onSave)}
+              >
                 Save Changes
               </button>
             </div>
           )}
           {onSaveNewVersion && (
-            <div className="tooltip tooltip-bottom tooltip-primary" data-tip="Preserves current history and saves edits as a brand new version.">
-              <button className="btn btn-primary shadow-sm hover:shadow-md transition-all" onClick={() => onSaveNewVersion(state)}>
+            <div
+              className="tooltip tooltip-bottom tooltip-primary"
+              data-tip={
+                blockingDiagnostics.length > 0
+                  ? "Resolve the validation issues below before saving."
+                  : "Preserves current history and saves edits as a brand new version."
+              }
+            >
+              <button
+                className="btn btn-primary shadow-sm hover:shadow-md transition-all"
+                disabled={blockingDiagnostics.length > 0}
+                onClick={() => attemptSave(onSaveNewVersion)}
+              >
                 Save as New Version
               </button>
             </div>
@@ -160,22 +242,49 @@ export function FormStudioUI({
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6">
-        <div className={activeTab === "builder" ? "block" : "hidden"}>
-          <FormBuilder
-            schema={typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema)}
-            uiSchema={typeof state.uiSchema === "string" ? state.uiSchema : JSON.stringify(state.uiSchema)}
-            onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
-              try {
-                setSchema(JSON.parse(newSchemaStr))
-                setUiSchema(JSON.parse(newUiSchemaStr))
-              } catch (e) {
-                console.error("Failed to parse schema from FormBuilder", e)
-              }
-            }}
-            mods={mods}
-          />
+      {commitDiagnostics.length > 0 && (
+        <div className="px-6 pt-6">
+          <div className="alert alert-warning" role="alert">
+            <div>
+              <p>Validation issues must be resolved before saving.</p>
+              <ul className="mt-2 list-disc pl-5">
+                {commitDiagnostics.map((diagnostic, index) => (
+                  <li key={`${diagnostic.source}-${diagnostic.code}-${index}`}>
+                    <span className="font-mono">{diagnostic.code}</span> — {diagnostic.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
+      )}
+
+      <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden p-6">
+        {activeTab === "builder" && (
+          <div className="block" data-studio-panel="builder">
+            <StudioPanelErrorBoundary panelName="Visual Builder" resetKey={panelResetKey}>
+              <FormBuilder
+                schema={
+                  typeof state.schema === "string" ? state.schema : JSON.stringify(state.schema)
+                }
+                uiSchema={
+                  typeof state.uiSchema === "string"
+                    ? state.uiSchema
+                    : JSON.stringify(state.uiSchema)
+                }
+                onChange={(newSchemaStr: string, newUiSchemaStr: string) => {
+                  try {
+                    setSchema(JSON.parse(newSchemaStr))
+                    setUiSchema(JSON.parse(newUiSchemaStr))
+                  } catch (e) {
+                    console.error("Failed to parse schema from FormBuilder", e)
+                  }
+                }}
+                mods={mods}
+              />
+            </StudioPanelErrorBoundary>
+          </div>
+        )}
         <div className={activeTab === "json" ? "block h-full" : "hidden"}>
           {hasVisitedJson && (
             <Suspense fallback={<JsonEditorFallback />}>
@@ -183,17 +292,33 @@ export function FormStudioUI({
             </Suspense>
           )}
         </div>
-        <div className={activeTab === "preview" ? "block" : "hidden"}>
-          <FormPreview />
-        </div>
+        {activeTab === "preview" && (
+          <div className="block" data-studio-panel="preview">
+            <StudioPanelErrorBoundary panelName="Live Preview" resetKey={panelResetKey}>
+              <FormPreview />
+            </StudioPanelErrorBoundary>
+          </div>
+        )}
       </div>
+
+      {extensionDiagnostics.length > 0 && (
+        <div className="px-6 pb-6">
+          <FormStudioDiagnostics />
+        </div>
+      )}
     </div>
   )
 }
 
-export default function FormStudio(props: FormStudioProps) {
+export default function FormStudio(props: FormStudioProps): ReactElement {
   return (
-    <FormStudioProvider initialSchema={props.initialSchema} initialUiSchema={props.initialUiSchema}>
+    <FormStudioProvider
+      extensions={props.extensions}
+      initialSchema={props.initialSchema}
+      initialUiSchema={props.initialUiSchema}
+      initialExtensionValues={props.initialExtensionValues}
+      initialFormData={props.initialFormData}
+    >
       <FormStudioUI
         onAutoSave={props.onAutoSave}
         onSave={props.onSave}
@@ -201,6 +326,7 @@ export default function FormStudio(props: FormStudioProps) {
         onCancel={props.onCancel}
         mods={props.mods}
         saveStatus={props.saveStatus}
+        onDiagnosticsChange={props.onDiagnosticsChange}
       />
     </FormStudioProvider>
   )

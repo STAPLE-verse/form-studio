@@ -38,11 +38,11 @@ export default function MarkdownDescriptionInput({
           value={value}
           placeholder="Description"
           rows={4}
-          className="textarea textarea-primary textarea-bordered focus:outline-secondary w-full form-description"
+          className="textarea textarea-primary textarea-bordered w-full form-description"
           onChange={(ev) => onChange(ev.target.value)}
         />
       ) : (
-        <div className="markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered focus:outline-secondary w-full h-auto min-h-[6rem]">
+        <div className="markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered w-full h-auto min-h-[6rem]">
           {value ? (
             <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
               {value}

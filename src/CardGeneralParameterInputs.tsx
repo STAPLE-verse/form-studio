@@ -48,7 +48,7 @@ export default function CardGeneralParameterInputs({
   const objectNameLabel = fetchLabel("objectNameLabel", "Variable Name")
   const displayNameLabel = fetchLabel("displayNameLabel", "Display Name")
   const descriptionLabel = fetchLabel("descriptionLabel", "Description")
-  const inputTypeLabel = fetchLabel("inputTypeLabel", "Item Type")
+  const inputTypeLabel = fetchLabel("inputTypeLabel", "Field Type")
 
   const availableInputTypes = () => {
     const definitionsInSchema =
@@ -71,7 +71,7 @@ export default function CardGeneralParameterInputs({
       "longAnswer",
       "integer",
       "number",
-      //"array",
+      "stringArray",
       "ref",
     ]
 
@@ -123,7 +123,7 @@ export default function CardGeneralParameterInputs({
                     onChange({ ...parameters })
                   }
                 }}
-                className={`input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
+                className={`input input-primary input-bordered ${entryControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
               />
               {keyError && (
                 <div className="label px-0 pb-0 pt-1">
@@ -156,7 +156,7 @@ export default function CardGeneralParameterInputs({
             onBlur={(ev) => {
               onChange({ ...parameters, title: ev.target.value })
             }}
-            className={`input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`}
+            className={`input input-primary input-bordered ${entryControlClass} card-text`}
           />
         </div>
       </div>
@@ -194,14 +194,14 @@ export default function CardGeneralParameterInputs({
                 mods.tooltipDescriptions &&
                 typeof mods.tooltipDescriptions.cardInputType === "string"
                   ? mods.tooltipDescriptions.cardInputType
-                  : "The type of item displayed on the form"
+                  : "The form control and value type used for this field"
               }
               id={`${elementId}-inputinfo`}
               type="help"
             />
           </h5>
           <select
-            className={`select select-primary select-bordered focus:outline-secondary ${entryControlClass}`}
+            className={`select select-primary select-bordered ${entryControlClass}`}
             value={parameters.category}
             onChange={(e) => {
               const newCategory = e.target.value
@@ -242,26 +242,6 @@ export default function CardGeneralParameterInputs({
           mods={mods}
           allFormInputs={allFormInputs}
         />
-      </div>
-
-      <div className={`${entryRowClass} mt-4`}>
-        <div className={entryClass}>
-          <h5 className={entryLabelClass}>
-            Ontology ID (Optional){` `}
-            <Tooltip
-              text="Bind this field to a standard ontology code (e.g., SNOMED:75367002). This drastically improves the reusability and semantic findability of your template!"
-              id={`${elementId}-ontologyinfo`}
-              type="help"
-            />
-          </h5>
-          <input
-            value={parameters.ontologyId || ""}
-            placeholder="e.g. NCIT:C25150"
-            type="text"
-            onChange={(ev) => onChange({ ...parameters, ontologyId: ev.target.value })}
-            className={`input input-primary input-bordered focus:outline-secondary ${entryControlClass} card-text`}
-          />
-        </div>
       </div>
     </React.Fragment>
   )

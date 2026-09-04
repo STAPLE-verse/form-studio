@@ -1,4 +1,5 @@
 import { ReactElement, FunctionComponent } from "react"
+import type { LocalReferenceResolutionStatus } from "./localReferences"
 
 export interface ComponentProps {
   dependents: {
@@ -21,9 +22,35 @@ export interface InputSelectDataType {
   category: string
 }
 
+export type FieldCompatibility =
+  | {
+      kind: "editable"
+      category: string
+    }
+  | {
+      kind: "readOnly"
+      code:
+        | "FS_OBJECT_ARRAY_READ_ONLY"
+        | "FS_SCALAR_ARRAY_READ_ONLY"
+        | "FS_UNSUPPORTED_ARRAY_READ_ONLY"
+        | "FS_ONE_OF_READ_ONLY"
+        | "FS_COMPOSITION_READ_ONLY"
+        | "FS_HIDDEN_READ_ONLY"
+        | "FS_REFERENCE_CYCLE_READ_ONLY"
+        | "FS_REFERENCE_EXTERNAL_READ_ONLY"
+        | "FS_REFERENCE_UNRESOLVED_READ_ONLY"
+        | "FS_REFERENCE_UNSUPPORTED_LOCAL_READ_ONLY"
+        | "FS_UNKNOWN_FIELD_READ_ONLY"
+      message: string
+    }
+  | {
+      kind: "migration"
+      code: "FS_TEXTAREA_MIGRATION"
+      message: string
+    }
+
 export interface CardComponentPropsType {
   name: string
-  ontologyId?: string
   required?: boolean
   hideKey?: boolean
   definitionData?: { [key: string]: any }
@@ -44,6 +71,7 @@ export interface CardComponentPropsType {
   "ui:placeholder"?: string
   minItems?: number
   maxItems?: number
+  uniqueItems?: boolean
   title?: string
   $ref?: string
   format?: string
@@ -59,6 +87,8 @@ export interface CardComponentPropsType {
   enum?: (number | string)[]
   enumNames?: string[] | null
   description?: string
+  /** RFC 6901 pointer rooted at the form schema for this instance-bearing field. */
+  fieldPointer?: string
 }
 
 export interface CardModalProps {
@@ -92,6 +122,8 @@ export interface SectionPropsType {
   onMoveUp?: () => any
   onMoveDown?: () => any
   path: string
+  /** RFC 6901 pointer rooted at the form schema for this instance-bearing section. */
+  fieldPointer?: string
   definitionData: { [key: string]: any }
   definitionUi: { [key: string]: any }
   dependents?: Array<{
@@ -142,8 +174,10 @@ export type CardProps = {
   required: boolean
   dataOptions: { [key: string]: any }
   uiOptions: { [key: string]: any }
+  compatibility?: FieldCompatibility
   // only defined if a reference
   $ref?: string
+  referenceResolution?: LocalReferenceResolutionStatus
   // only defined if a dependency parent
   dependents?: Array<{
     children: Array<string>
@@ -165,6 +199,7 @@ export type SectionProps = {
   uischema: { [key: string]: any }
   // only defined if a reference
   $ref?: string
+  referenceResolution?: LocalReferenceResolutionStatus
   // only defined if a dependency parent
   dependents?: Array<{
     children: Array<string>
@@ -274,11 +309,13 @@ export interface FormElement {
   description?: string
   required?: boolean
   $ref?: string
+  referenceResolution?: LocalReferenceResolutionStatus
   schema?: { [key: string]: any }
   uischema?: { [key: string]: any }
   propType?: string
   dataOptions?: { [key: string]: any }
   uiOptions?: { [key: string]: any }
+  compatibility?: FieldCompatibility
   type?: string
   dependents?: { [key: string]: any }
   dependent?: boolean
@@ -300,5 +337,5 @@ export interface AddFormObjectParametersType {
 }
 
 export interface DefinitionData {
-  [key: string]: { "ui:order"?: string[] }
+  [key: string]: { [key: string]: any }
 }
