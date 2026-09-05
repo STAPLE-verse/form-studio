@@ -313,7 +313,7 @@ test("Form Studio compatibility coordinates match the recorded current stack", a
   const readVersion = async (packagePath: string) =>
     JSON.parse(await readFile(path.join(process.cwd(), packagePath), "utf8")).version
 
-  assert.equal(await readVersion("package.json"), "0.2.0-rc.2")
+  assert.equal(await readVersion("package.json"), "0.2.0-rc.4")
   assert.equal(await readVersion("node_modules/@rjsf/core/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/@rjsf/validator-ajv8/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/ajv/package.json"), "8.20.0")
