@@ -18,10 +18,12 @@ export {
 export {
   FormStudioProvider,
   useFormStudio,
+  useFormStudioCommit,
   computeStateFingerprint,
   type FormStudioProviderProps,
   type FormStudioState,
   type FormStudioContextValue,
+  type FormStudioCommitResult,
 } from "./FormStudioContext"
 export {
   defineFormStudioExtension,

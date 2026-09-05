@@ -5,13 +5,13 @@ import {
   Suspense,
   useState,
   useEffect,
-  useMemo,
   useRef,
   type ReactElement,
 } from "react"
 import {
   FormStudioProvider,
   useFormStudio,
+  useFormStudioCommit,
   computeStateFingerprint,
   type FormStudioProviderProps,
   type FormStudioState,
@@ -68,17 +68,8 @@ export function FormStudioUI({
   saveStatus,
   onDiagnosticsChange,
 }: FormStudioUIProps): ReactElement {
-  const {
-    state,
-    setSchema,
-    setUiSchema,
-    extensionDiagnostics,
-    validateForCommit,
-  } = useFormStudio()
-  const blockingDiagnostics = useMemo(
-    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
-    [extensionDiagnostics]
-  )
+  const { state, setSchema, setUiSchema, extensionDiagnostics } = useFormStudio()
+  const { blockingDiagnostics, commitDiagnostics, attemptCommit } = useFormStudioCommit()
   const [activeTab, setActiveTab] = useState<"builder" | "json" | "preview">("builder")
   const panelResetKey = computeStateFingerprint(state)
 
@@ -86,23 +77,6 @@ export function FormStudioUI({
     onDiagnosticsChange?.(extensionDiagnostics)
   }, [extensionDiagnostics, onDiagnosticsChange])
 
-  // Live diagnostics are debounced, so every committed save performs a fresh
-  // synchronous registry validation against the current provider state.
-  const [commitDiagnostics, setCommitDiagnostics] = useState<FormStudioDiagnostic[]>([])
-  useEffect(() => {
-    if (blockingDiagnostics.length === 0) setCommitDiagnostics([])
-  }, [blockingDiagnostics])
-
-  function attemptSave(save: (state: FormStudioState) => Promise<void>) {
-    const result = validateForCommit()
-    if (result.blocked) {
-      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit))
-      return
-    }
-    setCommitDiagnostics([])
-    void save(state)
-  }
-  
   // Track if the JSON tab has ever been visited so we only load the heavy editor once,
   // but keep it mounted in the background to preserve undo history and unsaved text.
   const [hasVisitedJson, setHasVisitedJson] = useState(false)
@@ -215,7 +189,7 @@ export function FormStudioUI({
               <button
                 className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all"
                 disabled={blockingDiagnostics.length > 0}
-                onClick={() => attemptSave(onSave)}
+                onClick={() => attemptCommit(onSave)}
               >
                 Save Changes
               </button>
@@ -233,7 +207,7 @@ export function FormStudioUI({
               <button
                 className="btn btn-primary shadow-sm hover:shadow-md transition-all"
                 disabled={blockingDiagnostics.length > 0}
-                onClick={() => attemptSave(onSaveNewVersion)}
+                onClick={() => attemptCommit(onSaveNewVersion)}
               >
                 Save as New Version
               </button>

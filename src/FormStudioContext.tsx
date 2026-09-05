@@ -3,6 +3,8 @@
 import React, {
   createContext,
   useContext,
+  useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactElement,
@@ -195,6 +197,55 @@ export function useFormStudio() {
     throw new Error("useFormStudio must be used within a FormStudioProvider")
   }
   return context
+}
+
+export interface FormStudioCommitResult {
+  /** Live, debounced blocking diagnostics — for disabling a commit control preemptively. */
+  blockingDiagnostics: FormStudioDiagnostic[]
+  /** Diagnostics surfaced by the most recent blocked commit attempt; cleared once resolved. */
+  commitDiagnostics: FormStudioDiagnostic[]
+  /**
+   * Runs a fresh, synchronous validation and only invokes `commit` if nothing
+   * blocks. Live `extensionDiagnostics` are debounced, so every commit attempt
+   * (a save, a "done" navigation, anything a consumer gates on validity)
+   * re-validates the current provider state before proceeding, rather than
+   * trusting a possibly-stale debounced value.
+   */
+  attemptCommit: (commit: (state: FormStudioState) => void | Promise<void>) => void
+}
+
+/**
+ * The commit-gating logic every known consumer needs around its own save/done
+ * controls (STAPLE's `commitIfValid`, `FormStudioUI`'s built-in buttons, and
+ * any host application with its own custom action buttons). Extracted as a
+ * shared primitive so consumers with bespoke chrome don't have to hand-roll
+ * this validate-then-commit sequence themselves and risk drifting from
+ * `FormStudioUI`'s own behavior as the registry/validation contract evolves.
+ */
+export function useFormStudioCommit(): FormStudioCommitResult {
+  const { state, extensionDiagnostics, validateForCommit } = useFormStudio()
+
+  const blockingDiagnostics = useMemo(
+    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
+    [extensionDiagnostics]
+  )
+
+  const [commitDiagnostics, setCommitDiagnostics] = useState<FormStudioDiagnostic[]>([])
+  useEffect(() => {
+    if (blockingDiagnostics.length === 0) setCommitDiagnostics([])
+  }, [blockingDiagnostics])
+
+  const attemptCommit = (commit: (state: FormStudioState) => void | Promise<void>) => {
+    const result = validateForCommit()
+    if (result.blocked) {
+      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit))
+      return
+    }
+    setCommitDiagnostics([])
+    void commit(state)
+  }
+
+  return { blockingDiagnostics, commitDiagnostics, attemptCommit }
 }
 
 /** Internal optional lookup used by provider-optional FormBuilder outlets. */
