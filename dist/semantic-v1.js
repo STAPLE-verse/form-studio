@@ -10,7 +10,7 @@ import {
   defineFormStudioExtension,
   useFormStudio,
   useSyncedJsonDocument
-} from "./chunk-NS4CFN76.js";
+} from "./chunk-EG7H73O6.js";
 
 // src/semantic-v1/SemanticBindingSection.tsx
 import { useMemo } from "react";

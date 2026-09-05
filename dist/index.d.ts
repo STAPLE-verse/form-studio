@@ -55,6 +55,29 @@ interface FormStudioProviderProps {
 }
 declare function FormStudioProvider({ extensions, initialExtensionValues, initialSchema, initialUiSchema, initialFormData, children, }: FormStudioProviderProps): ReactElement;
 declare function useFormStudio(): FormStudioContextValue;
+interface FormStudioCommitResult {
+    /** Live, debounced blocking diagnostics — for disabling a commit control preemptively. */
+    blockingDiagnostics: FormStudioDiagnostic[];
+    /** Diagnostics surfaced by the most recent blocked commit attempt; cleared once resolved. */
+    commitDiagnostics: FormStudioDiagnostic[];
+    /**
+     * Runs a fresh, synchronous validation and only invokes `commit` if nothing
+     * blocks. Live `extensionDiagnostics` are debounced, so every commit attempt
+     * (a save, a "done" navigation, anything a consumer gates on validity)
+     * re-validates the current provider state before proceeding, rather than
+     * trusting a possibly-stale debounced value.
+     */
+    attemptCommit: (commit: (state: FormStudioState) => void | Promise<void>) => void;
+}
+/**
+ * The commit-gating logic every known consumer needs around its own save/done
+ * controls (STAPLE's `commitIfValid`, `FormStudioUI`'s built-in buttons, and
+ * any host application with its own custom action buttons). Extracted as a
+ * shared primitive so consumers with bespoke chrome don't have to hand-roll
+ * this validate-then-commit sequence themselves and risk drifting from
+ * `FormStudioUI`'s own behavior as the registry/validation contract evolves.
+ */
+declare function useFormStudioCommit(): FormStudioCommitResult;
 
 type FormStudioSaveStatus = "synced" | "unsaved" | "saving";
 interface FormStudioUIProps {
@@ -117,4 +140,4 @@ declare function JsonSchemaForm<TFormData extends object = Record<string, unknow
 
 declare function FormStudioDiagnostics(): React.ReactElement | null;
 
-export { FormBuilder, FormPreview, FormStudio, type FormStudioContextValue, FormStudioDiagnostic, FormStudioDiagnostics, FormStudioExtension, type FormStudioProps, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type FormStudioUIProps, FormStudioValidationResult, InitParameters, JsonEditor, type JsonSchemaDocument, JsonSchemaForm, type JsonSchemaFormEvent, type JsonSchemaFormProps, type JsonSchemaFormValidationError, Mods, computeStateFingerprint, useFormStudio };
+export { FormBuilder, FormPreview, FormStudio, type FormStudioCommitResult, type FormStudioContextValue, FormStudioDiagnostic, FormStudioDiagnostics, FormStudioExtension, type FormStudioProps, FormStudioProvider, type FormStudioProviderProps, type FormStudioSaveStatus, type FormStudioState, FormStudioUI, type FormStudioUIProps, FormStudioValidationResult, InitParameters, JsonEditor, type JsonSchemaDocument, JsonSchemaForm, type JsonSchemaFormEvent, type JsonSchemaFormProps, type JsonSchemaFormValidationError, Mods, computeStateFingerprint, useFormStudio, useFormStudioCommit };

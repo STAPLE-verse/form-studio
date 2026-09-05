@@ -3,7 +3,7 @@ import {
   useFormStudio,
   useOptionalFormStudio,
   useSyncedJsonDocument
-} from "./chunk-NS4CFN76.js";
+} from "./chunk-EG7H73O6.js";
 
 // src/JsonEditor.tsx
 import Editor from "@monaco-editor/react";
@@ -252,4 +252,4 @@ export {
   FieldExtensionOutlet,
   JsonEditor
 };
-//# sourceMappingURL=chunk-LXAUWV33.js.map
+//# sourceMappingURL=chunk-67SZMXGX.js.map

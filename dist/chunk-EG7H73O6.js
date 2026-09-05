@@ -43,6 +43,8 @@ function defineFormStudioExtension(extension) {
 import {
   createContext,
   useContext,
+  useEffect as useEffect2,
+  useMemo as useMemo2,
   useRef as useRef3,
   useState as useState2
 } from "react";
@@ -305,6 +307,27 @@ function useFormStudio() {
   }
   return context;
 }
+function useFormStudioCommit() {
+  const { state, extensionDiagnostics, validateForCommit } = useFormStudio();
+  const blockingDiagnostics = useMemo2(
+    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
+    [extensionDiagnostics]
+  );
+  const [commitDiagnostics, setCommitDiagnostics] = useState2([]);
+  useEffect2(() => {
+    if (blockingDiagnostics.length === 0) setCommitDiagnostics([]);
+  }, [blockingDiagnostics]);
+  const attemptCommit = (commit) => {
+    const result = validateForCommit();
+    if (result.blocked) {
+      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit));
+      return;
+    }
+    setCommitDiagnostics([]);
+    void commit(state);
+  };
+  return { blockingDiagnostics, commitDiagnostics, attemptCommit };
+}
 function useOptionalFormStudio() {
   return useContext(FormStudioContext);
 }
@@ -355,7 +378,8 @@ export {
   computeStateFingerprint,
   FormStudioProvider,
   useFormStudio,
+  useFormStudioCommit,
   useOptionalFormStudio,
   useSyncedJsonDocument
 };
-//# sourceMappingURL=chunk-NS4CFN76.js.map
+//# sourceMappingURL=chunk-EG7H73O6.js.map

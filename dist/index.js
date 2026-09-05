@@ -10,7 +10,7 @@ import {
   FieldExtensionOutlet,
   FormExtensionOutlet,
   JsonEditor
-} from "./chunk-LXAUWV33.js";
+} from "./chunk-67SZMXGX.js";
 import {
   DEBOUNCE_MS,
   FormStudioProvider,
@@ -22,8 +22,9 @@ import {
   defineFormStudioExtension,
   getFormStudioExtensionValue,
   useFormStudio,
+  useFormStudioCommit,
   useOptionalFormStudio
-} from "./chunk-NS4CFN76.js";
+} from "./chunk-EG7H73O6.js";
 
 // node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
@@ -11923,7 +11924,6 @@ import {
   Suspense,
   useState as useState20,
   useEffect as useEffect6,
-  useMemo as useMemo7,
   useRef as useRef6
 } from "react";
 
@@ -26594,7 +26594,7 @@ function FormStudioDiagnostics() {
 // src/FormStudio.tsx
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import { jsx as jsx34, jsxs as jsxs27 } from "react/jsx-runtime";
-var JsonEditor2 = lazy(() => import("./JsonEditor-RGY5P2XN.js"));
+var JsonEditor2 = lazy(() => import("./JsonEditor-SDSH4VHY.js"));
 function JsonEditorFallback() {
   return /* @__PURE__ */ jsx34("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx34("span", { className: "loading loading-spinner text-primary loading-lg" }) });
 }
@@ -26607,35 +26607,13 @@ function FormStudioUI({
   saveStatus,
   onDiagnosticsChange
 }) {
-  const {
-    state,
-    setSchema,
-    setUiSchema,
-    extensionDiagnostics,
-    validateForCommit
-  } = useFormStudio();
-  const blockingDiagnostics = useMemo7(
-    () => extensionDiagnostics.filter((diagnostic) => diagnostic.blocksCommit),
-    [extensionDiagnostics]
-  );
+  const { state, setSchema, setUiSchema, extensionDiagnostics } = useFormStudio();
+  const { blockingDiagnostics, commitDiagnostics, attemptCommit } = useFormStudioCommit();
   const [activeTab, setActiveTab] = useState20("builder");
   const panelResetKey = computeStateFingerprint(state);
   useEffect6(() => {
     onDiagnosticsChange?.(extensionDiagnostics);
   }, [extensionDiagnostics, onDiagnosticsChange]);
-  const [commitDiagnostics, setCommitDiagnostics] = useState20([]);
-  useEffect6(() => {
-    if (blockingDiagnostics.length === 0) setCommitDiagnostics([]);
-  }, [blockingDiagnostics]);
-  function attemptSave(save) {
-    const result = validateForCommit();
-    if (result.blocked) {
-      setCommitDiagnostics(result.diagnostics.filter((diagnostic) => diagnostic.blocksCommit));
-      return;
-    }
-    setCommitDiagnostics([]);
-    void save(state);
-  }
   const [hasVisitedJson, setHasVisitedJson] = useState20(false);
   if (activeTab === "json" && !hasVisitedJson) {
     setHasVisitedJson(true);
@@ -26726,7 +26704,7 @@ function FormStudioUI({
               {
                 className: "btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all",
                 disabled: blockingDiagnostics.length > 0,
-                onClick: () => attemptSave(onSave),
+                onClick: () => attemptCommit(onSave),
                 children: "Save Changes"
               }
             )
@@ -26742,7 +26720,7 @@ function FormStudioUI({
               {
                 className: "btn btn-primary shadow-sm hover:shadow-md transition-all",
                 disabled: blockingDiagnostics.length > 0,
-                onClick: () => attemptSave(onSaveNewVersion),
+                onClick: () => attemptCommit(onSaveNewVersion),
                 children: "Save as New Version"
               }
             )
@@ -26817,7 +26795,8 @@ export {
   computeStateFingerprint,
   defineFormStudioExtension,
   getFormStudioExtensionValue,
-  useFormStudio
+  useFormStudio,
+  useFormStudioCommit
 };
 /*! Bundled license information:
 
