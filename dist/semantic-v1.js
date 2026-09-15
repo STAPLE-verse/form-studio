@@ -631,7 +631,7 @@ function SemanticFieldControls({
   diagnostics,
   field
 }) {
-  if (field.compatibility && field.compatibility.kind !== "editable") {
+  if (field.compatibility?.kind === "migration") {
     return null;
   }
   return /* @__PURE__ */ jsx5(
