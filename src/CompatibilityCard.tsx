@@ -40,9 +40,11 @@ export default function CompatibilityCard({
         inspect or change it.
       </p>
       {fieldPointer !== undefined && (
-        <div className="mt-4 pt-4 border-t border-base-300">
-          <FieldAuthoringControls fieldPointer={fieldPointer} compatibility={compatibility} />
-        </div>
+        <FieldAuthoringControls
+          fieldPointer={fieldPointer}
+          compatibility={compatibility}
+          className="mt-4 pt-4 border-t border-base-300"
+        />
       )}
     </div>
   )

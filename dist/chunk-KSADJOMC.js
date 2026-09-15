@@ -13,7 +13,7 @@ function Tooltip({
   id
 }) {
   const Icon = typeMap[type];
-  return /* @__PURE__ */ jsx("span", { className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs", "data-tip": text, id, children: /* @__PURE__ */ jsx(Icon, { className: "h-4 w-4 inline stroke-2 stroke-info" }) });
+  return /* @__PURE__ */ jsx("span", { className: "tooltip tooltip-right tooltip-info z-10 before:max-w-xs", "data-tip": text, id, children: /* @__PURE__ */ jsx(Icon, { className: "h-4 w-4 inline stroke-2 stroke-info" }) });
 }
 
 // src/fieldLayout.ts
@@ -29,4 +29,4 @@ export {
   fieldLabelClass,
   fieldControlClass
 };
-//# sourceMappingURL=chunk-XRLOQBER.js.map
+//# sourceMappingURL=chunk-KSADJOMC.js.map

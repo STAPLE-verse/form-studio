@@ -297,7 +297,7 @@ describe("Phase 2 generic extension outlets", () => {
 
   test("editable field controls render in CardModal's generic field outlet", () => {
     const extension = createTestExtension("test.field", "Field")
-    const { container } = render(
+    render(
       <FormStudioProvider
         extensions={[extension]}
         initialSchema={{
@@ -309,8 +309,8 @@ describe("Phase 2 generic extension outlets", () => {
       </FormStudioProvider>
     )
 
-    expect(container.querySelector('[data-test-field-slot="test.field"]')).not.toBeNull()
-    expect(container.querySelector('[data-field-compatibility="test.field"]')?.textContent).toBe(
+    expect(document.querySelector('[data-test-field-slot="test.field"]')).not.toBeNull()
+    expect(document.querySelector('[data-field-compatibility="test.field"]')?.textContent).toBe(
       "editable"
     )
   })
@@ -345,7 +345,7 @@ describe("Phase 2 generic extension outlets", () => {
         JsonDocument: () => <ThrowingSlot slot="json-document" />,
       },
     })
-    const { container } = render(
+    render(
       <FormStudioProvider
         extensions={[extension]}
         initialSchema={{
@@ -359,11 +359,14 @@ describe("Phase 2 generic extension outlets", () => {
       </FormStudioProvider>
     )
 
+    // CardModal's field slot is portaled to document.body (see CardModal.tsx),
+    // so it no longer sits at its render-tree position in document order —
+    // compare as a set rather than asserting a specific DOM order.
     expect(
-      Array.from(container.querySelectorAll('[data-extension-slot-error="test.throwing"]'), (node) =>
+      Array.from(document.querySelectorAll('[data-extension-slot-error="test.throwing"]'), (node) =>
         node.getAttribute("data-extension-slot")
-      )
-    ).toEqual(["form", "field", "json-document"])
+      ).sort()
+    ).toEqual(["field", "form", "json-document"])
     expect(screen.getByText("Data Schema")).not.toBeNull()
   })
 })

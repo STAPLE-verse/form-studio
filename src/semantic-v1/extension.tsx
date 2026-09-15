@@ -31,6 +31,12 @@ function SemanticFieldControls({
   diagnostics,
   field,
 }: FieldExtensionControlProps<SemanticV1Component>) {
+  // A field flagged read-only/migration isn't safely interpretable yet —
+  // offering to bind semantics to it would suggest it's fine to enrich
+  // before the underlying schema/uiSchema problem is fixed.
+  if (field.compatibility && field.compatibility.kind !== "editable") {
+    return null
+  }
   return (
     <SemanticBindingSection
       fieldPointer={field.fieldPointer}

@@ -89,7 +89,7 @@ export default function CardEnumOptions({
     <React.Fragment>
       {possibleValues}
       <span
-        className="tooltip tooltip-right tooltip-info z-50 before:max-w-xs mt-2 inline-flex cursor-pointer"
+        className="tooltip tooltip-right tooltip-info z-10 before:max-w-xs mt-2 inline-flex cursor-pointer"
         data-tip="Add new possible option"
         onClick={() => {
           // add a new dropdown option

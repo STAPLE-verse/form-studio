@@ -68,7 +68,7 @@ export default function DependencyPossibility({
         </div>
       </div>
       <div className="absolute top-2 right-2">
-        <span className="tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer" data-tip="Delete this dependency">
+        <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer" data-tip="Delete this dependency">
           <XMarkIcon className="h-6 w-6 stroke-warning hover:stroke-error transition-colors" strokeWidth={2} onClick={() => onDelete()} />
         </span>
       </div>

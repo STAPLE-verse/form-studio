@@ -58,7 +58,7 @@ export default function FormBuilder({
   }).flatMap((element) => {
     if (!element.compatibility || element.compatibility.kind === "editable") return []
     const pointer = `/properties/${element.name.replace(/~/g, "~0").replace(/\//g, "~1")}`
-    return [`[${element.compatibility.code}] ${pointer}: ${element.compatibility.message}`]
+    return [`${pointer}: ${element.compatibility.message}`]
   })
 
   const unsupportedFeatures = Array.from(

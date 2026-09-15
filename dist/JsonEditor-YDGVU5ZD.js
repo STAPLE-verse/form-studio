@@ -2,9 +2,9 @@
 "use client";
 import {
   JsonEditor
-} from "./chunk-67SZMXGX.js";
+} from "./chunk-NFKYDQN3.js";
 import "./chunk-EG7H73O6.js";
 export {
   JsonEditor as default
 };
-//# sourceMappingURL=JsonEditor-SDSH4VHY.js.map
+//# sourceMappingURL=JsonEditor-YDGVU5ZD.js.map

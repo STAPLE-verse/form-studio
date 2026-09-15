@@ -101,7 +101,7 @@ export default function Section({
             </span>
             <span
               {...(dragHandleProps ?? {})}
-              className="tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1"
+              className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-grab active:cursor-grabbing p-1"
               data-tip="Drag to move section"
               id={`${elementId}_moveinfosection`}
             >
@@ -335,13 +335,13 @@ export default function Section({
                 label="Required"
                 id={`${elementId}_required`}
               />
-              <span className="tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1" data-tip="Additional configurations for this section" id={`${elementId}_editinfo`}>
+              <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Additional configurations for this section" id={`${elementId}_editinfo`}>
                 <PencilIcon
                   className="w-5 h-5 text-secondary hover:text-primary transition-colors"
                   onClick={() => setModalOpen(true)}
                 />
               </span>
-              <span className="tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1" data-tip="Delete section" id={`${elementId}_trashinfo`}>
+              <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Delete section" id={`${elementId}_trashinfo`}>
                 <TrashIcon
                   className="w-5 h-5 text-warning hover:text-error transition-colors"
                   onClick={() => (onDelete ? onDelete() : {})}

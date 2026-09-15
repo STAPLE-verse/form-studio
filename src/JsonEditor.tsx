@@ -8,11 +8,19 @@ import { JsonDocumentExtensionOutlet } from "./extensions/outlets"
 
 const EMPTY_OBJECT = {}
 
-function ParseErrorNotice({ message }: { message: string }) {
+// Fixed height and always mounted (even with no error) so a message
+// appearing/disappearing never changes the column's total height — the
+// Data Schema, UI Schema, and Semantics columns stay the same height as
+// each other regardless of which ones currently have a parse error.
+function ParseErrorNotice({ message }: { message: string | null }) {
   return (
-    <p className="mt-2 text-xs text-error font-mono break-words" role="alert">
-      Invalid JSON — not yet applied: {message}
-    </p>
+    <div className="mt-2 h-12 shrink-0 overflow-y-auto">
+      {message && (
+        <p className="text-xs text-error font-mono break-words" role="alert">
+          Invalid JSON — not yet applied: {message}
+        </p>
+      )}
+    </div>
   )
 }
 
@@ -27,7 +35,7 @@ export default function JsonEditor(): ReactElement {
       <div className="flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4">
         <div className="flex-1 min-w-0 flex flex-col h-[500px] lg:h-full">
           <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2">Data Schema</h4>
-          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative">
+          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative">
             <Editor
               height="100%"
               language="json"
@@ -44,12 +52,12 @@ export default function JsonEditor(): ReactElement {
               }}
             />
           </div>
-          {schemaDoc.parseError && <ParseErrorNotice message={schemaDoc.parseError} />}
+          <ParseErrorNotice message={schemaDoc.parseError} />
         </div>
 
         <div className="flex-1 min-w-0 flex flex-col h-[500px] lg:h-full">
           <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2">UI Schema</h4>
-          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative">
+          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative">
             <Editor
               height="100%"
               language="json"
@@ -66,7 +74,7 @@ export default function JsonEditor(): ReactElement {
               }}
             />
           </div>
-          {uiSchemaDoc.parseError && <ParseErrorNotice message={uiSchemaDoc.parseError} />}
+          <ParseErrorNotice message={uiSchemaDoc.parseError} />
         </div>
 
         <JsonDocumentExtensionOutlet />

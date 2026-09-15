@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { createPortal } from "react-dom"
 import DependencyField from "./dependencies/DependencyField"
 import type { CardModalType, CardComponentPropsType } from "./types"
 import Tooltip from "./Tooltip"
@@ -49,9 +50,9 @@ const CardModal: CardModalType = ({
       }
     : undefined
 
-  if (!isOpen) return null
+  if (!isOpen || typeof document === "undefined") return null
 
-  return (
+  return createPortal(
     <dialog
       className={`modal ${isOpen ? "modal-open" : ""}`}
       data-test="card-modal"
@@ -151,7 +152,8 @@ const CardModal: CardModalType = ({
       <form method="dialog" className="modal-backdrop">
         <button onClick={() => onClose()}>close</button>
       </form>
-    </dialog>
+    </dialog>,
+    document.body
   )
 }
 

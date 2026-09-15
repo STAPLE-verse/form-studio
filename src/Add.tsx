@@ -68,7 +68,7 @@ export default function Add({
           <div
             ref={popoverRef}
             style={{ position: "absolute", top: popoverPos.top, left: popoverPos.left }}
-            className="z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300"
+            className="z-10 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300"
           >
             <div className="font-bold text-center mb-4 border-b pb-2">Create New</div>
             <FBRadioGroup

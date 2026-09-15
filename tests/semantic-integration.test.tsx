@@ -301,7 +301,7 @@ describe("Semantic V1 registry integration", () => {
     await settleDebouncedWork()
 
     const globalDiagnostics = container.querySelector('[data-semantic-diagnostics="true"]')
-    const fieldDiagnostics = container.querySelector('[data-semantic-binding-section="true"]')
+    const fieldDiagnostics = document.querySelector('[data-semantic-binding-section="true"]')
     expect(globalDiagnostics).not.toBeNull()
     expect(fieldDiagnostics).not.toBeNull()
     // The live edit went through StateProbe's hook directly, outside the
