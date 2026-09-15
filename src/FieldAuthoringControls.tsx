@@ -10,16 +10,19 @@ export default function FieldAuthoringControls({
   fieldPointer,
   compatibility,
   valueOverride,
+  className,
 }: {
   fieldPointer: string
   compatibility?: FieldCompatibility
   valueOverride?: FieldExtensionValueOverride
+  className?: string
 }) {
   return (
     <FieldExtensionOutlet
       fieldPointer={fieldPointer}
       compatibility={compatibility}
       valueOverride={valueOverride}
+      className={className}
     />
   )
 }

@@ -39,7 +39,8 @@ function FormExtensionOutlet({
 function FieldExtensionOutlet({
   fieldPointer,
   compatibility,
-  valueOverride
+  valueOverride,
+  className
 }) {
   const context = useOptionalFormStudio();
   if (!context || context.extensions.length === 0) return null;
@@ -52,6 +53,7 @@ function FieldExtensionOutlet({
     {
       "data-form-studio-extension-outlet": "field",
       "data-field-pointer": fieldPointer,
+      className: className ? `${className} empty:!m-0 empty:!border-0 empty:!p-0` : void 0,
       children: extensions.map((extension) => {
         const FieldControls = extension.slots?.FieldControls;
         if (!FieldControls) return null;
@@ -189,10 +191,10 @@ var ExtensionSlotErrorBoundary = class extends Component {
 import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var EMPTY_OBJECT = {};
 function ParseErrorNotice({ message }) {
-  return /* @__PURE__ */ jsxs2("p", { className: "mt-2 text-xs text-error font-mono break-words", role: "alert", children: [
+  return /* @__PURE__ */ jsx2("div", { className: "mt-2 h-12 shrink-0 overflow-y-auto", children: message && /* @__PURE__ */ jsxs2("p", { className: "text-xs text-error font-mono break-words", role: "alert", children: [
     "Invalid JSON \u2014 not yet applied: ",
     message
-  ] });
+  ] }) });
 }
 function JsonEditor() {
   const { state, setSchema, setUiSchema } = useFormStudio();
@@ -201,7 +203,7 @@ function JsonEditor() {
   return /* @__PURE__ */ jsx2("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs2("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
     /* @__PURE__ */ jsxs2("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
       /* @__PURE__ */ jsx2("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
-      /* @__PURE__ */ jsx2("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx2(
+      /* @__PURE__ */ jsx2("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative", children: /* @__PURE__ */ jsx2(
         Editor,
         {
           height: "100%",
@@ -219,11 +221,11 @@ function JsonEditor() {
           }
         }
       ) }),
-      schemaDoc.parseError && /* @__PURE__ */ jsx2(ParseErrorNotice, { message: schemaDoc.parseError })
+      /* @__PURE__ */ jsx2(ParseErrorNotice, { message: schemaDoc.parseError })
     ] }),
     /* @__PURE__ */ jsxs2("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
       /* @__PURE__ */ jsx2("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
-      /* @__PURE__ */ jsx2("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx2(
+      /* @__PURE__ */ jsx2("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative", children: /* @__PURE__ */ jsx2(
         Editor,
         {
           height: "100%",
@@ -241,7 +243,7 @@ function JsonEditor() {
           }
         }
       ) }),
-      uiSchemaDoc.parseError && /* @__PURE__ */ jsx2(ParseErrorNotice, { message: uiSchemaDoc.parseError })
+      /* @__PURE__ */ jsx2(ParseErrorNotice, { message: uiSchemaDoc.parseError })
     ] }),
     /* @__PURE__ */ jsx2(JsonDocumentExtensionOutlet, {})
   ] }) });
@@ -252,4 +254,4 @@ export {
   FieldExtensionOutlet,
   JsonEditor
 };
-//# sourceMappingURL=chunk-67SZMXGX.js.map
+//# sourceMappingURL=chunk-NFKYDQN3.js.map

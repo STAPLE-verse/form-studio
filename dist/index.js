@@ -5,12 +5,12 @@ import {
   fieldControlClass,
   fieldLabelClass,
   fieldStackClass
-} from "./chunk-XRLOQBER.js";
+} from "./chunk-KSADJOMC.js";
 import {
   FieldExtensionOutlet,
   FormExtensionOutlet,
   JsonEditor
-} from "./chunk-67SZMXGX.js";
+} from "./chunk-NFKYDQN3.js";
 import {
   DEBOUNCE_MS,
   FormStudioProvider,
@@ -7344,6 +7344,7 @@ var Collapse_default = Collapse;
 
 // src/CardModal.tsx
 import { useState as useState7 } from "react";
+import { createPortal } from "react-dom";
 
 // src/dependencies/DependencyField.tsx
 import React8, { useState as useState6 } from "react";
@@ -7416,14 +7417,16 @@ import { jsx as jsx5 } from "react/jsx-runtime";
 function FieldAuthoringControls({
   fieldPointer,
   compatibility,
-  valueOverride
+  valueOverride,
+  className
 }) {
   return /* @__PURE__ */ jsx5(
     FieldExtensionOutlet,
     {
       fieldPointer,
       compatibility,
-      valueOverride
+      valueOverride,
+      className
     }
   );
 }
@@ -7452,7 +7455,14 @@ function CompatibilityCard({
         /* @__PURE__ */ jsx6("p", { className: "mt-3 text-sm", children: compatibility.message }),
         /* @__PURE__ */ jsx6("p", { className: "mt-2 font-mono text-xs text-base-content/60", children: pointer }),
         /* @__PURE__ */ jsx6("p", { className: "mt-3 text-sm text-base-content/70", children: "Visual controls are disabled to avoid reinterpreting this field. Use the JSON Editor to inspect or change it." }),
-        fieldPointer !== void 0 && /* @__PURE__ */ jsx6("div", { className: "mt-4 pt-4 border-t border-base-300", children: /* @__PURE__ */ jsx6(FieldAuthoringControls, { fieldPointer, compatibility }) })
+        fieldPointer !== void 0 && /* @__PURE__ */ jsx6(
+          FieldAuthoringControls,
+          {
+            fieldPointer,
+            compatibility,
+            className: "mt-4 pt-4 border-t border-base-300"
+          }
+        )
       ]
     }
   );
@@ -9166,7 +9176,7 @@ function CardEnumOptions({
     /* @__PURE__ */ jsx10(
       "span",
       {
-        className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs mt-2 inline-flex cursor-pointer",
+        className: "tooltip tooltip-right tooltip-info z-10 before:max-w-xs mt-2 inline-flex cursor-pointer",
         "data-tip": "Add new possible option",
         onClick: () => {
           onChange(
@@ -9455,7 +9465,7 @@ function DependencyPossibility({
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsx12("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsx12("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer", "data-tip": "Delete this dependency", children: /* @__PURE__ */ jsx12(XMarkIcon4, { className: "h-6 w-6 stroke-warning hover:stroke-error transition-colors", strokeWidth: 2, onClick: () => onDelete() }) }) })
+    /* @__PURE__ */ jsx12("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsx12("span", { className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer", "data-tip": "Delete this dependency", children: /* @__PURE__ */ jsx12(XMarkIcon4, { className: "h-6 w-6 stroke-warning hover:stroke-error transition-colors", strokeWidth: 2, onClick: () => onDelete() }) }) })
   ] });
 }
 
@@ -9578,7 +9588,7 @@ function DependencyField({
       /* @__PURE__ */ jsx13(
         "span",
         {
-          className: "tooltip tooltip-right tooltip-info z-50 before:max-w-xs inline-flex self-start cursor-pointer",
+          className: "tooltip tooltip-right tooltip-info z-10 before:max-w-xs inline-flex self-start cursor-pointer",
           "data-tip": "Add another dependency relation linking this element and other form elements",
           id: `${elementId}_adddependency`,
           children: /* @__PURE__ */ jsx13(
@@ -9626,129 +9636,132 @@ var CardModal = ({
     getValue: (extension) => Object.prototype.hasOwnProperty.call(extensionDraft, extension.id) ? extensionDraft[extension.id].value : formStudio.getExtensionValue(extension),
     setValue: (extension, value) => setExtensionDraft((prev) => ({ ...prev, [extension.id]: { extension, value } }))
   } : void 0;
-  if (!isOpen) return null;
-  return /* @__PURE__ */ jsxs11(
-    "dialog",
-    {
-      className: `modal ${isOpen ? "modal-open" : ""}`,
-      "data-test": "card-modal",
-      onClick: (event) => event.stopPropagation(),
-      onKeyDown: (event) => event.stopPropagation(),
-      onMouseDown: (event) => event.stopPropagation(),
-      onTouchStart: (event) => event.stopPropagation(),
-      children: [
-        /* @__PURE__ */ jsxs11("div", { className: "modal-box flex max-h-[calc(100vh-4rem)] w-11/12 max-w-3xl flex-col overflow-hidden", children: [
-          /* @__PURE__ */ jsx14("div", { style: { display: componentProps.hideKey ? "none" : "initial" }, className: "mb-4 shrink-0 border-b border-base-200 pb-2", children: /* @__PURE__ */ jsx14("h3", { className: "text-xl font-bold", children: "Additional Settings" }) }),
-          /* @__PURE__ */ jsxs11(
-            "div",
-            {
-              className: `min-h-0 flex-1 overflow-y-auto px-1.5 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${fieldStackClass}`,
-              children: [
-                /* @__PURE__ */ jsx14(
-                  TypeSpecificParameters,
-                  {
-                    parameters: componentPropsState,
-                    onChange: (newState) => {
-                      setComponentProps({
-                        ...componentPropsState,
-                        ...newState
-                      });
-                    }
-                  }
-                ),
-                /* @__PURE__ */ jsxs11("div", { className: fieldClass, children: [
-                  /* @__PURE__ */ jsxs11("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
-                    "Column Size",
-                    /* @__PURE__ */ jsx14(
-                      "a",
-                      {
-                        href: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Basic_Concepts_of_Grid_Layout",
-                        target: "_blank",
-                        rel: "noopener noreferrer",
-                        children: /* @__PURE__ */ jsx14(
-                          Tooltip,
-                          {
-                            id: "column_size_tooltip",
-                            type: "help",
-                            text: "Set the column size of the item"
-                          }
-                        )
+  if (!isOpen || typeof document === "undefined") return null;
+  return createPortal(
+    /* @__PURE__ */ jsxs11(
+      "dialog",
+      {
+        className: `modal ${isOpen ? "modal-open" : ""}`,
+        "data-test": "card-modal",
+        onClick: (event) => event.stopPropagation(),
+        onKeyDown: (event) => event.stopPropagation(),
+        onMouseDown: (event) => event.stopPropagation(),
+        onTouchStart: (event) => event.stopPropagation(),
+        children: [
+          /* @__PURE__ */ jsxs11("div", { className: "modal-box flex max-h-[calc(100vh-4rem)] w-11/12 max-w-3xl flex-col overflow-hidden", children: [
+            /* @__PURE__ */ jsx14("div", { style: { display: componentProps.hideKey ? "none" : "initial" }, className: "mb-4 shrink-0 border-b border-base-200 pb-2", children: /* @__PURE__ */ jsx14("h3", { className: "text-xl font-bold", children: "Additional Settings" }) }),
+            /* @__PURE__ */ jsxs11(
+              "div",
+              {
+                className: `min-h-0 flex-1 overflow-y-auto px-1.5 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${fieldStackClass}`,
+                children: [
+                  /* @__PURE__ */ jsx14(
+                    TypeSpecificParameters,
+                    {
+                      parameters: componentPropsState,
+                      onChange: (newState) => {
+                        setComponentProps({
+                          ...componentPropsState,
+                          ...newState
+                        });
                       }
+                    }
+                  ),
+                  /* @__PURE__ */ jsxs11("div", { className: fieldClass, children: [
+                    /* @__PURE__ */ jsxs11("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
+                      "Column Size",
+                      /* @__PURE__ */ jsx14(
+                        "a",
+                        {
+                          href: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout/Basic_Concepts_of_Grid_Layout",
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          children: /* @__PURE__ */ jsx14(
+                            Tooltip,
+                            {
+                              id: "column_size_tooltip",
+                              type: "help",
+                              text: "Set the column size of the item"
+                            }
+                          )
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsx14(
+                      "input",
+                      {
+                        value: componentPropsState["ui:column"] ? componentPropsState["ui:column"] : "",
+                        placeholder: "Column Size",
+                        type: "number",
+                        min: 0,
+                        onChange: (ev) => {
+                          setComponentProps({
+                            ...componentPropsState,
+                            "ui:column": ev.target.value
+                          });
+                        },
+                        className: `input input-primary input-bordered input-sm ${fieldControlClass}`
+                      },
+                      "ui:column"
                     )
                   ] }),
                   /* @__PURE__ */ jsx14(
-                    "input",
+                    DependencyField,
                     {
-                      value: componentPropsState["ui:column"] ? componentPropsState["ui:column"] : "",
-                      placeholder: "Column Size",
-                      type: "number",
-                      min: 0,
-                      onChange: (ev) => {
+                      parameters: componentPropsState,
+                      onChange: (newState) => {
                         setComponentProps({
                           ...componentPropsState,
-                          "ui:column": ev.target.value
+                          ...newState
                         });
-                      },
-                      className: `input input-primary input-bordered input-sm ${fieldControlClass}`
-                    },
-                    "ui:column"
-                  )
-                ] }),
-                /* @__PURE__ */ jsx14(
-                  DependencyField,
-                  {
-                    parameters: componentPropsState,
-                    onChange: (newState) => {
-                      setComponentProps({
-                        ...componentPropsState,
-                        ...newState
-                      });
+                      }
                     }
-                  }
-                ),
-                componentPropsState.fieldPointer !== void 0 && /* @__PURE__ */ jsx14(
-                  FieldAuthoringControls,
-                  {
-                    fieldPointer: componentPropsState.fieldPointer,
-                    valueOverride: extensionValueOverride
-                  }
-                )
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxs11("div", { className: "modal-action shrink-0", children: [
-            /* @__PURE__ */ jsx14(
-              "button",
-              {
-                onClick: () => {
-                  onClose();
-                  setComponentProps(componentProps);
-                  setExtensionDraft({});
-                },
-                className: "btn btn-ghost",
-                children: "Cancel"
+                  ),
+                  componentPropsState.fieldPointer !== void 0 && /* @__PURE__ */ jsx14(
+                    FieldAuthoringControls,
+                    {
+                      fieldPointer: componentPropsState.fieldPointer,
+                      valueOverride: extensionValueOverride
+                    }
+                  )
+                ]
               }
             ),
-            /* @__PURE__ */ jsx14(
-              "button",
-              {
-                onClick: () => {
-                  onClose();
-                  Object.values(extensionDraft).forEach(({ extension, value }) => {
-                    formStudio?.setExtensionValue(extension, value);
-                  });
-                  setExtensionDraft({});
-                  onChange(componentPropsState);
-                },
-                className: "btn btn-primary",
-                children: "Save"
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx14("form", { method: "dialog", className: "modal-backdrop", children: /* @__PURE__ */ jsx14("button", { onClick: () => onClose(), children: "close" }) })
-      ]
-    }
+            /* @__PURE__ */ jsxs11("div", { className: "modal-action shrink-0", children: [
+              /* @__PURE__ */ jsx14(
+                "button",
+                {
+                  onClick: () => {
+                    onClose();
+                    setComponentProps(componentProps);
+                    setExtensionDraft({});
+                  },
+                  className: "btn btn-ghost",
+                  children: "Cancel"
+                }
+              ),
+              /* @__PURE__ */ jsx14(
+                "button",
+                {
+                  onClick: () => {
+                    onClose();
+                    Object.values(extensionDraft).forEach(({ extension, value }) => {
+                      formStudio?.setExtensionValue(extension, value);
+                    });
+                    setExtensionDraft({});
+                    onChange(componentPropsState);
+                  },
+                  className: "btn btn-primary",
+                  children: "Save"
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx14("form", { method: "dialog", className: "modal-backdrop", children: /* @__PURE__ */ jsx14("button", { onClick: () => onClose(), children: "close" }) })
+        ]
+      }
+    ),
+    document.body
   );
 };
 var CardModal_default = CardModal;
@@ -10021,7 +10034,7 @@ function CardGeneralParameterInputs({
 
 // src/Add.tsx
 import { useState as useState9, useEffect, useLayoutEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+import { createPortal as createPortal2 } from "react-dom";
 import { PlusIcon as PlusIcon3 } from "@heroicons/react/24/outline";
 import { Fragment, jsx as jsx18, jsxs as jsxs14 } from "react/jsx-runtime";
 function Add({
@@ -10069,13 +10082,13 @@ function Add({
         children: /* @__PURE__ */ jsx18(PlusIcon3, { className: "h-6 w-6 text-base-content/70 group-hover:text-primary transition-colors" })
       }
     ),
-    popoverOpen && createPortal(
+    popoverOpen && createPortal2(
       /* @__PURE__ */ jsxs14(
         "div",
         {
           ref: popoverRef,
           style: { position: "absolute", top: popoverPos.top, left: popoverPos.left },
-          className: "z-50 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300",
+          className: "z-10 p-4 shadow-xl bg-base-100 rounded-box w-64 border border-base-300",
           children: [
             /* @__PURE__ */ jsx18("div", { className: "font-bold text-center mb-4 border-b pb-2", children: "Create New" }),
             /* @__PURE__ */ jsx18(
@@ -10171,7 +10184,7 @@ function Card({
             "span",
             {
               ...dragHandleProps ?? {},
-              className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
+              className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
               "data-tip": "Drag to move form item",
               id: `${elementId}_moveformcard`,
               children: /* @__PURE__ */ jsx19(
@@ -10210,8 +10223,8 @@ function Card({
                 id: `${elementId}_required`
               }
             ),
-            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this item", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx19(PencilIcon, { className: "w-5 h-5 text-secondary hover:text-primary transition-colors", onClick: () => setModalOpen(true) }) }),
-            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete item", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx19(TrashIcon, { className: "w-5 h-5 text-warning hover:text-error transition-colors", onClick: () => onDelete && onDelete() }) })
+            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this item", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx19(PencilIcon, { className: "w-5 h-5 text-secondary hover:text-primary transition-colors", onClick: () => setModalOpen(true) }) }),
+            /* @__PURE__ */ jsx19("span", { className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete item", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx19(TrashIcon, { className: "w-5 h-5 text-warning hover:text-error transition-colors", onClick: () => onDelete && onDelete() }) })
           ] }),
           /* @__PURE__ */ jsx19(
             CardModal_default,
@@ -10603,7 +10616,7 @@ function Section({
             "span",
             {
               ...dragHandleProps ?? {},
-              className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
+              className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-grab active:cursor-grabbing p-1",
               "data-tip": "Drag to move section",
               id: `${elementId}_moveinfosection`,
               children: /* @__PURE__ */ jsx21(
@@ -10829,14 +10842,14 @@ function Section({
                   id: `${elementId}_required`
                 }
               ),
-              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this section", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx21(
+              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1", "data-tip": "Additional configurations for this section", id: `${elementId}_editinfo`, children: /* @__PURE__ */ jsx21(
                 PencilIcon2,
                 {
                   className: "w-5 h-5 text-secondary hover:text-primary transition-colors",
                   onClick: () => setModalOpen(true)
                 }
               ) }),
-              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-50 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete section", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx21(
+              /* @__PURE__ */ jsx21("span", { className: "tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1", "data-tip": "Delete section", id: `${elementId}_trashinfo`, children: /* @__PURE__ */ jsx21(
                 TrashIcon2,
                 {
                   className: "w-5 h-5 text-warning hover:text-error transition-colors",
@@ -11736,7 +11749,7 @@ function FormBuilder({
   }).flatMap((element) => {
     if (!element.compatibility || element.compatibility.kind === "editable") return [];
     const pointer = `/properties/${element.name.replace(/~/g, "~0").replace(/\//g, "~1")}`;
-    return [`[${element.compatibility.code}] ${pointer}: ${element.compatibility.message}`];
+    return [`${pointer}: ${element.compatibility.message}`];
   });
   const unsupportedFeatures = Array.from(
     /* @__PURE__ */ new Set([
@@ -26594,7 +26607,7 @@ function FormStudioDiagnostics() {
 // src/FormStudio.tsx
 import { CheckCircleIcon, ExclamationCircleIcon } from "@heroicons/react/20/solid";
 import { jsx as jsx34, jsxs as jsxs27 } from "react/jsx-runtime";
-var JsonEditor2 = lazy(() => import("./JsonEditor-SDSH4VHY.js"));
+var JsonEditor2 = lazy(() => import("./JsonEditor-YDGVU5ZD.js"));
 function JsonEditorFallback() {
   return /* @__PURE__ */ jsx34("div", { className: "flex items-center justify-center h-full w-full bg-base-200 rounded-lg border border-base-300", children: /* @__PURE__ */ jsx34("span", { className: "loading loading-spinner text-primary loading-lg" }) });
 }

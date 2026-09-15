@@ -147,7 +147,7 @@ export default function DependencyField({
           : ""}
 
         <span
-          className="tooltip tooltip-right tooltip-info z-50 before:max-w-xs inline-flex self-start cursor-pointer"
+          className="tooltip tooltip-right tooltip-info z-10 before:max-w-xs inline-flex self-start cursor-pointer"
           data-tip="Add another dependency relation linking this element and other form elements"
           id={`${elementId}_adddependency`}
         >

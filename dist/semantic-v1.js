@@ -5,7 +5,7 @@ import {
   fieldControlClass,
   fieldLabelClass,
   fieldStackClass
-} from "./chunk-XRLOQBER.js";
+} from "./chunk-KSADJOMC.js";
 import {
   defineFormStudioExtension,
   useFormStudio,
@@ -500,22 +500,25 @@ function SemanticDocument({
           /* @__PURE__ */ jsx3("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider", children: "Semantics" }),
           semantics !== void 0 && /* @__PURE__ */ jsx3(RemoveSemanticComponentControl, { onRemove: () => setSemantics(void 0) })
         ] }),
-        semantics === void 0 ? /* @__PURE__ */ jsxs3("div", { className: "flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center", children: [
-          /* @__PURE__ */ jsx3("p", { className: "text-base-content/60 italic", children: "This form has no Semantic V1 component yet." }),
-          /* @__PURE__ */ jsxs3(
-            "button",
-            {
-              type: "button",
-              className: "btn btn-primary btn-sm gap-1.5",
-              onClick: () => setSemantics(STARTER_SEMANTICS),
-              children: [
-                /* @__PURE__ */ jsx3(PlusIcon, { className: "w-4 h-4" }),
-                "Add semantic component"
-              ]
-            }
-          )
+        semantics === void 0 ? /* @__PURE__ */ jsxs3(Fragment2, { children: [
+          /* @__PURE__ */ jsxs3("div", { className: "flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center", children: [
+            /* @__PURE__ */ jsx3("p", { className: "text-base-content/60 italic", children: "This form has no Semantic V1 component yet." }),
+            /* @__PURE__ */ jsxs3(
+              "button",
+              {
+                type: "button",
+                className: "btn btn-primary btn-sm gap-1.5",
+                onClick: () => setSemantics(STARTER_SEMANTICS),
+                children: [
+                  /* @__PURE__ */ jsx3(PlusIcon, { className: "w-4 h-4" }),
+                  "Add semantic component"
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsx3("div", { className: "mt-2 h-12 shrink-0" })
         ] }) : /* @__PURE__ */ jsxs3(Fragment2, { children: [
-          /* @__PURE__ */ jsx3("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative", children: /* @__PURE__ */ jsx3(
+          /* @__PURE__ */ jsx3("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative", children: /* @__PURE__ */ jsx3(
             Editor,
             {
               height: "100%",
@@ -533,10 +536,10 @@ function SemanticDocument({
               }
             }
           ) }),
-          semanticsDoc.parseError && /* @__PURE__ */ jsxs3("p", { className: "mt-2 text-xs text-error font-mono break-words", role: "alert", children: [
+          /* @__PURE__ */ jsx3("div", { className: "mt-2 h-12 shrink-0 overflow-y-auto", children: semanticsDoc.parseError && /* @__PURE__ */ jsxs3("p", { className: "text-xs text-error font-mono break-words", role: "alert", children: [
             "Invalid JSON \u2014 not yet applied: ",
             semanticsDoc.parseError
-          ] })
+          ] }) })
         ] })
       ]
     }
@@ -628,6 +631,9 @@ function SemanticFieldControls({
   diagnostics,
   field
 }) {
+  if (field.compatibility?.kind === "migration") {
+    return null;
+  }
   return /* @__PURE__ */ jsx5(
     SemanticBindingSection,
     {

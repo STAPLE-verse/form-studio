@@ -38,22 +38,28 @@ export default function SemanticDocument({
       </div>
 
       {semantics === undefined ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center">
-          <p className="text-base-content/60 italic">
-            This form has no Semantic V1 component yet.
-          </p>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm gap-1.5"
-            onClick={() => setSemantics(STARTER_SEMANTICS)}
-          >
-            <PlusIcon className="w-4 h-4" />
-            Add semantic component
-          </button>
-        </div>
+        <>
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center">
+            <p className="text-base-content/60 italic">
+              This form has no Semantic V1 component yet.
+            </p>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm gap-1.5"
+              onClick={() => setSemantics(STARTER_SEMANTICS)}
+            >
+              <PlusIcon className="w-4 h-4" />
+              Add semantic component
+            </button>
+          </div>
+          {/* Matches the h-12 footer in the editor branch below, so this
+              column's height doesn't change when a semantic component is
+              added/removed. */}
+          <div className="mt-2 h-12 shrink-0" />
+        </>
       ) : (
         <>
-          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden py-2 relative">
+          <div className="bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative">
             <Editor
               height="100%"
               language="json"
@@ -70,11 +76,16 @@ export default function SemanticDocument({
               }}
             />
           </div>
-          {semanticsDoc.parseError && (
-            <p className="mt-2 text-xs text-error font-mono break-words" role="alert">
-              Invalid JSON — not yet applied: {semanticsDoc.parseError}
-            </p>
-          )}
+          {/* Fixed height and always mounted (even with no error) so this
+              column stays the same height as Data Schema/UI Schema
+              regardless of which one currently has a parse error. */}
+          <div className="mt-2 h-12 shrink-0 overflow-y-auto">
+            {semanticsDoc.parseError && (
+              <p className="text-xs text-error font-mono break-words" role="alert">
+                Invalid JSON — not yet applied: {semanticsDoc.parseError}
+              </p>
+            )}
+          </div>
         </>
       )}
     </div>

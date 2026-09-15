@@ -59,10 +59,12 @@ export function FieldExtensionOutlet({
   fieldPointer,
   compatibility,
   valueOverride,
+  className,
 }: {
   fieldPointer: string
   compatibility?: FieldCompatibility
   valueOverride?: FieldExtensionValueOverride
+  className?: string
 }) {
   const context = useOptionalFormStudio()
   if (!context || context.extensions.length === 0) return null
@@ -76,6 +78,11 @@ export function FieldExtensionOutlet({
     <div
       data-form-studio-extension-outlet="field"
       data-field-pointer={fieldPointer}
+      // Every registered extension can still choose to render nothing for
+      // this specific field (e.g. semantic-v1 hides its controls on a
+      // read-only/migration field) — collapse the spacing/divider rather
+      // than leaving a bare rule with no content under it.
+      className={className ? `${className} empty:!m-0 empty:!border-0 empty:!p-0` : undefined}
     >
       {extensions.map((extension) => {
         const FieldControls = extension.slots?.FieldControls
