@@ -31,10 +31,13 @@ function SemanticFieldControls({
   diagnostics,
   field,
 }: FieldExtensionControlProps<SemanticV1Component>) {
-  // A field flagged read-only/migration isn't safely interpretable yet —
-  // offering to bind semantics to it would suggest it's fine to enrich
-  // before the underlying schema/uiSchema problem is fixed.
-  if (field.compatibility && field.compatibility.kind !== "editable") {
+  // A field flagged "migration" uses a legacy, non-standard schema shape
+  // that needs to be fixed before it means anything stable — offering to
+  // bind semantics to it would suggest it's fine to enrich as-is. Ordinary
+  // "readOnly" fields (e.g. arrays of objects the visual builder can't edit)
+  // have a perfectly valid schema; only visual editing is unsupported, so
+  // semantic binding stays available for them.
+  if (field.compatibility?.kind === "migration") {
     return null
   }
   return (

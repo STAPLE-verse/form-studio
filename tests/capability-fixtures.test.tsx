@@ -313,7 +313,7 @@ test("Form Studio compatibility coordinates match the recorded current stack", a
   const readVersion = async (packagePath: string) =>
     JSON.parse(await readFile(path.join(process.cwd(), packagePath), "utf8")).version
 
-  assert.equal(await readVersion("package.json"), "0.2.0-rc.4")
+  assert.equal(await readVersion("package.json"), "1.0.0")
   assert.equal(await readVersion("node_modules/@rjsf/core/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/@rjsf/validator-ajv8/package.json"), "6.6.2")
   assert.equal(await readVersion("node_modules/ajv/package.json"), "8.20.0")
@@ -1410,7 +1410,17 @@ test("SemanticBindingSection scopes diagnostics to the field's own binding index
   assert.doesNotMatch(markup, /SEMANTIC_COMPONENT_INVALID/)
 })
 
-test("CardModal exposes the semantic binding section when a field pointer and context are present", () => {
+// CardModal portals its <dialog> to document.body (see CardModal.tsx) so it
+// always stacks correctly regardless of ancestor styling — but that means it
+// renders nothing under renderToStaticMarkup, which has no real DOM for a
+// portal to attach to (and, unlike this file's other fixtures, isn't
+// representative of how CardModal actually behaves for a user). The
+// field-pointer-gated semantic binding section behavior these two used to
+// assert is still covered, through a real jsdom document, by
+// "global diagnostics reflect a live edit while the open CardModal
+// withholds field-local diagnostics for its staged value" in
+// tests/semantic-integration.test.tsx.
+test("CardModal renders nothing under renderToStaticMarkup (it portals to document.body)", () => {
   const markup = renderToStaticMarkup(
     <SemanticAuthoringProvider value={semanticContext()}>
       <CardModal
@@ -1423,24 +1433,7 @@ test("CardModal exposes the semantic binding section when a field pointer and co
     </SemanticAuthoringProvider>
   )
 
-  assert.match(markup, /data-semantic-binding-section="true"/)
-  assert.match(markup, /Add semantic binding/)
-})
-
-test("CardModal omits the semantic binding section without a field pointer", () => {
-  const markup = renderToStaticMarkup(
-    <SemanticAuthoringProvider value={semanticContext()}>
-      <CardModal
-        componentProps={{ name: "name" } as any}
-        isOpen={true}
-        onClose={() => undefined}
-        onChange={() => undefined}
-        TypeSpecificParameters={() => null}
-      />
-    </SemanticAuthoringProvider>
-  )
-
-  assert.doesNotMatch(markup, /data-semantic-binding-section="true"/)
+  assert.equal(markup, "")
 })
 
 test("CompatibilityCard exposes a semantic binding section for its own field pointer when semantics are enabled", () => {
