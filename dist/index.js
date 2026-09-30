@@ -9834,7 +9834,7 @@ function MarkdownDescriptionInput({
           "button",
           {
             type: "button",
-            className: `btn btn-md text-base join-item ${mode === "edit" ? "btn-primary" : "btn-outline"}`,
+            className: `btn btn-md text-base join-item ${mode === "edit" ? "btn-primary" : ""}`,
             onClick: () => setMode("edit"),
             children: "Edit"
           }
@@ -9843,7 +9843,7 @@ function MarkdownDescriptionInput({
           "button",
           {
             type: "button",
-            className: `btn btn-md text-base join-item ${mode === "preview" ? "btn-primary" : "btn-outline"}`,
+            className: `btn btn-md text-base join-item ${mode === "preview" ? "btn-primary" : ""}`,
             onClick: () => setMode("preview"),
             children: "Preview"
           }
@@ -26013,7 +26013,7 @@ function MyRemoveButton(props) {
     {
       type: "button",
       ...buttonProps,
-      className: `${actionButtonClassName} btn-error btn-outline ${className || ""}`,
+      className: `${actionButtonClassName} btn-error ${className || ""}`,
       title: label,
       "aria-label": label,
       children: [
@@ -26760,7 +26760,7 @@ function FormStudioUI({
             ]
           }
         ),
-        onCancel && /* @__PURE__ */ jsx35("button", { className: "btn text-base btn-secondary btn-outline transition-all ml-2", onClick: onCancel, children: "Cancel" }),
+        onCancel && /* @__PURE__ */ jsx35("button", { className: "btn text-base btn-secondary transition-all ml-2", onClick: onCancel, children: "Cancel" }),
         onSave && /* @__PURE__ */ jsx35(
           "div",
           {

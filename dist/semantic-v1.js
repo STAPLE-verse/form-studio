@@ -78,7 +78,7 @@ function SemanticBindingSection({
       )
     ] }),
     /* @__PURE__ */ jsx("p", { className: "text-base font-mono text-base-content/90 break-all -mt-2", children: fieldPointer }),
-    !binding ? /* @__PURE__ */ jsx("button", { type: "button", className: "btn btn-outline btn-md text-base self-start", onClick: addBinding, children: "Add semantic binding" }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+    !binding ? /* @__PURE__ */ jsx("button", { type: "button", className: "btn btn-primary btn-md text-base self-start", onClick: addBinding, children: "Add semantic binding" }) : /* @__PURE__ */ jsxs(Fragment, { children: [
       /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
         /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
           "Predicate IRI",
@@ -334,7 +334,7 @@ function IriBindingControls({
           "button",
           {
             type: "button",
-            className: "btn btn-outline btn-md text-base self-start",
+            className: "btn btn-primary btn-md text-base self-start",
             onClick: () => onChange({
               ...binding,
               valueMappings: [...binding.valueMappings ?? [], { value: "", iri: "" }]

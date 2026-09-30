@@ -19,14 +19,14 @@ export default function MarkdownDescriptionInput({
         <div className="join">
           <button
             type="button"
-            className={`btn btn-md text-base join-item ${mode === "edit" ? "btn-primary" : "btn-outline"}`}
+            className={`btn btn-md text-base join-item ${mode === "edit" ? "btn-primary" : ""}`}
             onClick={() => setMode("edit")}
           >
             Edit
           </button>
           <button
             type="button"
-            className={`btn btn-md text-base join-item ${mode === "preview" ? "btn-primary" : "btn-outline"}`}
+            className={`btn btn-md text-base join-item ${mode === "preview" ? "btn-primary" : ""}`}
             onClick={() => setMode("preview")}
           >
             Preview

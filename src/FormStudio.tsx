@@ -173,7 +173,7 @@ export function FormStudioUI({
             </div>
           )}
           {onCancel && (
-            <button className="btn text-base btn-secondary btn-outline transition-all ml-2" onClick={onCancel}>
+            <button className="btn text-base btn-secondary transition-all ml-2" onClick={onCancel}>
               Cancel
             </button>
           )}

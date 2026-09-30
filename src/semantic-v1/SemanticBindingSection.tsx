@@ -106,7 +106,7 @@ export default function SemanticBindingSection({
       <p className="text-base font-mono text-base-content/90 break-all -mt-2">{fieldPointer}</p>
 
       {!binding ? (
-        <button type="button" className="btn btn-outline btn-md text-base self-start" onClick={addBinding}>
+        <button type="button" className="btn btn-primary btn-md text-base self-start" onClick={addBinding}>
           Add semantic binding
         </button>
       ) : (
@@ -366,7 +366,7 @@ function IriBindingControls({
             ))}
             <button
               type="button"
-              className="btn btn-outline btn-md text-base self-start"
+              className="btn btn-primary btn-md text-base self-start"
               onClick={() =>
                 onChange({
                   ...binding,

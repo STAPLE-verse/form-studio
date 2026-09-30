@@ -331,7 +331,7 @@ function MyRemoveButton(props: IconButtonProps) {
     <button
       type="button"
       {...buttonProps}
-      className={`${actionButtonClassName} btn-error btn-outline ${className || ""}`}
+      className={`${actionButtonClassName} btn-error ${className || ""}`}
       title={label}
       aria-label={label}
     >
