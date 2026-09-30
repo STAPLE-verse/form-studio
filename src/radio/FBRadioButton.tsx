@@ -29,7 +29,7 @@ export default function FBRadioButton(props: Props): ReactElement {
           disabled={disabled}
           autoFocus={autoFocus}
           onChange={() => onChange(value)}
-          className="radio radio-primary radio-sm"
+          className="radio radio-primary radio-md"
         />
         <span className="label-text text-base">{label}</span>
       </label>

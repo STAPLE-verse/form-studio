@@ -52,7 +52,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
               minLength: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -68,7 +68,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
               maxLength: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -97,7 +97,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
               pattern: ev.target.value,
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -110,7 +110,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
           />
         </div>
         <select
-          className={`select select-primary select-bordered select-sm ${fieldControlClass}`}
+          className={`select select-primary select-bordered select-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
           value={parameters.format || ""}
           onChange={(e) =>
             onChange({
@@ -142,7 +142,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
           </a>
         </div>
         <select
-          className={`select select-primary select-bordered select-sm ${fieldControlClass}`}
+          className={`select select-primary select-bordered select-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
           value={parameters["ui:autocomplete"] || ""}
           onChange={(e) =>
             onChange({
@@ -182,7 +182,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
 const ShortAnswerField: CardComponentType = ({ parameters, onChange }) => {
   return (
     <React.Fragment>
-      <h5>Default Value</h5>
+      <h5 className="text-xl">Default Value</h5>
       <input
         value={(parameters.default ?? "") as string | number | readonly string[]}
         placeholder="Default"
@@ -191,7 +191,7 @@ const ShortAnswerField: CardComponentType = ({ parameters, onChange }) => {
           "text"
         }
         onChange={(ev) => onChange({ ...parameters, default: ev.target.value })}
-        className="input input-primary input-bordered w-full"
+        className="input text-base input-primary input-bordered w-full border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
       />
     </React.Fragment>
   )
@@ -200,13 +200,13 @@ const ShortAnswerField: CardComponentType = ({ parameters, onChange }) => {
 const Password: CardComponentType = ({ parameters, onChange }) => {
   return (
     <React.Fragment>
-      <h5>Default Password</h5>
+      <h5 className="text-xl">Default Password</h5>
       <input
         value={(parameters.default ?? "") as string | number | readonly string[]}
         placeholder="Default"
         type="password"
         onChange={(ev) => onChange({ ...parameters, default: ev.target.value })}
-        className="input input-primary input-bordered w-full"
+        className="input text-base input-primary input-bordered w-full border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
       />
     </React.Fragment>
   )

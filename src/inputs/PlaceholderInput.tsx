@@ -33,7 +33,7 @@ export const PlaceholderInput: CardComponentType = ({ parameters, onChange }) =>
             "ui:placeholder": ev.target.value,
           })
         }}
-        className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+        className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
       />
     </div>
   )

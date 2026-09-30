@@ -28,7 +28,7 @@ const CardArrayParameterInputs: CardComponentType = ({ parameters, onChange }) =
               minItems: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -44,7 +44,7 @@ const CardArrayParameterInputs: CardComponentType = ({ parameters, onChange }) =
               maxItems: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
     </div>

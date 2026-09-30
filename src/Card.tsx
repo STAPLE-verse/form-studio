@@ -61,7 +61,7 @@ export default function Card({
               id={`${elementId}_moveformcard`}
             >
               <ArrowsPointingOutIcon
-                className="w-6 h-6 stroke-2 text-base-content/50 hover:text-base-content transition-colors"
+                className="w-6 h-6 stroke-2 text-base-content/90 hover:text-base-content transition-colors"
                 onClick={() => {}}
               />
             </span>

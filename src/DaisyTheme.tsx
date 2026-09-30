@@ -47,6 +47,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline"
 import ReactMarkdown from "react-markdown"
+import { markdownComponents, MARKDOWN_WRAPPER_CLASS } from "./markdownComponents"
 import remarkGfm from "remark-gfm"
 import remarkBreaks from "remark-breaks"
 
@@ -110,9 +111,11 @@ function MyDescriptionField<
     return (
       <div
         id={id}
-        className="markdown-display prose max-w-none dark:prose-invert text-md italic mb-2"
+        className={`markdown-display text-base italic mb-2 ${MARKDOWN_WRAPPER_CLASS}`}
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{description}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={markdownComponents}>
+          {description}
+        </ReactMarkdown>
       </div>
     )
   } else {
@@ -289,7 +292,7 @@ function MySubmitButton<
       <button
         type="submit"
         {...submitButtonProps}
-        className={`btn btn-primary ${submitButtonProps.className || ""}`}
+        className={`btn text-base btn-primary ${submitButtonProps.className || ""}`}
       >
         {submitText}
       </button>

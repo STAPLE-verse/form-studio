@@ -43,7 +43,7 @@ export default function SemanticRootClassInput({
     <div>
       <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
         <div className="flex items-center gap-2">
-          <h5 data-test="semantic-root-class-label" className="font-semibold">
+          <h5 data-test="semantic-root-class-label" className="text-xl">
             Semantic root class (optional)
           </h5>
           <Tooltip
@@ -61,10 +61,10 @@ export default function SemanticRootClassInput({
         placeholder="https://example.org/YourClass"
         type="text"
         onChange={(ev) => handleClassIriChange(ev.target.value)}
-        className="input input-bordered w-full"
+        className="input text-base input-bordered w-full input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
         data-test="semantic-root-class-input"
       />
-      <p className="mt-1.5 text-xs text-base-content/60">
+      <p className="mt-1.5 text-base text-base-content/90">
         The absolute IRI of the class this form instance represents. Leave blank for a Core-only
         form.
       </p>

@@ -169,7 +169,7 @@ var ExtensionSlotErrorBoundary = class extends Component {
       return /* @__PURE__ */ jsx(
         "div",
         {
-          className: "alert alert-warning",
+          className: "alert text-base alert-warning",
           role: "alert",
           "data-extension-slot-error": this.props.extensionId,
           "data-extension-slot": this.props.slot,
@@ -191,7 +191,7 @@ var ExtensionSlotErrorBoundary = class extends Component {
 import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var EMPTY_OBJECT = {};
 function ParseErrorNotice({ message }) {
-  return /* @__PURE__ */ jsx2("div", { className: "mt-2 h-12 shrink-0 overflow-y-auto", children: message && /* @__PURE__ */ jsxs2("p", { className: "text-xs text-error font-mono break-words", role: "alert", children: [
+  return /* @__PURE__ */ jsx2("div", { className: "mt-2 h-12 shrink-0 overflow-y-auto", children: message && /* @__PURE__ */ jsxs2("p", { className: "text-base text-error font-mono break-words", role: "alert", children: [
     "Invalid JSON \u2014 not yet applied: ",
     message
   ] }) });
@@ -202,7 +202,7 @@ function JsonEditor() {
   const uiSchemaDoc = useSyncedJsonDocument(state.uiSchema, setUiSchema, EMPTY_OBJECT);
   return /* @__PURE__ */ jsx2("div", { className: "flex flex-col h-full", children: /* @__PURE__ */ jsxs2("div", { className: "flex flex-col lg:flex-row gap-6 w-full h-full overflow-y-auto pb-8 pt-4", children: [
     /* @__PURE__ */ jsxs2("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx2("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "Data Schema" }),
+      /* @__PURE__ */ jsx2("h4", { className: "text-base font-semibold text-base-content/90 uppercase tracking-wider mb-2", children: "Data Schema" }),
       /* @__PURE__ */ jsx2("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative", children: /* @__PURE__ */ jsx2(
         Editor,
         {
@@ -224,7 +224,7 @@ function JsonEditor() {
       /* @__PURE__ */ jsx2(ParseErrorNotice, { message: schemaDoc.parseError })
     ] }),
     /* @__PURE__ */ jsxs2("div", { className: "flex-1 min-w-0 flex flex-col h-[500px] lg:h-full", children: [
-      /* @__PURE__ */ jsx2("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2", children: "UI Schema" }),
+      /* @__PURE__ */ jsx2("h4", { className: "text-base font-semibold text-base-content/90 uppercase tracking-wider mb-2", children: "UI Schema" }),
       /* @__PURE__ */ jsx2("div", { className: "bg-base-200 rounded-lg border border-base-300 flex-1 overflow-hidden relative", children: /* @__PURE__ */ jsx2(
         Editor,
         {
@@ -254,4 +254,4 @@ export {
   FieldExtensionOutlet,
   JsonEditor
 };
-//# sourceMappingURL=chunk-NFKYDQN3.js.map
+//# sourceMappingURL=chunk-QRZ272PY.js.map

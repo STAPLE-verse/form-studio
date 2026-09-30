@@ -24,7 +24,7 @@ const RefChoice: CardComponentType = ({ parameters, onChange }) => {
   return (
     <div className="card-select">
       <select
-        className="select select-bordered w-full text-primary border-primary border-2 bg-primary-content"
+        className="select text-base select-bordered w-full border-2 select-primary focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
         value={parameters.$ref || ""}
         onChange={(e) => onChange({ ...parameters, $ref: e.target.value })}
       >

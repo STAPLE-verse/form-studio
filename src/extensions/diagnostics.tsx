@@ -29,7 +29,7 @@ export default function FormStudioDiagnostics(): React.ReactElement | null {
           >
             <h4 className="text-lg font-bold">{extension.label}</h4>
             {blocksCommit && (
-              <p className="mt-1 text-sm text-error">
+              <p className="mt-1 text-base text-error">
                 Resolve the blocking issues below before committing this form.
               </p>
             )}
@@ -37,7 +37,7 @@ export default function FormStudioDiagnostics(): React.ReactElement | null {
               {diagnostics.map((diagnostic, index) => (
                 <li
                   key={`${diagnostic.code}-${diagnostic.pointer ?? ""}-${index}`}
-                  className={`rounded-lg border px-3 py-2 text-sm ${
+                  className={`rounded-lg border px-3 py-2 text-base ${
                     diagnostic.severity === "error"
                       ? "border-error/40 bg-error/10"
                       : "border-warning/40 bg-warning/10"
@@ -47,14 +47,14 @@ export default function FormStudioDiagnostics(): React.ReactElement | null {
                   data-diagnostic-blocks-commit={diagnostic.blocksCommit}
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="badge badge-outline badge-sm font-mono">
+                    <span className="badge badge-outline badge-md text-base font-mono">
                       {diagnostic.code}
                     </span>
                     {diagnostic.stage && (
-                      <span className="font-mono text-xs opacity-70">{diagnostic.stage}</span>
+                      <span className="font-mono text-base opacity-70">{diagnostic.stage}</span>
                     )}
                     {diagnostic.pointer && (
-                      <span className="font-mono text-xs opacity-70">{diagnostic.pointer}</span>
+                      <span className="font-mono text-base opacity-70">{diagnostic.pointer}</span>
                     )}
                   </div>
                   <p className="mt-1">{diagnostic.message}</p>

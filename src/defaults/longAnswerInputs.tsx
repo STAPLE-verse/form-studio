@@ -24,7 +24,7 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
               minLength: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -40,7 +40,7 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
               maxLength: parseInt(ev.target.value, 10),
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -65,7 +65,7 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
               pattern: ev.target.value,
             })
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <PlaceholderInput parameters={parameters} onChange={onChange} />
@@ -90,12 +90,12 @@ const CardLongAnswerParameterInputs: CardComponentType = ({ parameters, onChange
 const LongAnswer: CardComponentType = ({ parameters, onChange }) => {
   return (
     <React.Fragment>
-      <h5>Default Value</h5>
+      <h5 className="text-xl">Default Value</h5>
       <textarea
         value={(parameters.default ?? "") as string | number | readonly string[]}
         placeholder="Default"
         onChange={(ev) => onChange({ ...parameters, default: ev.target.value })}
-        className="textarea textarea-primary textarea-bordered w-full"
+        className="textarea text-base textarea-primary textarea-bordered w-full border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
       />
     </React.Fragment>
   )

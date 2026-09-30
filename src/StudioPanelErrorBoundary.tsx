@@ -21,20 +21,20 @@ export function StudioPanelErrorFallback({
 }) {
   return (
     <div
-      className="alert alert-warning"
+      className="alert text-base alert-warning"
       data-studio-panel-error="true"
       role="alert"
     >
       <div className="flex min-w-0 flex-col items-start gap-2">
         <h4 className="font-bold">{panelName} unavailable</h4>
-        <p className="text-sm">
+        <p className="text-base">
           This panel could not interpret the current schema. The rest of Form Studio is still
           available.
         </p>
-        <p className="max-w-full overflow-x-auto whitespace-pre-wrap font-mono text-xs">
+        <p className="max-w-full overflow-x-auto whitespace-pre-wrap font-mono text-base">
           {error.message}
         </p>
-        <p className="text-sm">Use the JSON Editor to correct the schema or UI schema.</p>
+        <p className="text-base">Use the JSON Editor to correct the schema or UI schema.</p>
       </div>
     </div>
   )

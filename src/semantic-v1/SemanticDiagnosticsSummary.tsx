@@ -54,13 +54,13 @@ function SemanticDiagnosticItem({
 }): React.ReactElement {
   return (
     <li
-      className="text-sm rounded-lg border border-error/40 bg-error/20 px-3 py-2"
+      className="text-base rounded-lg border border-error/40 bg-error/20 px-3 py-2"
       data-semantic-diagnostic-code={diagnostic.code}
       data-semantic-diagnostic-stage={diagnostic.stage}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="badge badge-outline badge-sm font-mono">{diagnostic.code}</span>
-        <span className="font-mono text-xs opacity-70">{diagnostic.pointer}</span>
+        <span className="badge badge-outline badge-md text-base font-mono">{diagnostic.code}</span>
+        <span className="font-mono text-base opacity-70">{diagnostic.pointer}</span>
       </div>
       <p className="mt-1">{diagnostic.message}</p>
     </li>

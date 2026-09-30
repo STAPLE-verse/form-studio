@@ -104,7 +104,7 @@ const CardModal: CardModalType = ({
                   "ui:column": ev.target.value,
                 })
               }}
-              className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+              className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
             />
           </div>
           <DependencyField
@@ -130,7 +130,7 @@ const CardModal: CardModalType = ({
               setComponentProps(componentProps)
               setExtensionDraft({})
             }}
-            className="btn btn-ghost"
+            className="btn text-base btn-ghost"
           >
             Cancel
           </button>
@@ -143,7 +143,7 @@ const CardModal: CardModalType = ({
               setExtensionDraft({})
               onChange(componentPropsState)
             }}
-            className="btn btn-primary"
+            className="btn text-base btn-primary"
           >
             Save
           </button>

@@ -58,7 +58,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
             if (Number.isNaN(newVal)) newVal = null
             onChange(updateNumberParameter(parameters, "multipleOf", newVal))
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -82,7 +82,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
               )
             }
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={`${fieldClass} card-modal-boolean`}>
@@ -132,7 +132,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
               )
             }
           }}
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={`${fieldClass} card-modal-boolean`}>
@@ -168,7 +168,7 @@ const CardNumberParameterInputs: CardComponentType = ({ parameters, onChange }) 
 const NumberField: CardComponentType = ({ parameters, onChange }) => {
   return (
     <React.Fragment>
-      <h5>Default Number</h5>
+      <h5 className="text-xl">Default Number</h5>
       <input
         value={(parameters.default ?? "") as string | number | readonly string[]}
         placeholder="Default"
@@ -179,7 +179,7 @@ const NumberField: CardComponentType = ({ parameters, onChange }) => {
             default: parseFloat(ev.target.value),
           })
         }
-        className="input input-primary input-bordered w-full"
+        className="input text-base input-primary input-bordered w-full border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
       />
     </React.Fragment>
   )

@@ -67,10 +67,10 @@ export const StringArrayParameterInputs: CardComponentType = ({ parameters, onCh
     <div className={fieldStackClass} data-string-array-constraints="true">
       <div className="rounded-lg border border-base-300 bg-base-200 p-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-sm font-semibold">Item type</span>
-          <span className="badge badge-ghost">Text (string)</span>
+          <span className="text-base font-semibold">Item type</span>
+          <span className="badge text-base badge-ghost">Text (string)</span>
         </div>
-        <p className="mt-2 text-xs text-base-content/70">
+        <p className="mt-2 text-base text-base-content/90">
           The item type is fixed to keep this editor lossless. Other array shapes remain read-only.
         </p>
       </div>
@@ -87,7 +87,7 @@ export const StringArrayParameterInputs: CardComponentType = ({ parameters, onCh
           onChange={(event) =>
             onChange(updateArrayIntegerConstraint(parameters, "minItems", event.target.value))
           }
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
 
@@ -102,7 +102,7 @@ export const StringArrayParameterInputs: CardComponentType = ({ parameters, onCh
           onChange={(event) =>
             onChange(updateArrayIntegerConstraint(parameters, "maxItems", event.target.value))
           }
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
 
@@ -131,7 +131,7 @@ export const StringArrayParameterInputs: CardComponentType = ({ parameters, onCh
           onChange={(event) =>
             onChange(updateItemConstraint(parameters, "minLength", event.target.value))
           }
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
 
@@ -146,7 +146,7 @@ export const StringArrayParameterInputs: CardComponentType = ({ parameters, onCh
           onChange={(event) =>
             onChange(updateItemConstraint(parameters, "maxLength", event.target.value))
           }
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
 
@@ -159,7 +159,7 @@ export const StringArrayParameterInputs: CardComponentType = ({ parameters, onCh
           onChange={(event) =>
             onChange(updateItemConstraint(parameters, "pattern", event.target.value))
           }
-          className={`input input-primary input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-primary input-bordered input-md text-base ${fieldControlClass} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
     </div>

@@ -240,7 +240,7 @@ class ExtensionSlotErrorBoundary extends Component<
     if (this.state.error) {
       return (
         <div
-          className="alert alert-warning"
+          className="alert text-base alert-warning"
           role="alert"
           data-extension-slot-error={this.props.extensionId}
           data-extension-slot={this.props.slot}

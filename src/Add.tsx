@@ -60,7 +60,7 @@ export default function Add({
         onClick={() => setPopoverOpen(!popoverOpen)}
         title={tooltipDescription || "Add a new item or section"}
       >
-        <PlusIcon className="h-6 w-6 text-base-content/70 group-hover:text-primary transition-colors" />
+        <PlusIcon className="h-6 w-6 text-base-content/90 group-hover:text-primary transition-colors" />
       </div>
 
       {popoverOpen &&
@@ -72,7 +72,7 @@ export default function Add({
           >
             <div className="font-bold text-center mb-4 border-b pb-2">Create New</div>
             <FBRadioGroup
-              className="choose-create text-sm"
+              className="choose-create text-base"
               defaultValue={createChoice}
               horizontal={false}
               options={[
@@ -90,7 +90,7 @@ export default function Add({
               }}
             />
             <div className="flex justify-between mt-4">
-              <button onClick={() => setPopoverOpen(false)} className="btn btn-sm btn-secondary">
+              <button onClick={() => setPopoverOpen(false)} className="btn btn-md text-base btn-secondary">
                 Cancel
               </button>
               <button
@@ -98,7 +98,7 @@ export default function Add({
                   addElem(createChoice)
                   setPopoverOpen(false)
                 }}
-                className="btn btn-sm btn-primary"
+                className="btn btn-md text-base btn-primary"
               >
                 Create
               </button>

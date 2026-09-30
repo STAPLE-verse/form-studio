@@ -114,7 +114,7 @@ export default function ValueSelector({
                     },
                   })
                 }}
-                className="input input-bordered input-sm w-full"
+                className="input input-bordered input-md text-base w-full input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
               />
             )
             break
@@ -138,7 +138,7 @@ export default function ValueSelector({
                     },
                   })
                 }}
-                className="input input-bordered input-sm w-full"
+                className="input input-bordered input-md text-base w-full input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
               />
             )
             break
@@ -167,7 +167,7 @@ export default function ValueSelector({
                     },
                   })
                 }}
-                className="textarea textarea-bordered w-full"
+                className="textarea text-base textarea-bordered w-full textarea-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
               />
             )
             break
@@ -182,7 +182,7 @@ export default function ValueSelector({
                 const val: combinationValue = combination[key] ?? ""
                 return (
                   <div key={key}>
-                    <h5>{key}:</h5>
+                    <h5 className="text-xl">{key}:</h5>
                     {getInput(val, index, key)}
                   </div>
                 )
@@ -236,6 +236,6 @@ export default function ValueSelector({
       />
     )
   } else {
-    return <h5> Appear if defined </h5>
+    return <h5 className="text-xl"> Appear if defined </h5>
   }
 }

@@ -29,7 +29,7 @@ export default function SemanticDocument({
       data-json-editor-document="semantics"
     >
       <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-        <h4 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider">
+        <h4 className="text-base font-semibold text-base-content/90 uppercase tracking-wider">
           Semantics
         </h4>
         {semantics !== undefined && (
@@ -40,12 +40,12 @@ export default function SemanticDocument({
       {semantics === undefined ? (
         <>
           <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center">
-            <p className="text-base-content/60 italic">
+            <p className="text-base-content/90 italic">
               This form has no Semantic V1 component yet.
             </p>
             <button
               type="button"
-              className="btn btn-primary btn-sm gap-1.5"
+              className="btn btn-primary btn-md text-base gap-1.5"
               onClick={() => setSemantics(STARTER_SEMANTICS)}
             >
               <PlusIcon className="w-4 h-4" />
@@ -81,7 +81,7 @@ export default function SemanticDocument({
               regardless of which one currently has a parse error. */}
           <div className="mt-2 h-12 shrink-0 overflow-y-auto">
             {semanticsDoc.parseError && (
-              <p className="text-xs text-error font-mono break-words" role="alert">
+              <p className="text-base text-error font-mono break-words" role="alert">
                 Invalid JSON — not yet applied: {semanticsDoc.parseError}
               </p>
             )}

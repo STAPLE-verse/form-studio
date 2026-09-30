@@ -29,13 +29,13 @@ export default function CompatibilityCard({
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="text-lg font-bold">{title || name}</h4>
-        <span className={`badge ${isMigration ? "badge-warning" : "badge-ghost"}`}>
+        <span className={`badge text-base ${isMigration ? "badge-warning" : "badge-ghost"}`}>
           {isMigration ? "Migration required" : "Read-only"}
         </span>
       </div>
-      <p className="mt-3 text-sm">{compatibility.message}</p>
-      <p className="mt-2 font-mono text-xs text-base-content/60">{pointer}</p>
-      <p className="mt-3 text-sm text-base-content/70">
+      <p className="mt-3 text-base">{compatibility.message}</p>
+      <p className="mt-2 font-mono text-base text-base-content/90">{pointer}</p>
+      <p className="mt-3 text-base text-base-content/90">
         Visual controls are disabled to avoid reinterpreting this field. Use the JSON Editor to
         inspect or change it.
       </p>

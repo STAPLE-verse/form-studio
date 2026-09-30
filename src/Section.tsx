@@ -106,7 +106,7 @@ export default function Section({
               id={`${elementId}_moveinfosection`}
             >
               <ArrowsPointingOutIcon
-                className="w-6 h-6 stroke-2 text-base-content/50 hover:text-base-content transition-colors"
+                className="w-6 h-6 stroke-2 text-base-content/90 hover:text-base-content transition-colors"
                 onClick={() => {}}
               />
             </span>
@@ -122,7 +122,7 @@ export default function Section({
               <div className={`${sectionEntryClass} section-reference`}>
                 <h5 className={sectionLabelClass}>Reference Section</h5>
                 <select
-                  className={`select select-bordered ${sectionControlClass} text-primary border-primary border-2 bg-primary-content`}
+                  className={`select text-base select-bordered ${sectionControlClass} border-2 select-primary focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
                   value={reference}
                   onChange={(e) => {
                     onChange(schema, uischema, e.target.value)
@@ -171,7 +171,7 @@ export default function Section({
                       onNameChange(name)
                     }
                   }}
-                  className={`input input-primary input-bordered ${sectionControlClass} card-text ${keyError !== null ? 'input-error' : ''}`}
+                  className={`input text-base input-primary input-bordered ${sectionControlClass} card-text ${keyError !== null ? 'input-error' : ''} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
                   readOnly={hideKey}
                 />
                 {keyError && (
@@ -210,7 +210,7 @@ export default function Section({
                     uischema
                   )
                 }
-                className={`input input-primary input-bordered ${sectionControlClass} card-text`}
+                className={`input text-base input-primary input-bordered ${sectionControlClass} card-text border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
               />
             </div>
             <div className={sectionEntryClass} data-test="section-description">
@@ -235,7 +235,7 @@ export default function Section({
               />
             </div>
             <div
-              className="alert alert-warning mb-4 mt-4 flex-col items-start"
+              className="alert text-base alert-warning mb-4 mt-4 flex-col items-start"
               style={{
                 display: unsupportedFeatures.length === 0 ? "none" : "flex",
               }}

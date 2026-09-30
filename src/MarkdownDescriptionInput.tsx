@@ -2,6 +2,7 @@ import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkBreaks from "remark-breaks"
+import { markdownComponents, MARKDOWN_WRAPPER_CLASS } from "./markdownComponents"
 
 export default function MarkdownDescriptionInput({
   value,
@@ -18,37 +19,50 @@ export default function MarkdownDescriptionInput({
         <div className="join">
           <button
             type="button"
-            className={`btn btn-sm join-item ${mode === "edit" ? "btn-primary" : "btn-ghost"}`}
+            className={`btn btn-md text-base join-item ${mode === "edit" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setMode("edit")}
           >
             Edit
           </button>
           <button
             type="button"
-            className={`btn btn-sm join-item ${mode === "preview" ? "btn-primary" : "btn-ghost"}`}
+            className={`btn btn-md text-base join-item ${mode === "preview" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setMode("preview")}
           >
             Preview
           </button>
         </div>
-        <span className="text-sm opacity-60 italic">Supports Markdown</span>
+        <span className="text-base italic">
+          Supports{" "}
+          <a
+            href="https://www.markdownguide.org/cheat-sheet/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline"
+          >
+            Markdown
+          </a>{" "}
+          formatting.
+        </span>
       </div>
       {mode === "edit" ? (
         <textarea
           value={value}
           placeholder="Description"
           rows={4}
-          className="textarea textarea-primary textarea-bordered w-full form-description"
+          className="textarea text-base textarea-primary textarea-bordered w-full form-description border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
           onChange={(ev) => onChange(ev.target.value)}
         />
       ) : (
-        <div className="markdown-display prose prose-sm max-w-none prose-p:m-0 dark:prose-invert textarea textarea-primary textarea-bordered w-full h-auto min-h-[6rem]">
+        <div
+          className={`markdown-display textarea text-base textarea-primary textarea-bordered w-full h-auto min-h-[6rem] ${MARKDOWN_WRAPPER_CLASS} border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
+        >
           {value ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={markdownComponents}>
               {value}
             </ReactMarkdown>
           ) : (
-            <span className="text-base-content/40 italic">Nothing to preview yet…</span>
+            <span className="text-base-content/90 italic">Nothing to preview yet…</span>
           )}
         </div>
       )}

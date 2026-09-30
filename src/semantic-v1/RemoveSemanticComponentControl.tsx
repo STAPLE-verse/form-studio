@@ -20,17 +20,17 @@ export default function RemoveSemanticComponentControl({
   if (confirming) {
     return (
       <div
-        className={`alert alert-warning py-2 text-sm items-center w-full ${className ?? ""}`}
+        className={`alert alert-warning py-2 text-base items-center w-full ${className ?? ""}`}
         role="alert"
       >
         <span>Remove the entire semantic component? This cannot be undone.</span>
         <div className="flex gap-2 ml-auto">
-          <button type="button" className="btn btn-xs btn-ghost" onClick={() => setConfirming(false)}>
+          <button type="button" className="btn btn-md text-base btn-ghost" onClick={() => setConfirming(false)}>
             Cancel
           </button>
           <button
             type="button"
-            className="btn btn-xs btn-error"
+            className="btn btn-md text-base btn-error"
             onClick={() => {
               onRemove()
               setConfirming(false)
@@ -46,7 +46,7 @@ export default function RemoveSemanticComponentControl({
   return (
     <button
       type="button"
-      className={`btn btn-ghost btn-xs text-error gap-1 ${className ?? ""}`}
+      className={`btn btn-ghost btn-md text-base text-error gap-1 ${className ?? ""}`}
       onClick={() => setConfirming(true)}
     >
       <TrashIcon className="w-3.5 h-3.5" />

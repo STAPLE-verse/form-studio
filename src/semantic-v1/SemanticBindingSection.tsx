@@ -103,10 +103,10 @@ export default function SemanticBindingSection({
           text="Connects this field to a standard meaning that other systems can understand, so your data can be shared and combined with other datasets."
         />
       </div>
-      <p className="text-xs font-mono text-base-content/60 break-all -mt-2">{fieldPointer}</p>
+      <p className="text-base font-mono text-base-content/90 break-all -mt-2">{fieldPointer}</p>
 
       {!binding ? (
-        <button type="button" className="btn btn-outline btn-sm self-start" onClick={addBinding}>
+        <button type="button" className="btn btn-outline btn-md text-base self-start" onClick={addBinding}>
           Add semantic binding
         </button>
       ) : (
@@ -125,7 +125,7 @@ export default function SemanticBindingSection({
               placeholder="https://example.org/predicate"
               type="text"
               onChange={(ev) => updateBinding({ ...binding, predicate: ev.target.value })}
-              className={`input input-bordered input-sm ${fieldControlClass}`}
+              className={`input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
             />
           </div>
 
@@ -139,7 +139,7 @@ export default function SemanticBindingSection({
               />
             </div>
             <select
-              className={`select select-bordered select-sm ${fieldControlClass}`}
+              className={`select select-bordered select-md text-base ${fieldControlClass} select-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
               value={binding.valueKind}
               onChange={(ev) =>
                 updateBinding(changeValueKind(binding, ev.target.value as SemanticBinding["valueKind"]))
@@ -168,7 +168,7 @@ export default function SemanticBindingSection({
           )}
 
           {analysis && (
-            <p className="text-xs text-base-content/60">
+            <p className="text-base text-base-content/90">
               Effective Core field type:{" "}
               {analysis.resolutionStatus !== "resolved"
                 ? analysis.resolutionStatus
@@ -181,7 +181,7 @@ export default function SemanticBindingSection({
           {fieldDiagnostics.length > 0 && (
             <ul className="flex flex-col gap-1">
               {fieldDiagnostics.map((diagnostic, index) => (
-                <li key={index} className="text-xs text-error">
+                <li key={index} className="text-base text-error">
                   <span className="font-mono">{diagnostic.code}</span> — {diagnostic.message}
                 </li>
               ))}
@@ -190,7 +190,7 @@ export default function SemanticBindingSection({
 
           <button
             type="button"
-            className="btn btn-ghost btn-xs text-error self-start gap-1"
+            className="btn btn-ghost btn-md text-base text-error self-start gap-1"
             onClick={removeBinding}
           >
             <TrashIcon className="w-3.5 h-3.5" />
@@ -239,7 +239,7 @@ function LiteralBindingControls({
           onChange={(ev) =>
             onChange({ ...binding, datatypeIri: ev.target.value || undefined, language: undefined })
           }
-          className={`input input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
       <div className={fieldClass}>
@@ -259,10 +259,10 @@ function LiteralBindingControls({
           onChange={(ev) =>
             onChange({ ...binding, language: ev.target.value || undefined, datatypeIri: undefined })
           }
-          className={`input input-bordered input-sm ${fieldControlClass}`}
+          className={`input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         />
       </div>
-      <p className="text-xs text-base-content/60 -mt-2">
+      <p className="text-base text-base-content/90 -mt-2">
         Only one of datatype IRI or language tag may be set.
       </p>
     </>
@@ -300,7 +300,7 @@ function IriBindingControls({
           />
         </div>
         <select
-          className={`select select-bordered select-sm ${fieldControlClass}`}
+          className={`select select-bordered select-md text-base ${fieldControlClass} select-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
           value={hasMappings ? "mapped" : "direct"}
           onChange={(ev) => {
             if (ev.target.value === "direct") {
@@ -332,7 +332,7 @@ function IriBindingControls({
             {(binding.valueMappings ?? []).map((mapping, index) => (
               <div key={index} className="flex gap-2 items-center">
                 <input
-                  className="input input-bordered input-sm flex-1 min-w-0"
+                  className="input input-bordered input-md text-base flex-1 min-w-0 input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
                   placeholder="Value"
                   value={String(mapping.value)}
                   onChange={(ev) => {
@@ -342,7 +342,7 @@ function IriBindingControls({
                   }}
                 />
                 <input
-                  className="input input-bordered input-sm flex-1 min-w-0"
+                  className="input input-bordered input-md text-base flex-1 min-w-0 input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
                   placeholder="https://example.org/value"
                   value={mapping.iri}
                   onChange={(ev) => {
@@ -354,7 +354,7 @@ function IriBindingControls({
                 <button
                   type="button"
                   aria-label="Remove mapping"
-                  className="btn btn-ghost btn-xs text-error"
+                  className="btn btn-ghost btn-md text-base text-error"
                   onClick={() => {
                     const next = (binding.valueMappings ?? []).filter((_, i) => i !== index)
                     onChange({ ...binding, valueMappings: next.length ? next : [{ value: "", iri: "" }] })
@@ -366,7 +366,7 @@ function IriBindingControls({
             ))}
             <button
               type="button"
-              className="btn btn-outline btn-xs self-start"
+              className="btn btn-outline btn-md text-base self-start"
               onClick={() =>
                 onChange({
                   ...binding,
@@ -405,7 +405,7 @@ function NodeBindingControls({
         placeholder="https://example.org/YourClass"
         type="text"
         onChange={(ev) => onChange({ ...binding, classIri: ev.target.value || undefined })}
-        className={`input input-bordered input-sm ${fieldControlClass}`}
+        className={`input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
       />
     </div>
   )
@@ -436,7 +436,7 @@ function ParentNodePointerControl({
         />
       </div>
       <select
-        className={`select select-bordered select-sm ${fieldControlClass}`}
+        className={`select select-bordered select-md text-base ${fieldControlClass} select-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`}
         value={binding.parentNodePointer ?? ""}
         onChange={(ev) => onChange({ ...binding, parentNodePointer: ev.target.value || undefined })}
       >
@@ -452,7 +452,7 @@ function ParentNodePointerControl({
         )}
       </select>
       {nearest && binding.parentNodePointer !== nearest.binding.fieldPointer && (
-        <p className="text-xs text-warning mt-1">
+        <p className="text-base text-warning mt-1">
           Recommended: the nearest containing node is {nearest.binding.fieldPointer}
         </p>
       )}

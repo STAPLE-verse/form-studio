@@ -17,13 +17,13 @@ const getInputCardBodyComponent = ({ type }: { type: React.HTMLInputTypeAttribut
   }) {
     return (
       <React.Fragment>
-        <h5>Default Value</h5>
+        <h5 className="text-xl">Default Value</h5>
         <input
           value={(parameters.default || "") as string | number}
           placeholder="Default"
           type={type}
           onChange={(ev) => onChange({ ...parameters, default: ev.target.value })}
-          className="input input-primary input-bordered w-full"
+          className="input text-base input-primary input-bordered w-full border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
         />
       </React.Fragment>
     )
@@ -65,7 +65,7 @@ function MultipleChoice({
   const [elementId] = React.useState(getRandomId())
   return (
     <div className="card-enum">
-      <h5>Possible Values</h5>
+      <h5 className="text-xl">Possible Values</h5>
       <FBCheckbox
         onChangeValue={() => {
           if (Array.isArray(parameters.enumNames)) {
@@ -156,7 +156,7 @@ function MultipleChoiceArray({
 
   return (
     <div className="card-enum">
-      <h5>Options</h5>
+      <h5 className="text-xl">Options</h5>
       <FBCheckbox
         onChangeValue={() => {
           const hasNames = Array.isArray(items.enumNames)

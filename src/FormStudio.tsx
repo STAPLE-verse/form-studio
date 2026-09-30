@@ -119,23 +119,23 @@ export function FormStudioUI({
   }, [state.schema, state.uiSchema, state.extensionValues, onAutoSave, state])
 
   return (
-    <div className="form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden">
-      <div className="flex flex-col md:flex-row justify-between items-end border-b border-base-200 px-4 pt-4 bg-base-200 gap-4">
+    <div className="form-studio flex flex-col w-full h-full animate-in fade-in duration-300 bg-base-100 border border-base-content/10 rounded-xl shadow-sm overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-end border-b border-base-content/10 px-4 pt-4 bg-base-200 gap-4">
         <div className="tabs tabs-bordered w-full md:w-auto">
           <button
-            className={`tab tab-lg transition-all font-semibold ${activeTab === "builder" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`}
+            className={`tab text-lg transition-all font-semibold ${activeTab === "builder" ? "tab-active text-primary" : "text-base-content/90 hover:text-base-content"}`}
             onClick={() => setActiveTab("builder")}
           >
             Visual Builder
           </button>
           <button
-            className={`tab tab-lg transition-all font-semibold ${activeTab === "json" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`}
+            className={`tab text-lg transition-all font-semibold ${activeTab === "json" ? "tab-active text-primary" : "text-base-content/90 hover:text-base-content"}`}
             onClick={() => setActiveTab("json")}
           >
             JSON Editor
           </button>
           <button
-            className={`tab tab-lg transition-all font-semibold ${activeTab === "preview" ? "tab-active text-primary" : "text-base-content/60 hover:text-base-content/80"}`}
+            className={`tab text-lg transition-all font-semibold ${activeTab === "preview" ? "tab-active text-primary" : "text-base-content/90 hover:text-base-content"}`}
             onClick={() => setActiveTab("preview")}
           >
             Live Preview
@@ -153,19 +153,19 @@ export function FormStudioUI({
               }
             >
               {saveStatus === "synced" && (
-                <span className="text-xs font-medium text-base-content/60 flex items-center gap-1.5">
+                <span className="text-base font-medium text-base-content/90 flex items-center gap-1.5">
                   <CheckCircleIcon className="w-4 h-4 text-success/80" />
                   All changes saved
                 </span>
               )}
               {saveStatus === "saving" && (
-                <span className="text-xs font-medium text-base-content/70 flex items-center gap-1.5">
-                  <span className="loading loading-spinner loading-xs text-primary"></span>
+                <span className="text-base font-medium text-base-content/90 flex items-center gap-1.5">
+                  <span className="loading loading-spinner loading-sm text-primary"></span>
                   Saving…
                 </span>
               )}
               {saveStatus === "unsaved" && (
-                <span className="text-xs font-medium text-warning flex items-center gap-1.5">
+                <span className="text-base font-medium text-warning flex items-center gap-1.5">
                   <ExclamationCircleIcon className="w-4 h-4" />
                   Unsaved changes
                 </span>
@@ -173,7 +173,7 @@ export function FormStudioUI({
             </div>
           )}
           {onCancel && (
-            <button className="btn btn-secondary btn-outline transition-all ml-2" onClick={onCancel}>
+            <button className="btn text-base btn-secondary btn-outline transition-all ml-2" onClick={onCancel}>
               Cancel
             </button>
           )}
@@ -187,7 +187,7 @@ export function FormStudioUI({
               }
             >
               <button
-                className="btn btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all"
+                className="btn text-base btn-ghost border border-base-300 hover:border-base-content/30 shadow-sm transition-all"
                 disabled={blockingDiagnostics.length > 0}
                 onClick={() => attemptCommit(onSave)}
               >
@@ -205,7 +205,7 @@ export function FormStudioUI({
               }
             >
               <button
-                className="btn btn-primary shadow-sm hover:shadow-md transition-all"
+                className="btn text-base btn-primary shadow-sm hover:shadow-md transition-all"
                 disabled={blockingDiagnostics.length > 0}
                 onClick={() => attemptCommit(onSaveNewVersion)}
               >
@@ -218,7 +218,7 @@ export function FormStudioUI({
 
       {commitDiagnostics.length > 0 && (
         <div className="px-6 pt-6">
-          <div className="alert alert-warning" role="alert">
+          <div className="alert text-base alert-warning" role="alert">
             <div>
               <p>Validation issues must be resolved before saving.</p>
               <ul className="mt-2 list-disc pl-5">

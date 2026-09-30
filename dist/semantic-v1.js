@@ -5,7 +5,7 @@ import {
   fieldControlClass,
   fieldLabelClass,
   fieldStackClass
-} from "./chunk-KSADJOMC.js";
+} from "./chunk-2THQ6LO4.js";
 import {
   defineFormStudioExtension,
   useFormStudio,
@@ -77,8 +77,8 @@ function SemanticBindingSection({
         }
       )
     ] }),
-    /* @__PURE__ */ jsx("p", { className: "text-xs font-mono text-base-content/60 break-all -mt-2", children: fieldPointer }),
-    !binding ? /* @__PURE__ */ jsx("button", { type: "button", className: "btn btn-outline btn-sm self-start", onClick: addBinding, children: "Add semantic binding" }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+    /* @__PURE__ */ jsx("p", { className: "text-base font-mono text-base-content/90 break-all -mt-2", children: fieldPointer }),
+    !binding ? /* @__PURE__ */ jsx("button", { type: "button", className: "btn btn-outline btn-md text-base self-start", onClick: addBinding, children: "Add semantic binding" }) : /* @__PURE__ */ jsxs(Fragment, { children: [
       /* @__PURE__ */ jsxs("div", { className: fieldClass, children: [
         /* @__PURE__ */ jsxs("div", { className: `${fieldLabelClass} flex items-center gap-2`, children: [
           "Predicate IRI",
@@ -98,7 +98,7 @@ function SemanticBindingSection({
             placeholder: "https://example.org/predicate",
             type: "text",
             onChange: (ev) => updateBinding({ ...binding, predicate: ev.target.value }),
-            className: `input input-bordered input-sm ${fieldControlClass}`
+            className: `input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`
           }
         )
       ] }),
@@ -117,7 +117,7 @@ function SemanticBindingSection({
         /* @__PURE__ */ jsxs(
           "select",
           {
-            className: `select select-bordered select-sm ${fieldControlClass}`,
+            className: `select select-bordered select-md text-base ${fieldControlClass} select-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`,
             value: binding.valueKind,
             onChange: (ev) => updateBinding(changeValueKind(binding, ev.target.value)),
             children: [
@@ -139,12 +139,12 @@ function SemanticBindingSection({
           onChange: updateBinding
         }
       ),
-      analysis && /* @__PURE__ */ jsxs("p", { className: "text-xs text-base-content/60", children: [
+      analysis && /* @__PURE__ */ jsxs("p", { className: "text-base text-base-content/90", children: [
         "Effective Core field type:",
         " ",
         analysis.resolutionStatus !== "resolved" ? analysis.resolutionStatus : analysis.unsupportedType || analysis.valueSchemas.length === 0 ? "unresolved" : Array.from(new Set(analysis.valueSchemas.map((s) => s.type))).join(" | ")
       ] }),
-      fieldDiagnostics.length > 0 && /* @__PURE__ */ jsx("ul", { className: "flex flex-col gap-1", children: fieldDiagnostics.map((diagnostic, index) => /* @__PURE__ */ jsxs("li", { className: "text-xs text-error", children: [
+      fieldDiagnostics.length > 0 && /* @__PURE__ */ jsx("ul", { className: "flex flex-col gap-1", children: fieldDiagnostics.map((diagnostic, index) => /* @__PURE__ */ jsxs("li", { className: "text-base text-error", children: [
         /* @__PURE__ */ jsx("span", { className: "font-mono", children: diagnostic.code }),
         " \u2014 ",
         diagnostic.message
@@ -153,7 +153,7 @@ function SemanticBindingSection({
         "button",
         {
           type: "button",
-          className: "btn btn-ghost btn-xs text-error self-start gap-1",
+          className: "btn btn-ghost btn-md text-base text-error self-start gap-1",
           onClick: removeBinding,
           children: [
             /* @__PURE__ */ jsx(TrashIcon, { className: "w-3.5 h-3.5" }),
@@ -199,7 +199,7 @@ function LiteralBindingControls({
           type: "text",
           disabled: binding.language !== void 0,
           onChange: (ev) => onChange({ ...binding, datatypeIri: ev.target.value || void 0, language: void 0 }),
-          className: `input input-bordered input-sm ${fieldControlClass}`
+          className: `input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`
         }
       )
     ] }),
@@ -223,11 +223,11 @@ function LiteralBindingControls({
           type: "text",
           disabled: binding.datatypeIri !== void 0,
           onChange: (ev) => onChange({ ...binding, language: ev.target.value || void 0, datatypeIri: void 0 }),
-          className: `input input-bordered input-sm ${fieldControlClass}`
+          className: `input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`
         }
       )
     ] }),
-    /* @__PURE__ */ jsx("p", { className: "text-xs text-base-content/60 -mt-2", children: "Only one of datatype IRI or language tag may be set." })
+    /* @__PURE__ */ jsx("p", { className: "text-base text-base-content/90 -mt-2", children: "Only one of datatype IRI or language tag may be set." })
   ] });
 }
 function parseMappingValue(raw) {
@@ -257,7 +257,7 @@ function IriBindingControls({
       /* @__PURE__ */ jsxs(
         "select",
         {
-          className: `select select-bordered select-sm ${fieldControlClass}`,
+          className: `select select-bordered select-md text-base ${fieldControlClass} select-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`,
           value: hasMappings ? "mapped" : "direct",
           onChange: (ev) => {
             if (ev.target.value === "direct") {
@@ -293,7 +293,7 @@ function IriBindingControls({
           /* @__PURE__ */ jsx(
             "input",
             {
-              className: "input input-bordered input-sm flex-1 min-w-0",
+              className: "input input-bordered input-md text-base flex-1 min-w-0 input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]",
               placeholder: "Value",
               value: String(mapping.value),
               onChange: (ev) => {
@@ -306,7 +306,7 @@ function IriBindingControls({
           /* @__PURE__ */ jsx(
             "input",
             {
-              className: "input input-bordered input-sm flex-1 min-w-0",
+              className: "input input-bordered input-md text-base flex-1 min-w-0 input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]",
               placeholder: "https://example.org/value",
               value: mapping.iri,
               onChange: (ev) => {
@@ -321,7 +321,7 @@ function IriBindingControls({
             {
               type: "button",
               "aria-label": "Remove mapping",
-              className: "btn btn-ghost btn-xs text-error",
+              className: "btn btn-ghost btn-md text-base text-error",
               onClick: () => {
                 const next = (binding.valueMappings ?? []).filter((_, i) => i !== index);
                 onChange({ ...binding, valueMappings: next.length ? next : [{ value: "", iri: "" }] });
@@ -334,7 +334,7 @@ function IriBindingControls({
           "button",
           {
             type: "button",
-            className: "btn btn-outline btn-xs self-start",
+            className: "btn btn-outline btn-md text-base self-start",
             onClick: () => onChange({
               ...binding,
               valueMappings: [...binding.valueMappings ?? [], { value: "", iri: "" }]
@@ -369,7 +369,7 @@ function NodeBindingControls({
         placeholder: "https://example.org/YourClass",
         type: "text",
         onChange: (ev) => onChange({ ...binding, classIri: ev.target.value || void 0 }),
-        className: `input input-bordered input-sm ${fieldControlClass}`
+        className: `input input-bordered input-md text-base ${fieldControlClass} input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`
       }
     )
   ] });
@@ -398,7 +398,7 @@ function ParentNodePointerControl({
     /* @__PURE__ */ jsxs(
       "select",
       {
-        className: `select select-bordered select-sm ${fieldControlClass}`,
+        className: `select select-bordered select-md text-base ${fieldControlClass} select-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]`,
         value: binding.parentNodePointer ?? "",
         onChange: (ev) => onChange({ ...binding, parentNodePointer: ev.target.value || void 0 }),
         children: [
@@ -414,7 +414,7 @@ function ParentNodePointerControl({
         ]
       }
     ),
-    nearest && binding.parentNodePointer !== nearest.binding.fieldPointer && /* @__PURE__ */ jsxs("p", { className: "text-xs text-warning mt-1", children: [
+    nearest && binding.parentNodePointer !== nearest.binding.fieldPointer && /* @__PURE__ */ jsxs("p", { className: "text-base text-warning mt-1", children: [
       "Recommended: the nearest containing node is ",
       nearest.binding.fieldPointer
     ] })
@@ -438,17 +438,17 @@ function RemoveSemanticComponentControl({
     return /* @__PURE__ */ jsxs2(
       "div",
       {
-        className: `alert alert-warning py-2 text-sm items-center w-full ${className ?? ""}`,
+        className: `alert alert-warning py-2 text-base items-center w-full ${className ?? ""}`,
         role: "alert",
         children: [
           /* @__PURE__ */ jsx2("span", { children: "Remove the entire semantic component? This cannot be undone." }),
           /* @__PURE__ */ jsxs2("div", { className: "flex gap-2 ml-auto", children: [
-            /* @__PURE__ */ jsx2("button", { type: "button", className: "btn btn-xs btn-ghost", onClick: () => setConfirming(false), children: "Cancel" }),
+            /* @__PURE__ */ jsx2("button", { type: "button", className: "btn btn-md text-base btn-ghost", onClick: () => setConfirming(false), children: "Cancel" }),
             /* @__PURE__ */ jsx2(
               "button",
               {
                 type: "button",
-                className: "btn btn-xs btn-error",
+                className: "btn btn-md text-base btn-error",
                 onClick: () => {
                   onRemove();
                   setConfirming(false);
@@ -465,7 +465,7 @@ function RemoveSemanticComponentControl({
     "button",
     {
       type: "button",
-      className: `btn btn-ghost btn-xs text-error gap-1 ${className ?? ""}`,
+      className: `btn btn-ghost btn-md text-base text-error gap-1 ${className ?? ""}`,
       onClick: () => setConfirming(true),
       children: [
         /* @__PURE__ */ jsx2(TrashIcon2, { className: "w-3.5 h-3.5" }),
@@ -497,17 +497,17 @@ function SemanticDocument({
       "data-json-editor-document": "semantics",
       children: [
         /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between mb-2 flex-wrap gap-2", children: [
-          /* @__PURE__ */ jsx3("h4", { className: "text-sm font-semibold text-base-content/70 uppercase tracking-wider", children: "Semantics" }),
+          /* @__PURE__ */ jsx3("h4", { className: "text-base font-semibold text-base-content/90 uppercase tracking-wider", children: "Semantics" }),
           semantics !== void 0 && /* @__PURE__ */ jsx3(RemoveSemanticComponentControl, { onRemove: () => setSemantics(void 0) })
         ] }),
         semantics === void 0 ? /* @__PURE__ */ jsxs3(Fragment2, { children: [
           /* @__PURE__ */ jsxs3("div", { className: "flex-1 flex flex-col items-center justify-center gap-3 bg-base-200 rounded-lg border border-dashed border-base-300 p-8 text-center", children: [
-            /* @__PURE__ */ jsx3("p", { className: "text-base-content/60 italic", children: "This form has no Semantic V1 component yet." }),
+            /* @__PURE__ */ jsx3("p", { className: "text-base-content/90 italic", children: "This form has no Semantic V1 component yet." }),
             /* @__PURE__ */ jsxs3(
               "button",
               {
                 type: "button",
-                className: "btn btn-primary btn-sm gap-1.5",
+                className: "btn btn-primary btn-md text-base gap-1.5",
                 onClick: () => setSemantics(STARTER_SEMANTICS),
                 children: [
                   /* @__PURE__ */ jsx3(PlusIcon, { className: "w-4 h-4" }),
@@ -536,7 +536,7 @@ function SemanticDocument({
               }
             }
           ) }),
-          /* @__PURE__ */ jsx3("div", { className: "mt-2 h-12 shrink-0 overflow-y-auto", children: semanticsDoc.parseError && /* @__PURE__ */ jsxs3("p", { className: "text-xs text-error font-mono break-words", role: "alert", children: [
+          /* @__PURE__ */ jsx3("div", { className: "mt-2 h-12 shrink-0 overflow-y-auto", children: semanticsDoc.parseError && /* @__PURE__ */ jsxs3("p", { className: "text-base text-error font-mono break-words", role: "alert", children: [
             "Invalid JSON \u2014 not yet applied: ",
             semanticsDoc.parseError
           ] }) })
@@ -573,7 +573,7 @@ function SemanticRootClassInput({
   return /* @__PURE__ */ jsxs4("div", { children: [
     /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between mb-2 flex-wrap gap-2", children: [
       /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsx4("h5", { "data-test": "semantic-root-class-label", className: "font-semibold", children: "Semantic root class (optional)" }),
+        /* @__PURE__ */ jsx4("h5", { "data-test": "semantic-root-class-label", className: "text-xl", children: "Semantic root class (optional)" }),
         /* @__PURE__ */ jsx4(
           Tooltip,
           {
@@ -592,11 +592,11 @@ function SemanticRootClassInput({
         placeholder: "https://example.org/YourClass",
         type: "text",
         onChange: (ev) => handleClassIriChange(ev.target.value),
-        className: "input input-bordered w-full",
+        className: "input text-base input-bordered w-full input-primary border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]",
         "data-test": "semantic-root-class-input"
       }
     ),
-    /* @__PURE__ */ jsx4("p", { className: "mt-1.5 text-xs text-base-content/60", children: "The absolute IRI of the class this form instance represents. Leave blank for a Core-only form." })
+    /* @__PURE__ */ jsx4("p", { className: "mt-1.5 text-base text-base-content/90", children: "The absolute IRI of the class this form instance represents. Leave blank for a Core-only form." })
   ] });
 }
 
@@ -720,13 +720,13 @@ function SemanticDiagnosticItem({
   return /* @__PURE__ */ jsxs5(
     "li",
     {
-      className: "text-sm rounded-lg border border-error/40 bg-error/20 px-3 py-2",
+      className: "text-base rounded-lg border border-error/40 bg-error/20 px-3 py-2",
       "data-semantic-diagnostic-code": diagnostic.code,
       "data-semantic-diagnostic-stage": diagnostic.stage,
       children: [
         /* @__PURE__ */ jsxs5("div", { className: "flex flex-wrap items-center gap-2", children: [
-          /* @__PURE__ */ jsx6("span", { className: "badge badge-outline badge-sm font-mono", children: diagnostic.code }),
-          /* @__PURE__ */ jsx6("span", { className: "font-mono text-xs opacity-70", children: diagnostic.pointer })
+          /* @__PURE__ */ jsx6("span", { className: "badge badge-outline badge-md text-base font-mono", children: diagnostic.code }),
+          /* @__PURE__ */ jsx6("span", { className: "font-mono text-base opacity-70", children: diagnostic.pointer })
         ] }),
         /* @__PURE__ */ jsx6("p", { className: "mt-1", children: diagnostic.message })
       ]

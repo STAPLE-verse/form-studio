@@ -22,7 +22,7 @@ export default function FormPreview(): React.ReactElement {
   if (!state.schema || Object.keys(state.schema).length === 0) {
     return (
       <div className="flex items-center justify-center h-full bg-base-200 rounded-box border border-base-300 p-8">
-        <p className="text-base-content/60 italic">No form defined to preview.</p>
+        <p className="text-base-content/90 italic">No form defined to preview.</p>
       </div>
     )
   }

@@ -106,7 +106,7 @@ export default function FormBuilder({
       className={`formBuilder ${builderControlAppearanceClass} ${className || ""}`}
     >
       <div
-        className="alert alert-warning mb-4 flex-col items-start"
+        className="alert text-base alert-warning mb-4 flex-col items-start"
         style={{
           display: unsupportedFeatures.length === 0 ? "none" : "flex",
         }}
@@ -124,7 +124,7 @@ export default function FormBuilder({
           data-test="form-head"
         >
           <div>
-            <h5 data-test="form-name-label" className="font-semibold mb-2">
+            <h5 data-test="form-name-label" className="text-xl mb-2">
               {mods && mods.labels && typeof mods.labels.formNameLabel === "string"
                 ? mods.labels.formNameLabel
                 : "Form Name"}
@@ -142,11 +142,11 @@ export default function FormBuilder({
                   uiSchema
                 )
               }}
-              className="input input-primary input-bordered w-full form-title mb-4"
+              className="input text-base input-primary input-bordered w-full form-title mb-4 border-2 focus:!outline-secondary focus:!outline-[3px] focus:!outline-offset-0 focus:![--input-color:var(--color-secondary)]"
             />
           </div>
           <div>
-            <h5 data-test="form-description-label" className="font-semibold mb-2">
+            <h5 data-test="form-description-label" className="text-xl mb-2">
               {mods && mods.labels && typeof mods.labels.formDescriptionLabel === "string"
                 ? mods.labels.formDescriptionLabel
                 : "Form Description"}
