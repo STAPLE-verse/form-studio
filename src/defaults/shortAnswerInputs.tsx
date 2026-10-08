@@ -8,10 +8,10 @@ import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from 
 
 const formatDictionary = {
   "": "None",
-  email: "Email",
-  hostname: "Hostname",
-  uri: "URI",
-  regex: "Regular Expression",
+  email: "Email address",
+  hostname: "Website name (e.g. example.com)",
+  uri: "Web link (URL)",
+  regex: "Regular expression",
 }
 
 type FormatDictionaryKey = "" | "email" | "hostname" | "uri" | "regex"
@@ -82,7 +82,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
             <Tooltip
               id={`${elementId}_regex`}
               type="help"
-              text="Regular expression pattern that this must satisfy"
+              text="Advanced: a regular expression pattern the answer must match. Click the icon to learn more"
             />
           </a>
         </div>
@@ -106,7 +106,7 @@ const CardShortAnswerParameterInputs: CardComponentType = ({ parameters, onChang
           <Tooltip
             id={`${elementId}_format`}
             type="help"
-            text="Require string input to match a certain common format"
+            text="Require the answer to look like a common kind of text, such as an email address or a web link"
           />
         </div>
         <select

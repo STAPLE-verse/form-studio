@@ -92,7 +92,7 @@ export default function Card({
             label="Required"
             id={`${elementId}_required`}
           />
-          <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Additional configurations for this item" id={`${elementId}_editinfo`}>
+          <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Set rules for this item, such as a format or limits on what can be entered" id={`${elementId}_editinfo`}>
             <PencilIcon className="w-5 h-5 text-secondary hover:text-primary transition-colors" onClick={() => setModalOpen(true)} />
           </span>
           <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Delete item" id={`${elementId}_trashinfo`}>
