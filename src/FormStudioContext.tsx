@@ -55,8 +55,22 @@ export function computeStateFingerprint(
   })
 }
 
+// The authored part of the state: what undo and redo move between. Preview data is not
+// included, so trying out the form never creates (or erases) undo steps.
+type AuthoredSnapshot = Pick<FormStudioState, "schema" | "uiSchema" | "extensionValues">
+
+/** Most undo steps kept; older ones are dropped. */
+export const UNDO_HISTORY_LIMIT = 100
+/** Changes closer together than this (e.g. typing a title) share one undo step. */
+export const UNDO_GROUP_MS = 1000
+
 export interface FormStudioContextValue {
   state: FormStudioState
+  /** Steps back to the state before the latest change (or group of quick changes). */
+  undo: () => void
+  redo: () => void
+  canUndo: boolean
+  canRedo: boolean
   /** Stable registration order captured when the provider mounts. */
   extensions: readonly AnyFormStudioExtension[]
   setSchema: (newSchema: object) => void
@@ -167,6 +181,65 @@ export function FormStudioProvider({
     })
   }
 
+  // --- undo / redo -------------------------------------------------------------------
+  // History is recorded by watching the authored state change, so every way of changing it
+  // (builder, JSON editor, extension edits) is covered, and one user action that writes the
+  // schema and uiSchema separately still counts as a single step.
+  const authoredFingerprint = useMemo(
+    () => computeStateFingerprint(state),
+    [state.schema, state.uiSchema, state.extensionValues]
+  )
+  const pastRef = useRef<AuthoredSnapshot[]>([])
+  const futureRef = useRef<AuthoredSnapshot[]>([])
+  const currentRef = useRef<AuthoredSnapshot>(state)
+  const fingerprintRef = useRef(authoredFingerprint)
+  const lastChangeAtRef = useRef(0)
+  const applyingHistoryRef = useRef(false)
+  const [, setHistoryVersion] = useState(0)
+
+  useEffect(() => {
+    if (authoredFingerprint === fingerprintRef.current) return
+    const previous = currentRef.current
+    currentRef.current = state
+    fingerprintRef.current = authoredFingerprint
+
+    if (applyingHistoryRef.current) {
+      // this change is an undo/redo being applied, not a new edit
+      applyingHistoryRef.current = false
+      return
+    }
+
+    const now = Date.now()
+    if (now - lastChangeAtRef.current > UNDO_GROUP_MS) {
+      pastRef.current.push(previous)
+      if (pastRef.current.length > UNDO_HISTORY_LIMIT) pastRef.current.shift()
+    }
+    lastChangeAtRef.current = now
+    futureRef.current = []
+    setHistoryVersion((version) => version + 1)
+  }, [authoredFingerprint])
+
+  const applySnapshot = (from: AuthoredSnapshot[], to: AuthoredSnapshot[]) => {
+    // skip snapshots identical to what's showing (they would look like a dead click)
+    while (from.length > 0) {
+      const target = from.pop()!
+      if (computeStateFingerprint(target) === fingerprintRef.current) continue
+      to.push(currentRef.current)
+      applyingHistoryRef.current = true
+      lastChangeAtRef.current = 0
+      setState((prev) => ({
+        ...prev,
+        schema: target.schema,
+        uiSchema: target.uiSchema,
+        extensionValues: target.extensionValues,
+      }))
+      break
+    }
+    setHistoryVersion((version) => version + 1)
+  }
+  const undo = () => applySnapshot(pastRef.current, futureRef.current)
+  const redo = () => applySnapshot(futureRef.current, pastRef.current)
+
   const extensionDiagnostics = useDebouncedExtensionDiagnostics(registry, state)
   const validateForCommit = (): FormStudioValidationResult =>
     validateRegisteredExtensions(registry, state)
@@ -175,6 +248,10 @@ export function FormStudioProvider({
     <FormStudioContext.Provider
       value={{
         state,
+        undo,
+        redo,
+        canUndo: pastRef.current.length > 0,
+        canRedo: futureRef.current.length > 0,
         extensions: registry.extensions,
         setSchema,
         setUiSchema,
