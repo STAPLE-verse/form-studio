@@ -45,8 +45,14 @@ export default function Add({
     if (!popoverOpen || !containerRef.current) return
     const rect = containerRef.current.getBoundingClientRect()
     const popoverWidth = 256 // w-64
+    const popoverHeight = popoverRef.current?.offsetHeight ?? 0
+    // Open above the plus icon so the new item/section choice is visible without
+    // scrolling; only fall back to below when there is no room above.
+    const fitsAbove = rect.top - popoverHeight - 8 >= 0
     setPopoverPos({
-      top: rect.bottom + window.scrollY + 8,
+      top: fitsAbove
+        ? rect.top + window.scrollY - popoverHeight - 8
+        : rect.bottom + window.scrollY + 8,
       left: rect.left + window.scrollX + rect.width / 2 - popoverWidth / 2,
     })
   }, [popoverOpen])
