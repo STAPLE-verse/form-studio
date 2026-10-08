@@ -268,6 +268,8 @@ export default function FormBuilder({
           <Add
             tooltipDescription={((mods || {}).tooltipDescriptions || {}).add}
             labels={mods?.labels ?? {}}
+            itemSource={mods?.itemSource}
+            addProperties={addProperties}
             addElem={(choice: string) => {
               if (choice === "card") {
                 addCardObj(addProperties)

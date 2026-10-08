@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, ReactElement } from "react"
 import { createPortal } from "react-dom"
 import FBRadioGroup from "./radio/FBRadioGroup"
-import type { ModLabels } from "./types"
+import type { AddFormObjectParametersType, ModLabels } from "./types"
+import type { ItemSource } from "./itemSource"
+import { addCopiedItems } from "./itemSource"
+import CopyFromFormModal from "./CopyFromFormModal"
 import { PlusIcon } from "@heroicons/react/24/outline"
 
 export default function Add({
@@ -9,14 +12,21 @@ export default function Add({
   hidden,
   tooltipDescription,
   labels,
+  itemSource,
+  addProperties,
 }: {
   addElem: (choice: string) => void
   hidden?: boolean
   tooltipDescription?: string
   labels?: ModLabels
+  // when both are given, "From another form" is offered as a third choice
+  itemSource?: ItemSource
+  addProperties?: AddFormObjectParametersType
 }): ReactElement {
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [createChoice, setCreateChoice] = useState("card")
+  const [copyOpen, setCopyOpen] = useState(false)
+  const canCopy = !!itemSource && !!addProperties
   const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -90,6 +100,7 @@ export default function Add({
                   value: "section",
                   label: labels?.addSectionLabel ?? "Section",
                 },
+                ...(canCopy ? [{ value: "copy", label: "From another form" }] : []),
               ]}
               onChange={(selection) => {
                 setCreateChoice(selection)
@@ -101,7 +112,11 @@ export default function Add({
               </button>
               <button
                 onClick={() => {
-                  addElem(createChoice)
+                  if (createChoice === "copy") {
+                    setCopyOpen(true)
+                  } else {
+                    addElem(createChoice)
+                  }
                   setPopoverOpen(false)
                 }}
                 className="btn btn-md text-base btn-primary"
@@ -112,6 +127,15 @@ export default function Add({
           </div>,
           document.body
         )}
+      {canCopy && (
+        <CopyFromFormModal
+          isOpen={copyOpen}
+          onClose={() => setCopyOpen(false)}
+          itemSource={itemSource}
+          categoryHash={addProperties.categoryHash}
+          onCopy={(contents, names) => addCopiedItems(addProperties, contents, names)}
+        />
+      )}
     </div>
   )
 }

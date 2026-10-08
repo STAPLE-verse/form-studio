@@ -1,5 +1,6 @@
 import { ReactElement, FunctionComponent } from "react"
 import type { LocalReferenceResolutionStatus } from "./localReferences"
+import type { ItemSource } from "./itemSource"
 
 export interface ComponentProps {
   dependents: {
@@ -296,6 +297,8 @@ export interface Mods {
   deactivatedFormInputs?: Array<string>
   newElementDefaultDataOptions?: DataOptions
   newElementDefaultUiSchema?: { [key: string]: any }
+  /** Lets the user copy items from their other forms. Omit to hide the option. */
+  itemSource?: ItemSource
 }
 
 export type FormInput = FormInputType
