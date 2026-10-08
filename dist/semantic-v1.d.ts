@@ -1,4 +1,4 @@
-import { k as DefinedFormStudioExtension, u as FormStudioExtensionState, a as FormStudioDiagnostic } from './types-C5lOkV8d.js';
+import { k as DefinedFormStudioExtension, u as FormStudioExtensionState, a as FormStudioDiagnostic } from './types-Cf3ZyPp0.js';
 import { SemanticV1Component, ConformanceDiagnostic } from '@staple-verse/marker-template-runtime';
 export { ConformanceDiagnostic, SemanticBinding, SemanticIriBinding, SemanticLiteralBinding, SemanticNodeBinding, SemanticV1Component, SemanticValueMapping } from '@staple-verse/marker-template-runtime';
 import React from 'react';

@@ -2,6 +2,31 @@ import { FunctionComponent, ReactElement, ComponentType } from 'react';
 
 type LocalReferenceResolutionStatus = "resolved" | "unresolved" | "unsupportedLocal" | "external" | "cycle";
 
+/** A form the host app lets the user copy items from. */
+interface ItemSourceForm {
+    id: string | number;
+    title: string;
+    /** Optional extra line, e.g. a version or last-edited date. */
+    description?: string;
+}
+/** The JSON of a form, as stored by the host app. */
+interface ItemSourceFormContents {
+    schema: {
+        [key: string]: any;
+    };
+    uiSchema?: {
+        [key: string]: any;
+    } | null;
+}
+/**
+ * Lets the host app supply the user's other forms so items can be copied from them.
+ * Form Studio only ever reads through this; it never writes to the source form.
+ */
+interface ItemSource {
+    listForms: () => Promise<ItemSourceForm[]>;
+    getForm: (id: ItemSourceForm["id"]) => Promise<ItemSourceFormContents>;
+}
+
 interface ComponentProps {
     dependents: {
         children: string[];
@@ -160,6 +185,7 @@ interface CardPropsType {
     componentProps: CardComponentPropsType;
     onChange: (newParams: CardComponentPropsType) => void;
     onDelete?: () => void;
+    onDuplicate?: () => void;
     onMoveUp?: () => void;
     onMoveDown?: () => void;
     TypeSpecificParameters: FunctionComponent<{
@@ -292,6 +318,8 @@ interface Mods {
     newElementDefaultUiSchema?: {
         [key: string]: any;
     };
+    /** Lets the user copy items from their other forms. Omit to hide the option. */
+    itemSource?: ItemSource;
 }
 type FormInput = FormInputType;
 interface InitParameters {
@@ -437,4 +465,4 @@ declare function getFormStudioExtensionValue<TValue>(state: FormStudioExtensionS
  */
 declare function defineFormStudioExtension<TValue>(extension: FormStudioExtension<TValue>): Readonly<DefinedFormStudioExtension<TValue>>;
 
-export { type AddFormObjectParametersType as A, type SectionType as B, type CardComponentPropsType as C, type DataOptions as D, type ElementProps as E, type FormStudioExtension as F, defineFormStudioExtension as G, getFormStudioExtensionValue as H, type InitParameters as I, type Mods as M, type SectionProps as S, type FormStudioDiagnostic as a, type FormStudioValidationResult as b, type CardComponentType as c, type CardModalProps as d, type CardModalType as e, type CardProps as f, type CardPropsType as g, type CardType as h, type ComponentProps as i, type DataType as j, type DefinedFormStudioExtension as k, type DefinitionData as l, type ExtensionDocumentProps as m, type FieldCompatibility as n, type FieldExtensionControlProps as o, type FormElement as p, type FormExtensionControlProps as q, type FormInput as r, type FormStudioExtensionControlProps as s, type FormStudioExtensionSlots as t, type FormStudioExtensionState as u, type FormStudioExtensionValidationInput as v, type FormStudioFieldContext as w, type InputSelectDataType as x, type ModLabels as y, type SectionPropsType as z };
+export { type AddFormObjectParametersType as A, type ItemSourceFormContents as B, type CardComponentPropsType as C, type DataOptions as D, type ElementProps as E, type FormStudioExtension as F, type ModLabels as G, type SectionPropsType as H, type InitParameters as I, type SectionType as J, defineFormStudioExtension as K, getFormStudioExtensionValue as L, type Mods as M, type SectionProps as S, type FormStudioDiagnostic as a, type FormStudioValidationResult as b, type CardComponentType as c, type CardModalProps as d, type CardModalType as e, type CardProps as f, type CardPropsType as g, type CardType as h, type ComponentProps as i, type DataType as j, type DefinedFormStudioExtension as k, type DefinitionData as l, type ExtensionDocumentProps as m, type FieldCompatibility as n, type FieldExtensionControlProps as o, type FormElement as p, type FormExtensionControlProps as q, type FormInput as r, type FormStudioExtensionControlProps as s, type FormStudioExtensionSlots as t, type FormStudioExtensionState as u, type FormStudioExtensionValidationInput as v, type FormStudioFieldContext as w, type InputSelectDataType as x, type ItemSource as y, type ItemSourceForm as z };

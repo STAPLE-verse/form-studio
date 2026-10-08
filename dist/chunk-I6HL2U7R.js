@@ -212,6 +212,8 @@ function computeStateFingerprint(state) {
     extensionValues: state.extensionValues
   });
 }
+var UNDO_HISTORY_LIMIT = 100;
+var UNDO_GROUP_MS = 1e3;
 var FormStudioContext = createContext(void 0);
 function FormStudioProvider({
   extensions = [],
@@ -279,6 +281,54 @@ function FormStudioProvider({
       return { ...prev, extensionValues };
     });
   };
+  const authoredFingerprint = useMemo2(
+    () => computeStateFingerprint(state),
+    [state.schema, state.uiSchema, state.extensionValues]
+  );
+  const pastRef = useRef3([]);
+  const futureRef = useRef3([]);
+  const currentRef = useRef3(state);
+  const fingerprintRef = useRef3(authoredFingerprint);
+  const lastChangeAtRef = useRef3(0);
+  const applyingHistoryRef = useRef3(false);
+  const [, setHistoryVersion] = useState2(0);
+  useEffect2(() => {
+    if (authoredFingerprint === fingerprintRef.current) return;
+    const previous = currentRef.current;
+    currentRef.current = state;
+    fingerprintRef.current = authoredFingerprint;
+    if (applyingHistoryRef.current) {
+      applyingHistoryRef.current = false;
+      return;
+    }
+    const now = Date.now();
+    if (now - lastChangeAtRef.current > UNDO_GROUP_MS) {
+      pastRef.current.push(previous);
+      if (pastRef.current.length > UNDO_HISTORY_LIMIT) pastRef.current.shift();
+    }
+    lastChangeAtRef.current = now;
+    futureRef.current = [];
+    setHistoryVersion((version) => version + 1);
+  }, [authoredFingerprint]);
+  const applySnapshot = (from, to) => {
+    while (from.length > 0) {
+      const target = from.pop();
+      if (computeStateFingerprint(target) === fingerprintRef.current) continue;
+      to.push(currentRef.current);
+      applyingHistoryRef.current = true;
+      lastChangeAtRef.current = 0;
+      setState((prev) => ({
+        ...prev,
+        schema: target.schema,
+        uiSchema: target.uiSchema,
+        extensionValues: target.extensionValues
+      }));
+      break;
+    }
+    setHistoryVersion((version) => version + 1);
+  };
+  const undo = () => applySnapshot(pastRef.current, futureRef.current);
+  const redo = () => applySnapshot(futureRef.current, pastRef.current);
   const extensionDiagnostics = useDebouncedExtensionDiagnostics(registry, state);
   const validateForCommit = () => validateRegisteredExtensions(registry, state);
   return /* @__PURE__ */ jsx(
@@ -286,6 +336,10 @@ function FormStudioProvider({
     {
       value: {
         state,
+        undo,
+        redo,
+        canUndo: pastRef.current.length > 0,
+        canRedo: futureRef.current.length > 0,
         extensions: registry.extensions,
         setSchema,
         setUiSchema,
@@ -382,4 +436,4 @@ export {
   useOptionalFormStudio,
   useSyncedJsonDocument
 };
-//# sourceMappingURL=chunk-EG7H73O6.js.map
+//# sourceMappingURL=chunk-I6HL2U7R.js.map
