@@ -162,7 +162,11 @@ export default function Section({
                   onChange={(ev) => setKeyName(ev.target.value)}
                   onBlur={(ev) => {
                     const { value } = ev.target
-                    if (value === name || !(neighborNames && neighborNames.includes(value))) {
+                    if (value.trim() === "") {
+                      setKeyName(name)
+                      setKeyError("A key is required.")
+                      onNameChange(name)
+                    } else if (value === name || !(neighborNames && neighborNames.includes(value))) {
                       setKeyError(null)
                       onNameChange(value)
                     } else {

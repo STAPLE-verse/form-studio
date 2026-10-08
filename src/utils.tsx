@@ -944,7 +944,8 @@ export function generateUiSchemaFromElementProps(
   const definitions = definitionUi
 
   elementArr.forEach((element) => {
-    uiOrder.push(element.name)
+    // a blank key names no schema property, so it must never reach ui:order
+    if (element.name) uiOrder.push(element.name)
     if (element.$ref !== undefined) {
       // look for the reference
       const definitionName = getLocalDefinitionName(element.$ref)

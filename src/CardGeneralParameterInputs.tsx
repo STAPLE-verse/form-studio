@@ -108,7 +108,11 @@ export default function CardGeneralParameterInputs({
                 onChange={(ev) => setKeyState(ev.target.value)}
                 onBlur={(ev) => {
                   const { value } = ev.target
-                  if (
+                  if (value.trim() === "") {
+                    setKeyState(parameters.name)
+                    setKeyError("A key is required.")
+                    onChange({ ...parameters })
+                  } else if (
                     value === parameters.name ||
                     !(parameters.neighborNames && parameters.neighborNames.includes(value))
                   ) {
