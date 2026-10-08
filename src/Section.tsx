@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import MarkdownDescriptionInput from "./MarkdownDescriptionInput"
 import FBCheckbox from "./checkbox/FBCheckbox"
 import Collapse from "./Collapse/Collapse"
+import { useCollapseAllSync } from "./Collapse/CollapseAllContext"
 import CardModal from "./CardModal"
 import { CardDefaultParameterInputs } from "./defaults/defaultInputs"
 import Tooltip from "./Tooltip"
@@ -63,6 +64,7 @@ export default function Section({
   )
   const schemaData = schema || {}
   const [cardOpenState, setCardOpenState] = React.useState<Record<string, boolean>>({})
+  useCollapseAllSync(setCardOpenState)
   // keep name in state to avoid losing focus
   const [keyName, setKeyName] = React.useState(name)
   const [keyError, setKeyError] = React.useState<null | string>(null)

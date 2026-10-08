@@ -1,4 +1,5 @@
 import { ReactNode } from "react"
+import { isCardOpen } from "./Collapse/CollapseAllContext"
 import {
   SectionType,
   CardType,
@@ -1343,7 +1344,7 @@ export function generateElementComponentsFromSchemas(parameters: {
       categoryHash,
     }
 
-    const expanded = cardOpenState[elementKey] || false
+    const expanded = isCardOpen(cardOpenState, elementKey)
     const childFieldPointer = buildChildFieldPointer(fieldPointer, elementProp.name)
     if (elementProp.propType === "card") {
       const compatibility = elementProp.compatibility

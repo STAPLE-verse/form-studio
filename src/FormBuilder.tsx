@@ -23,6 +23,11 @@ import DEFAULT_FORM_INPUTS from "./defaults/defaultFormInputs"
 import type { Mods, InitParameters, AddFormObjectParametersType } from "./types"
 import { builderControlAppearanceClass } from "./controlAppearance"
 import { FormExtensionOutlet } from "./extensions/outlets"
+import {
+  CollapseAllContext,
+  useCollapseAllSync,
+  type CollapseAllSignal,
+} from "./Collapse/CollapseAllContext"
 
 
 export default function FormBuilder({
@@ -75,6 +80,11 @@ export default function FormBuilder({
   )
 
   const [cardOpenState, setCardOpenState] = React.useState<Record<string, boolean>>({})
+  const [collapseAll, setCollapseAll] = React.useState<CollapseAllSignal>({
+    version: 0,
+    open: false,
+  })
+  useCollapseAllSync(setCardOpenState, collapseAll)
 
   const isFirstRender = React.useRef(true)
 
@@ -167,7 +177,26 @@ export default function FormBuilder({
         </div>
       )}
       <FormExtensionOutlet schema={schemaData} uiSchema={uiSchemaData} />
+      <CollapseAllContext.Provider value={collapseAll}>
       <div className="form-body formBody mt-6">
+        {schemaData.properties && Object.keys(schemaData.properties).length > 0 && (
+          <div className="flex justify-end gap-2 mb-4" data-test="collapse-all-controls">
+            <button
+              type="button"
+              className="btn text-base btn-primary"
+              onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: true }))}
+            >
+              Expand all
+            </button>
+            <button
+              type="button"
+              className="btn text-base btn-secondary"
+              onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: false }))}
+            >
+              Collapse all
+            </button>
+          </div>
+        )}
         <DragDropContext
           onDragEnd={(result) =>
             onDragEnd(result, {
@@ -232,6 +261,7 @@ export default function FormBuilder({
           </Droppable>
         </DragDropContext>
       </div>
+      </CollapseAllContext.Provider>
       <div className="form-footer formFooter">
         {!hideAddButton && mods?.components?.add && mods.components.add(addProperties)}
         {!mods?.components?.add && (
