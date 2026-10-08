@@ -291,7 +291,7 @@ describe("Semantic V1 registry integration", () => {
     )
 
     const settingsIcon = container.querySelector(
-      '[data-tip="Additional configurations for this item"] svg'
+      '[id$="_editinfo"] svg'
     )
     expect(settingsIcon).not.toBeNull()
     fireEvent.click(settingsIcon!)
@@ -327,7 +327,7 @@ describe("Semantic V1 registry integration", () => {
 
     function openModal() {
       const settingsIcon = document.querySelector(
-        '[data-tip="Additional configurations for this item"] svg'
+        '[id$="_editinfo"] svg'
       )
       fireEvent.click(settingsIcon!)
     }
@@ -380,7 +380,7 @@ describe("Semantic V1 registry integration", () => {
     expect(screen.getByTestId("schema-state").textContent).not.toContain("fieldPointer")
 
     const settingsIcon = document.querySelector(
-      '[data-tip="Additional configurations for this item"] svg'
+      '[id$="_editinfo"] svg'
     )
     fireEvent.click(settingsIcon!)
     fireEvent.click(screen.getByText("Save"))

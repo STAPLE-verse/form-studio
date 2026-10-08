@@ -12,6 +12,7 @@ import {
 } from "./utils"
 import type { Mods, ModLabels, FormInput, CardComponentPropsType } from "./types"
 import Tooltip from "./Tooltip"
+import { PencilIcon } from "@heroicons/react/24/outline"
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "./fieldLayout"
 
 const entryRowClass = `card-entry-row ${fieldStackClass}`
@@ -198,7 +199,7 @@ export default function CardGeneralParameterInputs({
                 mods.tooltipDescriptions &&
                 typeof mods.tooltipDescriptions.cardInputType === "string"
                   ? mods.tooltipDescriptions.cardInputType
-                  : "The form control and value type used for this field"
+                  : "Changes how this field looks and what kind of answer it takes. To set rules for what can be entered, use the pencil icon at the bottom of this item"
               }
               id={`${elementId}-inputinfo`}
               type="help"
@@ -235,6 +236,12 @@ export default function CardGeneralParameterInputs({
               </option>
             ))}
           </select>
+          <p className="text-base text-base-content/90 mt-2" data-test="field-type-help">
+            This changes how the item looks on the form. To set rules for what can be entered
+            (such as a format, length, or range), click the pencil{" "}
+            <PencilIcon className="inline w-5 h-5 align-text-bottom text-secondary" aria-hidden="true" />{" "}
+            at the bottom of this item.
+          </p>
         </div>
       </div>
 

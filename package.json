@@ -35,7 +35,7 @@
     "build": "tsup",
     "test": "npm run test:capabilities && npm run test:integration && npm run test:packaging",
     "test:capabilities": "tsup --config tsup.test.config.ts && node .test-dist/capability-fixtures.test.js",
-    "test:integration": "vitest run tests/semantic-integration.test.tsx tests/extension-registry.test.tsx tests/extension-outlets.test.tsx tests/collapse-all.test.tsx tests/add-popover.test.tsx tests/rename-keeps-open.test.tsx",
+    "test:integration": "vitest run tests/semantic-integration.test.tsx tests/extension-registry.test.tsx tests/extension-outlets.test.tsx tests/collapse-all.test.tsx tests/add-popover.test.tsx tests/field-type-help.test.tsx tests/rename-keeps-open.test.tsx",
     "test:packaging": "npm run build && node scripts/verify-package-outputs.mjs",
     "test:packed-consumers": "npm run build && node scripts/verify-packed-consumers.mjs",
     "test:staple:packed": "npm run build && node scripts/verify-staple-packed.mjs",
