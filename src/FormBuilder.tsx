@@ -190,7 +190,7 @@ export default function FormBuilder({
             </button>
             <button
               type="button"
-              className="btn text-base btn-primary"
+              className="btn text-base btn-secondary"
               onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: false }))}
             >
               Collapse all
