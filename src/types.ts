@@ -150,6 +150,7 @@ export interface CardPropsType {
   componentProps: CardComponentPropsType
   onChange: (newParams: CardComponentPropsType) => void
   onDelete?: () => void
+  onDuplicate?: () => void
   onMoveUp?: () => void
   onMoveDown?: () => void
   TypeSpecificParameters: FunctionComponent<{

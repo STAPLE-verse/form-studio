@@ -7,12 +7,18 @@ import Add from "./Add"
 import Tooltip from "./Tooltip"
 import { getRandomId } from "./utils"
 import type { CardPropsType, CardComponentPropsType } from "./types"
-import { ArrowsPointingOutIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
+import {
+  ArrowsPointingOutIcon,
+  DocumentDuplicateIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline"
 
 export default function Card({
   componentProps,
   onChange,
   onDelete,
+  onDuplicate,
   TypeSpecificParameters,
   addElem,
   cardOpen,
@@ -95,6 +101,11 @@ export default function Card({
           <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Set rules for this item, such as a format or limits on what can be entered" id={`${elementId}_editinfo`}>
             <PencilIcon className="w-5 h-5 text-secondary hover:text-primary transition-colors" onClick={() => setModalOpen(true)} />
           </span>
+          {onDuplicate && (
+            <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Duplicate this item, including its answer choices and rules" id={`${elementId}_duplicateinfo`}>
+              <DocumentDuplicateIcon className="w-5 h-5 text-secondary hover:text-primary transition-colors" onClick={onDuplicate} />
+            </span>
+          )}
           <span className="tooltip tooltip-left tooltip-info z-10 before:max-w-xs cursor-pointer p-1" data-tip="Delete item" id={`${elementId}_trashinfo`}>
             <TrashIcon className="w-5 h-5 text-warning hover:text-error transition-colors" onClick={() => onDelete && onDelete()} />
           </span>

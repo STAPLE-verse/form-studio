@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 import { isCardOpen, renameCardOpenKey } from "./Collapse/CollapseAllContext"
+import { nextCopyName } from "./duplicateName"
 import {
   SectionType,
   CardType,
@@ -1461,6 +1462,50 @@ export function generateElementComponentsFromSchemas(parameters: {
               definitionUi,
               categoryHash,
               onChange,
+            })
+          }}
+          onDuplicate={() => {
+            const newElementObjArr = generateElementPropsFromSchemas({
+              schema,
+              uischema,
+              definitionData,
+              definitionUi,
+              categoryHash,
+            })
+            const original = newElementObjArr[index]!
+            const copyName = nextCopyName(
+              original.name,
+              newElementObjArr.map((elem) => elem.name)
+            )
+            // The copy is a standalone item: it keeps the type, choices and rules, but not
+            // the original's conditional (show-if) links.
+            newElementObjArr.splice(index + 1, 0, {
+              ...original,
+              name: copyName,
+              dependents: undefined,
+              dependent: false,
+              parent: undefined,
+            })
+            // show the copy open, ready to edit
+            setCardOpenState({ ...cardOpenState, [`${path}_${copyName}`]: true })
+            updateSchemas(newElementObjArr, {
+              schema,
+              uischema,
+              definitionData,
+              definitionUi,
+              categoryHash,
+              onChange: (newSchema, newUiSchema) => {
+                // The visual model doesn't capture every keyword, so copy the original's
+                // full JSON so nothing it carried is lost on the duplicate.
+                const originalProperty = schema.properties?.[original.name]
+                if (originalProperty && newSchema.properties?.[copyName]) {
+                  newSchema.properties[copyName] = cloneJsonValue(originalProperty)
+                }
+                if (uischema[original.name] !== undefined) {
+                  newUiSchema[copyName] = cloneJsonValue(uischema[original.name])
+                }
+                onChange(newSchema, newUiSchema)
+              },
             })
           }}
           onDelete={() => {
