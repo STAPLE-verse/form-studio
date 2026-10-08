@@ -6,7 +6,7 @@ import CardGeneralParameterInputs from "./CardGeneralParameterInputs"
 import Add from "./Add"
 import Tooltip from "./Tooltip"
 import { getRandomId } from "./utils"
-import type { CardPropsType, CardComponentPropsType } from "./types"
+import type { AddFormObjectParametersType, CardPropsType, CardComponentPropsType } from "./types"
 import {
   ArrowsPointingOutIcon,
   DocumentDuplicateIcon,
@@ -125,6 +125,8 @@ export default function Card({
         <Add
           tooltipDescription={((mods || {}).tooltipDescriptions || {}).add}
           addElem={(choice: string) => addElem(choice)}
+          itemSource={mods?.itemSource}
+          addProperties={addProperties as AddFormObjectParametersType | undefined}
         />
       )}
     </React.Fragment>
