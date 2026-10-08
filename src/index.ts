@@ -43,3 +43,8 @@ export {
 } from "./extensions/types"
 export { default as FormStudioDiagnostics } from "./extensions/diagnostics"
 export * from "./types"
+export type {
+  ItemSource,
+  ItemSourceForm,
+  ItemSourceFormContents,
+} from "./itemSource"
