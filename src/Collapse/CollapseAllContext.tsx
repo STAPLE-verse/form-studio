@@ -19,6 +19,19 @@ export function isCardOpen(cardOpenState: Record<string, boolean>, key: string):
   return cardOpenState[key] ?? cardOpenState[DEFAULT_OPEN_KEY] ?? false
 }
 
+// A card's key includes its variable name, so renaming it would otherwise drop
+// its open/closed state (and collapse it). Moves the state to the new key.
+export function renameCardOpenKey(
+  cardOpenState: Record<string, boolean>,
+  oldKey: string,
+  newKey: string
+): Record<string, boolean> {
+  if (oldKey === newKey) return cardOpenState
+  const next = { ...cardOpenState, [newKey]: isCardOpen(cardOpenState, oldKey) }
+  delete next[oldKey]
+  return next
+}
+
 // Resets every card/section tracked in this state record to the signal's state.
 // A nested Section keeps its own record, so each one calls this too.
 // The component that owns the signal passes it directly, since it sits above

@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { isCardOpen } from "./Collapse/CollapseAllContext"
+import { isCardOpen, renameCardOpenKey } from "./Collapse/CollapseAllContext"
 import {
   SectionType,
   CardType,
@@ -1446,6 +1446,14 @@ export function generateElementComponentsFromSchemas(parameters: {
             } else {
               throw new Error("Card editing non card element")
             }
+            // keep the card open when its variable name (and so its key) changes
+            setCardOpenState(
+              renameCardOpenKey(
+                cardOpenState,
+                elementKey,
+                `${path}_${newElementObjArr[index]!.name}`
+              )
+            )
             updateSchemas(newElementObjArr, {
               schema,
               uischema,
@@ -1622,6 +1630,8 @@ export function generateElementComponentsFromSchemas(parameters: {
               ...oldSection,
               name: newName,
             }
+            // keep the section open when its variable name (and so its key) changes
+            setCardOpenState(renameCardOpenKey(cardOpenState, elementKey, `${path}_${newName}`))
             updateSchemas(newElementObjArr, {
               schema,
               uischema,
