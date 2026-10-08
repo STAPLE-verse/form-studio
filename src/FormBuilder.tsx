@@ -23,6 +23,8 @@ import DEFAULT_FORM_INPUTS from "./defaults/defaultFormInputs"
 import type { Mods, InitParameters, AddFormObjectParametersType } from "./types"
 import { builderControlAppearanceClass } from "./controlAppearance"
 import { FormExtensionOutlet } from "./extensions/outlets"
+import { useOptionalFormStudio } from "./FormStudioContext"
+import { ArrowUturnLeftIcon, ArrowUturnRightIcon } from "@heroicons/react/24/outline"
 import {
   CollapseAllContext,
   useCollapseAllSync,
@@ -85,6 +87,28 @@ export default function FormBuilder({
     open: false,
   })
   useCollapseAllSync(setCardOpenState, collapseAll)
+
+  // undo/redo exist when the builder sits inside a FormStudioProvider
+  const formStudio = useOptionalFormStudio()
+  const undo = formStudio?.undo
+  const redo = formStudio?.redo
+  useEffect(() => {
+    if (!undo || !redo) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.altKey) return
+      const key = event.key.toLowerCase()
+      if (key !== "z" && key !== "y") return
+      // leave undo to text fields (and the JSON editor) while typing, and to open dialogs
+      const target = event.target as HTMLElement | null
+      if (target?.closest("input, textarea, select, [contenteditable='true'], .monaco-editor")) return
+      if (document.querySelector("dialog.modal-open")) return
+      event.preventDefault()
+      if (key === "y" || event.shiftKey) redo()
+      else undo()
+    }
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [undo, redo])
 
   const isFirstRender = React.useRef(true)
 
@@ -179,22 +203,52 @@ export default function FormBuilder({
       <FormExtensionOutlet schema={schemaData} uiSchema={uiSchemaData} />
       <CollapseAllContext.Provider value={collapseAll}>
       <div className="form-body formBody mt-6">
-        {schemaData.properties && Object.keys(schemaData.properties).length > 0 && (
-          <div className="flex justify-end gap-2 mb-4" data-test="collapse-all-controls">
-            <button
-              type="button"
-              className="btn text-base btn-primary"
-              onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: true }))}
-            >
-              Expand all
-            </button>
-            <button
-              type="button"
-              className="btn text-base btn-secondary"
-              onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: false }))}
-            >
-              Collapse all
-            </button>
+        {(formStudio || (schemaData.properties && Object.keys(schemaData.properties).length > 0)) && (
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div className="flex gap-2" data-test="undo-redo-controls">
+              {formStudio && (
+                <>
+                  <button
+                    type="button"
+                    className="btn text-base btn-primary"
+                    disabled={!formStudio.canUndo}
+                    onClick={formStudio.undo}
+                    title="Undo the last change (Ctrl/Cmd+Z)"
+                  >
+                    <ArrowUturnLeftIcon className="h-5 w-5" aria-hidden="true" />
+                    Undo
+                  </button>
+                  <button
+                    type="button"
+                    className="btn text-base btn-secondary"
+                    disabled={!formStudio.canRedo}
+                    onClick={formStudio.redo}
+                    title="Redo (Ctrl/Cmd+Shift+Z)"
+                  >
+                    <ArrowUturnRightIcon className="h-5 w-5" aria-hidden="true" />
+                    Redo
+                  </button>
+                </>
+              )}
+            </div>
+            {schemaData.properties && Object.keys(schemaData.properties).length > 0 && (
+              <div className="flex gap-2" data-test="collapse-all-controls">
+                <button
+                  type="button"
+                  className="btn text-base btn-primary"
+                  onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: true }))}
+                >
+                  Expand all
+                </button>
+                <button
+                  type="button"
+                  className="btn text-base btn-secondary"
+                  onClick={() => setCollapseAll((prev) => ({ version: prev.version + 1, open: false }))}
+                >
+                  Collapse all
+                </button>
+              </div>
+            )}
           </div>
         )}
         <DragDropContext
