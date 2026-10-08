@@ -12,6 +12,7 @@ import {
 } from "./utils"
 import type { Mods, ModLabels, FormInput, CardComponentPropsType } from "./types"
 import Tooltip from "./Tooltip"
+import { carryOverChoices } from "./carryOverChoices"
 import { PencilIcon } from "@heroicons/react/24/outline"
 import { fieldClass, fieldControlClass, fieldLabelClass, fieldStackClass } from "./fieldLayout"
 
@@ -213,6 +214,8 @@ export default function CardGeneralParameterInputs({
               const newProps = {
                 ...defaultUiProps(newCategory, allFormInputs),
                 ...defaultDataProps(newCategory, allFormInputs),
+                // keep answer choices when switching between Radio, Dropdown and Checkboxes
+                ...carryOverChoices(parameters, newCategory),
                 name: parameters.name,
                 required: parameters.required,
               }
