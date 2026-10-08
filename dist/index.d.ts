@@ -1,6 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react';
-import { I as InitParameters, M as Mods, F as FormStudioExtension, a as FormStudioDiagnostic, b as FormStudioValidationResult } from './types-C5lOkV8d.js';
-export { A as AddFormObjectParametersType, C as CardComponentPropsType, c as CardComponentType, d as CardModalProps, e as CardModalType, f as CardProps, g as CardPropsType, h as CardType, i as ComponentProps, D as DataOptions, j as DataType, k as DefinedFormStudioExtension, l as DefinitionData, E as ElementProps, m as ExtensionDocumentProps, n as FieldCompatibility, o as FieldExtensionControlProps, p as FormElement, q as FormExtensionControlProps, r as FormInput, s as FormStudioExtensionControlProps, t as FormStudioExtensionSlots, u as FormStudioExtensionState, v as FormStudioExtensionValidationInput, w as FormStudioFieldContext, x as InputSelectDataType, y as ModLabels, S as SectionProps, z as SectionPropsType, B as SectionType, G as defineFormStudioExtension, H as getFormStudioExtensionValue } from './types-C5lOkV8d.js';
+import { I as InitParameters, M as Mods, F as FormStudioExtension, a as FormStudioDiagnostic, b as FormStudioValidationResult } from './types-Cf3ZyPp0.js';
+export { A as AddFormObjectParametersType, C as CardComponentPropsType, c as CardComponentType, d as CardModalProps, e as CardModalType, f as CardProps, g as CardPropsType, h as CardType, i as ComponentProps, D as DataOptions, j as DataType, k as DefinedFormStudioExtension, l as DefinitionData, E as ElementProps, m as ExtensionDocumentProps, n as FieldCompatibility, o as FieldExtensionControlProps, p as FormElement, q as FormExtensionControlProps, r as FormInput, s as FormStudioExtensionControlProps, t as FormStudioExtensionSlots, u as FormStudioExtensionState, v as FormStudioExtensionValidationInput, w as FormStudioFieldContext, x as InputSelectDataType, y as ItemSource, z as ItemSourceForm, B as ItemSourceFormContents, G as ModLabels, S as SectionProps, H as SectionPropsType, J as SectionType, K as defineFormStudioExtension, L as getFormStudioExtensionValue } from './types-Cf3ZyPp0.js';
 
 declare function FormBuilder({ schema, uiSchema, onMount, onChange, mods, className, }: {
     schema: string;
@@ -30,6 +30,11 @@ interface FormStudioState {
 declare function computeStateFingerprint(state: Pick<FormStudioState, "schema" | "uiSchema" | "extensionValues">): string;
 interface FormStudioContextValue {
     state: FormStudioState;
+    /** Steps back to the state before the latest change (or group of quick changes). */
+    undo: () => void;
+    redo: () => void;
+    canUndo: boolean;
+    canRedo: boolean;
     /** Stable registration order captured when the provider mounts. */
     extensions: readonly AnyFormStudioExtension[];
     setSchema: (newSchema: object) => void;
