@@ -52,7 +52,7 @@
     "@hello-pangea/dnd": "^18.0.1",
     "@heroicons/react": "^2.2.0",
     "@monaco-editor/react": "^4.7.0",
-    "@staple-verse/marker-template-runtime": "https://github.com/STAPLE-verse/marker-template-spec/releases/download/v1.0.0/staple-verse-marker-template-runtime-1.0.0.tgz",
+    "@staple-verse/marker-template-runtime": "https://github.com/STAPLE-verse/marker-template-spec/releases/download/v1.1.0/staple-verse-marker-template-runtime-1.1.0.tgz",
     "react-markdown": "^10.1.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1"

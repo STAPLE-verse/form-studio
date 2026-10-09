@@ -69,11 +69,9 @@ function MultipleChoice({
       <FBCheckbox
         onChangeValue={() => {
           if (Array.isArray(parameters.enumNames)) {
-            // remove the enumNames
-            onChange({
-              ...parameters,
-              enumNames: null,
-            })
+            // remove the enumNames key entirely (Core V1 expects an array, never null)
+            const { enumNames: _removed, ...rest } = parameters
+            onChange(rest)
           } else {
             // create enumNames as a copy of enum values
             onChange({
@@ -159,14 +157,15 @@ function MultipleChoiceArray({
       <h5 className="text-xl">Options</h5>
       <FBCheckbox
         onChangeValue={() => {
-          const hasNames = Array.isArray(items.enumNames)
-          onChange({
-            ...parameters,
-            items: {
-              ...items,
-              enumNames: hasNames ? null : enumArray.map((val: any) => `${val}`),
-            },
-          })
+          if (Array.isArray(items.enumNames)) {
+            const { enumNames: _removed, ...restItems } = items
+            onChange({ ...parameters, items: restItems })
+          } else {
+            onChange({
+              ...parameters,
+              items: { ...items, enumNames: enumArray.map((val: any) => `${val}`) },
+            })
+          }
         }}
         isChecked={Array.isArray(items.enumNames)}
         label="Display different text label than the stored value"
