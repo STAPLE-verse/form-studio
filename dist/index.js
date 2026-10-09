@@ -10941,10 +10941,8 @@ function MultipleChoice({
       {
         onChangeValue: () => {
           if (Array.isArray(parameters.enumNames)) {
-            onChange({
-              ...parameters,
-              enumNames: null
-            });
+            const { enumNames: _removed, ...rest } = parameters;
+            onChange(rest);
           } else {
             onChange({
               ...parameters,
@@ -11021,14 +11019,15 @@ function MultipleChoiceArray({
       FBCheckbox_default,
       {
         onChangeValue: () => {
-          const hasNames = Array.isArray(items.enumNames);
-          onChange({
-            ...parameters,
-            items: {
-              ...items,
-              enumNames: hasNames ? null : enumArray.map((val) => `${val}`)
-            }
-          });
+          if (Array.isArray(items.enumNames)) {
+            const { enumNames: _removed, ...restItems } = items;
+            onChange({ ...parameters, items: restItems });
+          } else {
+            onChange({
+              ...parameters,
+              items: { ...items, enumNames: enumArray.map((val) => `${val}`) }
+            });
+          }
         },
         isChecked: Array.isArray(items.enumNames),
         label: "Display different text label than the stored value",
